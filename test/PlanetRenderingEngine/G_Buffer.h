@@ -60,15 +60,15 @@ public:
 
 	void SetSize(int width, int height);
 
-	void ShowDiffuseMap();
-	void ShowNormalMap();
-	void ShowHeightMap(float heightscale);
-	void ShowSpecularMap();
+	void ShowDiffuseMap( int width, int height );
+	void ShowNormalMap( int width, int height );
+	void ShowHeightMap( int width, int height, float heightscale);
+	void ShowSpecularMap( int width, int height );
 	void DrawShadedImage( const Vec3f &eyePos, const Vec3f &lightDir, const Vec3f &lightIntensity);// シェーディングしたイメージをレンダリングする
 
-	void Draw(int width, int height);// Gバッファを表示する
-	void DrawTexture_RGB(unsigned int texture, float color_scale=1.0f);
-	void DrawTexture_A(unsigned int texture, float color_scale=1.0f);
+	void Draw( int width, int height );// Gバッファを表示する
+	void DrawTexture_RGB( unsigned int texture, int width, int height, float color_scale=1.0f );
+	void DrawTexture_A( unsigned int texture, int width, int height, float color_scale=1.0f );
 
 
 	inline unsigned int Position()	const{ return m_PositionMap; };

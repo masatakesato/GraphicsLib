@@ -18,7 +18,7 @@ float		g_DeltaT		= 1.0f / 60.0f;	// 1フレームあたりの描画時間(初期
 
 //========================== カメラ =============================//
 float		g_CamRotSpeed = 5.0f;	// カメラの回転速度
-float		g_CamMovSpeed = 50.0f;	// カメラの移動速度
+float		g_CamMovSpeed = 5.0f;	// カメラの移動速度
 
 
 //======================== 地表マテリアル =======================//
@@ -55,9 +55,11 @@ GLenum		g_PolygonMode		= GL_FILL;
 // G-Bufferの表示切替え
 bool		g_ShowGbuffer		= false;
 
+// VirtualTexture
+bool		g_VirtualTexture	= false;
+
 // ビューフラスタム固定On/Offの切り替え
 bool		g_FixFrustum		= false;
-
 
 
 // HDRレンダリングの露光感度調整
@@ -78,7 +80,7 @@ float		g_Rho				= 1.3f;
 
 // ハイトマップのスケール
 const float	g_HeightRange		= 10.5f;		// 最大高度(固定値)
-float		g_HorizontalScale	= 5.48f;	// 凹凸スケールの大きさ
+float		g_HorizontalScale	= 6.2f;	// 凹凸スケールの大きさ
 float		g_VerticalScale		= 3.0f;		// 起伏の変化度合い
 
 // ハイトマップの解像度選択
@@ -233,7 +235,9 @@ cout << "PlanetRenderingEngine::Create()..." << endl;
 	//================= GUIインスタンス生成 =============//
 	m_GUI = new MyGUI();
 	m_GUI->SetScreenResolution(m_ScreenWidth, m_ScreenHeight);
+	m_Device_Main->Begin();
 	m_GUI->InitFontDisplayList(GetDC(m_hWnd));//ビットマップフォントの初期化
+	m_Device_Main->End();
 	
 
 	//======================= カメラインスタンス作成 =========================//
@@ -399,22 +403,28 @@ void PlanetRenderingEngine::RunThread()
 				int width = m_ScreenWidth;///3;
 				int height = m_ScreenHeight;///3;
 
-				//	m_GUI->Begin();
-				//		m_GUI->DoText(10,			10,				"Diffuse");	// 左下テクスチャ
-				//		m_GUI->DoText(10+width/2,	10,				"Specular");// 右下テクスチャ
-				//		m_GUI->DoText(10+width/2,	10+height/2,	"Normal");	// 右上テクスチャ
-				//		m_GUI->DoText(10,			10+height/2,	"Position (WorldSpace)");// 左上テクスチャ
-				//	m_GUI->End();
+				m_GUI->Begin();
+				m_GUI->DoText(10,			10,				"Diffuse");	// bottom left 
+				m_GUI->DoText(10+width/2,	10,				"Specular");// bottom right
+				m_GUI->DoText(10+width/2,	10+height/2,	"Normal");	// top right
+				m_GUI->DoText(10,			10+height/2,	"Position (WorldSpace)");// top left
+				m_GUI->End();
 
-				m_Gbuffer->Draw(width, height);
+				m_Gbuffer->Draw( width, height );
 			}
-
-
-			//m_Gbuffer->DrawTexture_RGB(m_FinalImage, g_Exposure);
-			//m_Gbuffer->DrawTexture_RGB(m_VirtualTexture->GetTileCache(), g_Exposure);
+			else
+			{
+				if( g_VirtualTexture==true )
+				{
+					//m_Gbuffer->DrawTexture_RGB(m_FinalImage, g_Exposure);
+					m_Gbuffer->DrawTexture_RGB( m_VirtualTexture->GetTileCache_normal(), 384, 384, 1.0f );//g_Exposure );
+					//m_Gbuffer->ShowHeightMap(  m_ScreenWidth, m_ScreenHeight, 0.15f);
+				}
 
 			// レンダリングしたシーンの表示（HDRレンダリング）
-			m_HDRShader->DoHDRLighting(m_FinalImage, g_DeltaT, g_Exposure, g_BloomWeight, m_ScreenWidth, m_ScreenHeight);
+			m_HDRShader->DoHDRLighting(m_FinalImage, g_DeltaT, g_Exposure, g_BloomWeight, m_ScreenWidth, m_ScreenHeight );
+			}
+
 
 			m_Device_Main->swapBuffers();
 
@@ -459,12 +469,12 @@ void PlanetRenderingEngine::ProcessCameraKeys()
 
 		switch(i)
 		{
-			case 'W' :{	m_Camera->Transrate(+g_CamMovSpeed * g_DeltaT, 0, 0);	break; }
-			case 'S' :{	m_Camera->Transrate(-g_CamMovSpeed * g_DeltaT, 0, 0);	break; }
-			case 'A' :{	m_Camera->Transrate(0, +g_CamMovSpeed * g_DeltaT, 0);	break; }
-			case 'D' :{	m_Camera->Transrate(0, -g_CamMovSpeed * g_DeltaT, 0);	break; }
-			case 'R' :{	m_Camera->Transrate(0, 0, +g_CamMovSpeed * g_DeltaT);	break; }
-			case 'F' :{	m_Camera->Transrate(0, 0, -g_CamMovSpeed * g_DeltaT);	break; }
+			case 'W' :{	m_Camera->Transrate( ( exp(g_CamMovSpeed) - 1.0f ) * g_DeltaT, 0, 0 );	break; }
+			case 'S' :{	m_Camera->Transrate( -( exp(g_CamMovSpeed) - 1.0f ) * g_DeltaT, 0, 0 );	break; }
+			case 'A' :{	m_Camera->Transrate( 0, +( exp(g_CamMovSpeed) - 1.0f ) * g_DeltaT, 0 );	break; }
+			case 'D' :{	m_Camera->Transrate( 0, -( exp(g_CamMovSpeed) - 1.0f ) * g_DeltaT, 0 );	break; }
+			case 'R' :{	m_Camera->Transrate( 0, 0, +( exp(g_CamMovSpeed) - 1.0f ) * g_DeltaT );	break; }
+			case 'F' :{	m_Camera->Transrate( 0, 0, -( exp(g_CamMovSpeed) - 1.0f ) * g_DeltaT );	break; }
 			case 'Q' :{	m_Camera->Roll(-g_CamRotSpeed * g_DeltaT);			break; }
 			case 'E' :{	m_Camera->Roll(+g_CamRotSpeed * g_DeltaT);			break; }
 			default : {	break; }
@@ -475,7 +485,7 @@ void PlanetRenderingEngine::ProcessCameraKeys()
 }
 
 
-void PlanetRenderingEngine::DoGUI()// 文字列描画プログラム（OpenGLで破棄されている）でクラッシュする 2013.12.27
+void PlanetRenderingEngine::DoGUI()
 {
 	m_GUI->Begin();
 	
@@ -495,6 +505,9 @@ void PlanetRenderingEngine::DoGUI()// 文字列描画プログラム（OpenGLで
 
 	// G-Buffer表示On/Off
 	m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-80, "Show G-Buffer", g_ShowGbuffer);
+
+// Virtual Texture表示On/Off
+m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-90, "Show VirtualTexture", g_VirtualTexture );
 
 	// ビューフラスタム固定On/Off
 	m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-100, "Fix ViewFrustum", g_FixFrustum);
@@ -592,7 +605,7 @@ void PlanetRenderingEngine::DoGUI()// 文字列描画プログラム（OpenGLで
 
 
 	//=================== カメラ移動速度の設定 =================//
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-600, 100, "CameraSpeed:", 0.0f, 100.0f, g_CamMovSpeed, 100);
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-600, 100, "CameraSpeed:", 0.0f, 10.0f, g_CamMovSpeed, 10000);
 
 end_gui:
 	

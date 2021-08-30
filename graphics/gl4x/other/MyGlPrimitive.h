@@ -26,10 +26,10 @@
 	// 文字列を表示する
 	static void DrawString(	float x, float y, float ColorArray[4], const char *str, void *font )
 	{
-//		glColor4fv(ColorArray);
-//		glRasterPos2f(x, y);
-//		for(int i=0; str[i]!='\0'; i++)
-//			glutBitmapCharacter(font, (int)str[i]);//	OpenGL最新版では破棄されている。文字列描画のプログラムが別途必要
+		glColor4fv(ColorArray);
+		glRasterPos2f(x, y);
+		for(int i=0; str[i]!='\0'; i++)
+			glutBitmapCharacter(font, (int)str[i]);//	OpenGL最新版では破棄されている。文字列描画のプログラムが別途必要
 	}
 
 	static void DrawString(	float x, float y, float ColorArray[4], const char *str,void *font, unsigned int fontbase )

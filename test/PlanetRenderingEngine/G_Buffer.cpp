@@ -67,32 +67,34 @@ void G_Buffer::SetSize(int width, int height)
 }
 
 
-void G_Buffer::ShowDiffuseMap()
+void G_Buffer::ShowDiffuseMap( int width, int height )
 {
-	DrawTexture_RGB(m_DiffuseMap);
+	DrawTexture_RGB( m_DiffuseMap, width, height );
 }
 
 
-void G_Buffer::ShowNormalMap()
+void G_Buffer::ShowNormalMap( int width, int height )
 {
-	DrawTexture_RGB(m_NormalMap);
+	DrawTexture_RGB( m_NormalMap, width, height );
 }
 
 
-void G_Buffer::ShowSpecularMap()
+void G_Buffer::ShowSpecularMap( int width, int height )
 {
-	DrawTexture_RGB(m_SpecularMap, 50.0);
+	DrawTexture_RGB( m_SpecularMap, width, height, 50.0 );
 }
 
 
-void G_Buffer::ShowHeightMap(float heightscale)
+void G_Buffer::ShowHeightMap( int width, int height, float heightscale )
 {
-	DrawTexture_A(m_PositionMap, heightscale);
+	DrawTexture_A( m_PositionMap, width, height, heightscale );
 }
 
 
-void G_Buffer::DrawTexture_RGB(unsigned int texture, float color_scale)
+void G_Buffer::DrawTexture_RGB( unsigned int texture, int width, int height, float color_scale )
 {
+	glViewport(0, 0, width, height);
+
 	m_CgPass = cgGetNamedPass(m_etDeferredRendering, "DrawTexture_RGB");
 
 	cgSetParameter1f(cgGetNamedEffectParameter(m_CgEffect, "g_Scale"), color_scale);
@@ -106,8 +108,10 @@ void G_Buffer::DrawTexture_RGB(unsigned int texture, float color_scale)
 }
 
 
-void G_Buffer::DrawTexture_A(unsigned int texture, float color_scale)
+void G_Buffer::DrawTexture_A( unsigned int texture, int width, int height, float color_scale )
 {
+	glViewport(0, 0, width, height);
+
 	m_CgPass = cgGetNamedPass(m_etDeferredRendering, "DrawTexture_A");
 
 	cgSetParameter1f(cgGetNamedEffectParameter(m_CgEffect, "g_Scale"), color_scale);
@@ -138,9 +142,8 @@ void G_Buffer::DrawShadedImage( const Vec3f &eyePos, const Vec3f &lightDir, cons
 }
 
 
-void G_Buffer::Draw(int width, int height)
+void G_Buffer::Draw( int width, int height )
 {
-
 	glViewport(0, 0, width, height);
 
 	m_CgPass = cgGetNamedPass(m_etDeferredRendering, "DrawGbuffer");

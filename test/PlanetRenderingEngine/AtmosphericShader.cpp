@@ -498,7 +498,7 @@ cout << "AtmosphericShader::CopyInscatterN()..." << endl;
 		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[COPY_INSCATTER_N], "layer"), layer);
 
 		// fboに3Dテクスチャのスライスをアタッチ
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, inscatterTexture, 0, layer);
+		GL_SAFE_CALL( glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, inscatterTexture, 0, layer) );
 		
 		// レンダリング
 		cgSetPassState(pass);
