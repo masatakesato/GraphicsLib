@@ -1,13 +1,15 @@
 ﻿#ifndef	I_SHADER_H
 #define	I_SHADER_H
 
+#include	"../Texture.h"
 
-#include	"Defines.h"
+#include	"../common/Defines.h"
+#include	"../resource/GLVertexArrayObject.h"
+#include	"../resource/GeometryBuffer.h"
+
 #include	"GLShader.h"
 #include	"GLComputeShader.h"
-#include	"Texture.h"
-#include	"GLVertexArrayObject.h"
-#include	"GeometryBuffer.h"
+
 
 
 namespace OreOreLib

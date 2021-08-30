@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2F1210F4-BC8E-41A8-9ECF-40D388D06362}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GPUVoxelFluid2D</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;FREEIMAGE_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../;D:\Lib\AntTweakBar;D:\Lib\opengl\include;D:\Lib\freeimage\Dist\$(Platform)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\Lib\opengl\lib\$(Platform);D:\Lib\AntTweakBar\lib\$(Platform);D:\Lib\freeimage\Dist\$(Platform)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;FREEIMAGE_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../;D:\Lib\AntTweakBar;D:\Lib\opengl\include;D:\Lib\freeimage\Dist\$(Platform)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\Lib\opengl\lib\$(Platform);D:\Lib\AntTweakBar\lib\$(Platform);D:\Lib\freeimage\Dist\$(Platform)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\GLComputeShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLFrameBufferObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLRenderTarget.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLVertexArrayObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\IShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\QuadShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\RampShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\SwapTexture.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\Texture.cpp" />
+    <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\FlameShader2D.cpp" />
+    <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\FluidVoxelData2D.cpp" />
+    <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\GPUVoxelFluid2D.cpp" />
+    <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\GPUVoxelFluid2D_main.cpp" />
+    <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\StreamLineShader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\GLComputeShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLFrameBufferObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLRenderTarget.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLVertexArrayObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\IShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\QuadShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\RampShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\SwapTexture.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\Texture.h" />
+    <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\StreamLineShader.h" />
+    <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\FlameShader2D.h" />
+    <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\FluidVoxelData2D.h" />
+    <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\GPUVoxelFluid2D.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\FlameShader2D.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_Advect.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_AdvectMacCormack.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_ApplyBuoyancy.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_ApplyImpulse.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_ComputeCurl.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_ComputeDivergence.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_Fill.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_Jacobi.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_SubtractGradient.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_VorticityConfinement.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\QuadShader.glsl" />
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\StreamLineShader.glsl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

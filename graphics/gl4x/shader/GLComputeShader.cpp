@@ -1,11 +1,9 @@
 ﻿#include "GLComputeShader.h"
 
-//#include	<windows.h>
+#include	<oreore/common/Utility.h>
 
+#include	"../io/FileIO.h"
 
-
-#include	"./common/Utility.h"
-#include	"FileIO.h"
 
 
 namespace OreOreLib

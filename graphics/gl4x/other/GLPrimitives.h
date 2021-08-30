@@ -1,10 +1,9 @@
 ﻿#ifndef	GL_PRIMITIVES_H
 #define	GL_PRIMITIVES_H
 
+#include	<oreore/common/Utility.h>
 
-
-#include	"./common/Utility.h"
-#include	"GLVertexArrayObject.h"
+#include	"../resource/GLVertexArrayObject.h"
 
 
 

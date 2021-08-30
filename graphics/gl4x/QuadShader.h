@@ -1,9 +1,9 @@
 ﻿#ifndef	QUAD_SHADER_H
 #define	QUAD_SHADER_H
 
+#include	"resource/GLVertexArrayObject.h"
+#include	"shader/IShader.h"
 
-#include	"IShader.h"
-#include	"GLVertexArrayObject.h"
 
 
 namespace OreOreLib

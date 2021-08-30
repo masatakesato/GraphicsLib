@@ -1,9 +1,10 @@
 ﻿#ifndef GL_COMPUTE_SHADER_H
 #define GL_COMPUTE_SHADER_H
 
+#include	<oreore/common/TString.h>
 
-#include	"GLHelperFunctions.h"
-#include	"./common/TString.h"
+#include	"../common/GLHelperFunctions.h"
+
 
 
 namespace OreOreLib

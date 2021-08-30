@@ -7,9 +7,9 @@
 #pragma comment (lib, "opengl32.lib")
 
 
-#include	"./common/Utility.h"
-#include	"./common/TString.h"
-#include	"BufferLayout.h"
+#include	<oreore/common/Utility.h>
+#include	<oreore/common/TString.h>
+#include	"resource/BufferLayout.h"
 
 // TODO: サンプラーステート情報とテクスチャ情報を完全分離できるか？
 

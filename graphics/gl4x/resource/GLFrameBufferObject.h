@@ -1,12 +1,12 @@
 ﻿// OpenGL GLFrameBufferObjectクラス
-
 #ifndef GL_FRAME_BUFFER_OBJECT_H
 #define GL_FRAME_BUFFER_OBJECT_H
 
+#include	<oreore/common/Utility.h>
 
-#include	"./common/Utility.h"
+#include	"../common/GLHelperFunctions.h"
 #include	"IGLBufferObject.h"
-#include	"GLHelperFunctions.h"
+
 
 
 namespace OreOreLib

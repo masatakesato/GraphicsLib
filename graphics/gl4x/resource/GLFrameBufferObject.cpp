@@ -1,9 +1,6 @@
 ﻿#include	"GLFrameBufferObject.h"
 
-
-
-
-#include	"GLHelperFunctions.h"
+#include	"../common/GLHelperFunctions.h"
 
 
 

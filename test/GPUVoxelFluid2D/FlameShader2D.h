@@ -1,35 +1,35 @@
-Ôªø#ifndef	RAMP_SHADER_H
-#define	RAMP_SHADER_H
+#ifndef	FLAME_SHADER_2D_H
+#define	FLAME_SHADER_2D_H
 
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/resource/GLVertexArrayObject.h>
 
-#include	"IShader.h"
-#include	"GLVertexArrayObject.h"
 
 
 namespace OreOreLib
 {
 
 
-	class RampShader : public IShader
+	class FlameShader2D : public IShader
 	{
 	public:
 
-		RampShader();
-		RampShader( const TCHAR *filepath, GLSL_VERSION version );
-		~RampShader();
+		FlameShader2D();
+		FlameShader2D( const TCHAR *filepath, GLSL_VERSION version );
+		~FlameShader2D();
 
 		void InitShader( const TCHAR *filepath, GLSL_VERSION version );
 		void Release();
 
 
-		void Render( Texture1D *texRamp, Texture2D *texScalar, float scale=1.0f );
+		void Render( Texture1D *texRamp, Texture2D *texScalar, Texture2D *texTemperature, float scale=1.0f );
 
 
 		// Override Virtual Functions
 		inline virtual int NumPasses() const	{ return 1; }
 		inline virtual GLuint GetPassID( int shader_idx=0 ) const{ return m_pShader->ID(); }
 
-		inline virtual void BindShader( int shader_idx=0 )	// „Ç∑„Çß„Éº„ÉÄ„Éº„Çí„Éê„Ç§„É≥„Éâ„Åô„Çã
+		inline virtual void BindShader( int shader_idx=0 )	// ÉVÉFÅ[É_Å[ÇÉoÉCÉìÉhÇ∑ÇÈ
 		{
 			if( m_pCurrShader == m_pShader )	return;
 			m_pCurrShader = m_pShader;
@@ -45,9 +45,10 @@ namespace OreOreLib
 	private:
 
 		GLShader	*m_pShader;
-		GLint		m_ulTexRamp;	// Ramp Texture
-		GLint		m_ulTexScalar;	// Scalar Texture
-		GLint		m_ulScale;		// scale;
+		GLint		m_ulTexRamp;		// Ramp Texture
+		GLint		m_ulTexDensity;		// Density Texture
+		GLint		m_ulTexTemperature;	// Temperature Texture
+		GLint		m_ulScale;			// scale;
 
 	};
 
@@ -56,7 +57,7 @@ namespace OreOreLib
 	{
 	protected:
 
-		IShader* Create( GLSL_VERSION version ){ return new RampShader( _T( "RampShader.glsl" ), version ); }
+		IShader* Create( GLSL_VERSION version ){ return new FlameShader2D( _T( "../../../test/GPUVoxelFluid2D/shaders/FlameShader2D.glsl" ), version ); }
 
 	public:
 
@@ -69,4 +70,4 @@ namespace OreOreLib
 }// end of namespace
 
 
-#endif	// RAMP_SHADER_H //
+#endif	// FLAME_SHADER_2D_H //

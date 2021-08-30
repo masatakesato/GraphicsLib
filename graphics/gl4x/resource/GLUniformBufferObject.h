@@ -1,13 +1,12 @@
 ﻿#ifndef	GL_UNIFORM_BUFFER_OBJECT_H
 #define	GL_UNIFORM_BUFFER_OBJECT_H
 
-#include	"./common/TString.h"
-#include	"./common/Utility.h"
-
+#include	<oreore/common/TString.h>
+#include	<oreore/common/Utility.h>
+#include	<oreore/container/RingQueue.h>
 
 #include	"Buffer.h"
 #include	"IGLBufferObject.h"
-#include	"./container/RingQueue.h"
 
 
 

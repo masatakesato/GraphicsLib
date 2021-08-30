@@ -1,8 +1,8 @@
 ﻿#ifndef I_BUFFER_OBJECT_H
 #define	I_BUFFER_OBJECT_H
 
+#include	<oreore/common/Utility.h>
 
-#include	"./common/Utility.h"
 
 
 namespace OreOreLib

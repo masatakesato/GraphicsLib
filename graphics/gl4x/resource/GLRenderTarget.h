@@ -1,9 +1,9 @@
 ﻿#ifndef GL_RENDER_TARGET_H
 #define	GL_RENDER_TARGET_H
 
-
-#include	"Texture.h"
+#include	"../Texture.h"
 #include	"GLFrameBufferObject.h"
+
 
 
 namespace OreOreLib

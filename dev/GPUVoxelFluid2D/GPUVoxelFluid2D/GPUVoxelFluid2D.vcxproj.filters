@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{820140a7-f1c4-4292-9b41-217994fc9f28}</UniqueIdentifier>
+      <Extensions>glsl;glslh;hlsl;cg;cgfx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\GPUVoxelFluid2D_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\FlameShader2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\GPUVoxelFluid2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\FluidVoxelData2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\GLComputeShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLFrameBufferObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLRenderTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLVertexArrayObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\IShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\QuadShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\RampShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\SwapTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\StreamLineShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\FlameShader2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\GLComputeShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLFrameBufferObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLRenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\GPUVoxelFluid2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\IShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\QuadShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\RampShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\SwapTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\FluidVoxelData2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\StreamLineShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLVertexArrayObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\FlameShader2D.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_Advect.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_AdvectMacCormack.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_ApplyBuoyancy.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_ApplyImpulse.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_ComputeCurl.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_ComputeDivergence.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_Fill.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_Jacobi.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_SubtractGradient.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_VorticityConfinement.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\StreamLineShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\QuadShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

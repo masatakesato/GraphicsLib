@@ -2,13 +2,13 @@
 
 #include	<comdef.h>
 
-#include	"GLHelperFunctions.h"
+#include	"common/GLHelperFunctions.h"
 
 
 
 #if defined( FREEIMAGE_SUPPORT )
 	// #define	FREEIMAGE_LIB	// needed for static link
-	#include	<FreeImage/FreeImage.h>
+	#include	<FreeImage.h>
 
 	#if defined(_DLL)
 		#pragma comment( lib, "FreeImage.lib" )
@@ -50,7 +50,7 @@
 #endif	// Image Library Support //
 
 
-#include	"GLDataFormat.h"
+#include	"resource/GLDataFormat.h"
 
 
 
