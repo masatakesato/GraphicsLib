@@ -62,24 +62,24 @@ StreamLineShader	g_StreamLineShader;
 
 
 // Fluid Simulation Parameters
-static int			g_NumIterations				= 20;
-static float		g_TimeStep					= 0.1f;
+static int			g_NumIterations				= GPUVoxelFluid2D::DEFAULT_ITERATIONS;
+static float		g_TimeStep					= GPUVoxelFluid2D::DEFAULT_TIME_STEP;
 
-static float		g_AmbientTemperature		= 0.0f;
-static float		g_ImpulseTemperature		= 10.0f;
-static float		g_ImpulseDensity			= 1.0f;
-static float		g_SmokeBuoyancy				= 1.0f;
-static float		g_SmokeWeight				= 0.05f;
+static float		g_AmbientTemperature		= GPUVoxelFluid2D::DEFAULT_AMBIENT_TEMPERATURE;
+static float		g_ImpulseTemperature		= GPUVoxelFluid2D::DEFAULT_IMPULSE_TEMPERATURE;
+static float		g_ImpulseDensity			= GPUVoxelFluid2D::DEFAULT_IMPULSE_DENSITY;
+static float		g_SmokeBuoyancy				= GPUVoxelFluid2D::DEFAULT_SMOKE_BUOYANCY;
+static float		g_SmokeWeight				= GPUVoxelFluid2D::DEFAULT_SMOKE_WEIGHT;
 
-static float		g_TemperatureDissipation	= 0.9999f;
-static float		g_VelocityDissipation		= 0.9999f;
-static float		g_DensityDissipation		= 0.9999f;
+static float		g_TemperatureDissipation	= GPUVoxelFluid2D::DEAFAULT_TEMPERATURE_DISSIPATION;
+static float		g_VelocityDissipation		= GPUVoxelFluid2D::DEAFAULT_VELOCITY_DISSIPATION;
+static float		g_DensityDissipation		= GPUVoxelFluid2D::DEAFAULT_DENSITY_DISSIPATION;
 
-static bool			g_bEnableBuoyancy			= false;
+static bool			g_bEnableBuoyancy			= true;
 static bool			g_bEnableMacCormackMethod	= false;
 
-static float		g_Vorticity					= 0.0001f;
-static float		g_Viscosity					= 0.01f;
+static float		g_Vorticity					= GPUVoxelFluid2D::DEFAULT_VORTICITY;
+static float		g_Viscosity					= GPUVoxelFluid2D::DEFAULT_VISCOSITY;
 
 static float		g_SmokeRadius				= 20.0f;
 static float		g_ObstacleRadius			= 10.0f;
@@ -379,15 +379,14 @@ void display()
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_DST_ALPHA, GL_ONE );
 
-	glClearColor( 0.4f, 0.4f, 0.4f, 0.0f );
+	glClearColor( 0.3f, 0.3f, 0.3f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	g_QuadShader.Render( pTex, 1.0f );
 	g_QuadShader.Render( g_FluidVoxelData2D.m_TexObstacles.TexID(), 1.0f );
 
-
-	//g_RampShader.Render( &g_TexRamp, g_FluidVoxelData2D.m_TexDensity.BackBuffer(), g_FluidVoxelData2D.m_TexTemperature.BackBuffer(), 0.1f );
-
+	//g_RampShader.Render( &g_TexRamp, g_FluidVoxelData2D.m_TexDensity.BackBuffer(), g_FluidVoxelData2D.m_TexTemperature.BackBuffer(), 0.75f );
+	//g_RampShader.Render( &g_TexRamp, &g_FluidVoxelData2D.m_TexObstacles, &g_FluidVoxelData2D.m_TexObstacles, 1.0f );
 	
 	glDisable( GL_BLEND );
 
@@ -426,7 +425,7 @@ void initialize()
 
 
 	g_TexRamp = Texture1D();
-	g_TexRamp.Load( _T( "../textures/ramp.png" ) );
+	g_TexRamp.Load( _T( "../../../assets/textures/ramp.png" ) );
 	g_TexStreamLine.SetFilterMode( FILTER_MODE::FILTER_MAG_MIN_LINEAR );
 	g_TexRamp.GenHardwareTexture();
 
@@ -441,7 +440,7 @@ void initialize()
 	g_TexStreamLine.GenHardwareTexture();
 
 	g_StreamLineShader.BindVectorField( g_FluidVoxelData2D.m_TexVelocity.BackBuffer(), &g_TexStreamLine );
-	g_StreamLineShader.SetGridSize( 320, 240 );
+	g_StreamLineShader.SetGridSize( 128, 72 );//320, 240 );
 
 }
 

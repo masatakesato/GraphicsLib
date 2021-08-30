@@ -15,7 +15,7 @@ layout( binding = 0 )		uniform writeonly image2D	g_TexDest;
 const vec2	g_TexSize		= vec2( textureSize( g_TexVectorField, 0 ) );
 const vec2	g_InverseSize	= 1.0 / g_TexSize;
 
-const float g_TimeStep		= 1.0;//0.125;
+const float g_TimeStep		= 1.0;//0.125;//
 
 
 // Workgroup Layout
@@ -26,7 +26,7 @@ layout( local_size_x=8, local_size_y=8 ) in;
 // Main Kernel
 void main()
 {
-	ivec2 texelPos	= ivec2( gl_GlobalInvocationID.xy ) * 12;// 16はストリームライン生成点の配置間隔(ピクセル数). シェーダーパラメータでコントロールできるようにしたい
+	ivec2 texelPos	= ivec2( gl_GlobalInvocationID.xy ) * 10;// 16はストリームライン生成点の配置間隔(ピクセル数). シェーダーパラメータでコントロールできるようにしたい
 	if( texelPos.x >= int( g_TexSize.x ) || texelPos.y >= int( g_TexSize.y ) )
 		return;
 
@@ -45,7 +45,7 @@ void main()
 			break;
 
 		// currTexelPosに色を入れる
-		imageStore( g_TexDest, ivec2( currTexelPos ), vec4( 0.5 ) );
+		imageStore( g_TexDest, ivec2( currTexelPos ), vec4( 0.1 ) );
 
 
 		vec2 advTexelPos	= currTexelPos - g_TimeStep * normalize( u );// * g_InverseSize;

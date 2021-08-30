@@ -7,26 +7,26 @@
 namespace OreOreLib
 {
 
-	static const float SplatRadius	= 32.0f;
 
-	static const float CellSize					= 1.0f;//1.25f;//1.25f;
-#define	DEFAULT_AMBIENT_TEMPERATURE			0.0f
-#define	DEFAULT_IMPULSE_TEMPERATURE			10.0f
-#define	DEFAULT_IMPULSE_DENSITY				1.0f
-#define	DEFAULT_ITERATIONS					40
-#define	DEFAULT_TIME_STEP					0.05f//0.125f;
-#define	DEFAULT_SMOKE_BUOYANCY				1.0f
-#define	DEFAULT_SMOKE_WEIGHT				0.05f
-#define	DEFAULT_GRADIENT_SCALE				0.5f / CellSize;//1.125f / CellSize;
-#define	DEAFAULT_TEMPERATURE_DISSIPATION	1.0f//0.9999f;
-#define	DEAFAULT_VELOCITY_DISSIPATION		1.0f//0.9999f;
-#define	DEAFAULT_DENSITY_DISSIPATION		1.0f//0.9999f;
-#define	DEFAULT_VORTICITY				0.5f
-#define	DEFAULT_VISCOSITY				0.01f
+	const float GPUVoxelFluid2D::SplatRadius					= 32.0f;
+	const float GPUVoxelFluid2D::CellSize						= 1.0f;//1.25f;//1.25f;
+	const float GPUVoxelFluid2D::DEFAULT_AMBIENT_TEMPERATURE	= 0.0f;
+	const float GPUVoxelFluid2D::DEFAULT_IMPULSE_TEMPERATURE	= 10.0f;
+	const float GPUVoxelFluid2D::DEFAULT_IMPULSE_DENSITY		= 1.0f;
+	const int GPUVoxelFluid2D::DEFAULT_ITERATIONS				= 40;
+	const float GPUVoxelFluid2D::DEFAULT_TIME_STEP				= 0.1f;//0.05f;//0.125f;
+	const float GPUVoxelFluid2D::DEFAULT_SMOKE_BUOYANCY			= 1.0f;
+	const float GPUVoxelFluid2D::DEFAULT_SMOKE_WEIGHT			= 0.05f;
+	const float GPUVoxelFluid2D::DEFAULT_GRADIENT_SCALE			= 0.5f / GPUVoxelFluid2D::CellSize;//1.125f / CellSize;
+	const float GPUVoxelFluid2D::DEAFAULT_TEMPERATURE_DISSIPATION	= 1.0f;//0.9999f;//
+	const float GPUVoxelFluid2D::DEAFAULT_VELOCITY_DISSIPATION		= 1.0f;//0.9999f;//
+	const float GPUVoxelFluid2D::DEAFAULT_DENSITY_DISSIPATION		= 1.0f;//0.9999f;//
+	const float GPUVoxelFluid2D::DEFAULT_VORTICITY				= 0.5f;//0.0001f;//
+	const float GPUVoxelFluid2D::DEFAULT_VISCOSITY				= 0.01f;
 
-	static const Vec2f ImpulsePosition			= { 512.0f, 32.0f };//{ GridWidth / 2.0f, - (int) SplatRadius / 2.0f};
 
-//static const float g_Eps	= 0.5f;
+	//static const Vec2f ImpulsePosition			= { 512.0f, 32.0f };//{ GridWidth / 2.0f, - (int) SplatRadius / 2.0f};
+	//static const float g_Eps	= 0.5f;
 
 
 
@@ -700,7 +700,7 @@ namespace OreOreLib
 		{
 			// Set Unforms
 			GL_SAFE_CALL( glUniform2fv( m_ulPoint, 1, position.xy ) );
-			GL_SAFE_CALL( glUniform1f( m_ulRadius, radius ) );//SplatRadius );
+			GL_SAFE_CALL( glUniform1f( m_ulRadius, radius ) );
 			GL_SAFE_CALL( glUniform3f( m_ulFillColor, value, value, value ) );
 			GL_SAFE_CALL( glUniform4f( m_ulTexSize, (float)dest->Width(), (float)dest->Height(), 1.0f/(float)dest->Width(), 1.0f/(float)dest->Height() ) );
 
@@ -756,7 +756,7 @@ namespace OreOreLib
 		{
 			// Set Unforms
 			GL_SAFE_CALL( glUniform2fv( m_ulPoint_FILL, 1, position.xy ) );
-			GL_SAFE_CALL( glUniform1f( m_ulRadius_FILL, radius ) );//SplatRadius );
+			GL_SAFE_CALL( glUniform1f( m_ulRadius_FILL, radius ) );
 			GL_SAFE_CALL( glUniform3fv( m_ulFillColor_FILL, 1, fillVal.xyz ) );
 			GL_SAFE_CALL( glUniform4f( m_ulTexSize_FILL, (float)dest->Width(), (float)dest->Height(), 1.0f/(float)dest->Width(), 1.0f/(float)dest->Height() ) );
 

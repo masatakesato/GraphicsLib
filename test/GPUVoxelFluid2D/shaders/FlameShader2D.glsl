@@ -75,7 +75,7 @@ void main()
 
 	vec3 rampColor = texture( g_TexRamp, clamp( temperature*g_Scale, 0.0, 0.999 ) ).xyz;
 
-	outColor = vec4( rampColor*density, 1.0 );
+	outColor = vec4( rampColor*density*g_Scale, 1.0 );
 }
 
 

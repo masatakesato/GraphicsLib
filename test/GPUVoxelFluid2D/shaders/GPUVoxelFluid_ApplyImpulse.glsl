@@ -4,7 +4,7 @@
 // Uniform Locations
 uniform vec2	g_Point;
 uniform float	g_Radius;
-uniform vec3	g_FillColor;
+uniform vec3	g_FillColor = vec3( 1.0, 0.0, 1.0 );
 uniform vec4	g_TexSize;
 
 
@@ -33,9 +33,9 @@ void main()
 		return;
 
 
-	float a = ( g_Radius - d ) * 0.5;
+	float a = exp( -d/g_Radius ); //( g_Radius - d ) * 0.5;
 	a = min(a, 1.0);
 
-	imageStore( g_TexDest, texelPos, vec4( g_FillColor, a ) );
+	imageStore( g_TexDest, texelPos, vec4( g_FillColor*a, a ) );
 	
 }

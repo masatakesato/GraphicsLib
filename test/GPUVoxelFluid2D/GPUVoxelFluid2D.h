@@ -51,6 +51,25 @@ namespace OreOreLib
 		void Update();
 
 
+		// Default simulation parameters
+		static const float SplatRadius;
+		static const float CellSize;//					= 1.0f;//1.25f;//1.25f;
+		static const float DEFAULT_AMBIENT_TEMPERATURE;// = 0.0f;
+		static const float DEFAULT_IMPULSE_TEMPERATURE;//			10.0f
+		static const float DEFAULT_IMPULSE_DENSITY;//				1.0f
+		static const int DEFAULT_ITERATIONS;//					40
+		static const float DEFAULT_TIME_STEP;//					0.05f//0.125f;
+		static const float DEFAULT_SMOKE_BUOYANCY;//				1.0f
+		static const float DEFAULT_SMOKE_WEIGHT;//				0.05f
+		static const float DEFAULT_GRADIENT_SCALE;//				0.5f / CellSize;//1.125f / CellSize;
+		static const float DEAFAULT_TEMPERATURE_DISSIPATION;//	1.0f//0.9999f;
+		static const float DEAFAULT_VELOCITY_DISSIPATION;//		1.0f//0.9999f;
+		static const float DEAFAULT_DENSITY_DISSIPATION;//		1.0f//0.9999f;
+		static const float DEFAULT_VORTICITY;//				0.5f
+		static const float DEFAULT_VISCOSITY;//				0.01f
+
+
+
 	private:
 
 		enum FLUID_PASS
