@@ -1,0 +1,244 @@
+﻿#include "inoise.cgh"
+
+// パーリンノイズテクスチャを生成する
+
+
+//############################################################//
+//###################### グローバル変数 ######################//
+//############################################################//
+
+
+//############################################################//
+//################### シェーダ入出力データ ###################//
+//############################################################//
+struct VertexData_In
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+
+struct VertexData_Out
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+
+
+//############################################################//
+//################### バーテックスシェーダ ###################//
+//############################################################//
+VertexData_Out SimpleVertexShader_VS(VertexData_In IN)
+{
+	VertexData_Out	OUT;
+	
+	OUT.position = IN.position;
+	OUT.tex_uv = IN.tex_uv;//float2(IN.position.xy*0.5 + 0.5);
+	
+	return OUT;
+}
+
+
+VertexData_Out SimpleVertexShader2_VS(VertexData_In IN)
+{
+	VertexData_Out	OUT;
+	
+	OUT.position = IN.position;
+	OUT.tex_uv = IN.position.xy;
+	
+	return OUT;
+}
+
+
+//float4x4	g_ModelViewMatrix;
+
+VertexData_Out VertexShaderFunction(VertexData_In IN)
+{
+	VertexData_Out OUT;
+	float3	displacement;
+ 
+    // calc the height displacement using 12 octaves of fBm
+    float heightValue = fBm(IN.position.xyz*0.02, 12)*10;
+    
+    // add the height displacement to the vertex position
+	displacement = normalize(IN.position.xyz) * heightValue;
+    IN.position.xyz += displacement;
+    
+    // multiply by the WVP matrices
+    OUT.position = mul(glstate.matrix.mvp, IN.position);
+	OUT.tex_uv.xy = float2(heightValue);
+	
+    return OUT;
+}
+
+
+
+//#############################################################//
+//###################### ピクセルシェーダ #####################//
+//#############################################################//
+
+
+float GeneratePermTexture_PS(VertexData_Out IN) : COLOR0 // 頂点座標→配列インデックスへの変換処理を事前に行う
+{
+	float	p = IN.tex_uv.x;// 1次元[0,1]
+	return GeneratePermTexture(p);
+}
+
+float4 GeneratePermTexture2d_PS(VertexData_Out IN) : COLOR0
+{
+	float2	p = IN.tex_uv;// 2次元(0,0)～(1,1)
+	return GeneratePermTexture2d(p);
+}
+
+float4 GeneratePermGradTexture_PS(VertexData_Out IN) : COLOR0
+{
+	float	p = IN.tex_uv.x;// 1次元[0,1]
+	return float4(GeneratePermGradTexture(p), 1.0);
+}
+/*
+float4 GenerateGradTexture4d_PS(VertexData_Out IN) : COLOR0
+{
+	float	p = IN.tex_uv.x;// 1次元[0,1]
+	return GenerateGradTexture4d(p);
+}
+*/
+
+
+
+float4 Perlin_PS(VertexData_Out IN) : COLOR0
+{	
+	// scale the input coordinates
+	float3	pos = float3(IN.tex_uv * 10, 0);
+
+	// convert the result from [-1, +1] to [0, +1]
+	return float4( float3(inoise(pos)*0.5+0.5), 0.0);
+	
+	//return tex1D(permSampler, IN.tex_uv.x);
+	//return tex2D(permSampler2d, IN.tex_uv);
+	//return tex1D(permGradSampler, IN.tex_uv.x);
+	//return abs(tex1D(gradSampler4d, IN.tex_uv.x));
+}
+
+
+float4 fBm_PS(VertexData_Out IN): COLOR0
+{
+    // scale the input coordinates
+	float3 pos = float3(IN.tex_uv * 10, 0);
+
+	// convert the result from [-1, +1] to [0, +1]
+	return fBm(pos, 12)*0.5+0.5;
+}
+
+
+float4 turbulence_PS(VertexData_Out IN): COLOR0
+{
+    // scale the input coordinates
+	float3 pos = float3(IN.tex_uv * 10, 0);
+
+	// convert the result from [-1, +1] to [0, +1]
+	return turbulence(pos, 12)*0.5+0.5;
+}
+
+
+float4 RidgedMf_PS(VertexData_Out IN): COLOR0
+{
+    // scale the input coordinates
+	float3 pos = float3(IN.tex_uv * 10, 0);
+
+	// convert the result from [-1, +1] to [0, +1]
+	return ridgedmf(pos, 12)*0.5+0.5;
+}
+
+
+float4	_PS(VertexData_Out IN): COLOR0
+{
+	return float4(IN.tex_uv.x, IN.tex_uv.y, 0.5, 1);
+}
+
+
+//############################################################//
+//######################### テクニック #######################//
+//############################################################//
+
+
+technique InitLookupTable
+{
+	pass GenPermTexture
+	{
+		VertexShader = compile gpu_vp SimpleVertexShader_VS();
+		PixelShader = compile gpu_fp GeneratePermTexture_PS();
+
+	}
+    pass GenPermTexture2d
+    {
+		VertexShader = compile gpu_vp SimpleVertexShader_VS();
+		PixelShader  = compile gpu_fp GeneratePermTexture2d_PS();
+
+		BlendEnable	= true;
+    }
+    pass GenPermGradTexture
+    {
+		VertexShader = compile gpu_vp SimpleVertexShader_VS();
+		PixelShader  = compile gpu_fp GeneratePermGradTexture_PS();
+
+		BlendEnable	= true;
+    }
+	/*
+    pass GenGradTexture4d
+    {
+		VertexShader = compile gpu_vp SimpleVertexShader_VS();
+		PixelShader  = compile gpu_fp GenerateGradTexture4d_PS();
+
+		BlendEnable	= true;
+    }
+	*/
+}
+
+
+
+technique Perlin
+{
+    pass p0
+    {
+		VertexShader = compile gpu_vp SimpleVertexShader2_VS();
+		PixelShader  = compile gpu_fp Perlin_PS();
+    }
+}
+
+technique fBm
+{
+    pass p0 
+    {
+		VertexShader = compile gpu_vp SimpleVertexShader2_VS();
+		PixelShader  = compile gpu_fp fBm_PS();
+    }
+}
+
+technique Turbulence
+{
+    pass p0 
+    {
+		VertexShader = compile gpu_vp SimpleVertexShader2_VS();
+		PixelShader  = compile gpu_fp turbulence_PS();
+    }
+}
+
+technique RidgedMf
+{
+    pass p0 
+    {
+		VertexShader = compile gpu_vp SimpleVertexShader2_VS();
+		PixelShader  = compile gpu_fp RidgedMf_PS();
+    }
+}
+
+
+technique VertexNoise
+{
+    pass
+    {
+		VertexShader = compile gpu_vp VertexShaderFunction();
+		PixelShader  = compile gpu_fp _PS();
+    }
+}

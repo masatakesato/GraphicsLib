@@ -1,0 +1,288 @@
+﻿#ifndef	SH_HELPER_FUNCTIONS
+#define	SH_HELPER_FUNCTIONS
+
+
+#define M_PI 3.141592
+
+#define	g_FrontFacingSolidAngle	2.0943951 // 4.0 * M_PI / 6.0
+
+
+
+
+// 起点セル中心点から見た隣接セル面の立体角[sr]
+#define g_FrontFacingArea	0.400669// / (4.0f * M_PI)	// 正面
+#define g_SideFacingArea	0.423431// / (4.0f * M_PI)// 側面
+
+
+
+// 放射強度の評価用ベクトル起点セル中心点から，隣接セルの各面への単位ベクトル(四錐台の垂線方向)
+vec3 g_EvaluationVector[30] = vec3[30]
+(
+	// +x方向への伝播ベクトル
+	vec3(1.0,		0.0,		0.0),		// +x面
+	vec3(0.860111,	0.510106,	0.0),		// +y面
+	vec3(0.860111,	-0.510106,	0.0),		// -y面
+	vec3(0.860111,	0.0,		0.510106),	// +z面
+	vec3(0.860111,	0.0,		-0.510106),	// -z面
+	
+	// -x方向への伝播ベクトル
+	vec3(-1.0,		0.0,		0.0),		// -x面
+	vec3(-0.860111,	0.510106,	0.0),		// +y面
+	vec3(-0.860111,	-0.510106,	0.0),		// -y面
+	vec3(-0.860111,	0.0,		0.510106),	// +z面
+	vec3(-0.860111,	0.0,		-0.510106),	// -z面
+
+	// +y方向への伝播ベクトル
+	vec3(0.0,		1.0,		0.0),		// +y面
+	vec3(0.510106,	0.860111,	0.0),		// +x面
+	vec3(-0.510106,	0.860111,	0.0),		// -x面
+	vec3(0.0,		0.860111,	0.510106),	// +z面
+	vec3(0.0,		0.860111,	-0.510106),	// +z面
+	
+	// -y方向への伝播ベクトル
+	vec3(0.0,		-1.0,		0.0),		// +y面
+	vec3(0.510106,	-0.860111,	0.0),		// +x面
+	vec3(-0.510106,	-0.860111,	0.0),		// -x面
+	vec3(0.0,		-0.860111,	0.510106),	// +z面
+	vec3(0.0,		-0.860111,	-0.510106),	// +z面
+
+	// +z方向への伝播ベクトル
+	vec3(0.0,		0.0,		1.0),		// +z面
+	vec3(0.510106,	0.0,		0.860111),	// +x面
+	vec3(-0.510106,	0.0,		0.860111),	// -x面
+	vec3(0.0,		0.510106,	0.860111),	// +y面
+	vec3(0.0,		-0.510106,	0.860111),	// -y面
+
+	// -z方向への伝播ベクトル
+	vec3(0.0,		0.0,		-1.0),		// +z面
+	vec3(0.510106,	0.0,		-0.860111),	// +x面
+	vec3(-0.510106,	0.0,		-0.860111),	// -x面
+	vec3(0.0,		0.510106,	-0.860111),	// +y面
+	vec3(0.0,		-0.510106,	-0.860111)	// -y面
+	
+);
+
+
+// 起点セルから伝播させた放射束を，隣接セルに再投影する際のベクトル
+vec3 g_ReprojectionVector[30] = vec3[30]
+(
+	// +x方向
+	vec3(1.0,	0.0,	0.0),	// +x面
+	vec3(0.0,	1.0,	0.0),	// +y面
+	vec3(0.0,	-1.0,	0.0),	// -y面
+	vec3(0.0,	0.0,	1.0),	// +z面
+	vec3(0.0,	0.0,	-1.0),	// -z面
+	
+	// -x方向
+	vec3(-1.0,	0.0,	0.0),	// -x面
+	vec3(0.0,	1.0,	0.0),	// +y面
+	vec3(0.0,	-1.0,	0.0),	// -y面
+	vec3(0.0,	0.0,	1.0),	// +z面
+	vec3(0.0,	0.0,	-1.0),	// -z面
+	
+	// +y方向
+	vec3(0.0,	1.0,	0.0),	// +y面
+	vec3(1.0,	0.0,	0.0),	// +x面
+	vec3(-1.0,	0.0,	0.0),	// -x面
+	vec3(0.0,	0.0,	1.0),	// +z面
+	vec3(0.0,	0.0,	-1.0),	// +z面
+	
+	// -y方向
+	vec3(0.0,	-1.0,	0.0),	// +y面
+	vec3(1.0,	0.0,	0.0),	// +x面
+	vec3(-1.0,	0.0,	0.0),	// -x面
+	vec3(0.0,	0.0,	1.0),	// +z面
+	vec3(0.0,	0.0,	-1.0),	// +z面
+	
+	// +z方向
+	vec3(0.0,	0.0,	1.0),	// +z面
+	vec3(1.0,	0.0,	0.0),	// +x面
+	vec3(-1.0,	0.0,	0.0),	// -x面
+	vec3(0.0,	1.0,	0.0),	// +y面
+	vec3(0.0,	-1.0,	0.0),	// -y面
+
+	// -z方向
+	vec3(0.0,	0.0,	-1.0),	// +z面
+	vec3(1.0,	0.0,	0.0),	// +x面
+	vec3(-1.0,	0.0,	0.0),	// -x面
+	vec3(0.0,	1.0,	0.0),	// +y面
+	vec3(0.0,	-1.0,	0.0)	// -y面
+	
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 球面調和関数の正規直交基底(2-bandまで)
+vec4 SHBasis = vec4
+(
+	0.282094,	// (l=0, m=0)...  0.5 / sqrt(pi)
+	0.488602,	// (l=1, m=-1)... 0.5 * sqrt(3.0/pi)
+	0.488602,	// (l=1, m=0)... 0.5 * sqrt(3.0/pi)
+	0.488602	// (l=1, m=+1)... 0.5 * sqrt(3.0/pi)
+);
+
+
+// 角度幅0.5PIの帯域調和関数の係数と，SH基底関数との積(2-bandまで)
+vec2 ZHCoeffs = vec2
+(
+	0.5,	// l=0
+	0.75	// l=1
+);
+
+
+
+// Clamped cosine lobeのSH係数(2-bandまで)
+vec4 SHClampedCosineLobe = vec4
+(
+	0.886226925,//0.0,//		// (l=0, m=0)... 0.0 * 0.5f*sqrt(pi),//
+	1.02332671,//2.046653,//	// (l=1, m=-1)... 2.0 * sqrt(pi/3.0),//
+	1.02332671,//2.046653,//	// (l=1, m=0)... 2.0 * sqrt(pi/3.0),//
+	1.02332671//2.046653//	// (l=1, m=+1)... 2.0 * sqrt(pi/3.0)//
+);
+
+
+// ベクトルvのSH係数を計算する
+vec4 CalcSHCoeff(vec3 v)
+{
+	return vec4(
+				SHBasis[0],
+				SHBasis[1]*v.y,
+				SHBasis[1]*v.z,
+				SHBasis[1]*v.x
+				);
+}
+
+
+// ベクトル(x,y,z)のSH係数を計算する
+vec4 CalcSHCoeff(float x, float y, float z)
+{
+	return vec4(
+				SHBasis[0],
+				SHBasis[1]*y,
+				SHBasis[1]*z,
+				SHBasis[1]*x
+				);
+}
+
+
+// v軸まわりのコサインローブSHを計算する
+vec4 CalcSHCoeff_CosineLobe(vec3 v)
+{
+	return vec4(
+				SHClampedCosineLobe.x,
+				SHClampedCosineLobe.y*v.y,
+				SHClampedCosineLobe.z*v.z,
+				SHClampedCosineLobe.w*v.x
+				);
+}
+
+
+// ZHを使ったコサインローブ近似
+vec4 CalcSHCoeff_ZHCosineLobe(vec3 dir)
+{
+	return vec4(
+				2.0,
+				3.0 * dir.y,
+				3.0 * dir.z,
+				3.0 * dir.x
+				);
+	/*
+	result.x = ZHCoeffs.x;
+	result.y = ZHCoeffs.y*dir.y;
+	result.z = ZHCoeffs.y*dir.z;
+	result.w = ZHCoeffs.y*dir.x;
+
+	result.x *= 4.0f;
+	result.y *= 4.0f;
+	result.z *= 4.0f;
+	result.w *= 4.0f;
+	*/
+}
+
+
+// dir方向に角度angle*2の広がりを持つコーンの球面調和関数近似(SH係数)を計算する
+vec4 CalcSHCone(vec3 dir, float angle)
+{
+	// 帯域調和関数の基底関数(L=1まで)
+	vec2	ZHCoeffs = vec2(
+		-sqrt(M_PI) * (-1.0 + cos(angle)),					// l=0, m=0
+		0.5 * sqrt(3.0)*sqrt(M_PI) * pow(sin(angle), 2.0)// l=1, m=0
+	);
+
+	vec4	result;
+	
+	result.x = ZHCoeffs.x * SHBasis[0];
+	result.y = ZHCoeffs.y * SHBasis[1] * dir.y;	// y
+	result.z = ZHCoeffs.y * SHBasis[2] * dir.z;	// z
+	result.w = ZHCoeffs.y * SHBasis[3] * dir.x;	// x
+
+	return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 90度コーン形状のSH
+vec4 Cone90Degree(vec3 dir)
+{
+	// 帯域調和関数の基底関数(L=1まで)
+	vec2	ZHCoeffs = vec2(
+		0.519139714,//-sqrt(M_PI) * (-1.0f + cos(angle)),					// l=0, m=0
+		0.767495031	//0.5f * sqrt(3.0f)*sqrt(M_PI) * sin(angle)*sin(angle)	// l=1, m=0
+	);
+
+
+	vec4	result;
+
+	result.x = ZHCoeffs.x * SHBasis.x;
+	result.y = ZHCoeffs.y * SHBasis.y * dir.y;	// y
+	result.z = ZHCoeffs.y * SHBasis.z * dir.z;	// z
+	result.w = ZHCoeffs.y * SHBasis.w * dir.x;	// x
+
+	return result;
+}
+
+
+
+
+
+// SHの中心差分を計算する
+vec4 SH_Gradient(in sampler3D SH_GV, in vec3 dir, in vec3 cellIndex, in vec3 cellIndexDim)
+{
+	vec3 nCoeff		= 0.5 * dir * cellIndexDim;
+	vec4 derivative	= ( texture(SH_GV, cellIndex+nCoeff).xyzw - texture(SH_GV, cellIndex-nCoeff).xyzw ) / ( length(dir) ); //(2.0 * length(nCoeff));
+
+	return derivative;
+}
+
+
+
+
+
+
+
+#endif	// SH_HELPER_FUNCTIONS //
