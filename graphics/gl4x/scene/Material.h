@@ -1,9 +1,7 @@
 ﻿#ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include	<oreore/MathLib.h>
-
-
+#include	<oreore/mathlib/GraphicsMath.h>
 
 
 

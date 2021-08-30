@@ -1,0 +1,25 @@
+﻿float3 Lambert(float3 N, float3 L)
+{
+	return max(dot(N,L),0.0);
+}
+
+float3 SimplifiedCookTorrance(float e, float3 L, float3 N, float3 H)
+{
+	float	LdotH = max(dot(L,H), 1.0e-3);
+	float	NdotH = max(dot(N,H), 0.0);
+	float	NdotL = max(dot(N,L), 0.0);
+	
+	return (1.0+e)/(8.0* pow(LdotH,3.0)) * pow(NdotH,e) * NdotL;
+}
+
+
+
+float3 CalcRefraction(float delta)
+{
+	float3 weight = float3(0.0);
+	float3 extinction = float3(0.4, 0.55, 0.5);//float3(0.0045, 0.75, 0.3);
+	
+	weight = saturate( delta / extinction );
+	
+	return float3(1.0) - weight;
+}

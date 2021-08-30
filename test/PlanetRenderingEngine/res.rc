@@ -1,0 +1,9 @@
+#include "resource.h"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// ÉAÉCÉRÉì
+//
+
+IDI_TEST       ICON         "Icon.ico"
+IDI_SMALL      ICON         "Icon.ico"

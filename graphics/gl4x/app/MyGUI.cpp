@@ -4,7 +4,7 @@
 #include	<iostream>
 using namespace std;
 
-#include	"MyGlPrimitive.h"
+#include	"../other/MyGlPrimitive.h"
 using namespace MyGlPrimitive;
 #include	<GL/glut.h>
 

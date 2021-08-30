@@ -2,15 +2,15 @@
 #define	I_OBJECT_H
 
 
-//#include	"MathLib.h"
-#include	"BufferLayout.h"
-#include	"MathLib.h"
-#include	"Node.h"
-#include	"BoundingVolume.h"
-#include	"Frustum.h"
-#include	"IBufferObject.h"
-#include	"IGLBufferObject.h"
-#include	"TransformAttribute.h"
+#include	<oreore/mathlib/GraphicsMath.h>
+
+#include	"../resource/BufferLayout.h"
+#include	"../scene/Node.h"
+#include	"../scene/BoundingVolume.h"
+#include	"../scene/Frustum.h"
+#include	"../resource/IBufferObject.h"
+#include	"../resource/IGLBufferObject.h"
+#include	"../scene/TransformAttribute.h"
 
 
 

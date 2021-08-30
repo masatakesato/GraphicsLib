@@ -1,10 +1,10 @@
 ﻿#ifndef	FRUSTUM_H
 #define	FRUSTUM_H
 
+#include	<oreore/mathlib/GraphicsMath.h>
 
-#include	<oreore/MathLib.h>
-#include	"BufferLayout.h"
-#include	"TransformAttribute.h"
+#include	"../resource/BufferLayout.h"
+#include	"../scene/TransformAttribute.h"
 
 
 

@@ -1,12 +1,12 @@
 ﻿#ifndef	TILE_CACHE_TEXTURE_H
 #define	TILE_CACHE_TEXTURE_H
 
-
 #include	<windows.h>
 #include	<process.h>
 
-#include	"CacheDataManager.h"
-#include	<oreore/MathLib.h>
+#include	<oreore/mathlib/GraphicsMath.h>
+#include	"resource/CacheDataManager.h"
+
 #include	"Texture.h"
 using namespace OreOreLib;
 

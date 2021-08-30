@@ -1,0 +1,109 @@
+﻿// computes higher order scattering (line 9 in algorithm 4.1)
+#include "common.cgh"
+
+
+
+float	r;
+float4	dhdH;
+int		layer;
+
+sampler3D	deltaJSampler;
+float		first;
+
+// inscatterNだけで使用
+float3 integrand(float r, float mu, float muS, float nu, float t)
+{
+	float ri = sqrt(r * r + t * t + 2.0 * r * mu * t);
+	float mui = (r * mu + t) / ri;
+	float muSi = (nu * t + muS * r) / ri;
+	return texture4D(deltaJSampler, ri, mui, muSi, nu).rgb * transmittance(r, mu, t);
+}
+
+// inscatterNだけで使用
+float3 inscatter(float r, float mu, float muS, float nu)
+{
+	float3	raymie = float3(0.0);
+	float	dx = limit(r, mu) / float(INSCATTER_INTEGRAL_SAMPLES);
+	float	xi = 0.0;
+	float3	raymiei = integrand(r, mu, muS, nu, 0.0);
+
+	for (int i = 1; i <= INSCATTER_INTEGRAL_SAMPLES; ++i)
+	{
+		float	xj = float(i) * dx;
+		float3	raymiej = integrand(r, mu, muS, nu, xj);
+		raymie += (raymiei + raymiej) / 2.0 * dx;
+		xi = xj;
+		raymiei = raymiej;
+	}
+	return raymie;
+}
+
+
+
+//############################################################//
+//################### バーテックスシェーダ ###################//
+//############################################################//
+
+// バーテックスシェーダ入力データ
+struct VertexData_In
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+// バーテックスシェーダ出力データ
+struct VertexData_Out
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+
+VertexData_Out InscatterN_VS(VertexData_In IN)
+{
+	VertexData_Out OUT;
+	
+	OUT.position = IN.position;
+	OUT.tex_uv = IN.tex_uv;
+	
+	return OUT;
+}
+
+//#############################################################//
+//######################## ピクセルシェーダ ###################//
+//#############################################################//
+
+void InscatterN_PS( VertexData_Out IN, out float3 color_out	: COLOR0)
+{
+	float	mu, muS, nu;
+	getMuMuSNu(r, dhdH, IN.tex_uv, mu, muS, nu);
+	color_out.rgb = inscatter(r, mu, muS, nu);
+}
+
+/*
+void main()
+{
+	float mu, muS, nu;
+	getMuMuSNu(r, dhdH, mu, muS, nu);
+	gl_FragColor.rgb = inscatter(r, mu, muS, nu);
+}
+*/
+
+//############################################################//
+//######################### テクニック #######################//
+//############################################################//
+
+technique InscatterN
+{
+	pass P0
+	{
+		VertexShader = compile gp4vp  InscatterN_VS();
+		PixelShader = compile gp4fp InscatterN_PS();
+
+		DepthTestEnable = false;
+	}
+
+}
+
+
+

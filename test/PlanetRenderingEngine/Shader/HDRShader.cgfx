@@ -1,0 +1,234 @@
+﻿#include	"TextureSampler.cgh"
+
+//############################################################//
+//###################### グローバル変数 ######################//
+//############################################################//
+float2		g_TexSize;		// テクスチャの解像度(x:width, y:height)
+sampler2D	g_Sampler1;		// 参照テクスチャ1
+sampler2D	g_Sampler2;		// 参照テクスチャ2
+sampler2D	g_Luminance;	// 画像の平均輝度
+float		g_TimeStep;		// 明順応のタイムステップ
+float		g_Key;			// 明るさパラメータ
+float		g_BloomWeight;	// ブルーム効果の重み係数
+int			g_CalcExponential;// expを計算するか否かのフラグ(平均輝度テクスチャ作成時に使用)
+
+static const float SENSITIVITY = 15.0f;// 明順応の速さ
+static const float BRIGHT_PASS_THRESHOLD = 5.0;
+static const float BRIGHT_PASS_OFFSET = 10.0;
+static const float LUM_AVG_MIN = 0.3;// 平均輝度の下限値
+static const float LUM_AVG_MAX = 2.0;// 平均輝度の上限値
+
+
+
+//############################################################//
+//################### シェーダ入出力データ ###################//
+//############################################################//
+struct VertexData_In
+{
+	float2	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+
+struct VertexData_Out
+{
+	float2	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+
+
+
+//############################################################//
+//################### バーテックスシェーダ ###################//
+//############################################################//
+VertexData_Out SimpleVertexShader_VS(VertexData_In IN)
+{
+	VertexData_Out	OUT;
+	
+	OUT.position = IN.position;
+	OUT.tex_uv = IN.tex_uv;
+	
+	return OUT;
+}
+
+
+
+//#############################################################//
+//###################### ピクセルシェーダ #####################//
+//#############################################################//
+
+
+// テクスチャをて1/2にスケーリングする
+float4 Sample2x2_PS(VertexData_Out IN) : COLOR0
+{	
+	float4 final_color = tex2D(g_Sampler1, IN.tex_uv);
+	return final_color;
+}
+
+
+// テクスチャを1/4にスケーリングする
+float4 Sample4x4_PS(VertexData_Out IN) : COLOR0
+{
+	float4 final_color = Sample4x4(g_Sampler1, IN.tex_uv);
+	return final_color;
+}
+
+
+// テクスチャ輝度のlogを計算する
+float ClaculateLogLuminance_PS(VertexData_Out IN) : COLOR0
+{
+	float3	color		= Sample4x4(g_Sampler1, IN.tex_uv).rgb;
+	float	luminance	= dot(color, float3(0.27f, 0.67f, 0.06f));
+	return log(1.0e-6 + luminance);
+}
+
+
+
+// 輝度logテクスチャをスケーリングする
+float AverageLogLuminance_PS(VertexData_Out IN) : COLOR0
+{
+	float color = Sample4x4(g_Sampler1, IN.tex_uv).r;
+	color = (g_CalcExponential==1 ? exp(color) : color);
+	return color;
+}
+
+
+
+// 明順応の簡易シミュレーション(DirectX9_SDKのサンプルコードを拝借)
+float CalculateAdaptedLuminance_PS(VertexData_Out IN) : COLOR0
+{
+    float fAdaptedLum = tex2D(g_Sampler1, float2(0.5));// 直前の輝度値
+    float fCurrentLum = tex2D(g_Sampler2, float2(0.5));// 現行の輝度値
+    
+    // The user's adapted luminance level is simulated by closing the gap between
+    // adapted luminance and current luminance by 2% every frame, based on a
+    // 30 fps rate. This is not an accurate model of human adaptation, which can
+    // take longer than half an hour.
+    float fNewAdaptation = fAdaptedLum + (fCurrentLum - fAdaptedLum) * ( 1 - pow( 0.98f, g_TimeStep * SENSITIVITY ) );
+	return clamp(fNewAdaptation, LUM_AVG_MIN, LUM_AVG_MAX);
+}
+
+
+
+// 輝度値の高い領域だけ抽出する
+float4 FilterBrightPass_PS(VertexData_Out IN) : COLOR0
+{
+	float	lum_avg = tex2D(g_Luminance, float2(0.5));// 画面の平均輝度
+	float3	lum_scaled = tex2D(g_Sampler1, IN.tex_uv).rgb;// ピクセルの輝度
+	
+	lum_scaled	*= g_Key/(lum_avg + 1.0e-6);
+	lum_scaled	-= BRIGHT_PASS_THRESHOLD;
+	lum_scaled	= max(lum_scaled, 0.0);
+	lum_scaled	/= (BRIGHT_PASS_OFFSET + lum_scaled);
+
+	return float4(lum_scaled, 0.0);
+}
+
+
+
+// 垂直方向にテクスチャをぼかす（ガウス）
+float4 GaussianBlur_Vertical_PS( float2 in_tex : TEXCOORD0 ) : COLOR0
+{ 
+	float4 color = float4(0);
+
+	for (int i=0; i<13; i++)
+	{ 
+		color += tex2D(g_Sampler1, in_tex + g_TexelKernel[i].yx / g_TexSize.y) * g_BlurWeights[i];
+	}
+
+	return color;
+}
+
+
+// 水平方向にテクスチャをぼかす（ガウス）
+float4 GaussianBlur_Horizontal_PS( float2 in_tex : TEXCOORD0 ) : COLOR0
+{
+	float4 color = float4(0);
+
+	for (int i=0; i<13; i++)
+	{
+		color += tex2D(g_Sampler1, in_tex + g_TexelKernel[i].xy / g_TexSize.x) * g_BlurWeights[i];
+	}
+
+	return color;
+}
+
+
+// 画像を合成する
+float4 Final_PS(VertexData_Out IN) : COLOR0
+{
+	float	lum_avg	= tex2D(g_Luminance, float2(0.5));
+	float4	lum_scaled = tex2D(g_Sampler1, IN.tex_uv);
+	float4	blur = tex2D(g_Sampler2, IN.tex_uv);
+	
+	lum_scaled *= g_Key/(lum_avg + 1.0e-6);
+	lum_scaled /= (1.0 + lum_scaled);
+
+	return lum_scaled + g_BloomWeight * blur;
+}
+
+
+
+//############################################################//
+//######################### テクニック #######################//
+//############################################################//
+
+technique Basic
+{
+	pass DownSample2x2
+	{
+		VertexShader	= compile gp4vp SimpleVertexShader_VS();
+		PixelShader		= compile gp4fp Sample2x2_PS();
+	}
+
+	pass DownSample4x4
+	{
+		VertexShader	= compile gp4vp SimpleVertexShader_VS();
+		PixelShader		= compile gp4fp Sample4x4_PS();
+	}
+
+	pass ClaculateLogLuminance
+	{
+		VertexShader	= compile gp4vp SimpleVertexShader_VS();
+		PixelShader		= compile gp4fp ClaculateLogLuminance_PS();
+	}
+
+	pass AverageLogLuminance
+	{
+		VertexShader	= compile gp4vp SimpleVertexShader_VS();
+		PixelShader		= compile gp4fp AverageLogLuminance_PS();
+	}
+	
+	pass ClaculateAdaptedLuminance
+	{
+		VertexShader	= compile gp4vp SimpleVertexShader_VS();
+		PixelShader		= compile gp4fp CalculateAdaptedLuminance_PS();
+	}
+
+	pass FilterBrightPass
+	{
+		VertexShader	= compile gp4vp SimpleVertexShader_VS();
+		PixelShader		= compile gp4fp FilterBrightPass_PS();
+	}
+
+	pass VerticalBlur
+	{
+		VertexShader	= compile gp4vp SimpleVertexShader_VS();
+		PixelShader		= compile gp4fp GaussianBlur_Vertical_PS();
+	}
+
+	pass HorizontalBlur
+	{
+		VertexShader	= compile gp4vp SimpleVertexShader_VS();
+		PixelShader		= compile gp4fp GaussianBlur_Horizontal_PS();
+	}
+
+	pass FinalImage
+	{
+		VertexShader	= compile gp4vp SimpleVertexShader_VS();
+		PixelShader		= compile gp4fp Final_PS();
+	}
+
+
+}

@@ -1,0 +1,78 @@
+﻿// adds deltaS into S (line 11 in algorithm 4.1)
+#include "common.cgh"
+
+
+
+float	r;
+float4	dhdH;
+int		layer;
+
+sampler3D	deltaSSampler;
+
+
+
+//############################################################//
+//################### バーテックスシェーダ ###################//
+//############################################################//
+
+// バーテックスシェーダ入力データ
+struct VertexData_In
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+// バーテックスシェーダ出力データ
+struct VertexData_Out
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+
+VertexData_Out copyInscatterN_VS(VertexData_In IN)
+{
+	VertexData_Out OUT;
+	
+	OUT.position = IN.position;
+	OUT.tex_uv = IN.tex_uv;
+	
+	return OUT;
+}
+
+//#############################################################//
+//######################## ピクセルシェーダ ###################//
+//#############################################################//
+
+void copyInscatterN_PS( VertexData_Out IN, out float4 color_out	: COLOR0)
+{
+	float2	xy = float2(IN.tex_uv.x*RES_MU_S*RES_NU, IN.tex_uv.y*RES_MU);
+	float	mu, muS, nu;
+	getMuMuSNu(r, dhdH, IN.tex_uv, mu, muS, nu);
+	float3	uvw = float3(xy, float(layer) + 0.5) / float3(int3(RES_MU_S * RES_NU, RES_MU, RES_R));
+	
+	color_out = float4(tex3D(deltaSSampler, uvw).rgb / phaseFunctionR(nu), 0.0);
+}
+
+/*
+void main()
+{
+	float mu, muS, nu;
+	getMuMuSNu(r, dhdH, mu, muS, nu);
+	vec3 uvw = vec3(gl_FragCoord.xy, float(layer) + 0.5) / vec3(ivec3(RES_MU_S * RES_NU, RES_MU, RES_R));
+	gl_FragColor = vec4(texture3D(deltaSSampler, uvw).rgb / phaseFunctionR(nu), 0.0);
+}
+*/
+
+//############################################################//
+//######################### テクニック #######################//
+//############################################################//
+
+technique copyInscatterN
+{
+	pass P0
+	{
+		VertexShader	= compile gp4vp  copyInscatterN_VS();
+		PixelShader		= compile gp4fp copyInscatterN_PS();
+	}
+}

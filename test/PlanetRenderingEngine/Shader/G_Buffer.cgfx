@@ -1,0 +1,170 @@
+﻿#include	"ReflectanceFunction.cgh"
+
+
+#define	M_PI 3.141592657
+
+
+sampler2D	g_NormalBuffer;	// 法線バッファ
+sampler2D	g_PosBuffer;	// x,y,z:3次元座標 / w:高さ
+sampler2D	g_ColorBuffer;	// 色マップ
+sampler2D	g_SpecularBuffer;
+
+
+sampler2D	g_Sampler;
+
+
+float3		g_LightDir;
+float3		g_LightIntensity;
+
+float3		g_EyePos;
+
+float		g_Scale;
+
+
+// バーテックスシェーダ入力データ
+struct VertexData_In
+{
+	float2	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+	float4	color		: COLOR0;
+};
+
+// バーテックスシェーダ出力データ
+struct VertexData_Out
+{
+	float2	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+	float4	color		: COLOR0;
+};
+
+
+//###########################################################//
+//###################### Vertex Shader ######################//
+//###########################################################//
+
+
+// 光源系の頂点座標値を計算する
+VertexData_Out DeferredShader_VS(VertexData_In IN)
+{
+	VertexData_Out OUT;
+	
+	OUT.position	= IN.position;
+	OUT.tex_uv		= IN.tex_uv.xy;
+	OUT.color		= IN.color;
+	
+	return OUT;
+}
+
+
+//###########################################################//
+//####################### Pixel Shader ######################//
+//###########################################################//
+
+float4 DeferredShader_PS(VertexData_Out IN) : COLOR0
+{
+	float4	material_color = tex2D(g_ColorBuffer, IN.tex_uv);
+	float4	material_specular = tex2D(g_SpecularBuffer, IN.tex_uv);
+	
+	float3	N = tex2D(g_NormalBuffer, IN.tex_uv);
+	float3	V = normalize(g_EyePos - tex2D(g_PosBuffer, IN.tex_uv));
+	float3	L = g_LightDir;
+	float3	H = normalize(L+V);
+
+	float3	Kd = material_color.rgb;
+	float3	Ks = material_specular.rgb;
+	float	e = pow(2.0, 12.0*material_specular.a);
+
+	float3 finalColor =	Kd/M_PI * Lambert(N, L) + Ks * SimplifiedCookTorrance(e, L, N, H);
+	
+	return float4(finalColor*g_LightIntensity, length(N) );// 出力イメージ...rgb:シェーディングをかけた色, a:シェーディング対象領域
+}
+
+
+float3 DrawTexture_RGB_PS(VertexData_Out IN) : COLOR0
+{
+	float3 color = abs(tex2D(g_Sampler, IN.tex_uv).rgb * g_Scale);
+	return color;
+}
+
+float3 DrawTexture_A_PS(VertexData_Out IN) : COLOR0
+{
+	float alpha = abs(tex2D(g_Sampler, IN.tex_uv).a * g_Scale);
+	return float3(alpha);
+}
+
+
+float3 DrawGbuffer_PS(VertexData_Out IN) : COLOR0
+{
+	float3	color = float3(0.0);//IN.color.rgb;
+	float2	tex_uv = IN.tex_uv;
+	
+	if(tex_uv.x<0.5 && tex_uv.y<0.5)// BottomLeft: Diffuse
+	{
+		color = tex2D(g_ColorBuffer, tex_uv);
+	}
+	else if(tex_uv.x>0.5 && tex_uv.y<0.5)// BottomRight: Specular
+	{
+		color = tex2D(g_SpecularBuffer, tex_uv) * 50.0;
+	}
+	else if(tex_uv.x<0.5 && tex_uv.y>0.5)// TopLeft: Position
+	{
+		color = abs(tex2D(g_PosBuffer, tex_uv).xyz) / 6360.0;
+	}
+	else if(tex_uv.x>0.5 && tex_uv.y>0.5)// TopRight: Normal
+	{
+		color = abs(tex2D(g_NormalBuffer, tex_uv).xyz);
+	}
+	
+	return color;
+}
+
+
+//############################################################//
+//########################## Technique #######################//
+//############################################################//
+
+technique DeferredRendering
+{
+	pass DrawTexture_RGB// テクスチャ描画(RGBチャンネル)
+	{
+		VertexShader	= compile gp4vp DeferredShader_VS();
+		PixelShader		= compile gp4fp DrawTexture_RGB_PS();
+	}
+
+	pass DrawTexture_A// テクスチャ描画(Aチャンネル)
+	{
+		VertexShader	= compile gp4vp DeferredShader_VS();
+		PixelShader		= compile gp4fp DrawTexture_A_PS();
+	}
+	
+	pass DrawShadedImage// シェーディング
+	{
+		VertexShader	= compile gp4vp DeferredShader_VS();
+		PixelShader		= compile gp4fp DeferredShader_PS();
+	}
+	
+	pass DrawGbuffer// Gbufferのレンダリング
+	{
+		VertexShader	= compile gp4vp DeferredShader_VS();
+		PixelShader		= compile gp4fp DrawGbuffer_PS();
+	}
+
+}
+
+
+
+
+
+
+
+
+//float3 HDR(float3 L, float exposure)
+//{
+//	L = L * exposure;
+//
+//	L.r = L.r < 1.413 ? pow(L.r * 0.38317, 1.0 / 2.2) : 1.0 - exp(-L.r);
+//	L.g = L.g < 1.413 ? pow(L.g * 0.38317, 1.0 / 2.2) : 1.0 - exp(-L.g);
+//	L.b = L.b < 1.413 ? pow(L.b * 0.38317, 1.0 / 2.2) : 1.0 - exp(-L.b);
+//	
+//	return L;
+//}

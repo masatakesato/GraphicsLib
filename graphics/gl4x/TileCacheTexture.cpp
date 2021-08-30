@@ -1,8 +1,6 @@
 ﻿#include	"TileCacheTexture.h"
 
-//#include	<oreore/GLTexture.h>
-//using namespace MyGlTexture;
-#include	"./common/TString.h"
+#include	<oreore/common/TString.h>
 
 
 

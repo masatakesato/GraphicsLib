@@ -1,0 +1,61 @@
+﻿// copies deltaE into E (lines 4 and 10 in algorithm 4.1)
+
+float k; // k=0 for line 4, k=1 for line 10
+sampler2D deltaESampler;
+
+
+
+
+
+//############################################################//
+//################### バーテックスシェーダ ###################//
+//############################################################//
+
+// バーテックスシェーダ入力データ
+struct VertexData_In
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+// バーテックスシェーダ出力データ
+struct VertexData_Out
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+
+VertexData_Out copyIrradiance_VS(VertexData_In IN)
+{
+	VertexData_Out OUT;
+	
+	OUT.position = IN.position;
+	OUT.tex_uv = IN.tex_uv;
+	
+	return OUT;
+}
+
+//#############################################################//
+//######################## ピクセルシェーダ ###################//
+//#############################################################//
+
+void copyIrradiance_PS( VertexData_Out IN, out float3 color_out	: COLOR0)
+{
+    color_out = k * tex2D(deltaESampler, IN.tex_uv); // k=0 for line 4, k=1 for line 10
+}
+
+
+//############################################################//
+//######################### テクニック #######################//
+//############################################################//
+
+technique copyIrradiance
+{
+	pass P0
+	{
+		VertexShader	= compile gp4vp copyIrradiance_VS();
+		PixelShader		= compile gp4fp copyIrradiance_PS();
+	}
+}
+

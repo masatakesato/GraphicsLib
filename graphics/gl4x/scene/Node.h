@@ -1,9 +1,10 @@
 ﻿#ifndef NODE_H
 #define	NODE_H
 
-#include	"./common/TString.h"
+#include	<oreore/common/TString.h>
 
-#include	"BufferLayout.h"
+#include	"../resource/BufferLayout.h"
+
 
 
 namespace OreOreLib

@@ -1,0 +1,75 @@
+﻿// copies deltaS into S (line 5 in algorithm 4.1)
+#include "common.cgh"
+
+
+float	r;
+float4	dhdH;
+int		layer;
+
+sampler3D deltaSRSampler;
+sampler3D deltaSMSampler;
+
+
+
+
+
+
+
+//############################################################//
+//################### バーテックスシェーダ ###################//
+//############################################################//
+
+// バーテックスシェーダ入力データ
+struct VertexData_In
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+// バーテックスシェーダ出力データ
+struct VertexData_Out
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+
+VertexData_Out copyInscatter1_VS(VertexData_In IN)
+{
+	VertexData_Out OUT;
+
+	OUT.position = IN.position;
+	OUT.tex_uv = IN.tex_uv;
+
+	return OUT;
+}
+
+//#############################################################//
+//######################## ピクセルシェーダ ###################//
+//#############################################################//
+
+void copyInscatter1_PS( VertexData_Out IN, out float4 color_out	: COLOR0)
+{
+	float2	xy = float2(IN.tex_uv.x*RES_MU_S*RES_NU, IN.tex_uv.y*RES_MU);
+
+	float3	uvw = float3(xy, float(layer) + 0.5) / float3(int3(RES_MU_S*RES_NU, RES_MU, RES_R));
+	float4	ray = tex3D(deltaSRSampler, uvw);
+	float4	mie = tex3D(deltaSMSampler, uvw);
+	color_out = float4(ray.rgb, mie.r); // store only red component of single Mie scattering (cf. "Angular precision")
+}
+
+
+//############################################################//
+//######################### テクニック #######################//
+//############################################################//
+
+technique copyInscatter1
+{
+	pass P0
+	{
+		VertexShader	= compile gp4vp  copyInscatter1_VS();
+		PixelShader		= compile gp4fp copyInscatter1_PS();
+		
+		DepthTestEnable	= false;
+	}
+}

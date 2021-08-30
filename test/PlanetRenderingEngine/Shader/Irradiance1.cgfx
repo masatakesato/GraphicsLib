@@ -1,0 +1,73 @@
+﻿// computes ground irradiance due to direct sunlight E[L0] (line 2 in algorithm 4.1)
+#include "common.cgh"
+
+
+
+
+//############################################################//
+//################### バーテックスシェーダ ###################//
+//############################################################//
+
+// バーテックスシェーダ入力データ
+struct VertexData_In
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+// バーテックスシェーダ出力データ
+struct VertexData_Out
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+
+VertexData_Out Irradiance1_VS(VertexData_In IN)
+{
+	VertexData_Out OUT;
+	
+	OUT.position = IN.position;
+	OUT.tex_uv = IN.tex_uv;
+	
+	return OUT;
+}
+
+//#############################################################//
+//######################## ピクセルシェーダ ###################//
+//#############################################################//
+
+void Irradiance1_PS( VertexData_Out IN, out float4 color_out : COLOR0)
+{
+	float	r = IN.tex_uv.t < 0.5 ? 0 : 1;//IN.tex_uv.t * (Rt-Rg);// 高度
+	float	muS = cos(IN.tex_uv.s * M_PI);// 角度
+	
+	color_out = float4( tex2D(transmittanceSampler, IN.tex_uv).rgb * max(muS, 0.0), 0.0);
+	
+	//color_out = float4(muS, 0,0,1);
+	//color_out = float4(0, IN.tex_uv.t, 0, 1);
+}
+
+/*
+void main()// こっちがオリジナル
+{
+	float r, muS;
+	getIrradianceRMuS(r, muS);
+	gl_FragColor = vec4(transmittance(r, muS) * max(muS, 0.0), 0.0);
+}
+*/
+
+
+//############################################################//
+//######################### テクニック #######################//
+//############################################################//
+
+technique PrecomputeIrradiance
+{
+	pass P0
+	{
+		VertexShader = compile gp4vp  Irradiance1_VS();
+		PixelShader = compile gp4fp Irradiance1_PS();
+	}
+
+}

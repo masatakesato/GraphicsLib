@@ -1,0 +1,74 @@
+﻿float2	g_offset;
+
+
+static float2 g_TexelKernel[13] =// ガウスフィルタピクセル座標
+{
+	{ -6, 0 },
+	{ -5, 0 },
+	{ -4, 0 },
+	{ -3, 0 },
+	{ -2, 0 },
+	{ -1, 0 },
+	{ 0, 0 },
+	{ 1, 0 },
+	{ 2, 0 },
+	{ 3, 0 },
+	{ 4, 0 },
+	{ 5, 0 },
+	{ 6, 0 },
+};
+
+static float g_BlurWeights[13] =// ガウスフィルタカーネル
+{
+	0.002216,
+	0.008764,
+	0.026995,
+	0.064759,
+	0.120985,
+	0.176033,
+	0.199471,
+	0.176033,
+	0.120985,
+	0.064759,
+	0.026995,
+	0.008764,
+	0.002216,
+};
+
+
+// 4x4のピクセル領域をサンプリングする（バイリニア）
+float4 Sample4x4(sampler2D texture, in float2 tex_uv)
+{
+	float2 tex0;
+	float2 tex1;
+	float2 tex2;
+	float2 tex3;
+	float4 tex_color;
+	
+	//================= テクスチャ座標値を計算する ===============//
+	//in_tex.x = in_tex.x + g_offset.x;// 補正
+	//in_tex.y = in_tex.y + g_offset.y;// 補正
+	
+	// 左上
+	tex0.x = tex_uv.x - 0.5f * g_offset.x;
+	tex0.y = tex_uv.y - 0.5f * g_offset.y;
+	// 左下
+	tex1.x = tex_uv.x - 0.5f * g_offset.x;
+	tex1.y = tex_uv.y + 0.5f * g_offset.y;
+	
+	// 右上
+	tex2.x = tex_uv.x + 0.5f * g_offset.x;
+	tex2.y = tex_uv.y - 0.5f * g_offset.y;	
+	
+	// 右下
+	tex3.x = tex_uv.x + 0.5f * g_offset.x;
+	tex3.y = tex_uv.y + 0.5f * g_offset.y;
+		
+	tex_color =	0.25f * (
+							tex2D(texture, tex0)
+							+ tex2D(texture, tex1)
+							+ tex2D(texture, tex2)
+							+ tex2D(texture, tex3)
+						);
+	return tex_color;
+}

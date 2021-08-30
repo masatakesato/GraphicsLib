@@ -2,10 +2,9 @@
 #define CAMERA_H
 
 // 任意の場所で任意の姿勢を取れるカメラ
-
-
-#include	<oreore/MathLib.h>
+#include	<oreore/mathlib/GraphicsMath.h>
 #include	"CameraObject.h"
+
 
 
 class Camera

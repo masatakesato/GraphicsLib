@@ -1,0 +1,240 @@
+﻿
+//############################################################//
+//###################### グローバル変数 ######################//
+//############################################################//
+
+// VirtualTexture
+int			g_TileSize;			// タイルの解像度
+static float g_TileSize_inv = 1.0 / g_TileSize;
+float		g_BorderSize = 2.5;	// タイル境界ピクセルの幅
+
+sampler2D	g_HeightSampler	: TEXUNIT0;// タイルキャッシュ(ハイトマップ)
+sampler2D	g_NormalSampler;	//	タイルキャッシュ(ハイトマップ)
+float4		g_CacheSize;		// TileCacheの解像度. (x,y,z,w) = (w, h, 1/w, 1/h)
+
+float2		g_vtex_tc;			// バーチャルテクスチャ座標
+int2		g_mip_level;		// MIPMAPレベル
+
+float2		page_phys_tc_high;	// 高解像度テクスチャのタイルキャッシュ座標
+float2		page_phys_tc_low;	// 低解像度テクスチャのタイルキャッシュ座標
+float2		rescale_page_to_physical;	// テクスチャのスケール
+static float2 scale_inv = 1.0f / rescale_page_to_physical;
+
+const float2 within_page_center = float2(0.5);// ページ内テクスチャの中心座標
+
+
+// 惑星形状
+float		g_HeightRange;		// 高低の幅
+float		g_Rho;				// パッチ分割解像度重み
+float3		g_EyePos;			// 視点位置（ワールド座標空間）
+float		g_Radius;			// 惑星の半径
+float		g_Dimension;		// パッチの大きさ
+float3		g_TilePos;			// パッチの原点（ワールド座標空間）
+float3		g_Uvec;				// パッチ横方向の単位ベクトル
+float3		g_Vvec;				// パッチ上方向の単位ベクトル
+
+
+// マテリアル
+sampler1D	g_StratumSampler;// 地層テクスチャ
+int			g_numMats;// マテリアル数
+struct		SurfaceProperty
+{
+	float4	Diffuse;	// 拡散反射率(rgb:拡散反射率，a:鏡面反射光の強さ)
+	float4	Specular;	// 鏡面反射率(rgb:鏡面反射率，a:面の粗さ)
+	float3	Distribution;	// 分布高度(x:中央値，x:分布幅，z:スムーシング境界の幅[0,1])
+	float	Slope;			// 勾配パラメータ
+	
+} g_SurfaceParam[8];
+
+
+// カメラ
+float4x4	g_ModelViewMatrix;	// 座標変換マトリクス
+float		g_FarClip;			// クリップ面
+
+
+// シェーダ入出力
+struct VertexData_In
+{
+	float4	position	: POSITION;
+	float3	color		: COLOR;
+	//int		iInstanceID	: INSTANCEID;
+};
+
+struct VertexData_Out
+{
+	float4	position	: POSITION;
+	float3	pos_obj		: TEXCOORD0;	// オブジェクト空間上での座標値
+	float4	texcoord	: TEXCOORD1;	// rg:高解像度テクスチャ座標, ba:低解像度テクスチャ座標
+	float	blendweight	: TEXCOORD2;	// テクスチャ混合の重み
+};
+
+struct PixelData_Out
+{
+	float4 position		: COLOR0;	// 座標(xyz:ワールド座標，w:高さ)
+	float3 normal		: COLOR1;	// 法線ベクトル
+	float4 Diffuse		: COLOR2;	// 拡散反射(rgb:反射率，a:鏡面反射の強度)
+	float4 Specular		: COLOR3;	// 鏡面反射(rgb:反射率，a:面の粗さ)
+};
+
+
+
+
+float4 MapToSphere(in float4 In)
+{
+	float3 Out;
+	
+	In.xyz /= g_Radius;
+
+	Out.x = In.x * sqrt(1.0 - 0.5*In.y*In.y - 0.5*In.z*In.z + In.y*In.y*In.z*In.z / 3.0);
+	Out.y = In.y * sqrt(1.0 - 0.5*In.z*In.z - 0.5*In.x*In.x + In.x*In.x*In.z*In.z / 3.0);
+	Out.z = In.z * sqrt(1.0 - 0.5*In.x*In.x - 0.5*In.y*In.y + In.x*In.x*In.y*In.y / 3.0);
+	
+	Out *= g_Radius;
+
+	return float4(Out,1.0);
+}
+
+
+
+
+
+//############################################################//
+//################### バーテックスシェーダ ###################//
+//############################################################//
+
+VertexData_Out RenderTerrain_Noise_VS(VertexData_In IN)
+{
+	VertexData_Out OUT;
+	float	blendweight;
+	float4	worldpos;
+	float4	border_offset;	// テクスチャのりしろ
+	float4	within_page_tc;	// テクスチャを拡大サンプリングする際のuv原点座標(xy:high, zw:low)
+	float4	texuv;			// タイルキャッシュ上のuv座標(xy:high, zw:low)
+
+	//====================== 2次元メッシュの頂点を球面上にマッピングする =====================//
+	worldpos = MapToSphere( float4(g_Dimension*(g_Uvec * IN.position.x + g_Vvec * IN.position.y) + g_TilePos, 1.0) );
+
+	//================================ mipmapレベルを計算する ===============================//
+	float	eps = g_Rho * g_Dimension / distance(g_EyePos, worldpos.xyz);
+	blendweight = saturate( (g_mip_level.x+1.0) * (2.0*(eps-0.5)) );// テクスチャブレンディングの重み
+	
+	//=========== タイルキャッシュをサンプリングするためのテクスチャ座標を計算する ==========//
+	within_page_tc = frac( exp2( float4(g_mip_level.xxyy) ) * g_vtex_tc.xyxy );
+	border_offset = scale_inv.xxyy * g_BorderSize*g_TileSize_inv * (within_page_center.xyxy - within_page_tc) * 2.0;
+	
+	// テクスチャuv座標を求め，タイルキャッシュの大きさにスケーリングする
+	texuv = (IN.position.xyxy + 0.5f);							// メッシュ頂点座標を[-0.5,0.5]から[0,1]に補正
+	texuv *= (1.0-2.0*g_BorderSize*g_TileSize_inv);				// のりしろ分だけテクスチャ座標を縮小
+	texuv += border_offset;										// のりしろ分だけテクスチャ座標を内側に移動
+	texuv *= g_CacheSize.zwzw * rescale_page_to_physical.xxyy;	// タイルキャッシュ上のスケールに変換
+	
+	// タイルキャッシュ上のサンプリング開始点をtexuvに加算する
+	texuv += float4(page_phys_tc_high, page_phys_tc_low) * g_CacheSize.zwzw;// タイルキャッシュ上の該当テクスチャ位置に移動
+	texuv += within_page_tc * g_CacheSize.zwzw;								// 拡大サンプリングするため，テクスチャ内で更に位置移動
+	
+	
+	//============== タイルキャッシュをサンプリングし，頂点ごとの高さを計算する =============//
+	float height1, height2, height;
+	height1 = tex2D(g_HeightSampler, texuv.xy);
+	height2 = tex2D(g_HeightSampler, texuv.zw);
+
+	height = lerp(height2, height1, blendweight);
+	
+float3 vec = worldpos.xyz;
+worldpos.xyz += height * normalize(vec);
+
+
+
+	//============================ 頂点データを出力する ============================//
+	OUT.position = mul(g_ModelViewMatrix, float4( worldpos.xyz - g_EyePos, 0.0 ) );// 視点座標系に変換する. 原点から遠い場所での近接オブジェクト描画精度対策のため、最初に頂点の平行移動だけ行ってから、行列で回転計算する
+	OUT.position.z = ( 2.0 * log(OUT.position.z + 1.0) / log(g_FarClip + 1.0) - 1.0) * OUT.position.w;// logarithmic z-buffer(with C=1.0)
+
+	OUT.pos_obj = vec;
+	OUT.texcoord = float4(texuv.xy, texuv.zw);
+	OUT.blendweight = blendweight;
+
+	return OUT;
+}
+
+
+
+//#############################################################//
+//###################### ピクセルシェーダ #####################//
+//#############################################################//
+
+void RenderTerrain_Noise_PS(in VertexData_Out IN, out PixelData_Out OUT)
+{
+	float	h;
+	float2	texuv_high, texuv_low;
+	float4	normal, normal1, normal2;
+	float	height1, height2;
+	float3	rock;
+
+	texuv_high = IN.texcoord.xy;
+	texuv_low = IN.texcoord.zw;
+	
+	//=================== 法線ベクトルを取得する ===============//
+	normal1 = tex2D(g_NormalSampler, texuv_high);
+	normal2 = tex2D(g_NormalSampler, texuv_low);
+	normal = lerp(normal2, normal1, IN.blendweight);//IN.blendweight * normal1 + (1.0-IN.blendweight) * normal2;
+	OUT.normal = normal.xyz;
+	
+	//==================== 地面の色を決定する ==================//
+	height1 = tex2D(g_HeightSampler, texuv_high);
+	height2 = tex2D(g_HeightSampler, texuv_low);
+	h = lerp(height2, height1, IN.blendweight);//IN.blendweight * height1 + (1.0-IN.blendweight) * height2;
+
+	// ベースの色
+	rock = tex1D(g_StratumSampler, h/g_HeightRange);
+	OUT.Diffuse = float4(rock, 0.2);
+	OUT.Specular = float4(0.001);// w:Specular Power
+	
+	float	h_delta;			// 中央値からの高度差
+	float	weight;
+	float	height_range;
+	
+	for(int i=0; i<g_numMats; i++)
+	{	
+		// 分布幅
+		float height_range = g_SurfaceParam[i].Distribution.y;
+		// テクセル高度～マテリアル分布中心高度の差分
+		h_delta = abs(h - g_SurfaceParam[i].Distribution.x);
+		// スムーシングの適用度
+		float smooth_range = height_range * (1.0-g_SurfaceParam[i].Distribution.z);
+		// 重み計算
+		weight = smoothstep(height_range, smooth_range-1.0e-6, h_delta) * pow(normal.w, g_SurfaceParam[i].Slope);
+		// ディフューズ/スペキュラー反射率の合成
+		OUT.Diffuse = lerp(OUT.Diffuse, g_SurfaceParam[i].Diffuse, weight);
+		OUT.Specular = lerp(OUT.Specular, g_SurfaceParam[i].Specular, weight);
+	}
+	
+
+	//  height_range                       height_range
+	//	      |--------|------*------|-------|
+	//           smooth_range   smooth_range
+/*
+	//---------------------- テスト実装（海）--------------------//
+	if(h<=1.0e-2)
+	{	
+		float3	sea = float3(0, 0.02, 0.03 );
+		OUT.Diffuse.xyz = lerp(sea, OUT.Diffuse.xyz, pow(h/1.0e-2, 0.5) );
+		OUT.Diffuse.w = (1.0 - h/1.0e-2)*0.005;// Specular Intensity
+		OUT.Specular = float4( float3((1.0 - h/1.0e-2)*0.005), 0.5 );// w:Specular Power
+	}
+*/	
+	OUT.position.xyz = normalize(IN.pos_obj.xyz) * (h + g_Radius);
+	OUT.position.w = h;
+}
+
+
+technique RenderTerrain
+{
+	pass
+	{
+		VertexShader	= compile gp4vp RenderTerrain_Noise_VS();
+		PixelShader		= compile gp4fp RenderTerrain_Noise_PS();
+		
+		CullFace = Back;
+		CullFaceEnable = true;
+	}
+}

@@ -4,9 +4,8 @@
 #include	<windows.h>
 #include	<process.h>
 
-#include	<oreore/MathLib.h>
-#include	"./container/RingQueue.h"
-
+#include	<oreore/mathlib/GraphicsMath.h>
+#include	<oreore/container/RingQueue.h>
 
 
 

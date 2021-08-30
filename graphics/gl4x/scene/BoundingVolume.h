@@ -1,8 +1,8 @@
 ﻿#ifndef	BOUNDING_VOLUME_H
 #define	BOUNDING_VOLUME_H
 
+#include	<oreore/mathlib/GraphicsMath.h>
 
-#include	<oreore/MathLib.h>
 
 
 namespace OreOreLib

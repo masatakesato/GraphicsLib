@@ -1,8 +1,8 @@
 ﻿#ifndef VIEWFRUSTUM_H
 #define VIEWFRUSTUM_H
 
+#include	<oreore/mathlib/GraphicsMath.h>
 
-#include	<oreore/MathLib.h>
 
 
 class ViewFrustum

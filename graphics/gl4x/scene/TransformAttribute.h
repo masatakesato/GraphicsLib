@@ -1,8 +1,10 @@
 ﻿#ifndef TRANSFORM_ATTRIBUTE_H
 #define	TRANSFORM_ATTRIBUTE_H
 
-#include	"BufferLayout.h"
-#include	<oreore/MathLib.h>
+#include	<oreore/mathlib/GraphicsMath.h>
+
+#include	"../resource/BufferLayout.h"
+
 
 
 namespace OreOreLib

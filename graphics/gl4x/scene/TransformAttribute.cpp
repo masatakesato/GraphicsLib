@@ -1,11 +1,11 @@
 ﻿#include	"TransformAttribute.h"
 
-#include	"BufferLayout.h"
+#include	"../resource/BufferLayout.h"
+
 
 
 namespace OreOreLib
 {
-
 
 	TransformAttribute::TransformAttribute()
 	{

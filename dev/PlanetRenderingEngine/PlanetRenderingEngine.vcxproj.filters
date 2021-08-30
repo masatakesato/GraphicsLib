@@ -1,0 +1,256 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{35673361-cc0e-4909-b6bd-d8741c550fd2}</UniqueIdentifier>
+      <Extensions>cgfx</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\AtmosphericShader.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\common.cgh">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\CopyInscatter1.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\CopyInscatterN.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\CopyIrradiance.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\G_Buffer.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\HDRShader.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\HeightmapGenerator.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\Inscatter1.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\InscatterN.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\InscatterS.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\Irradiance1.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\IrradianceN.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\NoiseFunction.cgh">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\ReflectanceFunction.cgh">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\TerrainEngine.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\TextureSampler.cgh">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\test\PlanetRenderingEngine\Shader\Transmittance.cgfx">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\Controller_base.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\G_Buffer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\GrahpicsDevice.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\HDRShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\HeightmapGenerator.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\PlanetRenderingEngine.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\PlanetRenderingEngine_Win32main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\SeamlessPatches.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\TerrainEngine.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\TerrainMaterial.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\VirtualTexture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\PlanetRenderingEngine\AtmosphericShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\Bitmap.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\scene\Camera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\scene\Frustum.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\scene\CameraObject.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\resource\GLRenderTarget.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\app\MyGUI.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\resource\GLFrameBufferObject.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\scene\TransformAttribute.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\scene\BoundingVolume.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\scene\Material.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\TileCacheTexture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\resource\CacheDataManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\Texture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\oreorelib\oreore\thread\win\ThreadPool.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\scene\ViewFrustum.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\AtmosphericShader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\Controller_base.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\G_Buffer.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\GraphicsDevice.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\HDRShader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\HeightmapGenerator.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\PlanetRenderingEngine.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\resource.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\SeamlessPatches.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\TerrainEngine.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\TerrainMaterial.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\PlanetRenderingEngine\VirtualTexture.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\Bitmap.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\resource\GLTexture.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\scene\Camera.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\scene\Frustum.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\scene\CameraObject.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\resource\GLRenderTarget.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\app\MyGUI.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\resource\GLFrameBufferObject.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\scene\TransformAttribute.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\scene\BoundingVolume.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\scene\Material.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\TileCacheTexture.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\resource\CacheDataManager.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\Texture.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\oreorelib\oreore\thread\win\ThreadPool.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\scene\ViewFrustum.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\test\PlanetRenderingEngine\res.rc">
+      <Filter>Resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\test\PlanetRenderingEngine\Icon.ico">
+      <Filter>Resource</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

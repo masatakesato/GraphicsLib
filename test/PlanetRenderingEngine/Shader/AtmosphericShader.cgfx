@@ -1,0 +1,259 @@
+﻿#include	"common.cgh"
+#include	"ReflectanceFunction.cgh"
+
+bool		g_EnableScattering;
+float3		g_EyePos;// カメラ位置
+float3		g_LightDir;// 光ベクトル
+float4x4	g_ModelViewMatrix;// モデルビューマトリクス
+
+
+// Deferred rendering用のバッファ
+sampler2D	g_PosBuffer;	// 座標値バッファ
+sampler2D	g_NormalBuffer;	// 法線バッファ
+sampler2D	g_ColorBuffer;	// カラーバッファ
+sampler2D	g_SpecularBuffer;	// カラーバッファ
+
+sampler2D	g_SkyColor;		// 空の色
+sampler2D	g_Surface;		// 
+
+sampler2D	g_StarField;	// 星
+
+
+// バーテックスシェーダ入力データ(空のレンダリング)
+struct VertexData_In_Sky
+{
+	float4	position	: POSITION;
+float2	tex_uv		: TEXCOORD0;
+};
+
+// バーテックスシェーダ出力データ(空のレンダリング)
+struct VertexData_Out_Sky
+{
+	float4	position		: POSITION;
+	float3	direction		: TEXCOORD1;// 天球頂点からカメラへのベクトル
+float2	tex_uv		: TEXCOORD0;
+
+};
+
+
+// バーテックスシェーダ入力データ(地表レンダリング)
+struct VertexData_In_Surface
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+};
+
+// バーテックスシェーダ出力データ(地表レンダリング)
+struct VertexData_Out_Surface
+{
+	float4	position	: POSITION;
+	float2	tex_uv		: TEXCOORD0;
+
+};
+
+
+
+//############################################################//
+//################### バーテックスシェーダ ###################//
+//############################################################//
+
+// 大気散乱効果（空だけ）を計算する
+VertexData_Out_Sky RenderSky_VS(VertexData_In_Sky IN)
+{
+	VertexData_Out_Sky OUT;
+
+	OUT.direction = IN.position.xyz;// 原点を中心とする球体（立方体）頂点へのレイをサンプリングする
+	OUT.position = mul(g_ModelViewMatrix, float4(IN.position.xyz+g_EyePos, IN.position.w) );
+	OUT.tex_uv = IN.tex_uv;
+	
+	return OUT;
+}
+
+
+// 地面の反射光を大気散乱効果付きでレンダリングする
+VertexData_Out_Surface RenderSurface_VS(VertexData_In_Surface IN)
+{
+	VertexData_Out_Surface OUT;
+	
+	OUT.position = IN.position;
+	OUT.tex_uv = IN.tex_uv;
+	
+	return OUT;
+}
+
+
+//#############################################################//
+//######################## ピクセルシェーダ ###################//
+//#############################################################//
+
+//天球交点までの距離を計算する(rgb:空の色，a:海面判定フラグ(1:海面，0：空))
+//float3 RenderSky_PS(VertexData_Out_Sky IN): COLOR0
+void RenderSky_PS(VertexData_Out_Sky IN, out float3 SkyColor : COLOR0, out float4 Geometry : COLOR1)
+{
+	float3	x = g_EyePos;// カメラの位置
+	float3	v = normalize(IN.direction);// カメラのレイ
+	float	r = length(x);// 高度（惑星中心から）
+	float	mu = dot(x, v) / r;
+	float	t = 0.0;
+	float	d = 0.0;// 天球交点までの距離
+	float	tmp_sqrd;
+	float3	inscatter_color;
+	float3	sun_color;
+
+float3 starcolor;
+
+	tmp_sqrd = r * r * (mu * mu - 1.0) + Rg * Rg;
+	t = (-r * mu - sqrt(tmp_sqrd)) * (tmp_sqrd>=0.0);// 地表までの距離(交点がある場合のみ，正の値をとる)
+
+	Geometry.xyz = v;
+	Geometry.w	= t;//max(t, 0.0);//t>0.0;// 奥行き方向に交点がある場合のみ1，それ以外は0
+
+	tmp_sqrd = r * r * (mu * mu - 1.0) + Rt * Rt;
+	d = (-r * mu - sqrt(tmp_sqrd)) * (tmp_sqrd>=0.0);// 天球交点までの距離(交点がある場合のみ，正の値をとる)
+
+	
+	if (d > 0.0) // カメラ位置が宇宙空間にあって，大気圏内を向いているとき，大気境界面まで移動する
+	{
+		x += d * v;// 視点の位置を，天球との衝突点に移動する
+		t -= d;// 位置を天球上層～詰める
+		mu = (r * mu + d) / Rt;//mu = (d*d + Rt*Rt - r*r) / (2*d*Rt);// 余弦定理から（３角形の３辺の長さから角度を計算）
+		r = Rt;
+	}
+	
+	if(r < Rm)// 標高0未満の場所にカメラがあるとき 地表まで移動する
+	{
+		x *= Rm / length(x);
+		r = Rm;
+		mu = dot(x, v) / r;
+	}
+
+	inscatter_color = inscatter(x, t, v, g_LightDir, r, mu); //S[L]-T(x,xs)S[l]|xs
+	sun_color = sunColor(x, t, v, g_LightDir, r, mu); //L0// 太陽光
+	starcolor = tex2D(g_StarField, IN.tex_uv).rgb * (r <= Rt ? transmittanceWithShadow(r, mu) : float3(1.0));
+
+	SkyColor = inscatter_color + sun_color + starcolor;
+}
+
+
+
+// 地面の反射光を大気散乱効果付きでレンダリングする
+float3 RenderSurface_PS(VertexData_Out_Surface IN) : COLOR0
+{	
+	// x:カメラ位置始点，v:レイの向き，t:レイの長さ，s：太陽～の向き，r：カメラ高度，mu:惑星真上とレイ方向との内積
+	float4	ray			= tex2D(g_Surface, IN.tex_uv);
+	float3	pos_obj		= tex2D(g_PosBuffer, IN.tex_uv).xyz;
+	float	h = tex2D(g_PosBuffer, IN.tex_uv).w;
+	//if(length(pos_obj)==0.0 && ray.w>0.0) h = -0.1;
+	
+	float3	color_out	= float3(0.0);
+	float3	x			= g_EyePos;		// レイの始点（惑星中心が原点.6360以上）
+	float3	v			= pos_obj - g_EyePos;//	// カメラから各ピクセルへのベクトル
+	float	t			= length(v);		// カメラから～地表までの距離
+	v /= t;
+	float	r			= length(x);// カメラ高度（惑星中心から）
+	float	mu			= dot(x, v) / r;// 鉛直ベクトルとカメラベクトルの内積
+	float	d			= -r * mu - sqrt(r * r * (mu * mu - 1.0) + Rt * Rt);// 天球交点までの距離
+	
+	
+	//================= 地面の反射率を計算する(Cook-Torrenceモデル) ==================//
+	float4	material_color		= tex2D(g_ColorBuffer, IN.tex_uv);
+	float4	material_specular	= tex2D(g_SpecularBuffer, IN.tex_uv);
+	float3	Kd					= material_color.rgb;
+	float3	Ks					= material_specular.rgb;
+	float	e					= pow(2.0, 12.0 * material_specular.a);
+	float3	N					= tex2D(g_NormalBuffer, IN.tex_uv);		// 法線ベクトル
+	float3	L					= g_LightDir;							// 光源ベクトル
+	float3	H					= normalize(L-v);						// ハーフベクトル
+	
+	float3	reflectance = (Kd/M_PI * Lambert(N, L) + Ks * SimplifiedCookTorrance(e, L, N, H)) * ISun;
+	
+
+// 視点～海面の距離を計算する
+float tmp_sqrd = r * r * (mu * mu - 1.0) + Rg * Rg;
+float ocean_d = (-r * mu - sqrt(tmp_sqrd)) * (tmp_sqrd >= 0.0);// 地表までの距離
+
+// 視点～地面の距離を計算する
+float ground_d = distance(g_EyePos, pos_obj);
+
+// 海面～地面の距離を計算する
+float delta = ground_d - ocean_d;
+
+
+if(ray.w>0.0 && delta > 0.0)// 海面ピクセルで，しかも地面よりも手前に海面がある場合
+{
+	// ピクセルの情報を，"地表"から"海面"に変更する
+	v		= ray.xyz;// カメラから各ピクセルへのベクトル
+	t		= ray.w;//length(v);			// カメラから～地表までの距離
+	pos_obj	= g_EyePos + v*t;// 頂点座標
+	mu		= dot(x, v) / r;// 鉛直ベクトルとカメラベクトルの内積
+	N		= normalize(pos_obj);		// 法線ベクトル
+	H		= normalize(L-v);			// ハーフベクトル
+	d		= -r * mu - sqrt(r * r * (mu * mu - 1.0) + Rt * Rt);// 天球交点までの距離
+
+	// 海洋シェーダでレンダリングした色を合成
+	float3 extinction = CalcRefraction(delta);
+	float3 oceancolor = reflectance * extinction + (float3(0.005) * SimplifiedCookTorrance(50.5, L, N, H) * ISun);
+	reflectance = lerp( reflectance, oceancolor, smoothstep(0.0, 0.1, delta) );
+	//material_color.rgb *=extinction;// lerp(material_color.rgb, material_color.rgb*extinction, smoothstep(0.0, 10.0, delta) ); 
+}
+
+	if(g_EnableScattering==false)	return reflectance;
+
+	//=============================== 大気散乱効果を付与する =========================//
+	if(length(N)==0.0)
+	{
+		color_out = tex2D(g_SkyColor, IN.tex_uv);
+	}
+	else
+	{
+		if (d > 0.0) // カメラ位置が宇宙空間にあって，大気圏内を向いているとき
+		{
+			x += d * v;// 視点の位置を，天球との衝突点に移動する
+			t -= d;// 位置を天球上層～詰める
+			mu = (r * mu + d) / Rt;//mu = (d*d + Rt*Rt - r*r) / (2*d*Rt);// 余弦定理から（３角形の３辺の長さから角度を計算）
+			r = Rt;
+		}
+
+		if(r < Rm)// 標高0未満の場所にカメラがあるとき
+		{
+			x *= Rm / r;
+			v = pos_obj - x;
+			t = length(v);
+			v /= t;
+			r = Rm;
+			mu = dot(x, v) / r;
+		}
+		
+		color_out = groundColor(x, t, v, L, r, mu, material_color.rgb, reflectance.rgb);
+	}
+	
+	return color_out;
+	
+	//return tex3D(inscatterSampler, float3(IN.tex_uv, 0.5));
+	//return tex2D(irradianceSampler, IN.tex_uv)*5.0;
+}
+
+
+
+//############################################################//
+//######################### テクニック #######################//
+//############################################################//
+
+technique Earth
+{
+	pass RenderSky
+	{
+		VertexShader	= compile gp4vp RenderSky_VS();
+		PixelShader		= compile gp4fp RenderSky_PS();
+		
+		CullFace		= Back;
+		CullFaceEnable	= true;
+	}
+
+	pass RenderSurface
+	{
+		VertexShader = compile gp4vp RenderSurface_VS();
+		PixelShader  = compile gp4fp RenderSurface_PS();
+	}
+
+}
