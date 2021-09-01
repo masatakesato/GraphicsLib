@@ -12,25 +12,25 @@ using namespace MyGlTexture;
 
 
 //================== フレームレート計測 =========================//
-float		g_FrameRate		= 0.0f;			// フレームレート
-float		g_DeltaT		= 1.0f / 60.0f;	// 1フレームあたりの描画時間(初期値)
+float	g_FrameRate		= 0.0f;			// フレームレート
+float	g_DeltaT		= 1.0f / 60.0f;	// 1フレームあたりの描画時間(初期値)
 
 
 //========================== カメラ =============================//
-float		g_CamRotSpeed = 5.0f;	// カメラの回転速度
-float		g_CamMovSpeed = 5.0f;	// カメラの移動速度
+float	g_CamRotSpeed = 5.0f;	// カメラの回転速度
+float	g_CamMovSpeed = 5.0f;	// カメラの移動速度
 
 
 //======================== 地表マテリアル =======================//
-char		*g_MatName[]			= { "Grass",				"Forest",					"Snow" };				// マテリアル名称
-int			g_numMaterials			= sizeof(g_MatName) / sizeof(g_MatName[0]);										// マテリアル数
+char*	g_MatName[]			= { "Grass",				"Forest",					"Snow" };				// マテリアル名称
+int		g_numMaterials			= sizeof(g_MatName) / sizeof(g_MatName[0]);										// マテリアル数
 Vec3f	g_Ambient[]				= { {0.0f, 0.0f, 0.0f},		{0.0f, 0.0f, 0.0f},			{0.0f, 0.0f, 0.0f} };	// 環境光(RGB)
 Vec3f	g_Diffuse[]				= { {0.117f, 0.136f, 0.0f},	{0.001f, 0.02f, 0.008f},	{0.78f, 0.78f, 0.8f} };	// 拡散反射率(RGB)
 Vec3f	g_Specular[]			= { {0.0f, 0.0f, 0.0f},		{0.0f, 0.0f, 0.0f},			{0.01f, 0.01f, 0.01f} };// 鏡面反射率(RGB)
-float		g_SpecularIntensity[]	= { 0.0f,					0.0f,						0.0f };					// 鏡面反射の強さ
-float		g_SpecularPower[]		= {	0.0f,					0.0f,						0.2f };					// 光沢度合い
+float	g_SpecularIntensity[]	= { 0.0f,					0.0f,						0.0f };					// 鏡面反射の強さ
+float	g_SpecularPower[]		= {	0.0f,					0.0f,						0.2f };					// 光沢度合い
 Vec3f	g_Distribution[]		= { {1.7f, 2.0f, 0.4f},	{1.8f, 1.4f, 0.57f},		{7.0f, 3.5f, 0.07f} };	// マテリアル分布パラメータ（高度,　幅, 減衰領域）
-float		g_Slope[]				= { 1.5f,					35.0f,						25.0f };				// 勾配パラメータ
+float	g_Slope[]				= { 1.5f,					35.0f,						25.0f };				// 勾配パラメータ
 
 
 //============================= 太陽 ============================//
@@ -85,7 +85,7 @@ float		g_VerticalScale		= 3.0f;		// 起伏の変化度合い
 
 // ハイトマップの解像度選択
 bool		g_showListBox_vt	= false;
-char		*g_TexSizes[]		= {" 32 x 32 ", " 64 x 64 ", " 128 x 128 ", " 256 x 256 ", " 512 x 512 "};	// 解像度
+char		*g_TexSizes[]		= {" 32 x 32 ", " 64 x 64 ", " 128 x 128 ", " 256 x 256 ", " 512 x 512 ", " 1024 x 1024 "};	// 解像度
 int			g_numTexSizes		= sizeof(g_TexSizes) / sizeof(g_TexSizes[0]);	// 選択できる解像度の種類数
 int			g_CurrentTexSize	= 3;											// 現在使用している解像度(g_TexSizes[]の要素インデックス)
 int			g_SelectedTexSize	= g_CurrentTexSize;								// GUIから新たに選択した解像度（初期値はg_CurrentTexSize）
@@ -489,63 +489,69 @@ void PlanetRenderingEngine::DoGUI()
 {
 	m_GUI->Begin();
 	
+	auto uiPosy = m_ScreenHeight;
 	//===================== GUI表示のOn/Off ====================//
-	m_GUI->DoButton(m_ScreenWidth-42, m_ScreenHeight-22, 40, 20, " GUI", g_ShowGui);
+	m_GUI->DoButton(m_ScreenWidth-42, uiPosy-=22, 40, 20, " GUI", g_ShowGui);
 	g_CurrGui ^= g_ShowGui;
 	if(g_CurrGui==false)	goto end_gui;
 
 
 	//===================== レンダリングの設定 =================//
 	// 大気散乱効果のOn/Off
-	m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-40, "Show Atmosphere", g_ShowAtmosphere);
+	m_GUI->DoCheckBox(m_ScreenWidth-150, uiPosy-=MyGUI::CheckBoxHeight, "Show Atmosphere", g_ShowAtmosphere);
 
 	//ワイヤフレーム表示On/Off
-	m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-60, "Show WireFrame", g_ShowWireFrame);
+	m_GUI->DoCheckBox(m_ScreenWidth-150, uiPosy-=MyGUI::CheckBoxHeight, "Show WireFrame", g_ShowWireFrame);
 	g_PolygonMode = g_ShowWireFrame==true ? GL_LINE : GL_FILL;
 
 	// G-Buffer表示On/Off
-	m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-80, "Show G-Buffer", g_ShowGbuffer);
+	m_GUI->DoCheckBox(m_ScreenWidth-150, uiPosy-=MyGUI::CheckBoxHeight, "Show G-Buffer", g_ShowGbuffer);
 
 // Virtual Texture表示On/Off
-m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-90, "Show VirtualTexture", g_VirtualTexture );
+m_GUI->DoCheckBox(m_ScreenWidth-150, uiPosy-=MyGUI::CheckBoxHeight, "Show VirtualTexture", g_VirtualTexture );
 
 	// ビューフラスタム固定On/Off
-	m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-100, "Fix ViewFrustum", g_FixFrustum);
+	m_GUI->DoCheckBox(m_ScreenWidth-150, uiPosy-=MyGUI::CheckBoxHeight, "Fix ViewFrustum", g_FixFrustum);
 	m_TerrainEngine->FixFrustum(g_FixFrustum);
 	
+	uiPosy -= MyGUI::VerticalSpacing;
+
 
 	//===================== HDRシェーダの設定 =================//
 	// HDRレンダリングの明るさ調整
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-150, 100, "Exposure:", 0.0f, 1.0f, g_Exposure);
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy-=MyGUI::HorizontalSliderHeight, 100, "Exposure:", 0.0f, 1.0f, g_Exposure);
 	
 	// HDRレンダリングのブラー適用度合い調整
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-180, 100, "BloomWeight:", 0.0f, 2.0f, g_BloomWeight);
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy-=MyGUI::HorizontalSliderHeight, 100, "BloomWeight:", 0.0f, 2.0f, g_BloomWeight);
 
 
-	//===================== テッセレーション ===================//
+	//===================== Tessellation ===================//
 	// 地面LODの分割レベル数調整
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-230, 100, "LOD Lv:", 0.0f, 14.0f, g_numSubdivision, 14);
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy-=MyGUI::HorizontalSliderHeight, 100, "LOD Lv:", 0.0f, 14.0f, g_numSubdivision, 14);
 	m_TerrainEngine->SetMaximumLevel((int)g_numSubdivision);
 
 	// 地面LOD分割の感度調整
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-260, 100, "LOD Sensitivity:", 0.0, 4.0, g_Rho, 40);
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy-=MyGUI::HorizontalSliderHeight, 100, "LOD Sensitivity:", 0.0, 10.0, g_Rho, 100);
 	m_TerrainEngine->SetRho(g_Rho);
 
-	//===================== ハイトマップ =========================//
-	// ハイトマップのスケール調整
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-320, 100, "HorizontalScale:", 0.0, 10.0, g_HorizontalScale, 100);// 凹凸の大きさ
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-350, 100, "VerticalScale:", 0.0, 10.0, g_VerticalScale, 100);// 凹凸の高さ
+	uiPosy -= MyGUI::VerticalSpacing;
+
+
+	//===================== Heightmap settings =========================//
+	// horizontal/vertical heghtmap scale sliders
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy-=MyGUI::HorizontalSliderHeight, 100, "HorizontalScale:", 0.0, 10.0, g_HorizontalScale, 100);// 凹凸の大きさ
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy-=MyGUI::HorizontalSliderHeight, 100, "VerticalScale:", 0.0, 10.0, g_VerticalScale, 100);// 凹凸の高さ
 	
-	// ハイトマップ更新
-	m_GUI->DoButton(m_ScreenWidth-120, m_ScreenHeight-380, 85, 20, "UpdateHeight", g_UpdateHeightmap);
+
+	// update heightmap button
+	m_GUI->DoButton(m_ScreenWidth-120, uiPosy-=MyGUI::HorizontalSliderHeight, 85, 20, "UpdateHeight", g_UpdateHeightmap);
 	if(g_UpdateHeightmap)
 	{
 		m_VirtualTexture->TileCache_Clear();
 		m_TerrainEngine->SetHeightmapScale(g_HorizontalScale, g_VerticalScale);
 	}
 	
-	// ハイトマップの解像度変更
-	m_GUI->DoComboBox(m_ScreenWidth-270, m_ScreenHeight-330, 80, g_numTexSizes, g_TexSizes, g_SelectedTexSize, g_showListBox_vt, "HeightmapSize:");
+	m_GUI->DoComboBox(m_ScreenWidth-270, uiPosy, 80, g_numTexSizes, g_TexSizes, g_SelectedTexSize, g_showListBox_vt, "HeightmapSize:");
 
 	if(g_SelectedTexSize != g_CurrentTexSize)
 	{
@@ -554,10 +560,12 @@ m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-90, "Show VirtualTexture", g
 		ChangeVirtualTextureParam(tex_size);
 	}
 
+	uiPosy -= MyGUI::VerticalSpacing;
+
 
 	//=================== マテリアル関連の設定 =================//
 	// マテリアル選択コンボボックス
-	m_GUI->DoComboBox(m_ScreenWidth-270, m_ScreenHeight-470, 80, g_numMaterials, g_MatName, g_CurrentMatID, g_showListBox_mat, "Materials:");
+	m_GUI->DoComboBox(m_ScreenWidth-270, uiPosy-=MyGUI::HorizontalSliderHeight, 80, g_numMaterials, g_MatName, g_CurrentMatID, g_showListBox_mat, "Materials:");
 
 	g_CurrentHeight = g_Distribution[g_CurrentMatID].x;
 	g_SelectedHeight = g_CurrentHeight;
@@ -572,7 +580,7 @@ m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-90, "Show VirtualTexture", g
 	g_SelectedSlope = g_CurrentSlope;
 		
 	// 分布高度下限調整スライダ
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-470, 100, "Height:", 0.0f, 10.0f, g_SelectedHeight, 100);
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy, 100, "Height:", 0.0f, 10.0f, g_SelectedHeight, 100);
 	if(g_SelectedHeight != g_CurrentHeight)
 	{
 		g_Distribution[g_CurrentMatID].x = g_SelectedHeight;
@@ -580,7 +588,7 @@ m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-90, "Show VirtualTexture", g
 	}
 
 	// 分布高度の上限調整スライダ
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-500, 100, "Range:", 0.0f, 10.0f, g_SelectedHeightRange, 100);
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy-=MyGUI::HorizontalSliderHeight, 100, "Range:", 0.0f, 10.0f, g_SelectedHeightRange, 100);
 	if(g_SelectedHeightRange != g_CurrentHeightRange)
 	{
 		g_Distribution[g_CurrentMatID].y = g_SelectedHeightRange;
@@ -588,7 +596,7 @@ m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-90, "Show VirtualTexture", g
 	}
 
 	// 高度境界付近のマテリアル適用度
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-530, 100, "BounbdarySmooth:", 0.0f, 1.0f, g_SelectedBoundary, 100);
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy-=MyGUI::HorizontalSliderHeight, 100, "BounbdarySmooth:", 0.0f, 1.0f, g_SelectedBoundary, 100);
 	if(g_SelectedBoundary != g_CurrentBoundary)
 	{
 		g_Distribution[g_CurrentMatID].z = g_SelectedBoundary;
@@ -596,16 +604,18 @@ m_GUI->DoCheckBox(m_ScreenWidth-150, m_ScreenHeight-90, "Show VirtualTexture", g
 	}
 
 	// 勾配調整スライダ
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-560, 100, "Slope:", 0.0f, 50.0f, g_SelectedSlope, 100);
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy-=MyGUI::HorizontalSliderHeight, 100, "Slope:", 0.0f, 50.0f, g_SelectedSlope, 100);
 	if(g_SelectedSlope != g_CurrentSlope)
 	{
 		g_Slope[g_CurrentMatID] = g_SelectedSlope;
 		m_TerrainEngine->SetSlope(g_CurrentMatID, g_Slope[g_CurrentMatID]);
 	}
 
+	uiPosy -= MyGUI::VerticalSpacing;
+
 
 	//=================== カメラ移動速度の設定 =================//
-	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, m_ScreenHeight-600, 100, "CameraSpeed:", 0.0f, 10.0f, g_CamMovSpeed, 10000);
+	m_GUI->DoHorizontalSlider(m_ScreenWidth-150, uiPosy-=MyGUI::HorizontalSliderHeight, 100, "CameraSpeed:", 0.0f, 10.0f, g_CamMovSpeed, 10000);
 
 end_gui:
 	

@@ -1,10 +1,13 @@
-﻿namespace MyGlPrimitive
-{
-
-#include	<GL/glew.h>
+﻿#include	<GL/glew.h>
 #include	<GL/glut.h>
 #pragma comment(lib, "glew32.lib")
 
+#include	<oreore/mathlib/GraphicsMath.h>
+
+
+
+namespace MyGlPrimitive
+{
 
 	static void DRAW_XYZ()
 	{
@@ -24,17 +27,17 @@
 	}
 
 	// 文字列を表示する
-	static void DrawString(	float x, float y, float ColorArray[4], const char *str, void *font )
+	static void DrawString(	float x, float y, const Vec4f& color, const char *str, void *font )
 	{
-		glColor4fv(ColorArray);
+		glColor4fv( color.rgba );
 		glRasterPos2f(x, y);
 		for(int i=0; str[i]!='\0'; i++)
 			glutBitmapCharacter(font, (int)str[i]);//	OpenGL最新版では破棄されている。文字列描画のプログラムが別途必要
 	}
 
-	static void DrawString(	float x, float y, float ColorArray[4], const char *str,void *font, unsigned int fontbase )
+	static void DrawString(	float x, float y, const Vec4f& color, const char *str,void *font, unsigned int fontbase )
 	{
-		glColor4fv(ColorArray);
+		glColor4fv( color.rgba );
 		glRasterPos2f(x, y);
 
 		glPushAttrib(GL_LIST_BIT);
@@ -44,7 +47,7 @@
 	}
 
 	// 点を描く
-	static void DrawPoint(float x, float y, float pointsize, float ColorArray[])
+	static void DrawPoint(float x, float y, float pointsize, const Vec4f& color )
 	{
 		float	VertexArray[2] = { x+0.5f*pointsize, y+0.5f*pointsize };
 		GLuint	index[1] = {0};
@@ -54,7 +57,7 @@
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
 		
-		glColorPointer(4, GL_FLOAT, 0, ColorArray);
+		glColorPointer( 4, GL_FLOAT, 0, color.rgba );
 		glVertexPointer(2, GL_FLOAT, 0, VertexArray);
 		glDrawElements(GL_POINTS,1, GL_UNSIGNED_INT, index);
 
@@ -104,14 +107,14 @@
 
 
 	// テクスチャマッピングした板を描く
-	static void DrawQuad(float x, float y, float width, float height, float ColorArray1[])
+	static void DrawQuad(float x, float y, float width, float height, const Vec4f& color )
 	{
-		float	ColorArray[16] =
+		float vertexColors[16] =
 		{
-			ColorArray1[0], ColorArray1[1], ColorArray1[2], ColorArray1[3],// 頂点0
-			ColorArray1[0], ColorArray1[1], ColorArray1[2], ColorArray1[3],// 頂点1
-			ColorArray1[0], ColorArray1[1], ColorArray1[2], ColorArray1[3],// 頂点2
-			ColorArray1[0], ColorArray1[1], ColorArray1[2], ColorArray1[3],// 頂点3
+			color.r, color.g, color.b, color.a,	// 頂点0
+			color.r, color.g, color.b, color.a,// 頂点1
+			color.r, color.g, color.b, color.a,// 頂点2
+			color.r, color.g, color.b, color.a,// 頂点3
 		};
 		
 		float	VertexArray[8] = 
@@ -127,7 +130,7 @@
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
 		
-		glColorPointer(4, GL_FLOAT, 0, ColorArray);
+		glColorPointer(4, GL_FLOAT, 0, vertexColors);
 		glVertexPointer(2, GL_FLOAT, 0, VertexArray);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, index);
 

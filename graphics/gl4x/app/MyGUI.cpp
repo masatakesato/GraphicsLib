@@ -6,77 +6,85 @@ using namespace std;
 
 #include	"../other/MyGlPrimitive.h"
 using namespace MyGlPrimitive;
-#include	<GL/glut.h>
 
 
-#define	SLIDER_SIZE				10
-#define	CHECKBOX_SIZE			14
+
+const int MyGUI::TextHeight				= 20;
+const int MyGUI::ButtonHeight			= 20;
+const int MyGUI::CheckBoxHeight			= 20;
+const int MyGUI::ComboBoxHeight			= 20;
+const int MyGUI::HorizontalSliderHeight	= 30;
+const int MyGUI::VerticalSpacing		= 20;
+
+const int MyGUI::SLIDER_SIZE			= 10;
+const int MyGUI::CHECKBOX_SIZE			= 14;
 
 
-// GUIの色
-enum GUI_COLOR { COLOR_DEFAULT, COLOR_OVERLAP=4, COLOR_HOLD=8, COLOR_ON=12 }; 
 
-// 文字
-static float color_string[8] =
+
+// text color
+const Vec4f MyGUI::color_string[2] =
 {
-	1.0f, 1.0f, 1.0f, 0.0f,
-	0.3f, 0.3f, 0.3f, 0.0f,
+	{ 1.0f, 1.0f, 1.0f, 0.0f },
+	{ 0.3f, 0.3f, 0.3f, 0.0f },
 };
 
 
-// 枠
-static float color_frame[8]	= 
+// frame color
+const Vec4f MyGUI::color_frame[2] = 
 {
-	0.5, 0.5, 0.5, 0.5,
-	0.5, 0.7, 0.5, 0.5,
+	{ 0.5f, 0.5f, 0.5f, 0.5f },
+	{ 0.5f, 0.7f, 0.5f, 0.5f },
 };
 
 
-// ボタン
-static float color_button[12] =
+// buton color
+const Vec4f MyGUI::color_button[3] =
 {
-	0.1, 0.1, 0.1, 0.5,// デフォルト色
-	0.3, 0.3, 0.3, 0.5,// カーソルオーバーラップ
-	0.1, 0.1, 0.1, 0.5,// ボタン押し込み
+	{ 0.1, 0.1, 0.1, 0.5 },// デフォルト色
+	{ 0.3, 0.3, 0.3, 0.5 },// カーソルオーバーラップ
+	{ 0.1, 0.1, 0.1, 0.5 },// ボタン押し込み
 };
+
 
 // チェックボックス
-static float color_checkbox[16] =
+const Vec4f MyGUI::color_checkbox[4] =
 {
-	0.1, 0.0, 0.0, 0.5,// デフォルト（オフ）
-	0.3, 0.0, 0.0, 0.5,// オーバーラップ
-	0.2, 0.0, 0.0, 0.5,// ボタン押し込み
-	0.7, 1.0, 0.7, 0.5,// オン
+	{ 0.1, 0.0, 0.0, 0.5 },// デフォルト（オフ）
+	{ 0.3, 0.0, 0.0, 0.5 },// オーバーラップ
+	{ 0.2, 0.0, 0.0, 0.5 },// ボタン押し込み
+	{ 0.7, 1.0, 0.7, 0.5 },// オン
 };
+
 
 // リストボックス
-static float color_listbox[16] = 
+const Vec4f MyGUI::color_listbox[4] = 
 {
-	0.1, 0.1, 0.1, 0.5,// デフォルト
-	0.5, 0.0, 0.0, 0.5,// オーバーラップ
-	0.5, 0.0, 0.0, 0.5,// ボタン押し込み
-	0.5, 0.7, 0.5, 0.5,// 選択
+	{ 0.1, 0.1, 0.1, 0.5 },// デフォルト
+	{ 0.5, 0.0, 0.0, 0.5 },// オーバーラップ
+	{ 0.5, 0.0, 0.0, 0.5 },// ボタン押し込み
+	{ 0.5, 0.7, 0.5, 0.5 },// 選択
 };
+
 
 // スライダーつまみ
-static float color_slider[8] =
+const Vec4f MyGUI::color_slider[2] =
 {
-	0.2, 0.3, 0.0, 0.5,
-	0.35, 0.5, 0.0, 0.5,
+	{ 0.2, 0.3, 0.0, 0.5 },
+	{ 0.35, 0.5, 0.0, 0.5 },
 };
 
-/*
-#define max((a),(b)) ((a)>(b)?(a):(b))
-#define min((a),(b)) ((a)<(b)?(a):(b))
-*/
 
-static void DrawPointer(float x, float y, float width, float height)
+
+
+
+void MyGUI::DrawDropDownIcon( float x, float y, float width, float height )
 {
 	float	ColorArray[12] =
 	{
-		0.1, 0.1, 0.1, 0.0,// 頂点0
-		0.5, 0.7, 0.5, 0.7,// 頂点1
-		0.1, 0.1, 0.1, 0.0,// 頂点2
+		0.2f, 0.3f, 0.2f, 0.0f,// 頂点0
+		0.5f, 0.7f, 0.5f, 0.7f,// 頂点1
+		0.2f, 0.3f, 0.2f, 0.0f,// 頂点2
 	};
 	
 	float	VertexArray[6] = 
@@ -86,37 +94,41 @@ static void DrawPointer(float x, float y, float width, float height)
 		x+width,		y+height,	// 頂点2
 	};
 
-	GLuint	index[12] = { 0,1,2 };
+	GLuint	index[3] = { 0,1,2 };
+
+	glLineWidth(2.5);
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	
 	glColorPointer(4, GL_FLOAT, 0, ColorArray);
 	glVertexPointer(2, GL_FLOAT, 0, VertexArray);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, index);
+	glDrawElements(GL_LINE_STRIP, 3, GL_UNSIGNED_INT, index);//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, index);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
+
+	glLineWidth(1.0);
 }
 
 
 
-static void DrawFrame(float x, float y, float width, float height, int offset)
+void MyGUI::DrawFrame( float x, float y, float width, float height, GUI_COLOR col )
 {
-	float	ColorArray[16] =
+	float ColorArray[16] =
 	{
-		color_frame[offset], color_frame[offset+1], color_frame[offset+2], color_frame[offset+3],// 頂点0
-		color_frame[offset], color_frame[offset+1], color_frame[offset+2], color_frame[offset+3],// 頂点1
-		color_frame[offset], color_frame[offset+1], color_frame[offset+2], color_frame[offset+3],// 頂点2
-		color_frame[offset], color_frame[offset+1], color_frame[offset+2], color_frame[offset+3],// 頂点3
+		color_frame[col].r, color_frame[col].g, color_frame[col].b, color_frame[col].a,// 頂点0
+		color_frame[col].r, color_frame[col].g, color_frame[col].b, color_frame[col].a,// 頂点1
+		color_frame[col].r, color_frame[col].g, color_frame[col].b, color_frame[col].a,// 頂点2
+		color_frame[col].r, color_frame[col].g, color_frame[col].b, color_frame[col].a,// 頂点3
 	};
 	
-	float	VertexArray[8] = 
+	float VertexArray[8] = 
 	{
-		x,			y,				// 頂点0
-		x,			y+height,		// 頂点1
+		x,			y,			// 頂点0
+		x,			y+height,	// 頂点1
 		x+width,	y+height,	// 頂点2
-		x+width,	y,		// 頂点3
+		x+width,	y,			// 頂点3
 	};
 
 	GLuint	index[4] = { 0,1,2,3, };
@@ -283,8 +295,8 @@ void MyGUI::End()
 //-----------------------------------------------------------------------------------------------------//
 void MyGUI::DoText(int x, int y, char *text)
 {
-	if(m_fontBase)	DrawString(x, y, &color_string[COLOR_DEFAULT], text, GLUT_BITMAP_HELVETICA_12, m_fontBase);
-	else			DrawString(x, y, &color_string[COLOR_DEFAULT], text, GLUT_BITMAP_HELVETICA_12);
+	if(m_fontBase)	DrawString(x, y, color_string[COLOR_DEFAULT], text, GLUT_BITMAP_HELVETICA_12, m_fontBase);
+	else			DrawString(x, y, color_string[COLOR_DEFAULT], text, GLUT_BITMAP_HELVETICA_12);
 }
 
 //GLUT_STROKE_ROMAN
@@ -577,7 +589,7 @@ void MyGUI::DoComboBox(int x, int y, int width, int numAttr, char *Attributes[],
 	if(caption)	DoText(x, y+25, caption); 
 	
 	// ボタン
-	DrawPointer(x+width, y+5, 16, 10);
+	DrawDropDownIcon( x+width, y+5, 12, 8 );
 
 	if(CursorState==true && ButtonState==true && ButtonDownState==true)
 	{
@@ -623,9 +635,9 @@ void MyGUI::DrawButton(int x, int y, int width, int height, char *text, int stat
 	DoText(x+5, y+5, text);
 
 	// ボタンの外枠部分を描画する
-	DrawFrame(x, y, width, height, COLOR_DEFAULT);
+	DrawFrame( x, y, width, height, COLOR_DEFAULT );
 	// ボタンの塗りつぶし部分を描画する
-	DrawQuad(x, y, width, height, &color_button[status]);
+	DrawQuad( x, y, width, height, color_button[status] );
 }
 
 
@@ -641,7 +653,7 @@ void MyGUI::DrawCheckBox(int x, int y, char *text, int status)
 	DrawFrame(x, y, CHECKBOX_SIZE, CHECKBOX_SIZE, COLOR_DEFAULT);
 	
 	// チェックボックス塗りつぶし
-	DrawQuad(x,y, CHECKBOX_SIZE, CHECKBOX_SIZE, &color_checkbox[status]);
+	DrawQuad( x,y, CHECKBOX_SIZE, CHECKBOX_SIZE, color_checkbox[status] );
 	
 	// テキスト
 	DoText(x+CHECKBOX_SIZE + 5, y, text);
@@ -662,11 +674,11 @@ void MyGUI::DrawHorizontalSlider(int x, int y, int width, char *text, float val,
 	pos = max(min(pos,1.0), 0.0)*width - SLIDER_SIZE/2 + 1;
 
 	// つまみ
-	DrawPoint(x+pos, y, SLIDER_SIZE, &color_slider[status]);// 内側
-	DrawPoint((float)x+pos-1.5f, (float)y-1.5f, SLIDER_SIZE+3.0f, &color_frame[COLOR_OVERLAP]);// 外枠
+	DrawPoint( x+pos, y, SLIDER_SIZE, color_slider[status] );// 内側
+	DrawPoint( (float)x+pos-1.5f, (float)y-1.5f, SLIDER_SIZE+3.0f, color_frame[COLOR_OVERLAP] );// 外枠
 
 	// バー
-	DrawQuad(x, y+SLIDER_SIZE/2, width, 1.5, &color_button[COLOR_DEFAULT]);
+	DrawQuad( x, y+SLIDER_SIZE/2, width, 1.5, color_button[COLOR_DEFAULT] );
 	DrawFrame(x, y+SLIDER_SIZE/2, width, 1.0, COLOR_DEFAULT);
 	
 
@@ -701,13 +713,13 @@ void MyGUI::DrawListBox(int x, int y, int width, int numAttr, char *Attributes[]
 		if(i==id_selected)
 		{
 			if(buttondown==true)
-				DrawQuad(x, pos_y, width, 20, &color_listbox[COLOR_ON]);
+				DrawQuad( x, pos_y, width, 20, color_listbox[COLOR_ON] );
 			else
-				DrawQuad(x, pos_y, width, 20, &color_listbox[COLOR_OVERLAP]);
+				DrawQuad( x, pos_y, width, 20, color_listbox[COLOR_OVERLAP] );
 		}
 		else
 		{
-			DrawQuad(x, pos_y, width, 20, &color_listbox[COLOR_DEFAULT]);
+			DrawQuad( x, pos_y, width, 20, color_listbox[COLOR_DEFAULT] );
 		}
 	}
 
