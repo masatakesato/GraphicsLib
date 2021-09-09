@@ -2,8 +2,8 @@
 
 #include	<math.h>
 
-#include	<graphics/gl4x/resource/GLTexture.h>
-using namespace MyGlTexture;
+#include	<graphics/gl4x/resource/Texture.h>
+using namespace OreOreLib;
 
 
 
@@ -84,7 +84,7 @@ TerrainEngine::TerrainEngine()
 // デストラクタ
 TerrainEngine::~TerrainEngine()
 {
-cout << "TerrainEngine::~TerrainEngine()..." << endl;
+tcout << _T("TerrainEngine::~TerrainEngine()...") << tendl;
 
 	m_pVirtualTexture	= NULL;
 
@@ -121,7 +121,7 @@ cout << "TerrainEngine::~TerrainEngine()..." << endl;
 
 void TerrainEngine::Init(Vec3f pos, float r, float heightrange, int numLv, float rho)
 {
-cout << "TerrainEngine::Init()..." << endl;
+tcout << _T("TerrainEngine::Init()...") << tendl;
 
 	m_Position	= pos;
 	m_Radius	= r;
@@ -157,7 +157,7 @@ cout << "TerrainEngine::Init()..." << endl;
 
 void TerrainEngine::InitHeightmapGenerator(int mapsize, float border, float heightrange, float scale_horizontal, float scale_height)
 {
-cout << "TerrainEngine::InitHeightmapGenerator()..." << endl;
+tcout << _T("TerrainEngine::InitHeightmapGenerator()...") << tendl;
 
 	m_pGraphicsDevice->Begin();
 
@@ -170,7 +170,7 @@ cout << "TerrainEngine::InitHeightmapGenerator()..." << endl;
 
 void TerrainEngine::InitMeshObject(int numdiv, int numlv)
 {
-cout << "TerrainEngine::InitMeshObject()..." << endl;
+tcout << _T("TerrainEngine::InitMeshObject()...") << tendl;
 
 	m_pGraphicsDevice->Begin();
 
@@ -186,7 +186,7 @@ void TerrainEngine::InitSurfaceProperties(	int nummats,
 										const Vec3f specular[], const float intensity[], const float power[], 
 										const Vec3f distribution[], const float slope[])
 {
-cout << "TerrainEngine::InitSurfaceProperties()..." << endl;
+tcout << _T("TerrainEngine::InitSurfaceProperties()...") << tendl;
 	int i;
 	CGparameter mat_element;
 
@@ -214,7 +214,7 @@ cout << "TerrainEngine::InitSurfaceProperties()..." << endl;
 
 void TerrainEngine::AttachGraphicsDevice(GraphicsDevice *pgd)
 {
-cout << "TerrainEngine::AttachGraphicsDevice()..." << endl;
+tcout << _T("TerrainEngine::AttachGraphicsDevice()...") << tendl;
 	m_pGraphicsDevice = pgd;
 }
 
@@ -269,7 +269,7 @@ void TerrainEngine::SetSlope(int i, const float slope)
 
 void TerrainEngine::AttachVirtualTexture(VirtualTexture *vt)
 {
-cout << "TerrainEngine::AttachVirtualTexture()..." << endl;
+tcout << _T("TerrainEngine::AttachVirtualTexture()...") << tendl;
 	int	i;
 	
 	//==== VirtualTextureにハイトマップ生成関数を登録する ====//
@@ -286,7 +286,7 @@ cout << "TerrainEngine::AttachVirtualTexture()..." << endl;
 
 void TerrainEngine::UpdateTextureParameter()
 {
-cout << "TerrainEngine::UpdateTextureParameter()..." << endl;
+tcout << _T("TerrainEngine::UpdateTextureParameter()...") << tendl;
 
 	int		tile_size;
 	float	cache_size[4];
@@ -375,7 +375,7 @@ void TerrainEngine::DrawGbuffer(const Camera &camera, unsigned int polygonmode)
 // 立方体を作成する（半径rの球に外接する立方体）
 void TerrainEngine::GeneratePatches()
 {
-cout << "TerrainEngine::GeneratePatches()..." << endl;
+tcout << _T("TerrainEngine::GeneratePatches()...") << tendl;
 	int i;
 	Vec3f		v0, v1, v2, v3;// パッチ頂点左下，パッチ頂点左上，パッチ頂点右上，パッチ頂点右下
 	Vec3f	du, dv, dn;
@@ -417,9 +417,9 @@ Vec3f TerrainEngine::MapToSphere(Vec3f In)
 	Vec3f Out;
 	
 	Scale( In, 1.0f/m_Radius );
-	Out.x = m_Radius * In.x * sqrt(1.0f - 0.5f*In.y*In.y - 0.5f*In.z*In.z + In.y*In.y*In.z*In.z / 3.0);
-	Out.y = m_Radius * In.y * sqrt(1.0f - 0.5f*In.z*In.z - 0.5f*In.x*In.x + In.x*In.x*In.z*In.z / 3.0);
-	Out.z = m_Radius * In.z * sqrt(1.0f - 0.5f*In.x*In.x - 0.5f*In.y*In.y + In.x*In.x*In.y*In.y / 3.0);
+	Out.x = m_Radius * In.x * sqrt(1.0f - 0.5f*In.y*In.y - 0.5f*In.z*In.z + In.y*In.y*In.z*In.z / 3.f);
+	Out.y = m_Radius * In.y * sqrt(1.0f - 0.5f*In.z*In.z - 0.5f*In.x*In.x + In.x*In.x*In.z*In.z / 3.f);
+	Out.z = m_Radius * In.z * sqrt(1.0f - 0.5f*In.x*In.x - 0.5f*In.y*In.y + In.x*In.x*In.y*In.y / 3.f);
 
 	return Out;
 }
@@ -591,29 +591,29 @@ void TerrainEngine::RenderTile(Vec3f tilepos, float dimension, float eps[],
 
 bool TerrainEngine::IsValidEffect(CGeffect effect)
 {	
-	//cout << "Checking effect techniques (" << cgGetEffectName(effect) << " )..." << endl;
+	//tcout << _T("Checking effect techniques (") << cgGetEffectName(effect) << _T(" )...") << tendl;
 	bool	flag = true;
 	CGtechnique techniques = cgGetFirstTechnique(effect);
 	
 	if(!techniques)
 	{
-		//cout << "	Error : No Valid Technique" << endl;
+		//tcout << _T("	Error : No Valid Technique") << tendl;
 		flag = false;
 		return flag;
 	}
 
 	while(techniques)
 	{
-		//cout << "  "<< cgGetTechniqueName(techniques) << "... ";
+		//tcout << _T("  ") << cgGetTechniqueName(techniques) << _T("... ");
 
 		if(cgValidateTechnique(techniques)==CG_FALSE)
 		{
 			flag = false;
-			//cout << "Invalid" << endl;
+			//tcout << _T("Invalid") << tendl;
 		}
 		//else
 		//{
-			//cout << "OK" << endl;			
+			//tcout << _T("OK") << tendl;			
 		//}		
 		techniques = cgGetNextTechnique(techniques);
 	}
@@ -625,13 +625,13 @@ bool TerrainEngine::IsValidEffect(CGeffect effect)
 
 void TerrainEngine::LoadCgEffect()
 {
-cout << "TerrainEngine::LoadCgEffect()..." << endl;
+tcout << _T("TerrainEngine::LoadCgEffect()...") << tendl;
 
 	//===================== エラーチェック ====================//
 	CGerror Error = cgGetError();
 	if(Error)
 	{
-		cout << cgGetErrorString(Error) << endl;
+		tcout << cgGetErrorString(Error) << tendl;
 		return; //exit(0);
 	}
 

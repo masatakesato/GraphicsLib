@@ -2,7 +2,7 @@
 
 #include	<comdef.h>
 
-#include	"common/GLHelperFunctions.h"
+#include	"../common/GLHelperFunctions.h"
 
 
 
@@ -50,7 +50,7 @@
 #endif	// Image Library Support //
 
 
-#include	"resource/GLDataFormat.h"
+#include	"GLDataFormat.h"
 
 
 
@@ -767,7 +767,7 @@ namespace OreOreLib
 
 			GetILFormat( texDesc.DataFormat, format, type );
 
-			//tcout << "subWidth: " << subWidth << endl;
+			//tcout << "subWidth: " << subWidth << tendl;
 
 			// copy pixel data
 			m_pSubData	= new uint8[size * subWidth];// サブテクスチャのデータ領域確保もしない
@@ -1248,7 +1248,7 @@ namespace OreOreLib
 			// load texture file
 			if( !ilLoadImage( file_name ) )// DevILの文字列がUnicode未対応. 強制的に型変換
 			{
-				tcerr << "Failed loading " << file_name << tendl;
+				tcerr << _T("Failed loading ") << file_name << tendl;
 				return;//return 0;
 			}
 			subWidth		= Min( ilGetInteger( IL_IMAGE_WIDTH ), texDesc.Width );
@@ -1256,8 +1256,8 @@ namespace OreOreLib
 
 			GetILFormat( texDesc.DataFormat, format, type );
 
-			//tcout << "subWidth: " << subWidth << endl;
-			//tcout << "subHeight: " << subHeight << endl;
+			//tcout << _T("subWidth: ") << subWidth << tendl;
+			//tcout << _T("subHeight: ") << subHeight << tendl;
 
 			// copy pixel data
 			m_pSubData	= new uint8[size * subWidth * subHeight];// サブテクスチャのデータ領域確保もしない

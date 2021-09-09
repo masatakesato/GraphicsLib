@@ -18,11 +18,11 @@ tcout << "TileCacheTexture::TileCacheTexture()..." << tendl;
 //	m_numMaxTiles	= m_CacheWidth * m_CacheHeight;// TileCacheに格納できるタイル数
 	
 	//============== テクスチャキャッシュの初期化 ================//
-	m_TileCache.Allocate( m_CacheWidth*m_TexSize, m_CacheHeight*m_TexSize, 0, 0, FORMAT_R16_FLOAT );//			= AllocateTexture2D(GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_CacheWidth*m_TexSize, m_CacheHeight*m_TexSize, GL_R16F, GL_RED, GL_FLOAT);
+	m_TileCache.Allocate( m_CacheWidth*m_TexSize, m_CacheHeight*m_TexSize, 0, 0, FORMAT_R32_FLOAT );//			= AllocateTexture2D(GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_CacheWidth*m_TexSize, m_CacheHeight*m_TexSize, GL_R16F, GL_RED, GL_FLOAT);
 	m_TileCache.SetFilterMode( FILTER_MAG_MIN_LINEAR );
 	m_TileCache.GenHardwareTexture();
 	
-	m_TileCache_normal.Allocate( m_CacheWidth*m_TexSize, m_CacheHeight*m_TexSize, 0, 0, FORMAT_R16G16B16_FLOAT ); //	= AllocateTexture2D(GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_CacheWidth*m_TexSize, m_CacheHeight*m_TexSize, GL_RGBA16F, GL_RGBA, GL_FLOAT, 0);
+	m_TileCache_normal.Allocate( m_CacheWidth*m_TexSize, m_CacheHeight*m_TexSize, 0, 0, FORMAT_R32G32B32A32_FLOAT ); //	= AllocateTexture2D(GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_CacheWidth*m_TexSize, m_CacheHeight*m_TexSize, GL_RGBA16F, GL_RGBA, GL_FLOAT, 0);
 	m_TileCache_normal.SetFilterMode( FILTER_MAG_MIN_LINEAR );
 	m_TileCache_normal.GenHardwareTexture();
 

@@ -1,8 +1,8 @@
 ﻿#include	"G_Buffer.h"
 
 
-#include	<graphics/gl4x/resource/GLTexture.h>
-using namespace	MyGlTexture;
+#include	<graphics/gl4x/resource/Texture.h>
+using namespace OreOreLib;
 #include	<graphics/gl4x/other/MyGlPrimitive.h>
 using namespace MyGlPrimitive;
 
@@ -11,7 +11,7 @@ using namespace MyGlPrimitive;
 
 G_Buffer::G_Buffer()
 {
-cout << "G_Buffer::G_Buffer()..." << endl;
+tcout << _T("G_Buffer::G_Buffer()...") << tendl;
 
 	m_PositionMap	= NULL;
 	m_NormalMap		= NULL;
@@ -23,7 +23,7 @@ cout << "G_Buffer::G_Buffer()..." << endl;
 
 G_Buffer::G_Buffer(int width, int height)
 {
-cout << "G_Buffer::G_Buffer(int width, int height)..." << endl;
+tcout << _T("G_Buffer::G_Buffer(int width, int height)...") << tendl;
 
 	m_PositionMap	= AllocateTexture2D(GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT);
 	m_NormalMap		= AllocateTexture2D(GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, width, height, GL_RGB16F, GL_RGB, GL_FLOAT);
@@ -41,7 +41,7 @@ cout << "G_Buffer::G_Buffer(int width, int height)..." << endl;
 
 G_Buffer::~G_Buffer()
 {
-cout << "G_Buffer::~G_Buffer()..." << endl;
+tcout << _T("G_Buffer::~G_Buffer()...") << tendl;
 
 	if(m_DiffuseMap){	glDeleteTextures(1, &m_DiffuseMap); m_DiffuseMap = NULL; }
 	if(m_SpecularMap){	glDeleteTextures(1, &m_SpecularMap); m_SpecularMap = NULL; }
@@ -160,13 +160,13 @@ void G_Buffer::Draw( int width, int height )
 
 void G_Buffer::LoadCgEffect()
 {
-cout << "G_Buffer::LoadCgEffect()..." << endl;
+tcout << _T("G_Buffer::LoadCgEffect()...") << tendl;
 
 	//===================== エラーチェック ====================//
 	CGerror Error = cgGetError();
 	if(Error)
 	{
-		cout << cgGetErrorString(Error) << endl;
+		tcout << cgGetErrorString(Error) << tendl;
 		return;
 	}
 
@@ -200,29 +200,29 @@ cout << "G_Buffer::LoadCgEffect()..." << endl;
 
 bool G_Buffer::IsValidEffect(CGeffect effect)
 {	
-	//cout << "Checking effect techniques (" << cgGetEffectName(effect) << " )..." << endl;
+	//tcout << _T("Checking effect techniques (") << cgGetEffectName(effect) << _T(" )...") << tendl;
 	bool	flag = true;
 	CGtechnique techniques = cgGetFirstTechnique(effect);
 	
 	if(!techniques)
 	{
-		//cout << "	Error : No Valid Technique" << endl;
+		//tcout << _T("	Error : No Valid Technique") << tendl;
 		flag = false;
 		return flag;
 	}
 
 	while(techniques)
 	{
-		//cout << "  "<< cgGetTechniqueName(techniques) << "... ";
+		//tcout << _T("  ") << cgGetTechniqueName(techniques) << _T("... ");
 
 		if(cgValidateTechnique(techniques)==CG_FALSE)
 		{
 			flag = false;
-			cout << "Error: Invalid Technique.... cgGetTechniqueName(techniques)" << endl;
+			tcout << _T("Error: Invalid Technique.... cgGetTechniqueName(techniques)") << tendl;
 		}
 		else
 		{
-			//cout << "OK" << endl;			
+			//tcout << _T("OK") << tendl;			
 		}		
 		techniques = cgGetNextTechnique(techniques);
 	}

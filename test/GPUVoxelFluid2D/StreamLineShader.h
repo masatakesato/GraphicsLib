@@ -2,7 +2,7 @@
 #define	STREAM_LINE_SHADER_H
 
 
-#include	<graphics/gl4x/Texture.h>
+#include	<graphics/gl4x/resource/Texture.h>
 #include	<graphics/gl4x/resource/GLRenderTarget.h>
 #include	<graphics/gl4x/shader/GLComputeShader.h>
 

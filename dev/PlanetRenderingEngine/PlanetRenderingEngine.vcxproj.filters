@@ -111,9 +111,6 @@
     <ClCompile Include="..\..\test\PlanetRenderingEngine\AtmosphericShader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphics\gl4x\Bitmap.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\graphics\gl4x\scene\Camera.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -141,19 +138,22 @@
     <ClCompile Include="..\..\graphics\gl4x\scene\Material.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphics\gl4x\TileCacheTexture.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\graphics\gl4x\resource\CacheDataManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\gl4x\Texture.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\oreorelib\oreore\thread\win\ThreadPool.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\graphics\gl4x\scene\ViewFrustum.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\resource\Texture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\oreore\images\Bitmap.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\gl4x\resource\TileCacheTexture.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -194,12 +194,6 @@
     <ClInclude Include="..\..\test\PlanetRenderingEngine\VirtualTexture.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\graphics\gl4x\Bitmap.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\gl4x\resource\GLTexture.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\graphics\gl4x\scene\Camera.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -227,19 +221,22 @@
     <ClInclude Include="..\..\graphics\gl4x\scene\Material.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\graphics\gl4x\TileCacheTexture.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\graphics\gl4x\resource\CacheDataManager.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\gl4x\Texture.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\oreorelib\oreore\thread\win\ThreadPool.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\graphics\gl4x\scene\ViewFrustum.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\resource\Texture.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\oreore\images\Bitmap.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\gl4x\resource\TileCacheTexture.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

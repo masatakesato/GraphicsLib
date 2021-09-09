@@ -5,7 +5,7 @@ namespace OreOreLib
 
 	//	CameraObject::CameraObject()
 	//	{
-	////tcout << "CameraObject::CameraObject()" << endl;
+	////tcout << "CameraObject::CameraObject()" << tendl;
 	//		//m_NodeType			= NODE_CAMERA;
 	//		m_refViewFrustum	= NULL;
 	//	}
@@ -13,7 +13,7 @@ namespace OreOreLib
 
 	CameraObject::CameraObject( Frustum& frustum )
 	{
-		//tcout << "CameraObject::CameraObject( FrustumAttribute *cam_attr, ViewTransformMatrix *cam_mat )" << endl;
+		//tcout << "CameraObject::CameraObject( FrustumAttribute *cam_attr, ViewTransformMatrix *cam_mat )" << tendl;
 		//m_NodeType			= NODE_CAMERA;
 		m_refViewFrustum	= &frustum;
 	}
@@ -21,7 +21,7 @@ namespace OreOreLib
 
 	CameraObject::~CameraObject()
 	{
-		//tcout << "CameraObject::~CameraObject()" << endl;
+		//tcout << "CameraObject::~CameraObject()" << tendl;
 		m_refViewFrustum	= NULL;
 	}
 
@@ -133,7 +133,7 @@ namespace OreOreLib
 	// TODO: ProjectionMatrixは毎回アップデートしなくてもいいはず、、、
 	void CameraObject::Update()
 	{
-		//tcout << "CameraObject::Update()..." << endl;
+		//tcout << "CameraObject::Update()..." << tendl;
 
 		//m_refViewFrustum->SetPosition( *m_DerivedSpace.GetOrigin() );
 		//m_refViewFrustum->SetDirection( *m_DerivedSpace.GetForwardAxis(), *m_DerivedSpace.GetVerticalAxis(), *m_DerivedSpace.GetHorizontalAxis() );

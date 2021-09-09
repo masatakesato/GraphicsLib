@@ -112,7 +112,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\oreorelib\oreore\thread\win\ThreadPool.cpp" />
     <ClCompile Include="..\..\graphics\gl4x\app\MyGUI.cpp" />
-    <ClCompile Include="..\..\graphics\gl4x\Bitmap.cpp" />
+    <ClCompile Include="..\..\oreore\images\Bitmap.cpp" />
     <ClCompile Include="..\..\graphics\gl4x\resource\CacheDataManager.cpp" />
     <ClCompile Include="..\..\graphics\gl4x\resource\GLFrameBufferObject.cpp" />
     <ClCompile Include="..\..\graphics\gl4x\resource\GLRenderTarget.cpp" />
@@ -123,8 +123,8 @@
     <ClCompile Include="..\..\graphics\gl4x\scene\Material.cpp" />
     <ClCompile Include="..\..\graphics\gl4x\scene\TransformAttribute.cpp" />
     <ClCompile Include="..\..\graphics\gl4x\scene\ViewFrustum.cpp" />
-    <ClCompile Include="..\..\graphics\gl4x\Texture.cpp" />
-    <ClCompile Include="..\..\graphics\gl4x\TileCacheTexture.cpp" />
+    <ClCompile Include="..\..\graphics\gl4x\resource\Texture.cpp" />
+    <ClCompile Include="..\..\graphics\gl4x\resource\TileCacheTexture.cpp" />
     <ClCompile Include="..\..\test\PlanetRenderingEngine\AtmosphericShader.cpp" />
     <ClCompile Include="..\..\test\PlanetRenderingEngine\Controller_base.cpp" />
     <ClCompile Include="..\..\test\PlanetRenderingEngine\GrahpicsDevice.cpp" />
@@ -141,11 +141,10 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\oreorelib\oreore\thread\win\ThreadPool.h" />
     <ClInclude Include="..\..\graphics\gl4x\app\MyGUI.h" />
-    <ClInclude Include="..\..\graphics\gl4x\Bitmap.h" />
+    <ClInclude Include="..\..\oreore\images\Bitmap.h" />
     <ClInclude Include="..\..\graphics\gl4x\resource\CacheDataManager.h" />
     <ClInclude Include="..\..\graphics\gl4x\resource\GLFrameBufferObject.h" />
     <ClInclude Include="..\..\graphics\gl4x\resource\GLRenderTarget.h" />
-    <ClInclude Include="..\..\graphics\gl4x\resource\GLTexture.h" />
     <ClInclude Include="..\..\graphics\gl4x\scene\BoundingVolume.h" />
     <ClInclude Include="..\..\graphics\gl4x\scene\Camera.h" />
     <ClInclude Include="..\..\graphics\gl4x\scene\CameraObject.h" />
@@ -153,8 +152,8 @@
     <ClInclude Include="..\..\graphics\gl4x\scene\Material.h" />
     <ClInclude Include="..\..\graphics\gl4x\scene\TransformAttribute.h" />
     <ClInclude Include="..\..\graphics\gl4x\scene\ViewFrustum.h" />
-    <ClInclude Include="..\..\graphics\gl4x\Texture.h" />
-    <ClInclude Include="..\..\graphics\gl4x\TileCacheTexture.h" />
+    <ClInclude Include="..\..\graphics\gl4x\resource\Texture.h" />
+    <ClInclude Include="..\..\graphics\gl4x\resource\TileCacheTexture.h" />
     <ClInclude Include="..\..\test\PlanetRenderingEngine\AtmosphericShader.h" />
     <ClInclude Include="..\..\test\PlanetRenderingEngine\Controller_base.h" />
     <ClInclude Include="..\..\test\PlanetRenderingEngine\GraphicsDevice.h" />

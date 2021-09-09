@@ -6,7 +6,7 @@
 #include	<process.h>
 
 #include	<oreore/thread/ThreadPool.h>
-#include	<graphics/gl4x/TileCacheTexture.h>
+#include	<graphics/gl4x/resource/TileCacheTexture.h>
 
 #include	"HeightmapGenerator.h"
 #include	"GraphicsDevice.h"

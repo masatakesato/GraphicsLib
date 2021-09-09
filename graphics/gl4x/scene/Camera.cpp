@@ -46,7 +46,7 @@ static void qrot(float r[], float q[])
 
 Camera::Camera()
 {
-cout << "Camera::Camera()..." << endl;
+tcout << _T("Camera::Camera()...") << tendl;
 	InitVec(m_Position,			0.0f, 0.0f, 0.0f);
 	InitVec(m_Forward,		1.0f, 0.0f, 0.0f);
 	InitVec(m_Horizontal,	0.0f, 1.0f, 0.0f);
@@ -238,9 +238,9 @@ void Camera::Transrate(float df, float dh, float dv)
 
 void Camera::Information()
 {
-	cout << GetForward()->x << ", " << GetForward()->y << ", " << GetForward()->z << endl;
-	cout << m_Horizontal.x << ", " << m_Horizontal.y << ", " << m_Horizontal.z << endl;
-	cout << GetVertical()->x << ", " << GetVertical()->y << ", " << GetVertical()->z << endl;
+	tcout << GetForward()->x << _T(", ") << GetForward()->y << _T(", ") << GetForward()->z << tendl;
+	tcout << m_Horizontal.x << _T(", ") << m_Horizontal.y << _T(", ") << m_Horizontal.z << tendl;
+	tcout << GetVertical()->x << _T(", ") << GetVertical()->y << _T(", ") << GetVertical()->z << tendl;
 }
 
 

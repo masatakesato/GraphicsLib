@@ -42,7 +42,7 @@ namespace MyGlPrimitive
 
 		glPushAttrib(GL_LIST_BIT);
 		glListBase(fontbase -32);
-		glCallLists( strlen(str), GL_UNSIGNED_BYTE, str );
+		glCallLists( GLsizei(strlen(str)), GL_UNSIGNED_BYTE, str );
 		glPopAttrib();
 	}
 

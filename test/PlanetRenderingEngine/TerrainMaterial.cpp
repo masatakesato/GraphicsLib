@@ -14,7 +14,7 @@ TerrainMaterial::TerrainMaterial()
 
 TerrainMaterial::TerrainMaterial(int nummats)
 {
-cout << "TerrainMaterial::TerrainMaterial()..." << endl;
+tcout << _T("TerrainMaterial::TerrainMaterial()...") << tendl;
 
 	m_numMats		= nummats;
 	m_SurfaceProperties = new SurfaceProperty[m_numMats];

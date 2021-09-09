@@ -41,37 +41,37 @@ const Vec4f MyGUI::color_frame[2] =
 // buton color
 const Vec4f MyGUI::color_button[3] =
 {
-	{ 0.1, 0.1, 0.1, 0.5 },// デフォルト色
-	{ 0.3, 0.3, 0.3, 0.5 },// カーソルオーバーラップ
-	{ 0.1, 0.1, 0.1, 0.5 },// ボタン押し込み
+	{ 0.1f, 0.1f, 0.1f, 0.5f },// デフォルト色
+	{ 0.3f, 0.3f, 0.3f, 0.5f },// カーソルオーバーラップ
+	{ 0.1f, 0.1f, 0.1f, 0.5f },// ボタン押し込み
 };
 
 
 // チェックボックス
 const Vec4f MyGUI::color_checkbox[4] =
 {
-	{ 0.1, 0.0, 0.0, 0.5 },// デフォルト（オフ）
-	{ 0.3, 0.0, 0.0, 0.5 },// オーバーラップ
-	{ 0.2, 0.0, 0.0, 0.5 },// ボタン押し込み
-	{ 0.7, 1.0, 0.7, 0.5 },// オン
+	{ 0.1f, 0.0f, 0.0f, 0.5f },// デフォルト（オフ）
+	{ 0.3f, 0.0f, 0.0f, 0.5f },// オーバーラップ
+	{ 0.2f, 0.0f, 0.0f, 0.5f },// ボタン押し込み
+	{ 0.7f, 1.0f, 0.7f, 0.5f },// オン
 };
 
 
 // リストボックス
 const Vec4f MyGUI::color_listbox[4] = 
 {
-	{ 0.1, 0.1, 0.1, 0.5 },// デフォルト
-	{ 0.5, 0.0, 0.0, 0.5 },// オーバーラップ
-	{ 0.5, 0.0, 0.0, 0.5 },// ボタン押し込み
-	{ 0.5, 0.7, 0.5, 0.5 },// 選択
+	{ 0.1f, 0.1f, 0.1f, 0.5f },// デフォルト
+	{ 0.5f, 0.0f, 0.0f, 0.5f },// オーバーラップ
+	{ 0.5f, 0.0f, 0.0f, 0.5f },// ボタン押し込み
+	{ 0.5f, 0.7f, 0.5f, 0.5f },// 選択
 };
 
 
 // スライダーつまみ
 const Vec4f MyGUI::color_slider[2] =
 {
-	{ 0.2, 0.3, 0.0, 0.5 },
-	{ 0.35, 0.5, 0.0, 0.5 },
+	{ 0.2f, 0.3f, 0.0f, 0.5f },
+	{ 0.35f, 0.5f, 0.0f, 0.5f },
 };
 
 
@@ -90,13 +90,13 @@ void MyGUI::DrawDropDownIcon( float x, float y, float width, float height )
 	float	VertexArray[6] = 
 	{
 		x,				y+height,	// 頂点0
-		x+width*0.5,	y,			// 頂点1
+		x+width*0.5f,	y,			// 頂点1
 		x+width,		y+height,	// 頂点2
 	};
 
 	GLuint	index[3] = { 0,1,2 };
 
-	glLineWidth(2.5);
+	glLineWidth(2.5f);
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -108,7 +108,7 @@ void MyGUI::DrawDropDownIcon( float x, float y, float width, float height )
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 
-	glLineWidth(1.0);
+	glLineWidth(1.0f);
 }
 
 
@@ -133,7 +133,7 @@ void MyGUI::DrawFrame( float x, float y, float width, float height, GUI_COLOR co
 
 	GLuint	index[4] = { 0,1,2,3, };
 	
-	glLineWidth(1.5);
+	glLineWidth(1.5f);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -145,7 +145,7 @@ void MyGUI::DrawFrame( float x, float y, float width, float height, GUI_COLOR co
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	
-	glLineWidth(1.0);
+	glLineWidth(1.0f);
 }
 
 
@@ -170,7 +170,7 @@ MyGUI::~MyGUI()
 //　デバイスコンテキストハンドルを使ってフォントのディスプレイリストを初期化する
 void MyGUI::InitFontDisplayList(HDC hdc)
 {
-//cout << "MyGUI::InitFontDisplayList()..." << endl;
+//tcout << _T("MyGUI::InitFontDisplayList()...") << tendl;
 
 	HFONT font;
 	HFONT oldfont;
@@ -211,12 +211,12 @@ void MyGUI::InitFontDisplayList(HDC hdc)
 
 void MyGUI::SetScreenResolution(int width, int height)
 {
-//cout << "MyGUI::SetScreenResolution()..." << endl;
+//tcout << _T("MyGUI::SetScreenResolution()...") << tendl;
 	m_ScreenWidth = width;
 	m_ScreenHeight = height;
 
-//std::cout << "ScreenWidth = " << m_ScreenWidth << std::endl;
-//std::cout << "ScreenHeight = " << m_ScreenHeight << std::endl;
+//tcout << _T("ScreenWidth = ") << m_ScreenWidth << tendl;
+//tcout << _T("ScreenHeight = ") << m_ScreenHeight << tendl;
 }
 
 
@@ -247,10 +247,10 @@ void MyGUI::mouseMove(int x, int y)
 
 
 
-bool MyGUI::CheckRange(float val, float val_min, float val_max)
-{
-	return val_min<=val && val<=val_max;
-}
+//bool MyGUI::CheckRange(float val, float val_min, float val_max)
+//{
+//	return val_min<=val && val<=val_max;
+//}
 
 
 
@@ -295,8 +295,8 @@ void MyGUI::End()
 //-----------------------------------------------------------------------------------------------------//
 void MyGUI::DoText(int x, int y, char *text)
 {
-	if(m_fontBase)	DrawString(x, y, color_string[COLOR_DEFAULT], text, GLUT_BITMAP_HELVETICA_12, m_fontBase);
-	else			DrawString(x, y, color_string[COLOR_DEFAULT], text, GLUT_BITMAP_HELVETICA_12);
+	if(m_fontBase)	DrawString( float(x), float(y), color_string[COLOR_DEFAULT], text, GLUT_BITMAP_HELVETICA_12, m_fontBase);
+	else			DrawString( float(x), float(y), color_string[COLOR_DEFAULT], text, GLUT_BITMAP_HELVETICA_12);
 }
 
 //GLUT_STROKE_ROMAN
@@ -317,7 +317,7 @@ void MyGUI::DoButton(int x, int y, int width, int height, char *text, bool &stat
 	bool	ButtonDownState	= CheckRange(m_MouseDownX, x, x+width) & CheckRange(m_MouseDownY, y, y+height);
 	bool	ButtonUpState	= CheckRange(m_MouseUpX, x, x+width) & CheckRange(m_MouseUpY, y, y+height);
 	
-//std::cout << "flag = " << CursorState << ", " << ButtonState << ", " << ButtonDownState << ", " << ButtonUpState << std::endl;
+//tcout << _T("flag = ") << CursorState << _T(", ") << ButtonState << _T(", ") << ButtonDownState << _T(", ") << ButtonUpState << tendl;
 	state = false;
 
 	//========================= マウス状態の検出 ===========================//
@@ -344,8 +344,8 @@ void MyGUI::DoButton(int x, int y, int width, int height, char *text, bool &stat
 		m_State = false;
 	}
 
-//std::cout << state << std::endl;
-	DrawFrame(x, y, width, height, COLOR_DEFAULT);
+//tcout << state << tendl;
+	DrawFrame( float(x), float(y), float(width), float(height), COLOR_DEFAULT);
 
 	//============================ ボタンの描画 ==============================//
 	if(CursorState==true && ButtonState==true && ButtonDownState==true)
@@ -371,12 +371,12 @@ void MyGUI::DoButton(int x, int y, int width, int height, char *text, bool &stat
 void MyGUI::DoCheckBox(int x, int y, char *text, bool &state)
 {
 	int		flag			= NULL;
-	bool	CursorState		= CheckRange(m_CursorX, x, x+CHECKBOX_SIZE) & CheckRange(m_CursorY, y, y+CHECKBOX_SIZE);
+	bool	CursorState		= CheckRange( m_CursorX, x, x+CHECKBOX_SIZE ) & CheckRange( m_CursorY, y, y+CHECKBOX_SIZE );
 	bool	ButtonState		= m_LeftMouseButtonPressed;
-	bool	ButtonDownState	= CheckRange(m_MouseDownX, x, x+CHECKBOX_SIZE) & CheckRange(m_MouseDownY, y, y+CHECKBOX_SIZE);
-	bool	ButtonUpState	= CheckRange(m_MouseUpX, x, x+CHECKBOX_SIZE) & CheckRange(m_MouseUpY, y, y+CHECKBOX_SIZE);
+	bool	ButtonDownState	= CheckRange( m_MouseDownX, x, x+CHECKBOX_SIZE ) & CheckRange( m_MouseDownY, y, y+CHECKBOX_SIZE );
+	bool	ButtonUpState	= CheckRange( m_MouseUpX, x, x+CHECKBOX_SIZE ) & CheckRange( m_MouseUpY, y, y+CHECKBOX_SIZE );
 	
-//std::cout << "flag = " << CursorState << ", " << ButtonState << ", " << ButtonDownState << ", " << ButtonUpState << std::endl;
+//tcout << _T("flag = ") << CursorState << _T(", ") << ButtonState << _T(", ") << ButtonDownState << _T(", ") << ButtonUpState << tendl;
 
 	//========================= マウス状態の検出 ===========================//
 	if( CursorState==false && ButtonState==false /*&& ButtonDownState==false*/ && ButtonUpState==false )// state0（何もしていない）
@@ -395,15 +395,15 @@ void MyGUI::DoCheckBox(int x, int y, char *text, bool &state)
 	else if( CursorState==true && ButtonState==false && ButtonDownState==true && ButtonUpState==true )// state4（コマンド実行）
 	{
 		state = !state;
-//std::cout << "State4: カーソルが領域内にあってボタンを離した" << std::endl;
+//tcout << _T("State4: Cursor released inside checkbox boudnary") << tendl;
 		m_MouseUpX = m_MouseUpY = -1;
 		m_MouseDownX = m_MouseDownY = -1;
 	}
 
-//std::cout << state << std::endl;
+//tcout << state << tendl;
 
 	//============================ GUIの描画 ==============================//
-	// チェックボックス塗りつぶし
+	// Fill check box with specified color
 	if(state ==true)
 	{
 		DrawCheckBox(x, y, text, COLOR_ON);
@@ -437,7 +437,7 @@ void MyGUI::DoHorizontalSlider(int x, int y, int width, char *text, float val_mi
 	bool	ButtonDownState	= CheckRange(m_MouseDownX, x-5, x+width+10) & CheckRange(m_MouseDownY, y, y+SLIDER_SIZE);
 	bool	ButtonUpState	= CheckRange(m_MouseUpX, x-5, x+width+10) & CheckRange(m_MouseUpY, y, y+SLIDER_SIZE);
 	
-//std::cout << "flag = " << CursorState << ", " << ButtonState << ", " << ButtonDownState << ", " << ButtonUpState << std::endl;
+//tcout << _T("flag = ") << CursorState << _T(", ") << ButtonState << _T(", ") << ButtonDownState << _T(", ") << ButtonUpState << tendl;
 
 	if( CursorState==false && ButtonState==false /*&& ButtonDownState==false*/ && ButtonUpState==false )// 領域外で何もしない
 	{
@@ -450,11 +450,11 @@ void MyGUI::DoHorizontalSlider(int x, int y, int width, char *text, float val_mi
 	{
 		// つまみの位置を更新したい → カーソル位置からvalを逆算する
 		float pos_relative = float(m_CursorX - x) / float(width);
-		pos_relative = max(min(pos_relative, 1.0), 0.0);
+		pos_relative = max(min(pos_relative, 1.f), 0.f);
 		
 		if(numbins > 0)
 		{
-			float bin = 1.0 / (float)numbins;
+			float bin = 1.f / (float)numbins;
 			float amari = fmod(pos_relative, bin);
 			pos_relative -= amari;
 			if(amari >= 0.5 * bin) pos_relative += bin;
@@ -484,7 +484,7 @@ void MyGUI::DoHorizontalSlider(int x, int y, int width, char *text, float val_mi
 	{
 		DrawHorizontalSlider(x, y, width, text, val, val_min, val_max, COLOR_DEFAULT);
 	}
-//std::cout << "flag = " << CursorState << ", " << ButtonState << ", " << ButtonDownState << ", " << ButtonUpState << std::endl;
+//tcout << _T("flag = ") << CursorState << _T(", ") << ButtonState << _T(", ") << ButtonDownState << _T(", ") << ButtonUpState << tendl;
 }
 
 
@@ -535,7 +535,7 @@ void MyGUI::DoListBox(int x, int y, int width, int numAttr, char *Attributes[], 
 
 	DrawListBox(x, y, width, numAttr, Attributes, idx_tmp, ButtonDownState);
 
-//std::cout << "flag = " << CursorState << ", " << ButtonState << ", " << ButtonDownState << ", " << ButtonUpState << std::endl;
+//tcout << _T("flag = ") << CursorState << _T(", ") << ButtonState << _T(", ") << ButtonDownState << _T(", ") << ButtonUpState << tendl;
 }
 
 
@@ -551,13 +551,13 @@ void MyGUI::DoListBox(int x, int y, int width, int numAttr, char *Attributes[], 
 void MyGUI::DoComboBox(int x, int y, int width, int numAttr, char *Attributes[], int &idx_curr, bool &showListBox, char *caption)
 {
 	int		flag			= NULL;
-	bool	CursorState		= CheckRange(m_CursorX, x, x+width+20) & CheckRange(m_CursorY, y, y+20);
+	bool	CursorState		= CheckRange( m_CursorX, x, x+width+20 ) & CheckRange( m_CursorY, y, y+20 );
 	bool	ButtonState		= m_LeftMouseButtonPressed;
-	bool	ButtonDownState	= CheckRange(m_MouseDownX, x, x+width+20) & CheckRange(m_MouseDownY, y, y+20);
+	bool	ButtonDownState	= CheckRange( m_MouseDownX, x, x+width+20 ) & CheckRange( m_MouseDownY, y, y+20 );
 	bool	ButtonUpState	= CheckRange(m_MouseUpX, x, x+width+20) & CheckRange(m_MouseUpY, y, y+20);
 	bool	IsSelected = false;
 
-//std::cout << "flag = " << CursorState << ", " << ButtonState << ", " << ButtonDownState << ", " << ButtonUpState << std::endl;
+//tcout << _T("flag = ") << CursorState << _T(", ") << ButtonState << _T(", ") << ButtonDownState << _T(", ") << ButtonUpState << tendl;
 
 	//========================= マウス状態の検出 ===========================//
 	if( CursorState==false && ButtonState==false /*&& ButtonDownState==false*/ && ButtonUpState==false )// state0（何もしていない）
@@ -589,7 +589,7 @@ void MyGUI::DoComboBox(int x, int y, int width, int numAttr, char *Attributes[],
 	if(caption)	DoText(x, y+25, caption); 
 	
 	// ボタン
-	DrawDropDownIcon( x+width, y+5, 12, 8 );
+	DrawDropDownIcon( float(x+width), float(y+5), 12.f, 8.f );
 
 	if(CursorState==true && ButtonState==true && ButtonDownState==true)
 	{
@@ -617,7 +617,7 @@ void MyGUI::DoComboBox(int x, int y, int width, int numAttr, char *Attributes[],
 		}
 	}
 
-//std::cout << "idx_curr = " << idx_curr << std::endl;
+//tcout << _T("idx_curr = ") << idx_curr << tendl;
 }
 
 
@@ -635,9 +635,9 @@ void MyGUI::DrawButton(int x, int y, int width, int height, char *text, int stat
 	DoText(x+5, y+5, text);
 
 	// ボタンの外枠部分を描画する
-	DrawFrame( x, y, width, height, COLOR_DEFAULT );
+	DrawFrame( float(x), float(y), float(width), float(height), COLOR_DEFAULT );
 	// ボタンの塗りつぶし部分を描画する
-	DrawQuad( x, y, width, height, color_button[status] );
+	DrawQuad( float(x), float(y), float(width), float(height), color_button[status] );
 }
 
 
@@ -650,13 +650,13 @@ void MyGUI::DrawButton(int x, int y, int width, int height, char *text, int stat
 void MyGUI::DrawCheckBox(int x, int y, char *text, int status)
 {
 	// チェックボックス枠
-	DrawFrame(x, y, CHECKBOX_SIZE, CHECKBOX_SIZE, COLOR_DEFAULT);
+	DrawFrame( float(x), float(y), float(CHECKBOX_SIZE), float(CHECKBOX_SIZE), COLOR_DEFAULT);
 	
 	// チェックボックス塗りつぶし
-	DrawQuad( x,y, CHECKBOX_SIZE, CHECKBOX_SIZE, color_checkbox[status] );
+	DrawQuad( float(x), float(y), float(CHECKBOX_SIZE), float(CHECKBOX_SIZE), color_checkbox[status] );
 	
 	// テキスト
-	DoText(x+CHECKBOX_SIZE + 5, y, text);
+	DoText( x+CHECKBOX_SIZE + 5, y, text);
 }
 
 
@@ -671,15 +671,15 @@ void MyGUI::DrawCheckBox(int x, int y, char *text, int status)
 void MyGUI::DrawHorizontalSlider(int x, int y, int width, char *text, float val, float val_min, float val_max, int status)
 {
 	float	pos = (val - val_min) / (val_max - val_min);
-	pos = max(min(pos,1.0), 0.0)*width - SLIDER_SIZE/2 + 1;
+	pos = max(min(pos,1.f), 0.f)*width - SLIDER_SIZE/2 + 1;
 
 	// つまみ
-	DrawPoint( x+pos, y, SLIDER_SIZE, color_slider[status] );// 内側
+	DrawPoint( x+pos, float(y), SLIDER_SIZE, color_slider[status] );// 内側
 	DrawPoint( (float)x+pos-1.5f, (float)y-1.5f, SLIDER_SIZE+3.0f, color_frame[COLOR_OVERLAP] );// 外枠
 
 	// バー
-	DrawQuad( x, y+SLIDER_SIZE/2, width, 1.5, color_button[COLOR_DEFAULT] );
-	DrawFrame(x, y+SLIDER_SIZE/2, width, 1.0, COLOR_DEFAULT);
+	DrawQuad( float(x), float(y+SLIDER_SIZE/2), float(width), 1.5f, color_button[COLOR_DEFAULT] );
+	DrawFrame( (float)x, float(y+SLIDER_SIZE/2), float(width), 1.f, COLOR_DEFAULT);
 	
 
 	// テキスト
@@ -699,27 +699,27 @@ void MyGUI::DrawHorizontalSlider(int x, int y, int width, char *text, float val,
 void MyGUI::DrawListBox(int x, int y, int width, int numAttr, char *Attributes[], int id_selected, bool buttondown)
 {
 	// フレーム描画
-	DrawFrame(x, y, width, -20*numAttr, COLOR_DEFAULT);
+	DrawFrame( float(x), float(y), float(width), float(-20*numAttr), COLOR_DEFAULT );
 
 	// リストボックス描画
 	for(int i=0; i<numAttr; i++)
 	{
-		float pos_y = (y - 20) - i * 20;
+		float pos_y = float( (y - 20) - i * 20 );
 		// テキスト
 		//DrawString(x+5, pos_y+5, &color_string[COLOR_DEFAULT], Attributes[i], GLUT_STROKE_ROMAN, 0.1);
-		DoText(x+5, pos_y+5, Attributes[i]);
+		DoText(x+5, (int)pos_y+5, Attributes[i]);
 
 		// 枠
 		if(i==id_selected)
 		{
 			if(buttondown==true)
-				DrawQuad( x, pos_y, width, 20, color_listbox[COLOR_ON] );
+				DrawQuad( float(x), pos_y, float(width), 20.f, color_listbox[COLOR_ON] );
 			else
-				DrawQuad( x, pos_y, width, 20, color_listbox[COLOR_OVERLAP] );
+				DrawQuad( float(x), pos_y, float(width), 20.f, color_listbox[COLOR_OVERLAP] );
 		}
 		else
 		{
-			DrawQuad( x, pos_y, width, 20, color_listbox[COLOR_DEFAULT] );
+			DrawQuad( float(x), pos_y, float(width), 20.f, color_listbox[COLOR_DEFAULT] );
 		}
 	}
 

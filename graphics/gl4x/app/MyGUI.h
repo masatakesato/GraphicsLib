@@ -74,8 +74,9 @@ private:
 	static const Vec4f color_slider[2];
 
 
+	template < typename T >
+	bool CheckRange( const T& val, const T& val_min, const T& val_max ) const	{ return val_min<=val && val<=val_max; }
 
-	bool CheckRange(float val, float val_min, float val_max);
 	void DrawButton(int x, int y, int width, int height, char *text, int state);
 	void DrawCheckBox(int x, int y, char *text, int status);
 	void DrawHorizontalSlider(int x, int y, int width, char *text, float val, float val_min, float val_max, int status);

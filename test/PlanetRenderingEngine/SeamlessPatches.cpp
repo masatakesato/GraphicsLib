@@ -17,7 +17,7 @@ using namespace std;
 
 MeshGenerator::MeshGenerator(int dim, int lv, float scale)
 {
-cout << "MeshGenerator::MeshGenerator()..." << endl;
+tcout << _T("MeshGenerator::MeshGenerator()...") << tendl;
 
 	m_Dim = dim;
 	m_numLevels = lv;
@@ -70,7 +70,7 @@ cout << "MeshGenerator::MeshGenerator()..." << endl;
 
 MeshGenerator::~MeshGenerator()
 {
-cout << "MeshGenerator::~MeshGenerator()..." << endl;
+tcout << _T("MeshGenerator::~MeshGenerator()...") << tendl;
 	//=============== 頂点の削除 ==============//
 	delete [] m_Vertices;
 	delete [] m_PatchIndices;
@@ -167,7 +167,7 @@ void MeshGenerator::Draw( int tileres[] )// 4辺の解像度を指定して描�
 
 void MeshGenerator::CreateVertexBufferObject()
 {
-cout << "MeshGenerator::CreateVertexBufferObject()..." << endl;
+tcout << _T("MeshGenerator::CreateVertexBufferObject()...") << tendl;
 	glGenBuffers(3, m_buffers);
 	
 	// 頂点バッファ作成
@@ -192,7 +192,7 @@ cout << "MeshGenerator::CreateVertexBufferObject()..." << endl;
 // [-0.5,+0.5]の2次元平面上に，タイルを構成する頂点群を生成する
 void MeshGenerator::GenerateTileVertices(int &numPoints, Vec2f **Vertices, int dimx, int dimy, float scale)
 {
-cout << "MeshGenerator::GenerateTileVertices()..." << endl;
+tcout << _T("MeshGenerator::GenerateTileVertices()...") << tendl;
 	int i, j;
 	float	offset = scale * 0.5f;
 
@@ -217,7 +217,7 @@ cout << "MeshGenerator::GenerateTileVertices()..." << endl;
 // 複数解像度分のタイル頂点インデックス配列を一括生成する
 void MeshGenerator::GenerateTileIndices(int &numElements, unsigned short **TileIndices, int numLevels, int dimx, int dimy)
 {
-cout << "MeshGenerator::GenerateTileIndices()..." << endl;
+tcout << _T("MeshGenerator::GenerateTileIndices()...") << tendl;
 
 	int i;
 	static int j;
@@ -271,7 +271,7 @@ cout << "MeshGenerator::GenerateTileIndices()..." << endl;
 // [-0.5,+0.5]の２次元平面上に，タイルの継ぎ目となる頂点群を生成する
 void MeshGenerator::GenerateStitchIndices(int &numElements, unsigned short **StitchIndices, int numLevels, int dimx, int dimy)
 {
-cout << "MeshGenerator::GenerateStitchIndices()..." << endl;
+tcout << _T("MeshGenerator::GenerateStitchIndices()...") << tendl;
 	int i,j;
 	static int k;
 	int step;

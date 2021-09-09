@@ -1,14 +1,16 @@
 ﻿#include "GraphicsDevice.h"
 
+#include	<oreore/common/TString.h>
 
 
 
 GraphicsDevice::GraphicsDevice()
 {
-cout << "GraphicsDevice::GraphicsDevice()..." << endl;
+tcout << _T("GraphicsDevice::GraphicsDevice()...") << tendl;
 	m_glrc	= NULL;
 	m_hDC	= NULL;
 }
+
 
 
 GraphicsDevice::~GraphicsDevice()
@@ -19,13 +21,10 @@ GraphicsDevice::~GraphicsDevice()
 
 
 
-
-
-
 // レンダリングコンテキストの初期化
 bool GraphicsDevice::CreateContext(HWND hWnd, int ColorBits, int DepthBits)
 {
-cout << "GraphicsDevice::CreateContext()..." << endl;
+tcout << _T("GraphicsDevice::CreateContext()...") << tendl;
 
 	BOOL	bResult;
 	
@@ -98,7 +97,7 @@ HGLRC GraphicsDevice::GetRenderingContext()
 
 void GraphicsDevice::ShareRenderingContext(HGLRC rc)
 {
-cout << "GraphicsDevice::ShareRenderingContext()..." << endl;
+tcout << _T("GraphicsDevice::ShareRenderingContext()...") << tendl;
 	wglShareLists(rc, m_glrc);
 
 }

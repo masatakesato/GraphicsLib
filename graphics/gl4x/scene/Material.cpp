@@ -83,10 +83,10 @@ void Material::SetLuminance(const Vec3f &luminance)
 
 void Material::Info()
 {
-	cout << "//============= Material Info ================//" << endl;
+	tcout << _T("//============= Material Info ================//") << tendl;
 
-	cout << "Diffuse: (" << m_Diffuse.x << ", "  << m_Diffuse.y << ", " <<  m_Diffuse.z << ", " <<  m_Diffuse.w << ")" << endl;
-	cout << "Specular: (" << m_Specular.x << ", "  << m_Specular.y << ", " <<  m_Specular.z << ", " <<  m_Specular.w << ")" << endl;
+	tcout << _T("Diffuse: (") << m_Diffuse.x << _T(", ")  << m_Diffuse.y << _T(", ") <<  m_Diffuse.z << _T(", ") <<  m_Diffuse.w << _T(")") << tendl;
+	tcout << _T("Specular: (") << m_Specular.x << _T(", ")  << m_Specular.y << _T(", ") <<  m_Specular.z << _T(", ") <<  m_Specular.w << _T(")") << tendl;
 	
 
 }

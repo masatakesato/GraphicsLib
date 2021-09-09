@@ -12,7 +12,7 @@ using namespace std;
 #include	<oreore/thread/ThreadPool.h>
 
 #include	<graphics/gl4x/resource/GLRenderTarget.h>
-#include	<graphics/gl4x/TileCacheTexture.h>
+#include	<graphics/gl4x/resource/TileCacheTexture.h>
 #include	<graphics/gl4x/scene/Camera.h>
 #include	<graphics/gl4x/app/MyGUI.h>
 using namespace OreOreLib;

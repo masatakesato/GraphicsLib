@@ -260,6 +260,6 @@ bool ViewFrustum::CubeInFrustum( float x, float y, float z, float size )
 
 void ViewFrustum::Info()
 {
-	cout << m_Frustum[0][0] << ", " << m_Frustum[0][1] << ", " << m_Frustum[0][2] << ", " << m_Frustum[0][3] << endl;
+	tcout << m_Frustum[0][0] << _T(", ") << m_Frustum[0][1] << _T(", ") << m_Frustum[0][2] << _T(", ") << m_Frustum[0][3] << tendl;
 	
 }

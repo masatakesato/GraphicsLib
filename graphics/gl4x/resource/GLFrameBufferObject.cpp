@@ -163,7 +163,7 @@ namespace OreOreLib
 
 	GLFrameBufferObject::~GLFrameBufferObject()
 	{
-		//tcout << "GLFrameBufferObject::~GLFrameBufferObject()..." << endl;
+		//tcout << "GLFrameBufferObject::~GLFrameBufferObject()..." << tendl;
 		Release();
 	}
 

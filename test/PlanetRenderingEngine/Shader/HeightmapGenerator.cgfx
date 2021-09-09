@@ -126,14 +126,14 @@ void GenerateHeightMap_PS(in VertexData_Out IN, out PixelData_Out OUT)
 	//height = max( fBm(pos_sph*g_HorizontalScale, 14) + ridgedmf(pos_sph*g_HorizontalScale, 16)-0.35, 0.0) * g_HeightRange;
 
 	float c1 =	(
-					ridgedmf	(pos_sph*1.2*g_HorizontalScale, 12, 2.0, 0.52, 1.0) +
-					fBm			(pos_sph*1.4*g_HorizontalScale, 20, 2.0, 0.52)+1.0
+					ridgedmf	(pos_sph*1.2*g_HorizontalScale, /*12*/24, 2.0, 0.52, 1.0) +
+					fBm			(pos_sph*1.4*g_HorizontalScale, /*20*/40, 2.0, 0.52)+1.0
 				) * 0.5;
 
 	float c3 =	(
 					(
-					ridgedmf(pos_sph*(1.1+c1)*g_HorizontalScale, 8, 1.8, 0.5, 0.5) + 
-					fBm		(pos_sph*(1.3+c1)*g_HorizontalScale, 16, 1.8, 0.5)
+					ridgedmf(pos_sph*(1.1+c1)*g_HorizontalScale, /*8*/16, 1.8, 0.5, 0.5) + 
+					fBm		(pos_sph*(1.3+c1)*g_HorizontalScale, /*16*/32, 1.8, 0.5)
 					) * 0.5
 				) / c1;
 	
@@ -155,7 +155,7 @@ void GenerateNormalMap_PS(in VertexData_Out IN, out float4 normal : COLOR0)
 	v_b = tex2D(g_PosSampler, IN.tex_uv + float2(0, -bin) );
 	
 	normal.xyz = normalize( cross(v_r-v_l,v_t-v_b) );
-	normal.w = dot(normal.xyz, normalize(tex2D(g_PosSampler, IN.tex_uv)) );
+	normal.w = abs( dot(normal.xyz, normalize(tex2D(g_PosSampler, IN.tex_uv)) ) );
 }
 
 

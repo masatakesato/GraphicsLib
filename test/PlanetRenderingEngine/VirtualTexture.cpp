@@ -17,7 +17,7 @@ using namespace std;
 //######################################## PageTable ######################################//
 PageTables::PageTables()
 {
-cout << "PageTables::PageTables()..." << endl;
+tcout << _T("PageTables::PageTables()...") << tendl;
 
 	m_numMIPs	= 0;
 	m_Tables	= NULL;
@@ -27,7 +27,7 @@ cout << "PageTables::PageTables()..." << endl;
 // ページテーブルを初期化する
 PageTables::PageTables(int nummips)
 {
-cout << "PageTables::PageTables(int nummips)..." << endl;
+tcout << _T("PageTables::PageTables(int nummips)...") << tendl;
 
 	int i;
 	int x, y;
@@ -63,7 +63,7 @@ cout << "PageTables::PageTables(int nummips)..." << endl;
 // コピーコンストラクタ
 PageTables::PageTables(const PageTables &pt)
 {
-cout << "PageTables::PageTables(const PageTables &pt)..." << endl;
+tcout << _T("PageTables::PageTables(const PageTables &pt)...") << tendl;
 	int i, x, y;
 
 	m_numMIPs	= pt.m_numMIPs;
@@ -99,7 +99,7 @@ cout << "PageTables::PageTables(const PageTables &pt)..." << endl;
 // デストラクタ
 PageTables::~PageTables()
 {
-cout << "PageTables::~PageTables()..." << endl;
+tcout << _T("PageTables::~PageTables()...") << tendl;
 	
 	if(m_Tables)
 	{
@@ -129,7 +129,7 @@ cout << "PageTables::~PageTables()..." << endl;
 
 VirtualTexture::VirtualTexture()
 {
-cout << "VirtualTexture::VirtualTexture()..." << endl;
+tcout << _T("VirtualTexture::VirtualTexture()...") << tendl;
 
 	m_TileCache		= NULL;
 m_TilesPageTableRefs	= NULL;
@@ -142,7 +142,7 @@ m_TileCapacity	= 0;
 
 VirtualTexture::~VirtualTexture()
 {
-cout << "VirtualTexture::~VirtualTexture()..." << endl;
+tcout << _T("VirtualTexture::~VirtualTexture()...") << tendl;
 
 	m_pNoiseFunc		= NULL;// ノイズ生成オブジェクトへの参照を無効化
 	m_GraphicsDevice	= NULL;// グラフィックスデバイスオブジェクトへの参照無効化
@@ -158,7 +158,7 @@ cout << "VirtualTexture::~VirtualTexture()..." << endl;
 
 void VirtualTexture::AttachGraphicsDevice(GraphicsDevice *pgd)
 {
-cout << "VirtualTexture::AttachGraphicsDevice()..." << endl;
+tcout << _T("VirtualTexture::AttachGraphicsDevice()...") << tendl;
 
 	m_GraphicsDevice = pgd;
 }
@@ -168,7 +168,7 @@ cout << "VirtualTexture::AttachGraphicsDevice()..." << endl;
 void VirtualTexture::InitTileCache( int cache_width, int cache_height, int tile_size )
 {
 	EnterCriticalSection(&m_CriticalSection);
-cout << "VirtualTexture::InitTileCache()..." << endl;
+tcout << _T("VirtualTexture::InitTileCache()...") << tendl;
 
 	m_GraphicsDevice->Begin();
 
@@ -198,7 +198,7 @@ cout << "VirtualTexture::InitTileCache()..." << endl;
 // ページテーブルを追加する
 int VirtualTexture::RegisterPageTables(int numLv)
 {
-cout << "VirtualTexture::RegisterPageTables()..." << endl;
+tcout << _T("VirtualTexture::RegisterPageTables()...") << tendl;
 
 	m_TableList.push_back( PageTables(numLv) );
 	return	m_TableList.size() -1;
@@ -352,7 +352,7 @@ void VirtualTexture::PageTables_Update(const Vec2f &vtex_tc, const int miplv, co
 	page_table_st	*pCurr;
 	int	tileID;
 
-	//cout << "TileCache_Update...begin" << endl;
+	//tcout << _T("TileCache_Update...begin") << tendl;
 
 	map_dim = Length(du);// タイル一辺の大きさ
 
@@ -402,7 +402,7 @@ void VirtualTexture::PageTables_Update(const Vec2f &vtex_tc, const int miplv, co
 		
 	}// end of i loop
 
-	//cout << "TileCache_Update...end" << endl;
+	//tcout << _T("TileCache_Update...end") << tendl;
 }
 
 
@@ -492,7 +492,7 @@ void VirtualTexture::PageTables_Cleanup(int px_curr, int py_curr, int miplv_curr
 
 	if( tileid != pCurr->Page[px_curr][py_curr].tileid ) return;// タイルidが不一致になった時点で処理を終了する
 	
-	//cout << "PageTables[" << id << "]->(" << curr_px << "," << curr_py << ") is released." << endl;
+	//tcout << _T("PageTables[") << id << _T("]->(") << curr_px << _T(",") << curr_py << _T(") is released.") << tendl;
 
 	pCurr->Page[px_curr][py_curr].tileid = 0;
 	pCurr->Page[px_curr][py_curr].curr_lv = 0;// レベルをゼロに戻す？

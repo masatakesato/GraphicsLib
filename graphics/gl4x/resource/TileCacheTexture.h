@@ -5,8 +5,8 @@
 #include	<process.h>
 
 #include	<oreore/mathlib/GraphicsMath.h>
-#include	"resource/CacheDataManager.h"
 
+#include	"CacheDataManager.h"
 #include	"Texture.h"
 using namespace OreOreLib;
 

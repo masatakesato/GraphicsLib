@@ -3,12 +3,13 @@
 
 #include	<windows.h>
 
-#include	<graphics/gl4x/Bitmap.h>
+#include	<oreore/images/Bitmap.h>
+
 #include	<graphics/gl4x/other/MyGlPrimitive.h>
 using namespace MyGlPrimitive;
 
-#include	<graphics/gl4x/resource/GlTexture.h>
-using namespace MyGlTexture;
+#include	<graphics/gl4x/resource/Texture.h>
+using namespace OreOreLib;
 
 
 
@@ -17,7 +18,7 @@ static unsigned int bufs[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_CO
 
 AtmosphericShader::AtmosphericShader(int width, int height)
 {
-cout << "AtmosphericShader::AtmosphericShader()..." << endl;
+tcout << _T("AtmosphericShader::AtmosphericShader()...") << tendl;
 
 	//========= 惑星形状パラメータ ============//
 	Rg	= 6360.0f;
@@ -25,12 +26,12 @@ cout << "AtmosphericShader::AtmosphericShader()..." << endl;
 
 	//========== 大気散乱のパラメータ =========//
 	// Rayleigh
-	m_HR	= 8.0;
+	m_HR	= 8.0f;
 	InitVec(m_betaR, 5.8e-3f, 1.35e-2f, 3.31e-2f);
 	// Mie
-	m_HM	= 2.2;
+	m_HM	= 2.2f;
 	InitVec(m_betaMSca, 20.0e-3f, 20.0e-3f, 20.0e-3f);
-	m_mieG	= 0.7;
+	m_mieG	= 0.7f;
 
 	
 	//=========== ルックアップテーブル解像度 ===========//
@@ -69,7 +70,7 @@ cout << "AtmosphericShader::AtmosphericShader()..." << endl;
 
 AtmosphericShader::~AtmosphericShader()
 {
-cout << "AtmosphericShader::~AtmosphericShader()..." << endl;
+tcout << _T("AtmosphericShader::~AtmosphericShader()...") << tendl;
 
 	//===== フレームバッファオブジェクト削除 =========//
 	if(m_fbo)
@@ -118,7 +119,7 @@ void AtmosphericShader::AttachGbuffer(const G_Buffer *gbuffer)
 
 void AtmosphericShader::PrecomputeLookupTable()
 {
-cout << "AtmosphericShader::PrecomputeLookupTable()..." << endl;
+tcout << _T("AtmosphericShader::PrecomputeLookupTable()...") << tendl;
 
 	glEnable(GL_DEPTH_TEST);
 	
@@ -196,7 +197,7 @@ cout << "AtmosphericShader::PrecomputeLookupTable()..." << endl;
 
 void AtmosphericShader::PrecomputeTransmittance()
 {
-cout << "AtmosphericShader::PrecomputeTransmittance()..." << endl;
+tcout << _T("AtmosphericShader::PrecomputeTransmittance()...") << tendl;
 
 	CGpass pass;
 	
@@ -218,7 +219,7 @@ cout << "AtmosphericShader::PrecomputeTransmittance()..." << endl;
 
 void AtmosphericShader::PrecomputeIrradiance1()
 {
-cout << "AtmosphericShader::PrecomputeIrradiance1()..." << endl;
+tcout << _T("AtmosphericShader::PrecomputeIrradiance1()...") << tendl;
 
 	CGpass pass;
 	
@@ -259,7 +260,7 @@ void AtmosphericShader::setLayer(float &r_float, float *dhdH, const int layer)//
 
 void AtmosphericShader::PrecomputeInscatter1()
 {
-cout << "AtmosphericShader::PrecomputeInscatter1()..." << endl;
+tcout << _T("AtmosphericShader::PrecomputeInscatter1()...") << tendl;
 
 	float	r = 0;// シェーダに渡す値
 	float	dhdH[4] = {0,0,0,0};// シェーダに渡す値
@@ -280,7 +281,7 @@ cout << "AtmosphericShader::PrecomputeInscatter1()..." << endl;
 		setLayer(r, dhdH, layer);
 		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[PRECOMPUTE_INSCATTER1], "r"), r);
 		cgSetParameter4fv(cgGetNamedEffectParameter(CgEffect[PRECOMPUTE_INSCATTER1], "dhdH"), dhdH);
-		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[PRECOMPUTE_INSCATTER1], "layer"), layer);
+		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[PRECOMPUTE_INSCATTER1], "layer"), (float)layer);
 		
 		// fboに3Dテクスチャのスライスをアタッチ
 		glFramebufferTextureLayer(GL_FRAMEBUFFER, bufs[0], deltaSRTexture, 0, layer);
@@ -302,7 +303,7 @@ cout << "AtmosphericShader::PrecomputeInscatter1()..." << endl;
 
 void AtmosphericShader::CopyIrradiance(int k)
 {
-cout << "AtmosphericShader::CopyIrradiance()..." << endl;
+tcout << _T("AtmosphericShader::CopyIrradiance()...") << tendl;
 
 	CGpass pass;
 
@@ -311,7 +312,7 @@ cout << "AtmosphericShader::CopyIrradiance()..." << endl;
 	glViewport(0, 0, SKY_W, SKY_H);
 
 	// Cgパラメータ設定
-	cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[COPY_IRRADIANCE], "k"), k);
+	cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[COPY_IRRADIANCE], "k"), (float)k);
 	cgGLSetTextureParameter(cgGetNamedEffectParameter(CgEffect[COPY_IRRADIANCE], "deltaESampler"), deltaETexture);
 	
 	// レンダリングパス実行
@@ -326,7 +327,7 @@ cout << "AtmosphericShader::CopyIrradiance()..." << endl;
 
 void AtmosphericShader::CopyInscatter1()
 {
-cout << "AtmosphericShader::CopyInscatter1()..." << endl;
+tcout << _T("AtmosphericShader::CopyInscatter1()...") << tendl;
 
 	float	r = 0;// シェーダに渡す値
 	float	dhdH[4] = {0,0,0,0};// シェーダに渡す値
@@ -347,7 +348,7 @@ cout << "AtmosphericShader::CopyInscatter1()..." << endl;
 		setLayer(r, dhdH, layer);
 		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[COPY_INSCATTER1], "r"), r);
 		cgSetParameter4fv(cgGetNamedEffectParameter(CgEffect[COPY_INSCATTER1], "dhdH"), dhdH);
-		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[COPY_INSCATTER1], "layer"), layer);
+		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[COPY_INSCATTER1], "layer"), (float)layer);
 
 		// fboに3Dテクスチャのスライスをアタッチ
 		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, inscatterTexture, 0, layer);
@@ -364,7 +365,7 @@ cout << "AtmosphericShader::CopyInscatter1()..." << endl;
 
 void AtmosphericShader::InscatterS(int order)
 {
-cout << "AtmosphericShader::InscatterS()..." << endl;
+tcout << _T("AtmosphericShader::InscatterS()...") << tendl;
 
 	float	r = 0;// シェーダに渡す値
 	float	dhdH[4] = {0,0,0,0};// シェーダに渡す値
@@ -376,7 +377,7 @@ cout << "AtmosphericShader::InscatterS()..." << endl;
 	glViewport(0, 0, RES_MU_S * RES_NU, RES_MU);// ビューポートの設定
 
 	// Cgパラメータ設定
-	cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[INSCATTER_S], "first"),order == 2 ? 1.0 : 0.0);
+	cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[INSCATTER_S], "first"),order == 2 ? 1.f : 0.f);
 	cgGLSetTextureParameter(cgGetNamedEffectParameter(CgEffect[INSCATTER_S], "transmittanceSampler"), transmittanceTexture);
 	cgGLSetTextureParameter(cgGetNamedEffectParameter(CgEffect[INSCATTER_S], "deltaESampler"), deltaETexture);
 	cgGLSetTextureParameter(cgGetNamedEffectParameter(CgEffect[INSCATTER_S], "deltaSRSampler"), deltaSRTexture);
@@ -388,7 +389,7 @@ cout << "AtmosphericShader::InscatterS()..." << endl;
 		setLayer(r, dhdH, layer);
 		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[INSCATTER_S], "r"), r);
 		cgSetParameter4fv(cgGetNamedEffectParameter(CgEffect[INSCATTER_S], "dhdH"), dhdH);
-		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[INSCATTER_S], "layer"), layer);
+		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[INSCATTER_S], "layer"), (float)layer);
 
 		// fboに3Dテクスチャのスライスをアタッチ
 		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, deltaJTexture, 0, layer);
@@ -405,7 +406,7 @@ cout << "AtmosphericShader::InscatterS()..." << endl;
 
 void AtmosphericShader::IrradianceN(int order)
 {
-cout << "AtmosphericShader::IrradianceN()..." << endl;
+tcout << _T("AtmosphericShader::IrradianceN()...") << tendl;
 
 	CGpass pass;
 
@@ -416,7 +417,7 @@ cout << "AtmosphericShader::IrradianceN()..." << endl;
 	glViewport(0, 0, SKY_W, SKY_H);
 	
 	// Cgパラメータ設定
-	cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[IRRADIANCE_N], "first"),order == 2 ? 1.0 : 0.0);
+	cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[IRRADIANCE_N], "first"),order == 2 ? 1.f : 0.f);
 	cgGLSetTextureParameter(cgGetNamedEffectParameter(CgEffect[IRRADIANCE_N], "transmittanceSampler"), transmittanceTexture);
 	cgGLSetTextureParameter(cgGetNamedEffectParameter(CgEffect[IRRADIANCE_N], "deltaSRSampler"), deltaSRTexture);
 	cgGLSetTextureParameter(cgGetNamedEffectParameter(CgEffect[IRRADIANCE_N], "deltaSMSampler"), deltaSMTexture);
@@ -433,7 +434,7 @@ cout << "AtmosphericShader::IrradianceN()..." << endl;
 
 void AtmosphericShader::InscatterN(int order)
 {
-cout << "AtmosphericShader::InscatterN()..." << endl;
+tcout << _T("AtmosphericShader::InscatterN()...") << tendl;
 
 	float	r = 0;// シェーダに渡す値
 	float	dhdH[4] = {0,0,0,0};// シェーダに渡す値
@@ -445,7 +446,7 @@ cout << "AtmosphericShader::InscatterN()..." << endl;
 	glViewport(0, 0, RES_MU_S * RES_NU, RES_MU);// ビューポートの設定
 
 	// Cgパラメータ設定
-	cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[INSCATTER_N], "first"),order == 2 ? 1.0 : 0.0);
+	cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[INSCATTER_N], "first"),order == 2 ? 1.f : 0.f);
 	cgGLSetTextureParameter(cgGetNamedEffectParameter(CgEffect[INSCATTER_N], "transmittanceSampler"), transmittanceTexture);
 	cgGLSetTextureParameter(cgGetNamedEffectParameter(CgEffect[INSCATTER_N], "deltaJSampler"), deltaJTexture);
 
@@ -455,7 +456,7 @@ cout << "AtmosphericShader::InscatterN()..." << endl;
 		setLayer(r, dhdH, layer);
 		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[INSCATTER_N], "r"), r);
 		cgSetParameter4fv(cgGetNamedEffectParameter(CgEffect[INSCATTER_N], "dhdH"), dhdH);
-		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[INSCATTER_N], "layer"), layer);
+		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[INSCATTER_N], "layer"), (float)layer);
 		
 		// fboに3Dテクスチャのスライスをアタッチ
 		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, deltaSRTexture, 0, layer);
@@ -473,7 +474,7 @@ cout << "AtmosphericShader::InscatterN()..." << endl;
 
 void AtmosphericShader::CopyInscatterN()
 {
-cout << "AtmosphericShader::CopyInscatterN()..." << endl;
+tcout << _T("AtmosphericShader::CopyInscatterN()...") << tendl;
 
 	float	r = 0;// シェーダに渡す値
 	float	dhdH[4] = {0,0,0,0};// シェーダに渡す値
@@ -495,7 +496,7 @@ cout << "AtmosphericShader::CopyInscatterN()..." << endl;
 		setLayer(r, dhdH, layer);
 		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[COPY_INSCATTER_N], "r"), r);
 		cgSetParameter4fv(cgGetNamedEffectParameter(CgEffect[COPY_INSCATTER_N], "dhdH"), dhdH);
-		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[COPY_INSCATTER_N], "layer"), layer);
+		cgSetParameter1f(cgGetNamedEffectParameter(CgEffect[COPY_INSCATTER_N], "layer"), (float)layer);
 
 		// fboに3Dテクスチャのスライスをアタッチ
 		GL_SAFE_CALL( glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, inscatterTexture, 0, layer) );
@@ -514,29 +515,29 @@ cout << "AtmosphericShader::CopyInscatterN()..." << endl;
 
 bool AtmosphericShader::IsValidEffect(CGeffect effect)
 {	
-	//cout << "Checking effect techniques (" << cgGetEffectName(effect) << " )..." << endl;
+	//tcout << _T("Checking effect techniques (") << cgGetEffectName(effect) << _T(" )...") << tendl;
 	bool	flag = true;
 	CGtechnique techniques = cgGetFirstTechnique(effect);
 	
 	if(!techniques)
 	{
-		//cout << "	Error : No Valid Technique" << endl;
+		//tcout << _T("	Error : No Valid Technique") << tendl;
 		flag = false;
 		return flag;
 	}
 
 	while(techniques)
 	{
-		//cout << "  "<< cgGetTechniqueName(techniques) << "... ";
+		//tcout << _T("  ") << cgGetTechniqueName(techniques) << _T("... ");
 
 		if(cgValidateTechnique(techniques)==CG_FALSE)
 		{
 			flag = false;
-			//cout << "Invalid" << endl;
+			//tcout << _T("Invalid") << tendl;
 		}
 		//else
 		//{
-		//	cout << "OK" << endl;			
+		//	tcout << _T("OK") << tendl;
 		//}		
 		techniques = cgGetNextTechnique(techniques);
 	}
@@ -547,7 +548,7 @@ bool AtmosphericShader::IsValidEffect(CGeffect effect)
 
 void AtmosphericShader::LoadCgEffect()
 {
-cout << "AtmosphericShader::LoadCgEffect()..." << endl;
+tcout << _T("AtmosphericShader::LoadCgEffect()...") << tendl;
 
 	int i;
 
@@ -555,7 +556,7 @@ cout << "AtmosphericShader::LoadCgEffect()..." << endl;
 	CGerror Error = cgGetError();
 	if(Error)
 	{
-		cout << cgGetErrorString(Error) << endl;
+		tcout << cgGetErrorString(Error) << tendl;
 		return; //exit(0);
 	}
 	

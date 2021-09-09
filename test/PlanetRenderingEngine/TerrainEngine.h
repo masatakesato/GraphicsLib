@@ -16,8 +16,8 @@ using namespace std;
 
 
 #include	<oreore/mathlib/GraphicsMath.h>
+#include	<oreore/images/Bitmap.h>
 
-#include	<graphics/gl4x/Bitmap.h>
 #include	<graphics/gl4x/scene/ViewFrustum.h>
 #include	<graphics/gl4x/scene/Camera.h>
 

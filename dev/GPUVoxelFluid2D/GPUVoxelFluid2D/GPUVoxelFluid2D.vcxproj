@@ -89,8 +89,8 @@
     <ClCompile Include="..\..\..\graphics\gl4x\shader\IShader.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\QuadShader.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\RampShader.cpp" />
-    <ClCompile Include="..\..\..\graphics\gl4x\SwapTexture.cpp" />
-    <ClCompile Include="..\..\..\graphics\gl4x\Texture.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\SwapTexture.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\Texture.cpp" />
     <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\FlameShader2D.cpp" />
     <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\FluidVoxelData2D.cpp" />
     <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\GPUVoxelFluid2D.cpp" />
@@ -106,8 +106,8 @@
     <ClInclude Include="..\..\..\graphics\gl4x\shader\IShader.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\QuadShader.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\RampShader.h" />
-    <ClInclude Include="..\..\..\graphics\gl4x\SwapTexture.h" />
-    <ClInclude Include="..\..\..\graphics\gl4x\Texture.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\SwapTexture.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\Texture.h" />
     <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\StreamLineShader.h" />
     <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\FlameShader2D.h" />
     <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\FluidVoxelData2D.h" />

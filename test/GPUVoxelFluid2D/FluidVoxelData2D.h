@@ -1,8 +1,8 @@
 ﻿#ifndef	FLUID_VOXEL_DATA_2D_H
 #define	FLUID_VOXEL_DATA_2D_H
 
-#include	<graphics/gl4x/Texture.h>
-#include	<graphics/gl4x/SwapTexture.h>
+#include	<graphics/gl4x/resource/Texture.h>
+#include	<graphics/gl4x/resource/SwapTexture.h>
 
 
 

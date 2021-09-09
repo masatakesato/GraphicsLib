@@ -1,8 +1,7 @@
 ﻿#include "HeightmapGenerator.h"
 
-#include	<graphics/gl4x/resource/GLTexture.h>
-using namespace MyGlTexture;
-
+#include	<graphics/gl4x/resource/Texture.h>
+using namespace OreOreLib;
 #include	<graphics/gl4x/other/MyGlPrimitive.h>
 using namespace MyGlPrimitive;
 
@@ -10,7 +9,7 @@ using namespace MyGlPrimitive;
 
 HeightmapGenerator::HeightmapGenerator(int mapsize, float border, float heightrange)
 {
-cout << "HeightmapGenerator::HeightmapGenerator()..." << endl;
+tcout << _T("HeightmapGenerator::HeightmapGenerator()...") << tendl;
 
 	m_HeightRange	= heightrange;
 	m_MapSize		= mapsize;
@@ -20,14 +19,14 @@ cout << "HeightmapGenerator::HeightmapGenerator()..." << endl;
 	m_Camera		= new Camera();
 
 	//========================== テクスチャの初期化 ==============================//
-	m_PermTexture		= AllocateTexture1D(GL_NEAREST, GL_NEAREST, 256, GL_R16F, GL_RED, GL_FLOAT);
-	m_PermTexture2d		= AllocateTexture2D(GL_NEAREST, GL_NEAREST, GL_REPEAT, GL_REPEAT, 256, 256, GL_RGBA16F, GL_RGBA, GL_FLOAT);
-	m_PermGradTexture	= AllocateTexture1D(GL_NEAREST, GL_NEAREST, 256, GL_RGBA16F, GL_RGBA, GL_FLOAT);
-	m_GradTexture4d		= AllocateTexture1D(GL_NEAREST, GL_NEAREST, 32, GL_RGBA16F, GL_RGBA, GL_FLOAT);
+	m_PermTexture		= AllocateTexture1D(GL_NEAREST, GL_NEAREST, 256, GL_R32F, GL_RED, GL_FLOAT);
+	m_PermTexture2d		= AllocateTexture2D(GL_NEAREST, GL_NEAREST, GL_REPEAT, GL_REPEAT, 256, 256, GL_RGBA32F, GL_RGBA, GL_FLOAT);
+	m_PermGradTexture	= AllocateTexture1D(GL_NEAREST, GL_NEAREST, 256, GL_RGBA32F, GL_RGBA, GL_FLOAT);
+	m_GradTexture4d		= AllocateTexture1D(GL_NEAREST, GL_NEAREST, 32, GL_RGBA32F, GL_RGBA, GL_FLOAT);
 	
-	m_HeightBuffer	= AllocateTexture2D(GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_MapSize, m_MapSize, GL_R16F, GL_RED, GL_FLOAT);
+	m_HeightBuffer	= AllocateTexture2D(GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_MapSize, m_MapSize, GL_R32F, GL_RED, GL_FLOAT);
 	m_PosBuffer		= AllocateTexture2D(GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_MapSize, m_MapSize, GL_RGB32F, GL_RGB, GL_FLOAT);
-	m_NormalBuffer	= AllocateTexture2D(GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_MapSize, m_MapSize, GL_RGBA16F, GL_RGBA, GL_FLOAT);
+	m_NormalBuffer	= AllocateTexture2D(GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_MapSize, m_MapSize, GL_RGBA32F, GL_RGBA, GL_FLOAT);
 
 	//====================== フレームバッファオブジェクト初期化 ======================//
 	m_fbo = NULL;
@@ -49,7 +48,7 @@ cout << "HeightmapGenerator::HeightmapGenerator()..." << endl;
 
 HeightmapGenerator::~HeightmapGenerator()
 {
-cout << "HeightmapGenerator::~HeightmapGenerator()..." << endl;
+tcout << _T("HeightmapGenerator::~HeightmapGenerator()...") << tendl;
 
 	//====== フレームバッファオブジェクトの削除 ======//
 	if(m_fbo)
@@ -92,7 +91,7 @@ void HeightmapGenerator::SetScale(float horizontal, float vertical)
 
 void HeightmapGenerator::SetMapSize(int mapsize)
 {
-cout << "HeightmapGenerator::SetMapSize()" << endl;
+tcout << _T("HeightmapGenerator::SetMapSize()") << tendl;
 
 	//============== 透視パラメータの更新 ==================//
 	m_MapSize	= mapsize;
@@ -105,9 +104,9 @@ cout << "HeightmapGenerator::SetMapSize()" << endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//================= テクスチャの再度確保 ===============//
-	ReallocateTexture2D(m_HeightBuffer, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_MapSize, m_MapSize, GL_R16F, GL_RED, GL_FLOAT);
+	ReallocateTexture2D(m_HeightBuffer, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_MapSize, m_MapSize, GL_R32F, GL_RED, GL_FLOAT);
 	ReallocateTexture2D(m_PosBuffer,  GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_MapSize, m_MapSize, GL_RGB32F, GL_RGB, GL_FLOAT);
-	ReallocateTexture2D(m_NormalBuffer, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_MapSize, m_MapSize, GL_RGBA16F, GL_RGBA, GL_FLOAT);
+	ReallocateTexture2D(m_NormalBuffer, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, m_MapSize, m_MapSize, GL_RGBA32F, GL_RGBA, GL_FLOAT);
 }
 
 
@@ -193,7 +192,7 @@ void HeightmapGenerator::Draw(	uint32 tex_height, uint32 tex_normal,
 // LookupTableを生成する
 void HeightmapGenerator::InitLookupTable()
 {
-cout << "HeightmapGenerator::InitLookupTable()..." << endl;
+tcout << _T("HeightmapGenerator::InitLookupTable()...") << tendl;
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 	{
@@ -212,7 +211,7 @@ cout << "HeightmapGenerator::InitLookupTable()..." << endl;
 
 void HeightmapGenerator::GeneratePermTexture()// 1channel
 {
-cout << "HeightmapGenerator::GeneratePermTexture()..." << endl;
+tcout << _T("HeightmapGenerator::GeneratePermTexture()...") << tendl;
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_PermTexture, 0);
 	
 	glClearColor(0,0,0,0);
@@ -232,7 +231,7 @@ cout << "HeightmapGenerator::GeneratePermTexture()..." << endl;
 
 void HeightmapGenerator::GeneratePermTexture2d()//4channel
 {
-cout << "HeightmapGenerator::GeneratePermTexture2d()..." << endl;
+tcout << _T("HeightmapGenerator::GeneratePermTexture2d()...") << tendl;
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_PermTexture2d, 0);
 
 	glClearColor(0,0,0,0);
@@ -251,7 +250,7 @@ cout << "HeightmapGenerator::GeneratePermTexture2d()..." << endl;
 
 void HeightmapGenerator::GeneratePermGradTexture()//4channel
 {
-cout << "HeightmapGenerator::GeneratePermGradTexture()..." << endl;
+tcout << _T("HeightmapGenerator::GeneratePermGradTexture()...") << tendl;
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_PermGradTexture, 0);
 
 	glClearColor(1,1,1,0);
@@ -270,7 +269,7 @@ cout << "HeightmapGenerator::GeneratePermGradTexture()..." << endl;
 
 void HeightmapGenerator::GenerateGradTexture4d()//4channel
 {	
-cout << "HeightmapGenerator::GenerateGradTexture4d()..." << endl;
+tcout << _T("HeightmapGenerator::GenerateGradTexture4d()...") << tendl;
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_GradTexture4d, 0);
 
 	glClearColor(0,0,0,0);
@@ -289,13 +288,13 @@ cout << "HeightmapGenerator::GenerateGradTexture4d()..." << endl;
 
 void HeightmapGenerator::LoadCgEffect()
 {
-cout << "HeightmapGenerator::LoadCgEffect()..." << endl;
+tcout << _T("HeightmapGenerator::LoadCgEffect()...") << tendl;
 
 	//===================== エラーチェック ====================//
 	CGerror Error = cgGetError();
 	if(Error)
 	{
-		cout << cgGetErrorString(Error) << endl;
+		tcout << cgGetErrorString(Error) << tendl;
 		return; //exit(0);
 	}
 
@@ -333,29 +332,29 @@ cout << "HeightmapGenerator::LoadCgEffect()..." << endl;
 
 bool HeightmapGenerator::IsValidEffect(CGeffect effect)
 {	
-	//cout << "Checking effect techniques (" << cgGetEffectName(effect) << " )..." << endl;
+	//tcout << _T("Checking effect techniques (") << cgGetEffectName(effect) << _T(" )...") << tendl;
 	bool	flag = true;
 	CGtechnique techniques = cgGetFirstTechnique(effect);
 	
 	if(!techniques)
 	{
-		//cout << "	Error : No Valid Technique" << endl;
+		//tcout << _T("	Error : No Valid Technique") << tendl;
 		flag = false;
 		return flag;
 	}
 
 	while(techniques)
 	{
-		//cout << "  "<< cgGetTechniqueName(techniques) << "... ";
+		//tcout << _T("  ") << cgGetTechniqueName(techniques) << _T("... ");
 
 		if(cgValidateTechnique(techniques)==CG_FALSE)
 		{
 			flag = false;
-			//cout << "Error : Invalid Technique" << endl;
+			//tcout << _T("Error : Invalid Technique") << tendl;
 		}
 		//else
 		//{
-		//	cout << "OK" << endl;			
+		//	tcout << _T("OK") << tendl;
 		//}		
 		techniques = cgGetNextTechnique(techniques);
 	}

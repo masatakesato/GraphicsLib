@@ -17,11 +17,11 @@
 
 #include	<oreore/mathlib/GraphicsMath.h>
 
-#include	<graphics/gl4x/resource/GLTexture.h>
+#include	<graphics/gl4x/resource/Texture.h>
 #include	<graphics/gl4x/scene/Camera.h>
 #include	"G_Buffer.h"
 
-
+using namespace OreOreLib;
 using namespace std;
 
 

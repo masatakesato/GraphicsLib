@@ -2,12 +2,11 @@
 
 #include	<math.h>
 
-#include	<graphics/gl4x/resource/GLTexture.h>
-using namespace MyGlTexture;
+#include	<graphics/gl4x/resource/Texture.h>
+using namespace OreOreLib;
 
 
 
-// テクスチャマッピングした板を描く
 static void DrawQuad()
 {
 	float	TexCoordArray[8] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f };
@@ -52,7 +51,7 @@ HDRShader::HDRShader()
 
 HDRShader::HDRShader(int width, int height)
 {
-cout << "HDRShader::HDRShader()..." << endl;
+tcout << _T("HDRShader::HDRShader()...") << tendl;
 
 	m_Width4x4 = width/4;
 	m_Height4x4 = height/4;
@@ -80,7 +79,7 @@ cout << "HDRShader::HDRShader()..." << endl;
 
 HDRShader::~HDRShader()
 {
-cout << "HDRShader::~HDRShader~()..." << endl;
+tcout << _T("HDRShader::~HDRShader~()...") << tendl;
 
 	//====== フレームバッファオブジェクトの削除 ======//
 	if(m_fbo)
@@ -347,13 +346,13 @@ void HDRShader::RenderFinalImage(unsigned int IN, int width, int height)
 
 void HDRShader::LoadCgEffect()
 {
-cout << "HDRShader::LoadCgEffect()..." << endl;
+tcout << _T("HDRShader::LoadCgEffect()...") << tendl;
 
 	//===================== エラーチェック ====================//
 	CGerror Error = cgGetError();
 	if(Error)
 	{
-		cout << cgGetErrorString(Error) << endl;
+		tcout << cgGetErrorString(Error) << tendl;
 		return; //exit(0);
 	}
 
@@ -388,29 +387,29 @@ cout << "HDRShader::LoadCgEffect()..." << endl;
 
 bool HDRShader::IsValidEffect(CGeffect effect)
 {	
-	//cout << "Checking effect techniques (" << cgGetEffectName(effect) << " )..." << endl;
+	//tcout << _T("Checking effect techniques (") << cgGetEffectName(effect) << _T(" )...") << tendl;
 	bool	flag = true;
 	CGtechnique techniques = cgGetFirstTechnique(effect);
 	
 	if(!techniques)
 	{
-		//cout << "	Error : No Valid Technique" << endl;
+		//tcout << _T("	Error : No Valid Technique") << tendl;
 		flag = false;
 		return flag;
 	}
 
 	while(techniques)
 	{
-		//cout << "  "<< cgGetTechniqueName(techniques) << "... ";
+		//tcout << _T("  ") << cgGetTechniqueName(techniques) << _T("... ");
 
 		if(cgValidateTechnique(techniques)==CG_FALSE)
 		{
 			flag = false;
-			cout << "Error: Invalid Technique... " << cgGetTechniqueName(techniques) << endl;
+			tcout << _T("Error: Invalid Technique... ") << cgGetTechniqueName(techniques) << tendl;
 		}
 		//else
 		//{
-		//	cout << "OK" << endl;			
+		//	tcout << _T("OK") << tendl;			
 		//}		
 		techniques = cgGetNextTechnique(techniques);
 	}

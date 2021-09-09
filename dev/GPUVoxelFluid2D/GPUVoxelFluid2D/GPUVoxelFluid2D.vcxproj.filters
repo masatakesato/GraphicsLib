@@ -55,13 +55,13 @@
     <ClCompile Include="..\..\..\graphics\gl4x\RampShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\graphics\gl4x\SwapTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\StreamLineShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\graphics\gl4x\Texture.cpp">
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\SwapTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -90,12 +90,6 @@
     <ClInclude Include="..\..\..\graphics\gl4x\RampShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\graphics\gl4x\SwapTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\graphics\gl4x\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\FluidVoxelData2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -106,6 +100,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\graphics\gl4x\resource\GLVertexArrayObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\SwapTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

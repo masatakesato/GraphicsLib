@@ -1,9 +1,9 @@
 ﻿#ifndef	I_SHADER_H
 #define	I_SHADER_H
 
-#include	"../Texture.h"
-
 #include	"../common/Defines.h"
+
+#include	"../resource/Texture.h"
 #include	"../resource/GLVertexArrayObject.h"
 #include	"../resource/GeometryBuffer.h"
 

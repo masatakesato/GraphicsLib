@@ -1,13 +1,10 @@
 ﻿#include	"PlanetRenderingEngine.h"
 
-//#ifndef _USE_MATH_DEFINES
-//	#define _USE_MATH_DEFINES
-//#endif
 #include	<math.h>
 
 #include	<graphics/gl4x/common/GLHelperFunctions.h>
-#include	<graphics/gl4x/resource/GLTexture.h>
-using namespace MyGlTexture;
+#include	<graphics/gl4x/resource/Texture.h>
+using namespace OreOreLib;
 
 
 
@@ -218,7 +215,7 @@ PlanetRenderingEngine::~PlanetRenderingEngine()
 void PlanetRenderingEngine::Create()
 {
 
-cout << "PlanetRenderingEngine::Create()..." << endl;
+tcout << _T("PlanetRenderingEngine::Create()...") << tendl;
 
 	Vec3f pos = {0,0,0};
 
@@ -370,7 +367,7 @@ void PlanetRenderingEngine::RunThread()
 
 			if((errCode=glGetError()) != GL_NO_ERROR)
 			{
-				cout << gluErrorString(errCode) << endl;
+				tcout << gluErrorString(errCode) << tendl;
 				//return;
 			}
 
@@ -765,7 +762,7 @@ unsigned PlanetRenderingEngine::mouseMove(LPARAM lParam)
 
 	}
 
-//cout << "Mouse Cursor = (" << m_MouseX << ", " << m_MouseY << ")" << endl;
+//tcout << _T("Mouse Cursor = (") << m_MouseX << _T(", ") << m_MouseY << _T(")") << tendl;
 	
 	ReleaseMutex(m_hMutex);
 
@@ -834,7 +831,7 @@ void PlanetRenderingEngine::ChangeVirtualTextureParam(int tex_size)
 {
 	WaitForSingleObject(m_hMutex, INFINITE);
 
-cout << "PlanetRenderingEngine::ChangeVirtualTextureParam()..." << endl;
+tcout << _T("PlanetRenderingEngine::ChangeVirtualTextureParam()...") << tendl;
 
 	m_VirtualTexture->TileCache_Clear();
 	m_VirtualTexture->InitTileCache(16,16,tex_size);
