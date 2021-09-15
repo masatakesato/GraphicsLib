@@ -1,10 +1,10 @@
 ﻿#include "SPHSolver.h"
 
 
-#include <math.h>
-#include <float.h>
+//#include <math.h>
+//#include <float.h>
 
-#include <oreore/MathLib.h>
+#include	<oreore/mathlib/GraphicsMath.h>
 
 
 
@@ -1068,15 +1068,15 @@ double SPH_WallDensity_At(double dist, SPH_WallDensity *wd)
 
 
 
-// [関数名]	SPH_Pressure_Implicit
+// [関数名]	SPH_Pressure_Implicit. Gave up implementation.
 // [引き数]	
 // [戻り値]	
 // [内容]	圧力項を陰解法で解く
 void SPH_Pressure_Implicit(SPH *sph)
 {
-	int loop, iter;// 反復計算用
-	int i, j, k;
-	double	Pab;
+//	int loop, iter;// 反復計算用
+//	int i, j, k;
+//	double	Pab;
 	
 	
 	// ∇^2 P_n+1 = rho0/dT * ∇u'

@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1401
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GPUBitonicSort", "GPUBitonicSort\GPUBitonicSort.vcxproj", "{F68C9A85-5942-410E-A405-6318829484B3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GPURadixSort", "GPURadixSort\GPURadixSort.vcxproj", "{B6C810C0-C140-4F34-B263-611A449B5993}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GPUPrefixSum", "GPUPrefixSum\GPUPrefixSum.vcxproj", "{CA68312C-AEAB-4D63-BC1E-EF30A26BE1A8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F68C9A85-5942-410E-A405-6318829484B3}.Debug|x64.ActiveCfg = Debug|x64
+		{F68C9A85-5942-410E-A405-6318829484B3}.Debug|x64.Build.0 = Debug|x64
+		{F68C9A85-5942-410E-A405-6318829484B3}.Release|x64.ActiveCfg = Release|x64
+		{F68C9A85-5942-410E-A405-6318829484B3}.Release|x64.Build.0 = Release|x64
+		{B6C810C0-C140-4F34-B263-611A449B5993}.Debug|x64.ActiveCfg = Debug|x64
+		{B6C810C0-C140-4F34-B263-611A449B5993}.Debug|x64.Build.0 = Debug|x64
+		{B6C810C0-C140-4F34-B263-611A449B5993}.Release|x64.ActiveCfg = Release|x64
+		{B6C810C0-C140-4F34-B263-611A449B5993}.Release|x64.Build.0 = Release|x64
+		{CA68312C-AEAB-4D63-BC1E-EF30A26BE1A8}.Debug|x64.ActiveCfg = Debug|x64
+		{CA68312C-AEAB-4D63-BC1E-EF30A26BE1A8}.Debug|x64.Build.0 = Debug|x64
+		{CA68312C-AEAB-4D63-BC1E-EF30A26BE1A8}.Release|x64.ActiveCfg = Release|x64
+		{CA68312C-AEAB-4D63-BC1E-EF30A26BE1A8}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {46BF6A54-CEC6-44CB-AF37-B4AA261C316D}
+	EndGlobalSection
+EndGlobal

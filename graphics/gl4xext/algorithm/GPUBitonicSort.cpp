@@ -38,7 +38,7 @@ namespace OreOreLib
 		};
 
 		// Create shader
-		m_Shader.Init( _T( "GPUBitonicSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Shader.Init( _T( "algorithm/GPUBitonicSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Shader.ID();
 
 		// Init Uniform Location

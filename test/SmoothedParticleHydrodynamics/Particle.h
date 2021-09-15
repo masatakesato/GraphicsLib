@@ -18,8 +18,7 @@
 
 using namespace std;
 
-#include <oreore/MathLib.h>
-
+#include	<oreore/mathlib/GraphicsMath.h>
 
 
 typedef struct Particle

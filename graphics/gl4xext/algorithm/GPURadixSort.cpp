@@ -52,7 +52,7 @@ namespace OreOreLib
 
 		//===========================	PASS_LOCAL_SORT	=========================//
 		// Create shader
-		m_Pass[PASS_LOCAL_SORT].Init( _T( "GPURadixSort_LocalSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_LOCAL_SORT].Init( _T( "algorithm/GPURadixSort_LocalSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_LOCAL_SORT].ID();
 
 		// Init Uniform Locations
@@ -70,7 +70,7 @@ namespace OreOreLib
 
 		//=============================	PASS_SCAN	=============================//
 		// Create shader
-		m_Pass[PASS_SCAN].Init( _T( "GPURadixSort_Scan.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_SCAN].Init( _T( "algorithm/GPURadixSort_Scan.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_SCAN].ID();
 
 		// Init Uniform Locations
@@ -89,7 +89,7 @@ namespace OreOreLib
 		Defines[0].Definition = to_tstring( PER_BLOCK_ELEMENTS );
 
 		// Create shader
-		m_Pass[PASS_ACCUM_BLOCK_SUM].Init( _T( "GPURadixSort_AccumBlockSum.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_ACCUM_BLOCK_SUM].Init( _T( "algorithm/GPURadixSort_AccumBlockSum.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_ACCUM_BLOCK_SUM].ID();
 
 		// Init Uniform Locations
@@ -106,7 +106,7 @@ namespace OreOreLib
 		//Defines[0].Definition = std::to_string( PER_BLOCK_ELEMENTS );
 
 		// Create Shader
-		m_Pass[PASS_GLOBAL_SORT].Init( _T( "GPURadixSort_GlobalSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_GLOBAL_SORT].Init( _T( "algorithm/GPURadixSort_GlobalSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_GLOBAL_SORT].ID();
 
 		// Init Uniform Locations

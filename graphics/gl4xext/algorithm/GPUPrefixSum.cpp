@@ -47,7 +47,7 @@ namespace OreOreLib
 
 		//=============================	PASS_SCAN	=============================//
 		// Create shader
-		m_Pass[PASS_SCAN].Init( _T( "GPUPrefixSum_Scan.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_SCAN].Init( _T( "algorithm/GPUPrefixSum_Scan.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_SCAN].ID();
 
 		// Init Uniform Locations
@@ -66,7 +66,7 @@ namespace OreOreLib
 		// Create shader
 		Defines[0].Definition = to_tstring( PER_BLOCK_ELEMENTS );
 
-		m_Pass[PASS_ACCUM_BLOCK_SUM].Init( _T( "GPUPrefixSum_AccumBlockSum.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_ACCUM_BLOCK_SUM].Init( _T( "algorithm/GPUPrefixSum_AccumBlockSum.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_ACCUM_BLOCK_SUM].ID();
 
 		// Init Uniform Locations

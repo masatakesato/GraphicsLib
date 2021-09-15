@@ -19,7 +19,7 @@
 using namespace std;
 #include <GL/glut.h>
 
-#include <oreore/MathLib.h>
+#include	<oreore/mathlib/GraphicsMath.h>
 
 
 
