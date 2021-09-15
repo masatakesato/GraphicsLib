@@ -1,9 +1,8 @@
 ﻿#ifndef	GPU_PREFIX_SUM_H
 #define	GPU_PREFIX_SUM_H
 
-
-#include	<oreore/GLComputeShader.h>
-#include	<oreore/GLShaderStorageBufferObject.h>
+#include	<graphics/gl4x/shader/GLComputeShader.h>
+#include	<graphics/gl4x/resource/GLShaderStorageBufferObject.h>
 
 
 

@@ -1,9 +1,10 @@
 ﻿#include	"GPUPrefixSum.h"
 
-
 #include	<oreore/common/Utility.h>
-#include	<oreore/MathLib.h>
-#include	<oreore/GLBindPointManager.h>
+#include	<oreore/mathlib/MathLib.h>
+
+#include	<graphics/gl4x/resource/GLBindPointManager.h>
+
 
 
 #define		PER_BLOCK_ELEMENTS	8	// Must be EVEN number!!
@@ -40,13 +41,13 @@ namespace OreOreLib
 
 		GL_SHADER_MACRO Defines[] =
 		{
-			GL_SHADER_MACRO( _T( "THREADS_PER_BLOCK" ), std::to_string( THREADS_PER_BLOCK ) ),
+			GL_SHADER_MACRO( _T( "THREADS_PER_BLOCK" ), to_tstring( THREADS_PER_BLOCK ) ),
 			GL_SHADER_MACRO( _T( "" ), _T( "" ) ),
 		};
 
 		//=============================	PASS_SCAN	=============================//
 		// Create shader
-		m_Pass[PASS_SCAN].Init( _T( "labworks/GPUPrefixSum_Scan.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_SCAN].Init( _T( "GPUPrefixSum_Scan.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_SCAN].ID();
 
 		// Init Uniform Locations
@@ -63,9 +64,9 @@ namespace OreOreLib
 
 		//======================	PASS_ACCUM_BLOCK_SUM	======================//
 		// Create shader
-		Defines[0].Definition = std::to_string( PER_BLOCK_ELEMENTS );
+		Defines[0].Definition = to_tstring( PER_BLOCK_ELEMENTS );
 
-		m_Pass[PASS_ACCUM_BLOCK_SUM].Init( _T( "labworks/GPUPrefixSum_AccumBlockSum.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_ACCUM_BLOCK_SUM].Init( _T( "GPUPrefixSum_AccumBlockSum.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_ACCUM_BLOCK_SUM].ID();
 
 		// Init Uniform Locations
@@ -98,7 +99,7 @@ namespace OreOreLib
 
 	void GPUPrefixSum::BindData( GLShaderStorageBufferObject *pInputData, GLShaderStorageBufferObject* pOutputData, int numelements )
 	{
-		m_NumRecursiveLevels	= int( ceil( Log( PER_BLOCK_ELEMENTS, numelements ) ) );
+		m_NumRecursiveLevels	= int( ceil( Log( (float64)PER_BLOCK_ELEMENTS, (float64)numelements ) ) ) + 1;
 		tcout << _T( "Number of Recursive Levels = " ) << m_NumRecursiveLevels << tendl;
 
 		if( m_NumRecursiveLevels == 0 )
@@ -136,9 +137,11 @@ namespace OreOreLib
 			tcout << _T( "Level:" ) << level << tendl;
 			tcout << _T( "   actual arrayLength = " ) << arrayLength << _T( " " ) << _T( " (aligned to " ) << m_numElms[level] << _T( ")" ) << tendl;
 			tcout << _T( "   # ThreadBlocks..." ) << m_numThreadBlocks[level] << tendl;
+
+			tcout << tendl;
 		}
 
-
+		tcout << tendl;
 	}
 
 
@@ -224,6 +227,13 @@ namespace OreOreLib
 		{
 			int numelms;
 
+			tcout << "m_BlockScans[" << level << "]:  ";
+			numelms	= m_numElms[level];
+			m_BlockScans[level]->Readback2CPU( cpuBuffer, sizeof( float )*numelms );
+
+			for( int i=0; i < numelms; ++i )	tcout << cpuBuffer[i] << _T( " " );
+			tcout << tendl;
+
 			tcout << "m_BlockSums[" << level << "]:   ";
 			numelms	= m_numElms[level];
 			m_BlockSums[level]->Readback2CPU( cpuBuffer, sizeof( float )*numelms );
@@ -231,15 +241,11 @@ namespace OreOreLib
 			for( int i=0; i < numelms; ++i )	tcout << cpuBuffer[i] << _T( " " );
 			tcout << tendl;
 
-
-			tcout << "m_BlockScans[" << level << "]:  ";
-			numelms	= m_numElms[level];
-			m_BlockScans[level]->Readback2CPU( cpuBuffer, sizeof( float )*numelms );
-
-			for( int i=0; i < numelms; ++i )	tcout << cpuBuffer[i] << _T( " " );
-			tcout << tendl;
-			//tcout << int(cpuBuffer[numelms - 1]) << tendl;
 		}
+
+		tcout << _T("Result = ") << int(cpuBuffer[0]) << tendl;
+		
+		tcout << tendl;
 
 		SafeDeleteArray( cpuBuffer );
 #endif

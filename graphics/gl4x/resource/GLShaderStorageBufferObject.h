@@ -1,8 +1,8 @@
 ﻿#ifndef GL_SHADER_STORAGE_OBJECT_H
 #define GL_SHADER_STORAGE_OBJECT_H
 
+#include	<oreore/common/TString.h>
 
-#include	"./common/TString.h"
 #include	"Buffer.h"
 #include	"IGLBufferObject.h"
 

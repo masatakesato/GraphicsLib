@@ -1,9 +1,9 @@
 ﻿#include	"GPURadixSort.h"
 
-
 #include	<oreore/common/Utility.h>
-#include	<oreore/MathLib.h>
-#include	<oreore/GLBindPointManager.h>
+#include	<oreore/mathlib/MathLib.h>
+
+#include	<graphics/gl4x/resource/GLBindPointManager.h>
 
 
 #define		PER_BLOCK_ELEMENTS	256	// Must be EVEN number!! 1024 at maximum. must be graeter equal 4(THREADS_PER_BLOCK>=4 at LocalScan Kernel)
@@ -45,14 +45,14 @@ namespace OreOreLib
 
 		GL_SHADER_MACRO Defines[] =
 		{
-			GL_SHADER_MACRO( _T( "THREADS_PER_BLOCK" ), std::to_string( THREADS_PER_BLOCK ) ),
+			GL_SHADER_MACRO( _T( "THREADS_PER_BLOCK" ), to_tstring( THREADS_PER_BLOCK ) ),
 			GL_SHADER_MACRO( _T( "" ), _T( "" ) ),
 		};
 
 
 		//===========================	PASS_LOCAL_SORT	=========================//
 		// Create shader
-		m_Pass[PASS_LOCAL_SORT].Init( _T( "labworks/GPURadixSort/GPURadixSort_LocalSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_LOCAL_SORT].Init( _T( "GPURadixSort_LocalSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_LOCAL_SORT].ID();
 
 		// Init Uniform Locations
@@ -70,7 +70,7 @@ namespace OreOreLib
 
 		//=============================	PASS_SCAN	=============================//
 		// Create shader
-		m_Pass[PASS_SCAN].Init( _T( "labworks/GPURadixSort/GPURadixSort_Scan.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_SCAN].Init( _T( "GPURadixSort_Scan.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_SCAN].ID();
 
 		// Init Uniform Locations
@@ -86,10 +86,10 @@ namespace OreOreLib
 
 
 		//======================	PASS_ACCUM_BLOCK_SUM	======================//
-		Defines[0].Definition = std::to_string( PER_BLOCK_ELEMENTS );
+		Defines[0].Definition = to_tstring( PER_BLOCK_ELEMENTS );
 
 		// Create shader
-		m_Pass[PASS_ACCUM_BLOCK_SUM].Init( _T( "labworks/GPURadixSort/GPURadixSort_AccumBlockSum.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_ACCUM_BLOCK_SUM].Init( _T( "GPURadixSort_AccumBlockSum.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_ACCUM_BLOCK_SUM].ID();
 
 		// Init Uniform Locations
@@ -106,7 +106,7 @@ namespace OreOreLib
 		//Defines[0].Definition = std::to_string( PER_BLOCK_ELEMENTS );
 
 		// Create Shader
-		m_Pass[PASS_GLOBAL_SORT].Init( _T( "labworks/GPURadixSort/GPURadixSort_GlobalSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Pass[PASS_GLOBAL_SORT].Init( _T( "GPURadixSort_GlobalSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Pass[PASS_GLOBAL_SORT].ID();
 
 		// Init Uniform Locations
@@ -157,7 +157,7 @@ namespace OreOreLib
 
 		//===============	Allocate Buffers for Recursive Global Radix Scan ===============//
 		uint32 radixCountArrayLength	= NUM_RADIX * m_Pass[PASS_LOCAL_SORT].GetWorkGroupSizeX();// number of radix * threadblock(workgroup) size of local sort pass
-		m_NumRadixRecursiveLevels	= int( ceil( Log( PER_BLOCK_ELEMENTS, radixCountArrayLength ) ) );
+		m_NumRadixRecursiveLevels	= int( ceil( Log( (float64)PER_BLOCK_ELEMENTS, (float64)radixCountArrayLength ) ) );
 
 		tcout << _T( "Radix Count Array Length = " ) << radixCountArrayLength << tendl;
 		tcout << _T( "Number of Radix Scan Recursive Levels = " ) << m_NumRadixRecursiveLevels << tendl;

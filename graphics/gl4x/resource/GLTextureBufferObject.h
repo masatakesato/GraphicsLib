@@ -1,16 +1,16 @@
 ﻿#ifndef	GL_TEXTURE_BUFFER_OBJECT_H
 #define	GL_TEXTURE_BUFFER_OBJECT_H
 
-#include	"./common/TString.h"
-#include	"./common/Utility.h"
-
 #include	<GL/glew.h>
 #pragma comment( lib, "glew32.lib" )
 
+#include	<oreore/common/TString.h>
+#include	<oreore/common/Utility.h>
+#include	<oreore/container/RingQueue.h>
 
 #include	"BufferLayout.h"
 #include	"IGLBufferObject.h"
-#include	"./container/RingQueue.h"
+
 
 
 namespace OreOreLib

@@ -7,8 +7,9 @@
 #pragma comment( lib, "glew32.lib" )
 
 
-#include	"./common/Utility.h"
-#include	"./container/RingQueue.h"
+#include	<oreore/common/Utility.h>
+#include	<oreore/container/RingQueue.h>
+
 
 
 namespace OreOreLib

@@ -3,15 +3,13 @@
 #include	<iostream>
 using namespace std;
 
+#include	<graphics/gl4x/common/GLHelperFunctions.h>
+#include	<graphics/gl4x/resource/GLBindPointManager.h>
+#include	<graphics/gl4x/resource/GLShaderStorageBufferObject.h>
+#include	<graphics/gl4x/resource/GLTextureBufferObject.h>
+#include	<graphics/gl4x/other/GLPrimitives.h>
 
-#include	<oreore/GLPrimitives.h>
-#include	<oreore/GLHelperFunctions.h>
-#include	<oreore/GLBindPointManager.h>
-#include	<oreore/GLShaderStorageBufferObject.h>
-#include	<oreore/GLTextureBufferObject.h>
-#include	<oreore/QuadShader.h>
-#include	<labworks/GPUPrefixSum.h>
-
+#include	<graphics/gl4xext/algorithm/GPUPrefixSum.h>
 
 using namespace OreOreLib;
 
@@ -25,7 +23,7 @@ GLShaderStorageBufferObject	g_SSBO, g_SSBO2;
 
 
 
-const int numElm = 64;//4096*4096;
+const int numElm = 66;//4096*4096;
 
 void initialize()
 {
@@ -34,7 +32,7 @@ void initialize()
 
 	TCHAR dir[_MAX_PATH];
 	GetCurrentDirectory( _MAX_PATH, dir );
-	SetCurrentDirectory( _T( "../shader/glsl/" ) );
+	SetCurrentDirectory( _T("../../../graphics/gl4xext/glsl/") );
 
 	g_GPUPrefixSum.Init();
 
@@ -49,7 +47,7 @@ void initialize()
 
 	for( int i=0; i<numElm; ++i )
 	{
-		fArray[i]	= /*float(i%2==1) */ 1.0f;//1.0f;//float( numElm-i );//float( rand()%numElm );// float( 1023-i );
+		fArray[i]	= float(i%2==1);//  1.0f;//1.0f;//float( numElm-i );//float( rand()%numElm );// float( 1023-i );
 		fArray2[i]	= 0.0f;
 		//tcout << fArray[i] << tendl;
 	}

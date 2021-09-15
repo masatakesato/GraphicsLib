@@ -4,14 +4,14 @@
 using namespace std;
 
 
-#include	<oreore/GLPrimitives.h>
-#include	<oreore/GLHelperFunctions.h>
-#include	<oreore/GLBindPointManager.h>
-#include	<oreore/GLBufferObject.h>
-#include	<oreore/GLShaderStorageBufferObject.h>
-#include	<oreore/GLTextureBufferObject.h>
-#include	<oreore/QuadShader.h>
-#include	<labworks/GPUBitonicSort.h>
+#include	<graphics/gl4x/common/GLHelperFunctions.h>
+#include	<graphics/gl4x/resource/GLBindPointManager.h>
+#include	<graphics/gl4x/resource/GLBufferObject.h>
+#include	<graphics/gl4x/resource/GLShaderStorageBufferObject.h>
+#include	<graphics/gl4x/resource/GLTextureBufferObject.h>
+#include	<graphics/gl4x/other/GLPrimitives.h>
+
+#include	<graphics/gl4xext/algorithm/GPUBitonicSort.h>
 
 
 using namespace OreOreLib;
@@ -28,22 +28,18 @@ GLShaderStorageBufferObject	g_SSBO;
 
 const int numElm = 1024 * 1024;
 
-void initialize () 
+void initialize() 
 {
 	GLBindPointManager::InitBindPoints();
 
-
 	TCHAR dir[_MAX_PATH];
 	GetCurrentDirectory( _MAX_PATH, dir );
-	SetCurrentDirectory( _T("../shader/glsl/") );
+	SetCurrentDirectory( _T("../../../graphics/gl4xext/glsl/") );
 
 	g_GPUBitonicSort.Init();
 
-
 	// back to current directory
 	SetCurrentDirectory( dir );
-
-	
 
 	float *fArray	= new float[numElm];
 	float *fArray2	= new float[numElm];

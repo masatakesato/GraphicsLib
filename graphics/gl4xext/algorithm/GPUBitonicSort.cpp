@@ -1,7 +1,7 @@
 ﻿#include	"GPUBitonicSort.h"
 
-
 #include	<oreore/common/Utility.h>
+#include	<oreore/mathlib/MathLib.h>
 
 
 #define		THREADS_PER_BLOCK	1024
@@ -33,12 +33,12 @@ namespace OreOreLib
 		
 		GL_SHADER_MACRO Defines[] =
 		{
-			GL_SHADER_MACRO( _T( "THREADS_PER_BLOCK" ), std::to_string( THREADS_PER_BLOCK ) ),
+			GL_SHADER_MACRO( _T( "THREADS_PER_BLOCK" ), to_tstring( THREADS_PER_BLOCK ) ),
 			GL_SHADER_MACRO( _T( "" ), _T( "" ) ),
 		};
 
 		// Create shader
-		m_Shader.Init( _T( "labworks/GPUBitonicSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
+		m_Shader.Init( _T( "GPUBitonicSort.glsl" ), GLSL_VERSION::GLSL_430, Defines );
 		program_id	= m_Shader.ID();
 
 		// Init Uniform Location
@@ -63,7 +63,7 @@ namespace OreOreLib
 
 	void GPUBitonicSort::BindData( GLShaderStorageBufferObject *pSsbo )
 	{
-		pSsbo->BindToShaderByName( m_Shader.ID(), _T( "ssbFloatArray" ) );
+		pSsbo->BindToShaderByName( m_Shader.ID(), "ssbFloatArray" );
 
 	}
 
@@ -81,7 +81,7 @@ namespace OreOreLib
 		{
 	
 			uint32 threads	= uint32(arraySize) >> 1;
-			uint32 blocks	= DivUp( threads, THREADS_PER_BLOCK );
+			uint32 blocks	= DivUp( threads, (uint32)THREADS_PER_BLOCK );
 	
 	//		val, key, threads, size, stride
 	

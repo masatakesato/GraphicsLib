@@ -76,7 +76,7 @@ namespace OreOreLib
 		m_Shader_id = glCreateProgram();
 
 		//=================== シェーダーをコンパイルする ===================//
-		CompileShaderFromFile( GL_COMPUTE_SHADER, g_GLslVersion[version] + shader_source, m_Shader_id, m_Shader_cs );
+		CompileShaderFromFile( GL_COMPUTE_SHADER, (tstring&)(g_GLslVersion[version] + shader_source), m_Shader_id, m_Shader_cs );
 
 
 		//=============== プログラムオブジェクトをリンクする ===============//

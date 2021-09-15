@@ -4,15 +4,13 @@
 #include	<iomanip>
 using namespace std;
 
+#include	<graphics/gl4x/common/GLHelperFunctions.h>
+#include	<graphics/gl4x/resource/GLBindPointManager.h>
+#include	<graphics/gl4x/resource/GLShaderStorageBufferObject.h>
+#include	<graphics/gl4x/resource/GLTextureBufferObject.h>
+#include	<graphics/gl4x/other/GLPrimitives.h>
 
-#include	<oreore/GLPrimitives.h>
-#include	<oreore/GLHelperFunctions.h>
-#include	<oreore/GLBindPointManager.h>
-#include	<oreore/GLShaderStorageBufferObject.h>
-#include	<oreore/GLTextureBufferObject.h>
-#include	<oreore/QuadShader.h>
-#include	<labworks/GPURadixSort.h>
-
+#include	<graphics/gl4xext/algorithm/GPURadixSort.h>
 
 using namespace OreOreLib;
 
@@ -50,22 +48,17 @@ void initialize()
 {
 	GLBindPointManager::InitBindPoints();
 	
-
 	TCHAR dir[_MAX_PATH];
 	GetCurrentDirectory( _MAX_PATH, dir );
-	SetCurrentDirectory( _T( "../shader/glsl/" ) );
+	SetCurrentDirectory( _T("../../../graphics/gl4xext/glsl/") );
 	
 	g_GPURadixSort.Init();
 
 	// back to current directory
 	SetCurrentDirectory( dir );
 
-
-
 	uint32 *fArray	= new uint32[numElm];
 	uint32 *fArray2	= new uint32[numElm];
-
-
 
 	for( int i=0; i<numElm; ++i )
 	{

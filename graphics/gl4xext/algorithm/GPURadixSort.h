@@ -1,9 +1,9 @@
 ﻿#ifndef GPU_RADIX_SORT_H
 #define	GPU_RADIX_SORT_H
 
+#include	<graphics/gl4x/shader/GLComputeShader.h>
+#include	<graphics/gl4x/resource/GLShaderStorageBufferObject.h>
 
-#include	<oreore/GLComputeShader.h>
-#include	<oreore/GLShaderStorageBufferObject.h>
 
 
 
