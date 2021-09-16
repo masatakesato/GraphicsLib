@@ -49,12 +49,6 @@
     <ClCompile Include="..\..\..\graphics\gl4x\shader\IShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\graphics\gl4x\QuadShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\graphics\gl4x\RampShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\StreamLineShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -62,6 +56,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\graphics\gl4x\resource\SwapTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\QuadShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\RampShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -84,12 +84,6 @@
     <ClInclude Include="..\..\..\graphics\gl4x\shader\IShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\graphics\gl4x\QuadShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\graphics\gl4x\RampShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\FluidVoxelData2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -106,6 +100,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\graphics\gl4x\resource\SwapTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\QuadShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\RampShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -144,9 +144,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\StreamLineShader.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\QuadShader.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

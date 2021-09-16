@@ -69,11 +69,11 @@ namespace OreOreLib
 		else			shader_source = textFileRead(filename);
 
 
-//TODO: Get current shader file directory
+		// Get current shader file directory
 		TCHAR currdir[_MAX_PATH ];
 		GetCurrentDirectory( _MAX_PATH, currdir );
 
-		tcout << currdir;
+		//tcout << currdir;
 
 		tstring filepath( filename );
 		tstring relativepath;
@@ -94,7 +94,7 @@ namespace OreOreLib
 				
 			relativepath = filepath.substr(first_idx, last_slash_idx);
 
-			tcout << "/" << relativepath << tendl;
+			//tcout << "/" << relativepath << tendl;
 		}
 
 		tstring shaderfiledir = tstring( currdir ) + _T("/") + relativepath + _T("/");

@@ -87,8 +87,8 @@
     <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\resource\GLVertexArrayObject.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\shader\IShader.cpp" />
-    <ClCompile Include="..\..\..\graphics\gl4x\QuadShader.cpp" />
-    <ClCompile Include="..\..\..\graphics\gl4x\RampShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\QuadShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\RampShader.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\resource\SwapTexture.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\resource\Texture.cpp" />
     <ClCompile Include="..\..\..\test\GPUVoxelFluid2D\FlameShader2D.cpp" />
@@ -104,8 +104,8 @@
     <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\resource\GLVertexArrayObject.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\shader\IShader.h" />
-    <ClInclude Include="..\..\..\graphics\gl4x\QuadShader.h" />
-    <ClInclude Include="..\..\..\graphics\gl4x\RampShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\QuadShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\RampShader.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\resource\SwapTexture.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\resource\Texture.h" />
     <ClInclude Include="..\..\..\test\GPUVoxelFluid2D\StreamLineShader.h" />
@@ -125,7 +125,6 @@
     <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_Jacobi.glsl" />
     <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_SubtractGradient.glsl" />
     <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\GPUVoxelFluid_VorticityConfinement.glsl" />
-    <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\QuadShader.glsl" />
     <None Include="..\..\..\test\GPUVoxelFluid2D\shaders\StreamLineShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

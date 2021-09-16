@@ -8,7 +8,7 @@ using namespace std;
 #include	<graphics/gl4x/other/GLPrimitives.h>
 #include	<graphics/gl4x/common/GLHelperFunctions.h>
 
-#include	<graphics/gl4x/QuadShader.h>
+#include	<graphics/gl4xext/rendering/QuadShader.h>
 #include	"GPUVoxelFluid2D.h"
 #include	"FlameShader2D.h"
 #include	"StreamLineShader.h"
@@ -413,7 +413,7 @@ void initialize()
 	SetCurrentDirectory( _T( "../shader/glsl/" ) );
 
 	g_VoxelFluid2D.InitShader();
-	g_QuadShader.InitShader( _T( "../../../test/GPUVoxelFluid2D/shaders/QuadShader.glsl" ), GLSL_VERSION::GLSL_430 );
+	g_QuadShader.InitShader( _T( "../../../graphics/gl4xext/glsl/rendering/QuadShader.glsl" ), GLSL_VERSION::GLSL_430 );
 	g_RampShader.InitShader( _T( "../../../test/GPUVoxelFluid2D/shaders/FlameShader2D.glsl" ), GLSL_VERSION::GLSL_430 );
 	
 	g_StreamLineShader.InitShader( _T( "../../../test/GPUVoxelFluid2D/shaders/StreamLineShader.glsl" ) );
