@@ -13,9 +13,9 @@
 
 
 #include	"RustShader.h"
-#include	"PerlinNoiseCPU.h"
-#include	"SimplexNoiseCPU.h"
-#include	"CellNoiseCPU.h"
+#include	<graphics/gl4xext/procedural/PerlinNoiseCPU.h>
+#include	<graphics/gl4xext/procedural/SimplexNoiseCPU.h>
+#include	<graphics/gl4xext/procedural/WorleyNoiseCPU.h>
 
 
 
@@ -28,13 +28,13 @@ using namespace OreOreLib;
 
 
 Texture2D			g_texSimplexNoise;
-Texture2D			g_texPerlinNoise;
+//Texture2D			g_texPerlinNoise;
 RustShader			g_RustShader;
 
 
 PerlinNoiseCPU		g_PerlinNoiseGenerator;
 SimplexNoiseCPU		g_SimplexNoiseGenerator;
-CellNoiseCPU		g_CellNoiseGenerator;
+WorleyNoiseCPU		g_CellNoiseGenerator;
 
 
 
@@ -171,7 +171,7 @@ void display()
 	// Clear Screen and Depth Buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor( 0.2f, 0.2f, 0.2f, 0.0f ); 
-
+/*
 	// シーンの描画
 for( int y=0; y<g_texSimplexNoise.Height(); ++y )
 	{
@@ -179,21 +179,21 @@ for( int y=0; y<g_texSimplexNoise.Height(); ++y )
 		{
 			*(float *)g_texSimplexNoise.Data(x,y) = g_SimplexNoiseGenerator.fBm((double)x/(double)g_texSimplexNoise.Width()*g_NoiseScale + g_OffsetX,
 																				(double)y/(double)g_texSimplexNoise.Height()*g_NoiseScale + g_OffsetY,
-																				g_OffsetZ
-																				//g_OffsetW
+																				g_OffsetZ,
+																				g_OffsetW
 																				) * 0.25f;
 
 			*(float *)g_texSimplexNoise.Data(x,y) += g_CellNoiseGenerator.fBm(	(double)x/(double)g_texSimplexNoise.Width()*g_NoiseScale + g_OffsetX,
 																				(double)y/(double)g_texSimplexNoise.Height()*g_NoiseScale + g_OffsetY,
-																				g_OffsetZ,
-																				4, 2.0f, 0.5f
+																				g_OffsetZ
+																				//4, 2.0f, 0.5f
 																				) * 0.5f;
 			*(float *)g_texSimplexNoise.Data(x,y) *= g_Brightness;
 		}// end of x loop
 	}// end of y loop
 
 g_texSimplexNoise.Transfer2GPU();
-
+*/
 
 
 
@@ -224,15 +224,32 @@ void reshape( int width, int height )
 
 void initialize () 
 {
-	g_texSimplexNoise.Allocate( 512, 512, 0, 0, FORMAT_R32_FLOAT );
-	g_texSimplexNoise.GenTexture();
+/*
+	const TCHAR* aa = _T("abcdefghijk");
 
-	g_texPerlinNoise.Allocate( 512, 512, 0, 0, FORMAT_R32_FLOAT );
-	g_texPerlinNoise.GenTexture();
+	auto aaa = tstring( aa );
 
+//	const char* fa = TStringToChar( aa );
+	const char* fa = TCharToChar( aa, 12 );
 
+	tcout << fa << tendl;
+*/
 
-	g_RustShader.InitShader( "../Shader/RustShader.glsl" );
+	g_texSimplexNoise.Load( _T("D:/Repository/GraphicsLib/test/RustProceduralTexture/media/rustmask.png"), FORMAT_R32_FLOAT );
+	g_texSimplexNoise.GenHardwareTexture();
+	g_texSimplexNoise.Transfer2GPU();
+
+//	g_texPerlinNoise.Allocate( 512, 512, 0, 0, FORMAT_R32_FLOAT );
+//	g_texPerlinNoise.GenHardwareTexture();
+
+	TCHAR dir[_MAX_PATH];
+	GetCurrentDirectory( _MAX_PATH, dir );
+	SetCurrentDirectory( _T( "../../../test/RustProceduralTexture/" ) );
+
+	g_RustShader.InitShader( _T("glsl/RustShader.glsl"), GLSL_VERSION::GLSL_430 );
+
+	// back to current directory
+	SetCurrentDirectory( dir );
 
 
 	// specify the clear value for the depth buffer
@@ -261,6 +278,8 @@ float	g_Zoom = 0.0f;
 
 int main(int argc, char **argv) 
 {
+	InitFreeImage();
+
 	// Ant TweakBar
 	TwBar *bar; // Pointer to the tweak bar
 
@@ -305,29 +324,89 @@ int main(int argc, char **argv)
 
 	bar = TwNewBar("TweakBar");
 
-	TwDefine(" TweakBar size='200 400' color='96 216 224' "); // change default tweak bar size and color
+	TwDefine(" TweakBar size='250 300' color='200 96 96 96' "); // change default tweak bar size and color
 
 
-	TwAddVarRW( bar, "NoiseScale", TW_TYPE_FLOAT, &g_NoiseScale,
-				" label='NoiseScale' min=0.0 max=100.0 step=0.1 keyIncr=z keyDecr=Z ");
+//	TwAddVarRW( bar, "NoiseScale", TW_TYPE_FLOAT, &g_NoiseScale,
+//				" label='NoiseScale' min=0.0 max=100.0 step=0.1 keyIncr=z keyDecr=Z ");
 
 
-	TwAddVarRW( bar, "OffsetX", TW_TYPE_FLOAT, &g_OffsetX,
-				" label='OffsetX' min=-1000.0 max=1000.0 step=0.05 keyIncr=z keyDecr=Z ");
+//	TwAddVarRW( bar, "OffsetX", TW_TYPE_FLOAT, &g_OffsetX,
+//				" label='OffsetX' min=-1000.0 max=1000.0 step=0.05 keyIncr=z keyDecr=Z ");
 
 
-	TwAddVarRW( bar, "OffsetY", TW_TYPE_FLOAT, &g_OffsetY,
-				" label='OffsetY' min=-1000.0 max=1000.0 step=0.05 keyIncr=z keyDecr=Z ");
+//	TwAddVarRW( bar, "OffsetY", TW_TYPE_FLOAT, &g_OffsetY,
+//				" label='OffsetY' min=-1000.0 max=1000.0 step=0.05 keyIncr=z keyDecr=Z ");
 
 
-	TwAddVarRW( bar, "OffsetZ", TW_TYPE_FLOAT, &g_OffsetZ,
-				" label='OffsetZ' min=-1000.0 max=1000.0 step=0.05 keyIncr=z keyDecr=Z ");
+//	TwAddVarRW( bar, "OffsetZ", TW_TYPE_FLOAT, &g_OffsetZ,
+//				" label='OffsetZ' min=-1000.0 max=1000.0 step=0.05 keyIncr=z keyDecr=Z ");
 
-	TwAddVarRW( bar, "OffsetW", TW_TYPE_FLOAT, &g_OffsetW,
-				" label='OffsetW' min=-1000.0 max=1000.0 step=0.05 keyIncr=z keyDecr=Z ");
+//	TwAddVarRW( bar, "OffsetW", TW_TYPE_FLOAT, &g_OffsetW,
+//				" label='OffsetW' min=-1000.0 max=1000.0 step=0.05 keyIncr=z keyDecr=Z ");
 
-	TwAddVarRW( bar, "Brightness", TW_TYPE_FLOAT, &g_Brightness,
-				" label='Brightness' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");
+//	TwAddVarRW( bar, "Brightness", TW_TYPE_FLOAT, &g_Brightness,
+//				" label='Brightness' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");
+
+
+	TwAddVarRW( bar, "Aging", TW_TYPE_FLOAT, (void *)&g_RustShader.Aging(),
+				" label='Aging' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");
+
+	TwAddVarRW( bar, "Scale", TW_TYPE_FLOAT, (void *)&g_RustShader.Scale(),
+				" label='Scale' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");
+
+
+	TwAddVarRW( bar, "OffsetX", TW_TYPE_FLOAT, (void *)&g_RustShader.OffsetX(),
+				" label='OffsetX' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");
+
+	TwAddVarRW( bar, "OffsetY", TW_TYPE_FLOAT, (void *)&g_RustShader.OffsetY(),
+				" label='OffsetY' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");
+
+	TwAddVarRW( bar, "OffsetZ", TW_TYPE_FLOAT, (void *)&g_RustShader.OffsetZ(),
+				" label='OffsetZ' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");
+
+
+	TwAddVarRW( bar, "DistribAmount", TW_TYPE_FLOAT, (void *)&g_RustShader.DistribAmount(),
+				" label='DistribAmount' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");
+	
+	TwAddVarRW( bar, "DistribSmoothness", TW_TYPE_FLOAT, (void *)&g_RustShader.DistribSmoothness(),
+				" label='DistribSmoothness' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");
+
+
+	TwAddVarRW( bar, "SpotAmount", TW_TYPE_FLOAT, (void *)&g_RustShader.SpotAmount(),
+				" label='SpotAmount' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");
+
+	TwAddVarRW( bar, "SpotSmoothness", TW_TYPE_FLOAT, (void *)&g_RustShader.SpotSmoothness(),
+				" label='SpotSmoothness' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");	
+
+
+	TwAddVarRW( bar, "BleedAmount", TW_TYPE_FLOAT, (void *)&g_RustShader.BleedAmount(),
+				" label='BleedAmount' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");	
+
+	TwAddVarRW( bar, "BleedSmoothness", TW_TYPE_FLOAT, (void *)&g_RustShader.BleedSmoothness(),
+				" label='BleedSmoothness' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");	
+
+
+	TwAddVarRW( bar, "BaseAmount", TW_TYPE_FLOAT, (void *)&g_RustShader.BaseAmount(),
+				" label='BaseAmount' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");	
+
+	TwAddVarRW( bar, "BaseSmoothness", TW_TYPE_FLOAT, (void *)&g_RustShader.BaseSmoothness(),
+				" label='BaseSmoothness' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");	
+
+
+	TwAddVarRW( bar, "OuterBleedAmount", TW_TYPE_FLOAT, (void *)&g_RustShader.OuterBleedAmount(),
+				" label='OuterBleedAmount' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");	
+
+	TwAddVarRW( bar, "OuterBleedSmoothness", TW_TYPE_FLOAT, (void *)&g_RustShader.OuterBleedSmoothness(),
+				" label='OuterBleedSmoothness' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");	
+
+
+	TwAddVarRW( bar, "OuterBaseAmount", TW_TYPE_FLOAT, (void *)&g_RustShader.OuterBaseAmount(),
+				" label='OuterBaseAmount' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");	
+
+	TwAddVarRW( bar, "OuterBaseSmoothness", TW_TYPE_FLOAT, (void *)&g_RustShader.OuterBaseSmoothness(),
+				" label='OuterBaseSmoothness' min=0.0 max=1000.0 step=0.01 keyIncr=z keyDecr=Z ");	
+
 
 	//
 	//TwAddVarRW( bar, "RingInterval", TW_TYPE_FLOAT, g_procMat->RingInterval(),
@@ -366,7 +445,8 @@ int main(int argc, char **argv)
 
 	glutMainLoop();							// run GLUT mainloop
 
-
+	
+	DeinitFreeImage();
 	TwTerminate();
 
 	return 0;

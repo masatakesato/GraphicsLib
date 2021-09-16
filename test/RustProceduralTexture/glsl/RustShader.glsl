@@ -88,8 +88,8 @@ void main(void)
 //#pragma include"../shader/SimplexNoise2d.glsl"
 //#pragma include"../shader/SimplexNoise3d.glsl"
 //#pragma include"../shader/SimplexNoise4d.glsl"
-#pragma include"../shader/SimplexNoise.glsl"
-#pragma include"../shader/WorleyNoise.glsl"
+#pragma include"../../../graphics/gl4xext/glsl/procedural/SimplexNoise.glsl"
+#pragma include"../../../graphics/gl4xext/glsl/procedural/WorleyNoise.glsl"
 
 
 // Fragment Shader Input
@@ -144,8 +144,8 @@ const float g_OuterBaseThreashold_end		= g_OuterBaseThreashold_start + g_OuterBa
 void calcRustInnerColor( inout vec4 rust_col )
 {
 	float rust_inner_mat	= //texture( g_InnerRust, vTexCoord.xy ).x;
-								0.5 * Worley_fBm( (g_Offset + vec3(vTexCoord, 0.0) )*RUST_INNER_SCALE * g_Scale, 4, 1.5, 0.5 ) +
-								0.5 * ( Simplex_fBm( (g_Offset + vec3(vTexCoord, 0.0) )*RUST_INNER_SCALE * g_Scale, 3, 2.5, 0.75 ) * 0.5 + 0.5 );
+								0.5 * Worley_fBm( (g_Offset + vec3(vTexCoord, 0.0) ) * RUST_INNER_SCALE * g_Scale, 4, 1.5, 0.5 ).x +
+								0.5 * ( Simplex_fBm( (g_Offset + vec3(vTexCoord, 0.0) ) * RUST_INNER_SCALE * g_Scale, 3, 2.5, 0.75 ) * 0.5 + 0.5 );
 
 	// 黄色い部分の計算
 	float base_weight	= smoothstep( g_BaseThreashold_start, g_BaseThreashold_end, rust_inner_mat );
@@ -153,7 +153,7 @@ void calcRustInnerColor( inout vec4 rust_col )
 
 	// 黒い部分の計算
 	float spot_distrib	= //texture( g_SpotDistribution, vTexCoord.xy ).x * 0.8 + rust_inner_mat * 0.2;
-							Worley_fBm( (g_Offset + vec3(vTexCoord, 0.0)) * RUST_SPOT_SCALE * g_Scale, 4, 1.25, 0.85 ) * 0.25 + 0.25;
+							Worley_fBm( (g_Offset + vec3(vTexCoord, 0.0) ) * RUST_SPOT_SCALE * g_Scale, 4, 1.25, 0.85 ).x * 0.25 + 0.25;
 	spot_distrib	= spot_distrib * 0.8 + rust_inner_mat * 0.2;
 
 	float spot_weight	= smoothstep( g_RustSpotThreshold_start, g_RustSpotThreshold_end, spot_distrib );//rust_inner_mat );
@@ -280,10 +280,10 @@ void main (void)
 							g_Aging *
 							(
 								0.35 * ( Simplex_fBm( (g_Offset+vec3(vTexCoord.xy,0.0)) * RUST_SHAPE_SCALE * g_Scale, 4, 2.5, 0.75 ) * 0.5 + 0.5 ) + 
-								0.65 * Worley_fBm( (g_Offset+vec3(vTexCoord.xy,0.0)) * RUST_SHAPE_SCALE * g_Scale, 4, 1.5, 0.5 )
+								0.65 * Worley_fBm( (g_Offset+vec3(vTexCoord.xy,0.0)) * RUST_SHAPE_SCALE * g_Scale, 4, 1.5, 0.5 ).x
 							),
 							0.0,
-							1.0 );
+							1.0 );// + Worley_fBm( (vec3(vTexCoord.xy*2.5,0.0)), 4, 1.5, 0.5 ).x;
 	const float rust_amount	= rust_shape * rust_map;
 	float rust_blend_weight	= smoothstep( g_RustDistribThreshold_start, g_RustDistribThreshold_end, rust_amount );
 
@@ -307,7 +307,7 @@ void main (void)
 	
 
 	//============================ 色を合成する ===================================//
-	outColor	= mix( rust_col_outer, rust_col_inner, rust_blend_weight );
+	outColor	= mix( rust_col_outer, rust_col_inner, rust_blend_weight );//vec4(rust_map, rust_map, rust_map, 1.0 )/255.0;//
 	
 }
 

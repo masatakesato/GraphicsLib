@@ -2,8 +2,6 @@
 #define	NOISE_PARAMS_H
 
 
-#include	<MathLib.h>
-
 
 namespace OreOreLib
 {

@@ -49,10 +49,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../;D:\Lib\AntTweakBar;D:\Lib\opengl\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;D:\Lib\AntTweakBar;D:\Lib\opengl\include;D:\Lib\freeimage\Dist\x64</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>FREEIMAGE_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>D:\Lib\opengl\lib\x64;D:\Lib\AntTweakBar\lib\x64;D:\Lib\freeimage\Dist\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -63,22 +65,38 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../;D:\Lib\AntTweakBar;D:\Lib\opengl\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;D:\Lib\AntTweakBar;D:\Lib\opengl\include;D:\Lib\freeimage\Dist\x64</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>FREEIMAGE_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\Lib\opengl\lib\x64;D:\Lib\AntTweakBar\lib\x64;D:\Lib\freeimage\Dist\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\graphics\gl4xext\procedural\PerlinNoiseCPU.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\procedural\SimplexNoiseCPU.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\procedural\WorleyNoiseCPU.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\Texture.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\IShader.cpp" />
     <ClCompile Include="..\..\..\test\RustProceduralTexture\RustProceduralTexture_main.cpp" />
     <ClCompile Include="..\..\..\test\RustProceduralTexture\RustShader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\graphics\gl4xext\procedural\PerlinNoiseCPU.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\procedural\SimplexNoiseCPU.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\procedural\WorleyNoiseCPU.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\Texture.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\IShader.h" />
     <ClInclude Include="..\..\..\test\RustProceduralTexture\RustShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\graphics\gl4xext\glsl\procedural\SimplexNoise.glsl" />
+    <None Include="..\..\..\graphics\gl4xext\glsl\procedural\WorleyNoise.glsl" />
     <None Include="..\..\..\test\RustProceduralTexture\glsl\RustShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

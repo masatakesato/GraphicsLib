@@ -1,7 +1,9 @@
 ﻿#ifndef	SIMPLEX_NOISE_CPU
 #define	SIMPLEX_NOISE_CPU
 
-#include	"../oreore/BufferLayout.h"
+#include	<graphics/gl4x/resource/BufferLayout.h>
+
+#include	"NoiseParams.h"
 
 
 
@@ -31,14 +33,14 @@ public:
 
 	void SetNoiseParam( const fBmNoiseParam& param )		{ m_NoiseParam = param; }
 	void SetScale( float scale )							{ m_NoiseParam.Scale = scale; }
-	void SetRotation( float degree )						{ m_NoiseParam.Angle = (float)TO_RADIAN( degree ); }
+	void SetRotation( float degree )						{ m_NoiseParam.Angle = ToRadian<float>( degree ); }
 	void SetStretch( float stretch )						{ m_NoiseParam.Stretch = stretch; }
 	void SetOctaves( float val )							{ m_NoiseParam.Octaves	= val; }
 	void SetLacunarity( float val )							{ m_NoiseParam.Lacunarity = val; }
 	void SetGain( float val )								{ m_NoiseParam.Gain = val; }
 
 	// output value control (test implementation 2013.12.03)
-	void SetOutputParam( const OutputControlParam& param )	{ m_OutputParam	= param; }
+	void SetOutputParam( const PostProcessParam& param )	{ m_OutputParam	= param; }
 	void SetBrightness( float val )							{ m_OutputParam.Brightness = val; }
 	void SetContrast( float val )							{ m_OutputParam.Contrast = val; }
 	void SetThreshold( float val )							{ m_OutputParam.Threshold = val; }
@@ -55,7 +57,7 @@ private:
 	Mat4f			m_MatTransform;
 
 	// output value control parameters
-	OutputControlParam	m_OutputParam;
+	PostProcessParam	m_OutputParam;
 
 
 	//static OreOreLib::Vec3i	grad3[];

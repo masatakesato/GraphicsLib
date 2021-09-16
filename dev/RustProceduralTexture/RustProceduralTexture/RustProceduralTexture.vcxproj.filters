@@ -25,14 +25,56 @@
     <ClCompile Include="..\..\..\test\RustProceduralTexture\RustShader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\IShader.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\Texture.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4xext\procedural\PerlinNoiseCPU.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4xext\procedural\SimplexNoiseCPU.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4xext\procedural\WorleyNoiseCPU.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\test\RustProceduralTexture\RustShader.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\IShader.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\Texture.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4xext\procedural\PerlinNoiseCPU.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4xext\procedural\SimplexNoiseCPU.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4xext\procedural\WorleyNoiseCPU.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\test\RustProceduralTexture\glsl\RustShader.glsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\..\graphics\gl4xext\glsl\procedural\SimplexNoise.glsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\..\graphics\gl4xext\glsl\procedural\WorleyNoise.glsl">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

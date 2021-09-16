@@ -1,16 +1,15 @@
 ﻿#ifndef	RUST_SHADER_H
 #define	RUST_SHADER_H
 
-
-#include	"../oreore/IRenderer.h"
-#include	"../oreore/GLShader.h"
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/shader/GLShader.h>
 using namespace OreOreLib;
 
 
 
 
 // Rust Shader
-class RustShader : public IRenderer
+class RustShader : public IShader
 {
 private:
 
@@ -69,25 +68,43 @@ private:
 public:
 
 	RustShader();
-	RustShader( const char* filepath );
+	RustShader( const TCHAR *filepath, GLSL_VERSION version );
 	~RustShader();
 
 	void Release();
 
-	void InitShader( const char* filepath );
+	void InitShader( const TCHAR *filepath, GLSL_VERSION version );
 	
-	inline virtual void BindShader( )
+	inline virtual void Bind( )
 	{
-		if( CurrentShader == m_pShader )	return;
-	
-		CurrentShader = m_pShader;
-		CurrentShader->Bind();
+		m_pShader->Bind();
 	}
 
 
-	void Render( /*uint32 distrib, uint32 rustshape, uint32 inner,*/ uint32 rust_mask );
-	virtual void Render( SceneNode *node, CameraMatrix *cp ){};
+	inline void Unbind()
+	{
+		m_pShader->Unbind();
+	}
+
 	
+	inline virtual int NumPasses() const						{ return 1; }
+	inline virtual GLuint GetPassID( int shader_idx=0 ) const	{ return m_pShader->ID(); }
+
+	inline virtual void BindShader( int shader_idx=0 )	// シェーダーをバインドする
+	{
+		if( m_pCurrShader == m_pShader )	return;
+		m_pCurrShader = m_pShader;
+		m_pCurrShader->Bind();
+	}
+
+
+	virtual void BindBufferObject( const IBufferObject* pbufferobj ){}
+	virtual void UnbindBufferObject(){}
+
+	//virtual void Render(){}
+	virtual void Render( const GeometryBuffer *pGeom, const ViewTransformMatrix *cam_mat ){}
+	void Render( /*uint32 distrib, uint32 rustshape, uint32 inner,*/ uint32 rust_mask );
+
 
 	void SetAging( float val )					{ m_Aging = val; }
 	void SetScale( float val )					{ m_Scale = val; }
@@ -105,6 +122,29 @@ public:
 	void SetOuterBaseAmount( float val )		{ m_OuterBaseAmount	= val; }
 	void SetOuterBaseSmoothness( float val )	{ m_OuterBaseSmoothness	= val; }
 
+
+
+	const float& Aging()					{ return m_Aging; }
+	const float& Scale()					{ return m_Scale; }
+	const float& OffsetX()				{ return m_Offset.x; }
+	const float& OffsetY()				{ return m_Offset.y; }
+	const float& OffsetZ()				{ return m_Offset.z; }
+	const float& DistribAmount()			{ return m_DistribAmount; }
+	const float& DistribSmoothness()		{ return m_DistribSmoothness; }
+	const float& SpotAmount()			{ return m_SpotAmount; }
+	const float& SpotSmoothness()		{ return m_SpotSmoothness; }
+	const float& BleedAmount()			{ return m_BleedAmount; }
+	const float& BleedSmoothness()		{ return m_BleedSmoothness; }
+	const float& BaseAmount()			{ return m_BaseAmount; }
+	const float& BaseSmoothness()		{ return m_BaseSmoothness; }
+	const float& OuterBleedAmount()		{ return m_OuterBleedAmount; }
+	const float& OuterBleedSmoothness()	{ return m_OuterBleedSmoothness; }
+	const float& OuterBaseAmount()		{ return m_OuterBaseAmount; }
+	const float& OuterBaseSmoothness()	{ return m_OuterBaseSmoothness; }
+
+
+
+
 };
 
 
@@ -112,16 +152,17 @@ public:
 
 
 // RustShaderオブジェクトを生成するファクトリクラス
-class RustShaderFactory : IRendererFactory
+class RustShaderFactory : IShaderFactory
 {
 private:
 
-	IRenderer* CreateInstance(){ return new RustShader( "RustShader.glsl" ); }
+	IShader* Create( GLSL_VERSION version ){ return new RustShader( _T("RustShader.glsl"), version ); }
 
 public:
 
-	RustShaderFactory(){};
-	//~RustShaderFactory(){};
+	virtual ~RustShaderFactory(){}
+	IShader* CreateInstance( GLSL_VERSION version );
+
 };
 
 

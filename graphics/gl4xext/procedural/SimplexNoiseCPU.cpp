@@ -37,7 +37,7 @@ static float BrightnessContrast( float value, float contrast, float brightness )
 	//pixelColor.rgb /= pixelColor.a;
 
 	// Apply contrast.
-	value	= ((value - 0.5f) * max(contrast, 0.0f)) + 0.5f;//pixelColor.rgb = ((pixelColor.rgb - 0.5f) * max(Contrast, 0)) + 0.5f;
+	value	= ((value - 0.5f) * Max(contrast, 0.0f)) + 0.5f;//pixelColor.rgb = ((pixelColor.rgb - 0.5f) * max(Contrast, 0)) + 0.5f;
 
 	// Apply brightness.
 	value	+= brightness;//pixelColor.rgb += Brightness;
@@ -78,14 +78,14 @@ static float Invert( float value )
 
 
 
-const OreOreLib::Vec3i grad3[] =
+const Vec3i grad3[] =
 {
 	{1,1,0},{-1,1,0},{1,-1,0},{-1,-1,0},
 	{1,0,1},{-1,0,1},{1,0,-1},{-1,0,-1},
 	{0,1,1},{0,-1,1},{0,1,-1},{0,-1,-1}
 };
 
-const OreOreLib::Vec4i grad4[] =
+const Vec4i grad4[] =
 {
 	{0,1,1,1}, {0,1,1,-1}, {0,1,-1,1}, {0,1,-1,-1},
 	{0,-1,1,1}, {0,-1,1,-1}, {0,-1,-1,1}, {0,-1,-1,-1},
@@ -115,7 +115,7 @@ const int p[] =
 };
 
 
-const OreOreLib::Vec4i simplex[] = 
+const Vec4i simplex[] = 
 {
 	{0,1,2,3},{0,1,3,2},{0,0,0,0},{0,2,3,1},{0,0,0,0},{0,0,0,0},{0,0,0,0},{1,2,3,0},
 	{0,2,1,3},{0,0,0,0},{0,3,1,2},{0,3,2,1},{0,0,0,0},{0,0,0,0},{0,0,0,0},{1,3,2,0},
@@ -659,17 +659,17 @@ void SimplexNoiseCPU::UpdateTransformMatrix()
 	static Quatf	quat;
 	static Mat4f	matRotScale, matScale, matRotation, matTranslation;
 	
-	MatScaling( matScale, m_NoiseParam.Scale, m_NoiseParam.Scale/max(m_NoiseParam.Stretch+1.0f, 1.0f), m_NoiseParam.Scale );
+	MatScale( matScale, m_NoiseParam.Scale, m_NoiseParam.Scale/Max(m_NoiseParam.Stretch+1.0f, 1.0f), m_NoiseParam.Scale );
 
 	InitQuat( quat, m_NoiseParam.Angle, 0.0f, 0.0f, 1.0f );
-	MatRotationQuat( matRotation, quat );
+	Quat2Mat( matRotation, quat );
 	
-	MatMultiply( matRotScale, matScale, matRotation );
+	Multiply( matRotScale, matScale, matRotation );
 
 	MatTranslation( matTranslation, DEFAULT_OFFSET, DEFAULT_OFFSET, DEFAULT_OFFSET );
 
 	// m_MatTransform = [ matTranslation ] * [ matRotation ] * [ matScale ] * [ 頂点座標 ]. 回転,拡大縮小が終わった後で平行移動する
-	MatMultiply( m_MatTransform, matTranslation, matRotScale );
+	Multiply( m_MatTransform, matTranslation, matRotScale );
 }
 
 

@@ -2,7 +2,7 @@
 
 
 
-OreOreLib::Vec3i PerlinNoiseCPU::grad3[] = 
+Vec3i PerlinNoiseCPU::grad3[] = 
 {
 	{1,1,0},{-1,1,0},{1,-1,0},{-1,-1,0},
 	{1,0,1},{-1,0,1},{1,0,-1},{-1,0,-1},

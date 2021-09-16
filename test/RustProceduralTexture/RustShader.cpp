@@ -37,46 +37,46 @@ RustShader::RustShader()
 	m_ulPermSimplex		= -1;
 	m_ulPermWorley		= -1;
 
-	m_Aging					= 0.0f;
-	m_Scale					= 0.0f;
+	m_Aging					= 1.0f;
+	m_Scale					= 10.0f;
 	InitVec( m_Offset, 500.0f, 500.0f, 500.0f );
-	m_DistribAmount			= 0.0f;
-	m_DistribSmoothness		= 0.0f;
-	m_SpotAmount			= 0.0f;
-	m_SpotSmoothness		= 0.0f;
-	m_BleedAmount			= 0.0f;
-	m_BleedSmoothness		= 0.0f;
-	m_BaseAmount			= 0.0f;
-	m_BaseSmoothness		= 0.0f;
-	m_OuterBleedAmount		= 0.0f;
-	m_OuterBleedSmoothness	= 0.0f;
-	m_OuterBaseAmount		= 0.0f;
-	m_OuterBaseSmoothness	= 0.0f;
+	m_DistribAmount			= 0.57f;
+	m_DistribSmoothness		= 1.56f;
+	m_SpotAmount			= 1.68f;
+	m_SpotSmoothness		= 0.43f;
+	m_BleedAmount			= 0.44f;
+	m_BleedSmoothness		= 0.45f;
+	m_BaseAmount			= 0.71f;
+	m_BaseSmoothness		= 0.53f;
+	m_OuterBleedAmount		= 0.16f;
+	m_OuterBleedSmoothness	= 0.37f;
+	m_OuterBaseAmount		= 0.34f;
+	m_OuterBaseSmoothness	= 0.31f;
 }
 
 // constructor
-RustShader::RustShader( const char *filepath )
+RustShader::RustShader( const TCHAR *filepath, GLSL_VERSION version )
 {
 	const type_info& id = typeid(*this);
-	cout << "AbstractClass-typeid: " << id.name() << endl;
+	tcout << _T("AbstractClass-typeid: ") << id.name() << tendl;
 
-	InitShader( filepath );
+	InitShader( filepath, version );
 
-	m_Aging					= 0.0f;
-	m_Scale					= 0.0f;
+	m_Aging					= 1.0f;
+	m_Scale					= 10.0f;
 	InitVec( m_Offset, 500.0f, 500.0f, 500.0f );
-	m_DistribAmount			= 0.0f;
-	m_DistribSmoothness		= 0.0f;
-	m_SpotAmount			= 0.0f;
-	m_SpotSmoothness		= 0.0f;
-	m_BleedAmount			= 0.0f;
-	m_BleedSmoothness		= 0.0f;
-	m_BaseAmount			= 0.0f;
-	m_BaseSmoothness		= 0.0f;
-	m_OuterBleedAmount		= 0.0f;
-	m_OuterBleedSmoothness	= 0.0f;
-	m_OuterBaseAmount		= 0.0f;
-	m_OuterBaseSmoothness	= 0.0f;
+	m_DistribAmount			= 0.57f;
+	m_DistribSmoothness		= 1.56f;
+	m_SpotAmount			= 1.68f;
+	m_SpotSmoothness		= 0.43f;
+	m_BleedAmount			= 0.44f;
+	m_BleedSmoothness		= 0.45f;
+	m_BaseAmount			= 0.71f;
+	m_BaseSmoothness		= 0.53f;
+	m_OuterBleedAmount		= 0.16f;
+	m_OuterBleedSmoothness	= 0.37f;
+	m_OuterBaseAmount		= 0.34f;
+	m_OuterBaseSmoothness	= 0.31f;
 }
 
 // destructor
@@ -92,21 +92,21 @@ void RustShader::Release()
 	m_PermSimplex.Release();
 	m_PermWorley.Release();
 
-	m_Aging					= 0.0f;
-	m_Scale					= 0.0f;
+	m_Aging					= 1.0f;
+	m_Scale					= 10.0f;
 	InitVec( m_Offset, 500.0f, 500.0f, 500.0f );
-	m_DistribAmount			= 0.0f;
-	m_DistribSmoothness		= 0.0f;
-	m_SpotAmount			= 0.0f;
-	m_SpotSmoothness		= 0.0f;
-	m_BleedAmount			= 0.0f;
-	m_BleedSmoothness		= 0.0f;
-	m_BaseAmount			= 0.0f;
-	m_BaseSmoothness		= 0.0f;
-	m_OuterBleedAmount		= 0.0f;
-	m_OuterBleedSmoothness	= 0.0f;
-	m_OuterBaseAmount		= 0.0f;
-	m_OuterBaseSmoothness	= 0.0f;
+	m_DistribAmount			= 0.57f;
+	m_DistribSmoothness		= 1.56f;
+	m_SpotAmount			= 1.68f;
+	m_SpotSmoothness		= 0.43f;
+	m_BleedAmount			= 0.44f;
+	m_BleedSmoothness		= 0.45f;
+	m_BaseAmount			= 0.71f;
+	m_BaseSmoothness		= 0.53f;
+	m_OuterBleedAmount		= 0.16f;
+	m_OuterBleedSmoothness	= 0.37f;
+	m_OuterBaseAmount		= 0.34f;
+	m_OuterBaseSmoothness	= 0.31f;
 }
 
 
@@ -114,15 +114,15 @@ void RustShader::Release()
 
 
 // init shader
-void RustShader::InitShader( const char *filepath )
+void RustShader::InitShader( const TCHAR *filepath, GLSL_VERSION version )
 {
 	// create shader
 	m_pShader	= new GLShader();
-	m_pShader->Init( filepath );
+	m_pShader->Init( filepath, version );
 	
 	// init attribute location
-	glBindAttribLocation( m_pShader->ID(), POSITION, "POSITION" );
-	glBindAttribLocation( m_pShader->ID(), TEXCOORD, "TEXCOORD" );
+	GL_SAFE_CALL( glBindAttribLocation( m_pShader->ID(), ATTRIB_LOCATION_POSITION, "POSITION" ) );
+	GL_SAFE_CALL( glBindAttribLocation( m_pShader->ID(), ATTRIB_LOCATION_TEXCOORD, "TEXCOORD" ) );
 
 	// init uniform location	
 	m_ulRustMask		= glGetUniformLocation( m_pShader->ID(), "g_RustMap" );
@@ -153,8 +153,8 @@ void RustShader::InitShader( const char *filepath )
 
 
 	InitPermTexture();
-	m_PermSimplex.GenTexture();
-	m_PermWorley.GenTexture();
+	m_PermSimplex.GenHardwareTexture();
+	m_PermWorley.GenHardwareTexture();
 
 
 	m_pShader->Bind();
@@ -177,6 +177,24 @@ void RustShader::InitShader( const char *filepath )
 
 
 
+//void RustShader::BindBufferObject( const IBufferObject* pbufferobj )
+//{
+//	const type_info &buffer_type	= typeid(*pbufferobj);
+//	//tcout << "class name: " << id.name() << tendl;// .name()使うと、コンパイラが間違えてメモリリーク報告してくる. 2013.08.05
+//
+//
+//	if( buffer_type == typeid(ViewTransformBuffer) )	// ビュー行列だった場合
+//	{
+//		((ViewTransformBuffer *)pbufferobj)->BindToShader( m_Shader.ID() );
+//	}
+//	else
+//	{
+//	}
+//
+//}
+
+
+
 // メッシュデータをレンダリングする(シェーダーはバインド済みと想定)
 void RustShader::Render( /*uint32 distrib, /*uint32 rustshape, uint32 inner,*/ uint32 rust_mask )
 {
@@ -185,12 +203,12 @@ void RustShader::Render( /*uint32 distrib, /*uint32 rustshape, uint32 inner,*/ u
 
 	//============================= AttributerLocationの設定 ==============================//
 	// 頂点座標
-	glVertexAttribPointer( POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(Vec2f), quad_verts );
-	glEnableVertexAttribArray( POSITION );
+	glVertexAttribPointer( ATTRIB_LOCATION_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(Vec2f), quad_verts );
+	glEnableVertexAttribArray( ATTRIB_LOCATION_POSITION );
 	
 	// テクスチャ座標
-	glVertexAttribPointer( TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vec2f), quad_texcoord );
-	glEnableVertexAttribArray( TEXCOORD );
+	glVertexAttribPointer( ATTRIB_LOCATION_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vec2f), quad_texcoord );
+	glEnableVertexAttribArray( ATTRIB_LOCATION_TEXCOORD );
 	
 
 	//=============================== UniformLocationの設定 ===============================//
@@ -254,8 +272,8 @@ void RustShader::Render( /*uint32 distrib, /*uint32 rustshape, uint32 inner,*/ u
 	glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, quad_indices );
 	
 	//================================ 頂点バッファの解放 =================================//
-	glDisableVertexAttribArray( POSITION );
-	glDisableVertexAttribArray( TEXCOORD );
+	glDisableVertexAttribArray( ATTRIB_LOCATION_POSITION );
+	glDisableVertexAttribArray( ATTRIB_LOCATION_TEXCOORD );
 	
 	m_pShader->Unbind();
 }

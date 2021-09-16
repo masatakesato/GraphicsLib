@@ -1,8 +1,7 @@
 ﻿#ifndef PERLIN_NOISE_CPU
 #define	PERLIN_NOISE_CPU
 
-
-#include	"MathLib.h"
+#include	<oreore/mathlib/GraphicsMath.h>
 
 
 
@@ -11,8 +10,8 @@ class PerlinNoiseCPU
 {
 private:
 
-	static OreOreLib::Vec3i	grad3[];
-	static int				p[];
+	static Vec3i	grad3[];
+	static int		p[];
 
 	// To remove the need for index wrapping, double the permutation table length
 	int				perm[512];

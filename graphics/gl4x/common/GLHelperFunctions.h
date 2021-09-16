@@ -226,7 +226,7 @@ namespace OreOreLib
 
 
 
-	static void IncludeHeader_rec( tstring &SrcCode )
+	static void IncludeHeader_rec( tstring &SrcCode, const tstring& root=_T("") )
 	{
 
 		// SrcCodeから，"#pragma include ***.h"を探す
@@ -236,8 +236,8 @@ namespace OreOreLib
 		{
 			for(int i=0; i<headers.size(); i++)
 			{
-				// ヘッダーファイルを読み込んでソースコードを取得
-				tstring HeaderCode = tstring( textFileRead( headers[i].c_str()) ) + _T('\n');
+// ヘッダーファイルを読み込んでソースコードを取得
+tstring HeaderCode = tstring( textFileRead( (root + headers[i]).c_str()) ) + _T('\n');
 				// ヘッダーのソースコード中にincludeがないか調べる
 				IncludeHeader_rec(HeaderCode);
 				// #pragmaの直後にソースコードを挿入
@@ -254,7 +254,7 @@ namespace OreOreLib
 
 
 
-	static void CompileShaderFromFile( GLenum shaderType, tstring& shader_source, GLuint& program, GLuint& shader )
+	static void CompileShaderFromFile( GLenum shaderType, const tstring& shader_source, GLuint& program, GLuint& shader )
 	{
 //#ifdef UNICODE
 //		size_t wLen		= 0;

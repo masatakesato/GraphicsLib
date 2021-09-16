@@ -68,7 +68,32 @@ namespace OreOreLib
 		if( pDefines )	shader_source = ExtractMacro( pDefines ) + textFileRead(filename);
 		else			shader_source = textFileRead(filename);
 
-		IncludeHeader_rec(shader_source);
+
+//TODO: Get current shader file directory
+		TCHAR currdir[_MAX_PATH ];
+		GetCurrentDirectory( _MAX_PATH, currdir );
+
+		tcout << currdir;
+
+		tstring filepath( filename );
+		tstring relativepath;
+		const size_t last_slash_idx = filepath.find_last_of(_T("\\\/"));
+
+		if( tstring::npos != last_slash_idx )
+		{
+			//directory = filepath.substr(0, last_slash_idx);
+
+			size_t first_idx = filepath.find( _T("./") );
+			if( tstring::npos == first_idx ) first_idx=0;
+				
+			relativepath = filepath.substr(first_idx, last_slash_idx);
+
+			tcout << "/" << relativepath << tendl;
+		}
+
+		tstring shaderfiledir = tstring( currdir ) + _T("/") + relativepath + _T("/");
+
+		IncludeHeader_rec(shader_source, shaderfiledir );
 
 		if(shader_source.empty())
 		{

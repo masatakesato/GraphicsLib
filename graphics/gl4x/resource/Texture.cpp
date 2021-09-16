@@ -534,12 +534,7 @@ namespace OreOreLib
 
 	void Texture1D::Load( const TCHAR *filepath, DATA_FORMAT data_format )
 	{
-#ifdef UNICODE
-		_bstr_t b( filepath );
-		const char* file_name = b;
-#else
-		const char *file_name = filepath;
-#endif // UNICODE
+		const char* file_name = TStringToChar( tstring(filepath) );
 
 #if defined( FREEIMAGE_SUPPORT )
 
@@ -581,6 +576,7 @@ namespace OreOreLib
 		m_pData	= new uint8[size * texDesc.Width /* texDesc.Height*/];
 		memcpy( m_pData, FreeImage_GetBits( dib ), size * texDesc.Width /* texDesc.Height*/ );
 
+		FreeImage_Unload( dib );
 
 		//#elif defined(IL_SUPPORT)
 #elif defined( RESIL_SUPPORT )
@@ -625,12 +621,7 @@ namespace OreOreLib
 
 	void Texture1D::Write( const TCHAR *filepath )
 	{
-#ifdef UNICODE
-		_bstr_t b( filepath );
-		const char* file_name = b;
-#else
-		const char *file_name = filepath;
-#endif // UNICODE
+		const char* file_name = TStringToChar( tstring(filepath) );
 
 #ifdef	IL_SUPPORT
 		//ilInit();
@@ -733,12 +724,7 @@ namespace OreOreLib
 
 	void Texture1D::Upload2GPU( const TCHAR *filepath, DATA_FORMAT data_format, int &subWidth, bool bNormalize )
 	{
-#ifdef UNICODE
-		_bstr_t b( filepath );
-		const char* file_name = b;
-#else
-		const char *file_name = filepath;
-#endif // UNICODE
+		const char* file_name = TStringToChar( tstring(filepath) );;
 
 #ifdef	IL_SUPPORT
 		if( !texID )	return;
@@ -943,12 +929,8 @@ namespace OreOreLib
 
 	void Texture2D::Load( const TCHAR* filepath, DATA_FORMAT data_format )
 	{
-#ifdef UNICODE
-		_bstr_t b( filepath );
-		const char* file_name = b;
-#else
-		const char* file_name = filepath;
-#endif // UNICODE
+		auto aa = tstring(filepath);
+		const char* file_name = TCharToChar( aa.c_str(), aa.length() );
 	
 #if defined( FREEIMAGE_SUPPORT )
 
@@ -985,10 +967,10 @@ namespace OreOreLib
 		texDesc.Width	= FreeImage_GetWidth( dib );
 		texDesc.Height	= FreeImage_GetHeight( dib );
 
-
 		m_pData	= new uint8[size * texDesc.Width * texDesc.Height];
 		memcpy( m_pData, FreeImage_GetBits( dib ), size * texDesc.Width * texDesc.Height );
 
+		FreeImage_Unload( dib );
 
 		//#elif defined(IL_SUPPORT)
 #elif defined( RESIL_SUPPORT )
@@ -1043,12 +1025,7 @@ namespace OreOreLib
 
 	void Texture2D::Write( const TCHAR *filepath )
 	{
-#ifdef UNICODE
-		_bstr_t b(filepath);
-		const char* file_name = b;
-#else
-		const char *file_name = filepath;
-#endif // UNICODE
+		const char* file_name = TStringToChar( tstring(filepath) );
 
 #if defined( FREEIMAGE_SUPPORT )
 
@@ -1187,14 +1164,7 @@ namespace OreOreLib
 			return;
 
 		uint8 *m_pSubData = NULL;
-
-#ifdef UNICODE
-		_bstr_t b(filepath);
-		const char* file_name = b;
-#else
-		const char *file_name = filepath;
-#endif // UNICODE
-
+		const char* file_name = TStringToChar( tstring(filepath) );
 
 #if defined(FREEIMAGE_SUPPORT)
 
@@ -1231,6 +1201,8 @@ namespace OreOreLib
 		m_pSubData = new uint8[size * texDesc.Width * texDesc.Height];
 		memcpy(m_pSubData, FreeImage_GetBits(dib), size * texDesc.Width * texDesc.Height);
 
+
+		FreeImage_Unload( dib );
 
 #elif defined(IL_SUPPORT)
 
