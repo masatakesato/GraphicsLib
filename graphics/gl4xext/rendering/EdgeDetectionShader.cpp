@@ -1,8 +1,9 @@
 ﻿#include	"EdgeDetectionShader.h"
-#include	<GLBindPointManager.h>
 
+#include	<oreore/common/TString.h>
 
-#include	<common/TString.h>
+#include	<graphics/gl4x/resource/GLBindPointManager.h>
+
 
 
 namespace OreOreLib
@@ -61,7 +62,7 @@ namespace OreOreLib
 
 
 	// constructor
-	EdgeDetectionShader::EdgeDetectionShader( const char *filepath, GLSL_VERSION version )
+	EdgeDetectionShader::EdgeDetectionShader( const TCHAR *filepath, GLSL_VERSION version )
 	{
 		m_pShader		= NULL;
 		m_ulRadius		= -1;
@@ -85,7 +86,6 @@ namespace OreOreLib
 	{
 		tcout << "EdgeDetectionShader::Release()..." << tendl;
 
-		m_pShader->Release();
 		SafeDelete( m_pShader );
 		m_refTexture	= NULL;
 
@@ -94,7 +94,7 @@ namespace OreOreLib
 
 
 	// init shader
-	void EdgeDetectionShader::InitShader( const char *filepath, GLSL_VERSION version )
+	void EdgeDetectionShader::InitShader( const TCHAR *filepath, GLSL_VERSION version )
 	{
 		const type_info& id = typeid( *this );
 		tcout << "AbstractClass-typeid: " << id.name() << tendl;

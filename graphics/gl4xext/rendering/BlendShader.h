@@ -2,7 +2,7 @@
 #define	BLEND_SHADER_H
 
 
-#include	<IShader.h>
+#include	<graphics/gl4x/shader/IShader.h>
 
 
 namespace OreOreLib
@@ -29,9 +29,9 @@ public:
 
 	void InitShader( const char* filepath, GLSL_VERSION version );
 
-	void SetOpacity( const float param[], int numelm ){	int elm = min( numelm, 8 );	for( int i=0; i<elm; ++i )	m_Opacity[i] = param[i]; }
-	void SetDiffuse0( const Vec3f diffuse0[], int numelm ){	int elm = min( numelm, 8 );	for( int i=0; i<elm; ++i )	m_Diffuse0[i] = diffuse0[i]; }
-	void SetDiffuse1( const Vec3f diffuse1[], int numelm ){	int elm = min( numelm, 8 );	for( int i=0; i<elm; ++i )	m_Diffuse1[i] = diffuse1[i]; }
+	void SetOpacity( const float param[], int numelm ){	int elm = Min( numelm, 8 );	for( int i=0; i<elm; ++i )	m_Opacity[i] = param[i]; }
+	void SetDiffuse0( const Vec3f diffuse0[], int numelm ){	int elm = Min( numelm, 8 );	for( int i=0; i<elm; ++i )	m_Diffuse0[i] = diffuse0[i]; }
+	void SetDiffuse1( const Vec3f diffuse1[], int numelm ){	int elm = Min( numelm, 8 );	for( int i=0; i<elm; ++i )	m_Diffuse1[i] = diffuse1[i]; }
 
 	float *GetOpacity() const	{ return (float *)&m_Opacity; }
 	Vec3f *GetDiffuse0() const	{ return (Vec3f *)&m_Diffuse0; }

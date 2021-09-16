@@ -1,18 +1,16 @@
 ﻿#ifndef	SILHOUETTE_SHADER_H
 #define	SILHOUETTE_SHADER_H
 
+#include	<graphics/gl4x/shader/IShader.h">
+#include	<graphics/gl4x/shader/GLShader.h>
 
-
-#include	"../oreore/IRenderer.h"
-#include	"../oreore/GLShader.h"
-using namespace OreOreLib;
 
 
 namespace OreOreLib
 {
 
 // 輪郭線描画シェーダー
-class SilhouetteShader : public IRenderer
+class SilhouetteShader : public IShader
 {
 private:
 

@@ -41,8 +41,8 @@ void main(void)
 #ifdef _FRAGMENT_SHADER_
 
 // Include files
-#pragma include"../shader/glsl/WorleyNoise.glsl"
-#pragma include"../shader/glsl/OutputShader.glsl"
+#pragma include"./WorleyNoise.glsl"
+#pragma include"../rendering/OutputShader.glsl"
 
 // Uniform Varianbles
 uniform int	g_Mode;

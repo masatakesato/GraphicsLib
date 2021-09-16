@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1401
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleEdgePixelDetection", "SimpleEdgePixelDetection\SimpleEdgePixelDetection.vcxproj", "{F574886C-FDB6-4A72-A997-E02BF521DB8B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SilhouetteShader", "SilhouetteShader\SilhouetteShader.vcxproj", "{61684041-E4DB-4D33-8038-73EA36220A2D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SuggestiveContour", "SuggestiveContour\SuggestiveContour.vcxproj", "{0979EB83-D130-4179-BED4-80E11E1F5C80}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F574886C-FDB6-4A72-A997-E02BF521DB8B}.Debug|x64.ActiveCfg = Debug|x64
+		{F574886C-FDB6-4A72-A997-E02BF521DB8B}.Debug|x64.Build.0 = Debug|x64
+		{F574886C-FDB6-4A72-A997-E02BF521DB8B}.Release|x64.ActiveCfg = Release|x64
+		{F574886C-FDB6-4A72-A997-E02BF521DB8B}.Release|x64.Build.0 = Release|x64
+		{61684041-E4DB-4D33-8038-73EA36220A2D}.Debug|x64.ActiveCfg = Debug|x64
+		{61684041-E4DB-4D33-8038-73EA36220A2D}.Debug|x64.Build.0 = Debug|x64
+		{61684041-E4DB-4D33-8038-73EA36220A2D}.Release|x64.ActiveCfg = Release|x64
+		{61684041-E4DB-4D33-8038-73EA36220A2D}.Release|x64.Build.0 = Release|x64
+		{0979EB83-D130-4179-BED4-80E11E1F5C80}.Debug|x64.ActiveCfg = Debug|x64
+		{0979EB83-D130-4179-BED4-80E11E1F5C80}.Debug|x64.Build.0 = Debug|x64
+		{0979EB83-D130-4179-BED4-80E11E1F5C80}.Release|x64.ActiveCfg = Release|x64
+		{0979EB83-D130-4179-BED4-80E11E1F5C80}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {76C9AF75-50FD-4FEC-B192-1335AD4789BF}
+	EndGlobalSection
+EndGlobal

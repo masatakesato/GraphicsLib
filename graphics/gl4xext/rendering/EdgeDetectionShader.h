@@ -1,16 +1,14 @@
 ﻿#ifndef	GENERAL_PROCEDURAL_SHADER_H
 #define	GENERAL_PROCEDURAL_SHADER_H
 
+#include	<graphics/gl4x/resource/Texture.h>
+#include	<graphics/gl4x/resource/GLFramebufferObject.h>
+#include	<graphics/gl4x/shader/IShader.h>
 
-
-#include	<Texture.h>
-#include	<GLFramebufferObject.h>
-#include	<IShader.h>
-
-
-#include	"SimplexNoiseGPU.h"
-#include	"WorleyNoiseGPU.h"
 #include	"BlendShader.h"
+#include	"../procedural/SimplexNoiseGPU.h"
+#include	"../procedural/WorleyNoiseGPU.h"
+
 
 
 //#include	"OutputShader.h"	// ポストエフェクト系のプロセス
@@ -27,12 +25,12 @@ namespace OreOreLib
 	public:
 
 		EdgeDetectionShader();
-		EdgeDetectionShader( const char* filepath, GLSL_VERSION version );
+		EdgeDetectionShader( const TCHAR* filepath, GLSL_VERSION version );
 		~EdgeDetectionShader();
 
 		void Release();
 
-		void InitShader( const char *filepath, GLSL_VERSION version );
+		void InitShader( const TCHAR *filepath, GLSL_VERSION version );
 
 		void SetFilterRadius( int radius );
 		void BindInputTexture( Texture2D *ptex )	{ m_refTexture = ptex; }

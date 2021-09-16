@@ -1,8 +1,8 @@
 ﻿#ifndef	QUAD_SHADER_H
 #define	QUAD_SHADER_H
 
-#include	"resource/GLVertexArrayObject.h"
-#include	"shader/IShader.h"
+#include	<graphics/gl4x/resource/GLVertexArrayObject.h>
+#include	<graphics/gl4x/shader/IShader.h>
 
 
 

@@ -63,7 +63,7 @@ WorleyNoiseGPU::WorleyNoiseGPU()
 }
 
 // constructor
-WorleyNoiseGPU::WorleyNoiseGPU( const char *filepath, GLSL_VERSION version )
+WorleyNoiseGPU::WorleyNoiseGPU( const TCHAR *filepath, GLSL_VERSION version )
 {
 	const type_info& id = typeid(*this);
 	tcout << "AbstractClass-typeid: " << id.name() << tendl;
@@ -111,7 +111,7 @@ void WorleyNoiseGPU::Release()
 
 
 // init shader
-void WorleyNoiseGPU::InitShader( const char *filepath, GLSL_VERSION version )
+void WorleyNoiseGPU::InitShader( const TCHAR *filepath, GLSL_VERSION version )
 {
 	// create shader
 	m_pShader	= new GLShader();
@@ -206,7 +206,7 @@ void WorleyNoiseGPU::Render()
 	static Quatf	quat;
 	static Mat4f	matRotScale, matScale, matRotation, matTranslation;
 	
-	MatScale( matScale, m_NoiseParam.Scale, m_NoiseParam.Scale/max(m_NoiseParam.Stretch+1.0f, 1.0f), m_NoiseParam.Scale );
+	MatScale( matScale, m_NoiseParam.Scale, m_NoiseParam.Scale/Max(m_NoiseParam.Stretch+1.0f, 1.0f), m_NoiseParam.Scale );
 
 	InitQuat( quat, m_NoiseParam.Angle, 0.0f, 0.0f, 1.0f );
 	Quat2Mat( matRotation, quat );
@@ -269,7 +269,7 @@ void WorleyNoiseGPU::InitPermTexture()
 	//unsigned char *pp	= m_PermTexture.m_pData;
 	//for( int i=0; i<256; ++i)	pp[i] = p[i&255];
 
-	byte *perm	= new byte[256];
+	uint8 *perm	= new uint8[256];
 	int i, j, k;
 
 	for( i=0; i<256; ++i )	perm[i]	= i;

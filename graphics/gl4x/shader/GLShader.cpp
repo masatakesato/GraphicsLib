@@ -84,7 +84,13 @@ namespace OreOreLib
 			//directory = filepath.substr(0, last_slash_idx);
 
 			size_t first_idx = filepath.find( _T("./") );
-			if( tstring::npos == first_idx ) first_idx=0;
+			if( tstring::npos == first_idx )
+				first_idx=0;
+			else if( 0 == first_idx )
+				first_idx=2;
+			else
+				first_idx=0;
+
 				
 			relativepath = filepath.substr(first_idx, last_slash_idx);
 

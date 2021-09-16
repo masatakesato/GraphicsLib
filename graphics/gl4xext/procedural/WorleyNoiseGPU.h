@@ -2,7 +2,7 @@
 #define	WORLEY_NOISE_GPU_H
 
 
-#include	<IShader.h>
+#include	<graphics/gl4x/shader/IShader.h>
 using namespace OreOreLib;
 
 #include	"NoiseParams.h"
@@ -14,16 +14,16 @@ class WorleyNoiseGPU : public IShader
 public:
 
 	WorleyNoiseGPU();
-	WorleyNoiseGPU( const char* filepath, GLSL_VERSION version );
+	WorleyNoiseGPU( const TCHAR* filepath, GLSL_VERSION version );
 	~WorleyNoiseGPU();
 
 	void Release();
 
-	void InitShader( const char* filepath, GLSL_VERSION version );
+	void InitShader( const TCHAR* filepath, GLSL_VERSION version );
 	
 	void SetNoiseParam( const fBmNoiseParam& param )	{ m_NoiseParam = param; }
 	void SetScale( float scale )		{ m_NoiseParam.Scale = scale; }
-	void SetRotation( float degree )	{ m_NoiseParam.Angle = TO_RADIAN( degree ); }
+	void SetRotation( float degree )	{ m_NoiseParam.Angle = ToRadian<float>( degree ); }
 	void SetStretch( float stretch )	{ m_NoiseParam.Stretch = stretch; }
 	void SetOctaves( float val )		{ m_NoiseParam.Octaves	= val; }
 	void SetLacunarity( float val )		{ m_NoiseParam.Lacunarity = val; }
