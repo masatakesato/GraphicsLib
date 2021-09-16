@@ -1,29 +1,21 @@
 ﻿#include	<iostream>
 using namespace std;
 
+#include	<AntTweakBar/AntTweakBar.h>
 
-#include	<AntTweakBar.h>
-
-
-#include	<oreore/QuadShader.h>
-#include	<labworks/ProceduralShader.h>
-//#include	<labworks/GeometricalNoiseGPU.h>
-#include	<labworks/GeneralProceduralShader.h>
+//#include	<graphics/gl4xext/rendering/QuadShader.h>
+#include	<graphics/gl4xext/procedural/ProceduralWood.h>
 
 #include	<gl/freeglut.h>
-
 
 using namespace OreOreLib;
 
 
 
-ProceduralMaterial		g_ProcMat;	// プロシージャルテクスチャ制御パラメータへのポインタ
-//GeometricalNoiseParam	g_ProcMat2;
+WoodMaterialParams	g_ProcMat;
 
-QuadShader				g_QuadShader;
-ProceduralShader		g_ProceduralShader;
-//GeometricalNoiseGPU		g_GeomNoiseGenerator;
-
+//QuadShader			g_QuadShader;
+ProceduralWood		g_ProceduralShader;
 
 
 int					g_ScreenWidth	= 800;
@@ -47,7 +39,7 @@ void display()
 	// シーンの描画
 	//g_RenderScene->Render2Texture();
 	//g_RenderScene->Render();
-	g_ProceduralShader.SetParams( &g_ProcMat );
+	g_ProceduralShader.SetParams( g_ProcMat );
 	g_ProceduralShader.Render();
 	//g_ProceduralShader.Render2Texture( &g_Fbo );
 	
@@ -76,36 +68,20 @@ void reshape( int width, int height )
 void initialize () 
 {
 
-	g_ProceduralShader.InitShader( "../shader/ProceduralTexture.glsl" );
-	g_QuadShader.InitShader( "../shader/QuadShader.glsl" );
+	g_ProceduralShader.InitShader( _T("../../../graphics/gl4xext/glsl/procedural/ProceduralWoodTexture.glsl"), GLSL_VERSION::GLSL_430 );
+//	g_QuadShader.InitShader( _T("../shader/QuadShader.glsl"), GLSL_VERSION::GLSL_430 );
 
-
-	AllocateProceduralMaterial( &g_ProcMat, 2 );
 	
-	*g_ProcMat.RingInterval()	= 1.0f;
-	*g_ProcMat.EdgeSmoothness()	= 0.0f;
+	g_ProcMat.RingInterval	= 1.0f;
+	g_ProcMat.EdgeSmoothness	= 0.0f;
 
-	*g_ProcMat.Amplitude(0)		= 1.0f;
-	*g_ProcMat.Stretch(0)		= 1.0f;
-	*g_ProcMat.Roughness(0)		= 1.0f;
+	g_ProcMat.Amplitude[0]		= 1.0f;
+	g_ProcMat.Stretch[0]		= 1.0f;
+	g_ProcMat.Roughness[0]		= 1.0f;
 
-	*g_ProcMat.Amplitude(1)		= 1.0f;
-	*g_ProcMat.Stretch(1)		= 1.0f;
-	*g_ProcMat.Roughness(1)		= 1.0f;
-
-
-	//g_ProcMat2.Scale.x			= 1.0f;
-	//g_ProcMat2.Scale.y			= 1.0f;
-	//g_ProcMat2.Scale.z			= 1.0f;
-
-	//g_ProcMat.Octaves			= 1.0f;
-	//g_ProcMat.Lacunarity		= 1.0f;
-	//g_ProcMat.Gain				= 1.0f;
-
-	//g_ProcMat2.Bin				= 1.0f;
-	//g_ProcMat2.Gap				= 0.0f;
-	//g_ProcMat2.Min				= 0.0f;
-	//g_ProcMat2.Max				= 1.0f;
+	g_ProcMat.Amplitude[1]		= 1.0f;
+	g_ProcMat.Stretch[1]		= 1.0f;
+	g_ProcMat.Roughness[1]		= 1.0f;
 
 
 	// specify the clear value for the depth buffer
@@ -173,70 +149,37 @@ int main(int argc, char **argv)
 
 	bar = TwNewBar("TweakBar");
 
-	TwDefine(" TweakBar size='200 400' color='96 216 224' "); // change default tweak bar size and color
+	TwDefine(" TweakBar size='250 300' color='200 96 96 96' "); // change default tweak bar size and color
 
 	
-	TwAddVarRW( bar, "RingInterval", TW_TYPE_FLOAT, g_ProcMat.RingInterval(),
+	TwAddVarRW( bar, "RingInterval", TW_TYPE_FLOAT, &g_ProcMat.RingInterval,
 				" label='RingInterval' min=0.0 max=100.0 step=0.001 keyIncr=z keyDecr=Z ");
 	
-	TwAddVarRW( bar, "EdgeSmoothness", TW_TYPE_FLOAT, g_ProcMat.EdgeSmoothness(),
+	TwAddVarRW( bar, "EdgeSmoothness", TW_TYPE_FLOAT, &g_ProcMat.EdgeSmoothness,
 				" label='EdgeSmoothness' min=0.0 max=100.0 step=0.001 keyIncr=z keyDecr=Z ");
 
-	TwAddVarRW( bar, "Amplitude1", TW_TYPE_FLOAT, g_ProcMat.Amplitude(0),
+	TwAddVarRW( bar, "Amplitude1", TW_TYPE_FLOAT, &g_ProcMat.Amplitude[0],
 				" label='Amplitude1' min=0.0 max=10.0 step=0.001 keyIncr=z keyDecr=Z ");
 
-	TwAddVarRW( bar, "Stretch1", TW_TYPE_FLOAT, g_ProcMat.Stretch(0),
+	TwAddVarRW( bar, "Stretch1", TW_TYPE_FLOAT, &g_ProcMat.Stretch[0],
 				" label='Stretch1' min=0.0 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
 
-	TwAddVarRW( bar, "Roughness1", TW_TYPE_FLOAT, g_ProcMat.Roughness(0),
+	TwAddVarRW( bar, "Roughness1", TW_TYPE_FLOAT, &g_ProcMat.Roughness[0],
 				" label='Roughness1' min=0.01 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
 
-	TwAddVarRW( bar, "Amplitude2", TW_TYPE_FLOAT, g_ProcMat.Amplitude(1),
+	TwAddVarRW( bar, "Amplitude2", TW_TYPE_FLOAT, &g_ProcMat.Amplitude[1],
 				" label='Amplitude2' min=0.0 max=10.0 step=0.001 keyIncr=z keyDecr=Z ");
 
-	TwAddVarRW( bar, "Stretch2", TW_TYPE_FLOAT, g_ProcMat.Stretch(1),
+	TwAddVarRW( bar, "Stretch2", TW_TYPE_FLOAT, &g_ProcMat.Stretch[1],
 				" label='Stretch2' min=0.0 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
 
-	TwAddVarRW( bar, "Roughness2", TW_TYPE_FLOAT, g_ProcMat.Roughness(1),
+	TwAddVarRW( bar, "Roughness2", TW_TYPE_FLOAT, &g_ProcMat.Roughness[1],
 				" label='Roughness2' min=0.01 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
 
 
-	//TwAddVarRW( bar, "ScaleX", TW_TYPE_FLOAT, &g_ProcMat2.Scale.x,
-	//			" label='ScaleX' min=0.01 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
-
-	//TwAddVarRW( bar, "ScaleY", TW_TYPE_FLOAT, &g_ProcMat2.Scale.y,
-	//			" label='ScaleY' min=0.01 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
-
-	//TwAddVarRW( bar, "ScaleZ", TW_TYPE_FLOAT, &g_ProcMat2.Scale.z,
-	//			" label='ScaleZ' min=0.01 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
-
-
-	//TwAddVarRW( bar, "Bin", TW_TYPE_FLOAT, &g_ProcMat2.Bin,
-	//			" label='Bin' min=0.01 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
-
-	//TwAddVarRW( bar, "Gap", TW_TYPE_FLOAT, &g_ProcMat2.Gap,
-	//			" label='Gap' min=0.01 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
-
-	//TwAddVarRW( bar, "Min", TW_TYPE_FLOAT, &g_ProcMat2.Min,
-	//			" label='Min' min=0.01 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
-
-	//TwAddVarRW( bar, "Max", TW_TYPE_FLOAT, &g_ProcMat2.Max,
-	//			" label='Max' min=0.01 max=10000.0 step=0.001 keyIncr=z keyDecr=Z ");
-
-
-
-
-//	static float aaa = 0.0f;
-	
-//	TwAddVarRW( bar, "test", TW_TYPE_FLOAT, &aaa,
-//				" label='test' min=0.01 max=10000.0 step=0.02 ");
-	
-//	TwAddVarRW( bar, "Param4", TW_TYPE_DIR3F, g_refProcParam->Param4.xyz,
-//				" label='Param4' opened=true help='Change the direction.' " );
-
 	TwWindowSize( g_ScreenWidth, g_ScreenHeight);
 
-	glutMainLoop();							// run GLUT mainloop
+	glutMainLoop();	// run GLUT mainloop
 
 
 	TwTerminate();
