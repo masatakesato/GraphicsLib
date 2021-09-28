@@ -3,14 +3,14 @@
 
 
 
-//#################### バーテックスシェーダ ##################//
+//#################### Vertex Shader ##################//
 #ifdef _VERTEX_SHADER_
 
 
-// 変数
+// Variables
 
 
-// 入力
+// Inputs
 in vec4			POSITION;
 in vec2			TEXCOORD;
 in vec3			NORMAL;
@@ -20,14 +20,14 @@ in vec3			COLOR;
 //in vec3			BINORMAL;
 
 
-// 出力
+// Outputs
 out Vertex_Out
 {
-	vec2		TexCoord;	// テクスチャ座標
+	vec2		TexCoord;
 }OUT;
 
 
-// メイン関数
+// Main function
 void main()
 {	
 	gl_Position		= POSITION;
@@ -43,25 +43,25 @@ void main()
 
 
 
-//##################### フラグメントシェーダ #################//
+//##################### Fragment Shader #################//
 #ifdef _FRAGMENT_SHADER_
 
 
-// Uniform Variables
+// Uniform variables
 uniform sampler1D	g_Texture1D;	// texture1D
 uniform sampler2D	g_Texture2D;	// texture2D
 uniform float		g_Scale;	// color scale
 uniform int			g_Mode;
 
 
-// Fragment Shader Input
+// Inputs
 in Vertex_Out
 {
-	vec2		TexCoord;	// テクスチャ座標	
+	vec2		TexCoord;
 }IN;
 
 
-// Fragment Shader Output
+// Outputs
 out vec4 outColor;
 
 
