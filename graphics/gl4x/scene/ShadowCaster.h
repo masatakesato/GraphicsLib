@@ -1,14 +1,12 @@
 ﻿#ifndef	SHADOW_MAP_H
 #define	SHADOW_MAP_H
 
+#include	<oreore/mathlib/GraphicsMath.h>
 
+#include	"../resource/BufferLayout.h"
+#include	"../resource/GLFrameBufferObject.h"
 
-//#include	"IShader.h"
-#include	"BufferLayout.h"
-#include	"MathLib.h"
 #include	"Frustum.h"
-#include	"GLFrameBufferObject.h"
-
 
 
 

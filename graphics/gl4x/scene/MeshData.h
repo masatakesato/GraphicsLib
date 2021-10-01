@@ -8,11 +8,10 @@
 using namespace std;
 
 
-#include	"MathLib.h"
-#include	"BufferLayout.h"
+#include	<oreore/mathlib/GraphicsMath.h>
+#include	<graphics/gl4x/resource/BufferLayout.h>
+#include	<graphics/gl4x/scene/Material.h>
 using namespace OreOreLib;
-#include	"Material.h"
-
 
 
 #pragma warning(disable : 4996)
@@ -100,7 +99,7 @@ public:
 
 	MeshData();
 	~MeshData(){};// TODO: 作る
-	bool Load(char *filename);
+	bool Load( const char *filename );
 	void GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertexlist, int &numIndices, int **Indices);
 	void GenerateMeshObject();// メッシュオブジェクトを作成する
 	void Information();

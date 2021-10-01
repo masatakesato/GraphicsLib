@@ -3,11 +3,13 @@
 
 
 //#include	"TileCacheTexture.h"
-#include	"MathLib.h"
+#include	<oreore/mathlib/GraphicsMath.h>
+
+#include	"../resource/GLUniformBufferObject.h"
+#include	"../resource/IBufferObject.h"
+#include	"../resource/CacheDataManager.h"
+
 #include	"Frustum.h"
-#include	"GLUniformBufferObject.h"
-#include	"IBufferObject.h"
-#include	"CacheDataManager.h"
 #include	"MovableObject.h"
 
 

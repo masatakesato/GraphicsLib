@@ -120,7 +120,7 @@ MeshData::MeshData()
 }
 //あああ
 
-bool MeshData::Load(char *filename)
+bool MeshData::Load( const char *filename )
 {
 
 	string FileString = textFileRead(filename);
@@ -392,8 +392,7 @@ CurrMatSub = AddMaterialSubset(one_line, CurrFace+1, m_MatSubs );
 //cout << "end of scan..." << endl;
 
 	//======================= BoundingBoxを求める =====================//
-	SET(m_BoundingBox[0], m_Vertices[0]);
-	SET(m_BoundingBox[1], m_Vertices[0]);
+	m_BoundingBox[0] = m_BoundingBox[1] = m_Vertices[0];
 
 	for(int i=1; i< m_Vertices.size(); i++)
 	{

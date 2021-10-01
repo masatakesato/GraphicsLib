@@ -5,13 +5,11 @@
 #include	<iostream>
 using namespace std;
 
+#include	<oreore/mathlib/GraphicsMath.h>
 
-
-#include	"BufferLayout.h"
-#include	"MathLib.h"
-#include	"IBufferObject.h"
+#include	"../resource/BufferLayout.h"
+#include	"../resource/IBufferObject.h"
 #include	"MovableObject.h"
-
 
 
 

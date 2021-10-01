@@ -1,7 +1,7 @@
 ﻿#include	"ViewTransformBuffer.h"
 
+#include	"../resource/GLBindPointManager.h"
 
-#include	"GLBindPointManager.h"
 
 
 namespace OreOreLib

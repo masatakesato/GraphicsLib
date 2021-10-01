@@ -1,29 +1,26 @@
 ﻿#ifndef	RENDER_SCENE_H
 #define	RENDER_SCENE_H
 
-
-#include	"./common/Utility.h"
-#include	"SceneGraph.h"
-
-#include	"GLBindPointManager.h"
-#include	"GLBufferObject.h"
-#include	"GLVertexArrayObject.h"
-
-#include	"IShader.h"
-//#include	"GLFrameBufferObject.h"
-#include	"GLRenderTarget.h"
-#include	"LightAttributeBuffer.h"
-#include	"ShadowCaster.h"
-#include	"ShadowBuffer.h"
-#include	"SSDOBuffer.h"
-#include	"ViewTransformBuffer.h"
-#include	"GeometryBuffer.h"
-#include	"LPVIrradianceVolume.h"
-#include	"VCTVoxelData.h"
-
-#include	"VoxelConeTracingPass.h"
+#include	<oreore/common/Utility.h>
 
 
+#include	"../resource/GLBufferObject.h"
+#include	"../resource//GLRenderTarget.h"//#include	<graphics/gl4x/resource/GLFrameBufferObject.h>
+#include	"../resource/GLVertexArrayObject.h"
+#include	"../resource/GeometryBuffer.h"
+#include	"../resource/ShadowBuffer.h"
+
+#include	"../scene/LightAttributeBuffer.h"
+#include	"../scene/ShadowCaster.h"
+#include	"../scene/SceneGraph.h"
+#include	"../scene/ViewTransformBuffer.h"
+
+#include	"../shader/IShader.h"
+
+#include	<graphics/gl4xext/rendering/SSDOBuffer.h>
+#include	<graphics/gl4xext/rendering/LPVIrradianceVolume.h>
+#include	<graphics/gl4xext/rendering/VCTVoxelData.h>
+#include	<graphics/gl4xext/rendering/VoxelConeTracingPass.h>
 
 
 

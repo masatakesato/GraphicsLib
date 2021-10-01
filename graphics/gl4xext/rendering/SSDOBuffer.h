@@ -1,9 +1,8 @@
 ﻿#ifndef	SSDO_BUFFER_H
 #define	SSDO_BUFFER_H
 
-
-#include	"Texture.h"
-#include	"GLUniformBufferObject.h"
+#include	<graphics/gl4x/resource/GLUniformBufferObject.h>
+#include	<graphics/gl4x/resource/Texture.h>
 
 
 

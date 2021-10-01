@@ -1,9 +1,8 @@
 ﻿#include	"ShadowCaster.h"
 
+#include	<oreore/common/TString.h>
 
-#include	"Defines.h"
-#include	"./common/TString.h"
-//#include	"Frustum.h"
+#include	"../common/Defines.h"
 
 
 

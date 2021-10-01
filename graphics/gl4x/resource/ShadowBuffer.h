@@ -1,8 +1,8 @@
 ﻿#ifndef	SHADOW_BUFFER_H
 #define	SHADOW_BUFFER_H
 
+#include	<oreore/mathlib/GraphicsMath.h>
 
-#include	"MathLib.h"
 #include	"CacheDataManager.h"
 #include	"GLFrameBufferObject.h"
 #include	"GLUniformBufferObject.h"

@@ -1,10 +1,9 @@
 ﻿#ifndef	VIEW_TRANSFORM_BUFFER_H
 #define	VIEW_TRANSFORM_BUFFER_H
 
+#include	"../resource/GLUniformBufferObject.h"
 
 #include	"Frustum.h"
-#include	"GLUniformBufferObject.h"
-#include	"IBufferObject.h"
 
 
 
