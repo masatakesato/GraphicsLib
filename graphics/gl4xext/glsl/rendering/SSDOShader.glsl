@@ -50,7 +50,7 @@ void main()
 //##################### フラグメントシェーダ #################//
 #ifdef _FRAGMENT_SHADER_
 
-#pragma include "lpv/LPVHelperFunctions.glslh"
+#pragma include "LightPropagationVolumes/LPVHelperFunctions.glslh"
 
 
 // Uniforms

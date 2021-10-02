@@ -3,7 +3,7 @@
 
 
 // ヘッダーファイルインクルード
-#pragma include "lpv/LPVHelperFunctions.glslh"
+#pragma include "LPVHelperFunctions.glslh"
 
 
 // RSMのグローバル変数

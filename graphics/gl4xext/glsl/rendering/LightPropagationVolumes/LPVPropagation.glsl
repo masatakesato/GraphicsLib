@@ -9,7 +9,7 @@
 
 
 // ヘッダーファイルインクルード
-#pragma include "lpv/LPVHelperFunctions.glslh"
+#pragma include "LPVHelperFunctions.glslh"
 
 
 //uniform int			g_Iter;// 伝播計算の反復回数. 未使用. 0回目だけGeometryVolumeを使った遮蔽計算を無視していた->必要ない

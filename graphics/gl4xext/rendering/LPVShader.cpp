@@ -159,7 +159,7 @@ namespace OreOreLib
 
 		//=================== LPVInjectionパスの初期化 ===================//
 		// シェーダオブジェクト生成
-		m_Pass[LPV_INJECTION].Init( _T( "lpv/LPVInjection.glsl" ), version );
+		m_Pass[LPV_INJECTION].Init( _T( "LightPropagationVolumes/LPVInjection.glsl" ), version );
 		program_id		= m_Pass[LPV_INJECTION].ID();
 
 		// 入力データの設定
@@ -232,7 +232,7 @@ namespace OreOreLib
 
 		//=================== GVInjectionパスの初期化 ===================//
 		// シェーダオブジェクト生成
-		m_Pass[GV_INJECTION].Init( _T( "lpv/LPVGVInjection.glsl" ), version );
+		m_Pass[GV_INJECTION].Init( _T( "LightPropagationVolumes/LPVGVInjection.glsl" ), version );
 		program_id		= m_Pass[GV_INJECTION].ID();
 
 		// 入力データの設定
@@ -291,7 +291,7 @@ namespace OreOreLib
 
 		//================== Propagationパスの初期化 ==================//
 		// シェーダオブジェクト生成
-		m_Pass[PROPAGATION].Init( _T( "lpv/LPVPropagation.glsl" ), version );
+		m_Pass[PROPAGATION].Init( _T( "LightPropagationVolumes/LPVPropagation.glsl" ), version );
 		program_id		= m_Pass[PROPAGATION].ID();
 
 		// 入力データの設定
@@ -339,7 +339,7 @@ namespace OreOreLib
 
 		//================ SurfaceShaderパスの初期化 ================//
 		// シェーダオブジェクト生成
-		m_Pass[SURFACE_SHADER].Init( _T( "lpv/LPVSurfaceShader.glsl" ), version );
+		m_Pass[SURFACE_SHADER].Init( _T( "LightPropagationVolumes/LPVSurfaceShader.glsl" ), version );
 		program_id = m_Pass[SURFACE_SHADER].ID();
 
 		// 入力データの設定

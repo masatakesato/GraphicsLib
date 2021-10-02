@@ -3,7 +3,7 @@
 
 
 // ヘッダーファイルインクルード
-#pragma include "lpv/LPVHelperFunctions.glslh"
+#pragma include "LPVHelperFunctions.glslh"
 
 // 光源情報
 uniform vec3		g_LightPos;		// 光源の位置

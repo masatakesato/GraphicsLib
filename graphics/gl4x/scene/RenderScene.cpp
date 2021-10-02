@@ -185,7 +185,9 @@ GLBindPointManager::InitBindPoints();
 		TCHAR currdir[ MAX_PATH ];
 		GetCurrentDirectory( MAX_PATH, currdir );
 
-		SetCurrentDirectory( _T( "../shader/glsl" ) );
+		//D:\Repository\GraphicsLib\graphics\gl4xext\glsl
+
+		SetCurrentDirectory( _T( "../../../graphics/gl4xext/glsl/rendering" ) );
 
 		m_Shaders.resize( NUM_SHADER_TYPE );
 		for( int i=0; i<NUM_SHADER_TYPE; ++i )

@@ -7,8 +7,8 @@
 
 #include	<oreore/ui/win/Window.h>
 #include	<oreore/ui/win/WindowProcedure.h>
-#include	<oreore/ui/win/Controller.h>
-//#include	"ControllerGL.h"
+//#include	<oreore/ui/win/Controller.h>
+#include	"ControllerGL.h"
 
 
 
@@ -37,16 +37,16 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 
 	
 	//================ Modelインスタンス作成 ================//
-//	ModelGL model;
+	ModelGL model;
 	
 
 	//=============== Viewインスタンス作成 ==================//
-//	ViewGL view;
+	ViewGL view;
 	
 
 	//============== Controllerインスタンス作成 =============//
-//	ControllerGL controller( &model, &view );
-	Controller controller;
+	ControllerGL controller( &model, &view );
+//	Controller controller;
 
 	////=============== Windowインスタンス作成 ================//
 	Window window = Window( hInstance, _T( "WindowClass" ), _T( "Main" ), &controller, (WNDPROC)WinProc );
