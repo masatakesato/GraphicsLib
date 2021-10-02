@@ -60,7 +60,7 @@ void ModelGL::Init()
 	//##########################################################################################//
 
 	g_SceneLoader.Init();
-	g_SceneLoader.Load( "V:/3dmodels/Sponza/Sponza.fbx" );//"../3dmodels/testCornelBox.fbx" );//"../3dmodels/Cube_hierarchy.fbx" );//"../3dmodels/Armadillo.fbx" );//"../3dmodels/parentMesh.fbx" );//"../3dmodels/Cube_hard_twomaterials.fbx");//"../3dmodels/multimesh.fbx" );//"../3dmodels/StanfordDragon.fbx" );//"../3dmodels/Sphere.fbx" );//"../3dmodels/ISD.fbx" );//   ""../3dmodels/blender_export.fbx" );//
+	g_SceneLoader.Load( "V:/\sample3dmodels/fbx/testscene.fbx" );
 	//g_SceneLoader.GetGeometry(m_pSceneGraph);
 	g_SceneLoader.ScanGeometry(m_pSceneGraph);
 
@@ -70,7 +70,7 @@ void ModelGL::Init()
 //	tcout << *pMesh3->m_pIndexBuffer->Index(i) << endl;
 
 
-	/*
+/*
 	for(int i=0; i<1; ++i)
 	{
 	for(int j=0; j<1; ++j)
