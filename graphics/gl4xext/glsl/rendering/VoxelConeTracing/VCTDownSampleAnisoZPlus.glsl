@@ -1,2 +1,2 @@
 ﻿#define DIRECTION	4
-#pragma include "vct/VCTDownSampleAnisotropic.glsl"
+#pragma include "VoxelConeTracing/VCTDownSampleAnisotropic.glsl"

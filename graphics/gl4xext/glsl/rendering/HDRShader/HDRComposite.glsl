@@ -1,2 +1,2 @@
 ﻿#define COMPOSITE
-#pragma include "HDRShader/HDRShader.glsl"
+#pragma include "HDRShader.glsl"

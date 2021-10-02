@@ -1,7 +1,7 @@
 ﻿// Include Files
-#pragma include "Common.glsl"
-#pragma include "vct/VCTCommon.glsl"
-#pragma include "VectorFormatConversion.glsl"
+#pragma include "../Common.glsl"
+#pragma include "../VectorFormatConversion.glsl"
+#pragma include "VCTCommon.glsl"
 
 // Uniform Locations
 uniform sampler2D	g_RSMPosition;

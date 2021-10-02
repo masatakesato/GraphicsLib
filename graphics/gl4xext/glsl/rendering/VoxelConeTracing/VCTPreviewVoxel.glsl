@@ -28,7 +28,7 @@ void main(void)
 #ifdef _FRAGMENT_SHADER_
 
 // Include Files
-#pragma include "vct/VCTCommon.glsl"
+#pragma include "VoxelConeTracing/VCTCommon.glsl"
 #pragma include "VectorFormatConversion.glsl"
 
 // Uniform Locations

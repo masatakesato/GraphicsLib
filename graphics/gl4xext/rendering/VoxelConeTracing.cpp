@@ -71,7 +71,7 @@ namespace OreOreLib
 
 		//########################	Init Voxelization Pass 	########################//
 		// Create Shader
-		m_Pass[PASS::VOXELIZATION].Init( _T( "vct/VCTVoxelization.glsl" ), version );
+		m_Pass[PASS::VOXELIZATION].Init( _T( "VoxelConeTracing/VCTVoxelization.glsl" ), version );
 		program_id			= m_Pass[ PASS::VOXELIZATION ].ID();
 
 		// Init Attribute location
@@ -96,7 +96,7 @@ namespace OreOreLib
 
 		//########################	Init Injection Pass 	########################//
 		// Create Shader
-		m_Pass[PASS::INJECTION].Init( _T( "vct/VCTInjection.glsl" ), version );
+		m_Pass[PASS::INJECTION].Init( _T( "VoxelConeTracing/VCTInjection.glsl" ), version );
 		program_id			= m_Pass[ PASS::INJECTION ].ID();
 
 		// Init Attribute Locations
@@ -120,7 +120,7 @@ namespace OreOreLib
 
 		//#####################	Init CreateSurfaceVoxeList Pass	####################//
 		// Create Shader
-		m_CreateSurfaceVoxelList.Init( _T( "vct/VCTCreateSurfaceVoxelList.glsl" ), version );
+		m_CreateSurfaceVoxelList.Init( _T( "VoxelConeTracing/VCTCreateSurfaceVoxelList.glsl" ), version );
 		program_id			= m_CreateSurfaceVoxelList.ID();
 
 		// Init Block Indices for SSBO
@@ -132,7 +132,7 @@ namespace OreOreLib
 
 		//####################	Init PerVoxelLightInjection Pass	################//
 		// Create Shader
-		m_PerVoxelLightInjection.Init( _T( "vct/VCTPerVoxelLightInjection.glsl" ), version );
+		m_PerVoxelLightInjection.Init( _T( "VoxelConeTracing/VCTPerVoxelLightInjection.glsl" ), version );
 		program_id			= m_PerVoxelLightInjection.ID();
 
 		// Init Block Indices for SSBO
@@ -144,7 +144,7 @@ namespace OreOreLib
 
 		//####################	Init Anisotropic Voxel Setup Pass	################//
 		// Create Shader
-		m_SetupAnisotropicVoxels.Init( _T( "vct/VCTSetupAnisotropicVoxels.glsl" ), version );
+		m_SetupAnisotropicVoxels.Init( _T( "VoxelConeTracing/VCTSetupAnisotropicVoxels.glsl" ), version );
 
 		// Link Shader
 		m_SetupAnisotropicVoxels.Link();
@@ -152,7 +152,7 @@ namespace OreOreLib
 
 		//########################	Init DownSample Pass	########################//
 		// Create Shader
-		m_ComputeDownSample.Init( _T( "vct/VCTDownSample.glsl" ), version );
+		m_ComputeDownSample.Init( _T( "VoxelConeTracing/VCTDownSample.glsl" ), version );
 
 		// Link Shader
 		m_ComputeDownSample.Link();
@@ -168,18 +168,18 @@ namespace OreOreLib
 		//########################	Init DownSampleAniso Pass	########################//
 		//for( int i=0; i<6; ++i )
 		//{
-		//	//m_ComputeDownSampleAniso[i].Init( _T("vct/VCTDownSampleAniso.glsl"), TODO: プリプロセッサ定義をシェーダーコードに直接追加して、処理フロー切り替えたい );
+		//	//m_ComputeDownSampleAniso[i].Init( _T("VoxelConeTracing/VCTDownSampleAniso.glsl"), TODO: プリプロセッサ定義をシェーダーコードに直接追加して、処理フロー切り替えたい );
 
 		//}// end of i loop
 
 		const TCHAR *downSampleAnisoShaderFileName[] =
 		{
-			_T("vct/VCTDownSampleAnisoXPlus.glsl"),
-			_T("vct/VCTDownSampleAnisoXMinus.glsl"),
-			_T("vct/VCTDownSampleAnisoYPlus.glsl"),
-			_T("vct/VCTDownSampleAnisoYMinus.glsl"),
-			_T("vct/VCTDownSampleAnisoZPlus.glsl"),
-			_T("vct/VCTDownSampleAnisoZMinus.glsl"),
+			_T("VoxelConeTracing/VCTDownSampleAnisoXPlus.glsl"),
+			_T("VoxelConeTracing/VCTDownSampleAnisoXMinus.glsl"),
+			_T("VoxelConeTracing/VCTDownSampleAnisoYPlus.glsl"),
+			_T("VoxelConeTracing/VCTDownSampleAnisoYMinus.glsl"),
+			_T("VoxelConeTracing/VCTDownSampleAnisoZPlus.glsl"),
+			_T("VoxelConeTracing/VCTDownSampleAnisoZMinus.glsl"),
 		};
 		
 		for( int i=0; i<6; ++i )
@@ -193,7 +193,7 @@ namespace OreOreLib
 
 		//########################	Init TraceVoxel Pass	######################//
 		// Create Shader
-		m_Pass[PASS::TRACE_VOXEL].Init( _T( "vct/VCTTraceVoxel.glsl" ), version );
+		m_Pass[PASS::TRACE_VOXEL].Init( _T( "VoxelConeTracing/VCTTraceVoxel.glsl" ), version );
 		program_id		= m_Pass[ PASS::TRACE_VOXEL ].ID();
 
 		// Init Attribute Locations

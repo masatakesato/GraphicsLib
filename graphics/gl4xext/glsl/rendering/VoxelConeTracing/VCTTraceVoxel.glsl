@@ -2,9 +2,9 @@
 // サンプルシェーダーコードのってる
 
 
-#pragma include "Common.glsl"
-#pragma include "ShadowMap.glsl"
-#pragma include "vct/VCTCommon.glsl"
+#pragma include "../Common.glsl"
+#pragma include "../ShadowMap.glsl"
+#pragma include "VCTCommon.glsl"
 
 
 

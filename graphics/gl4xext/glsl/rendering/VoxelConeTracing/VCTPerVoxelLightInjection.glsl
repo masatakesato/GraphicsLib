@@ -2,8 +2,8 @@
 #pragma include "Common.glsl"
 #pragma include "LightAttribute.glsl"
 #pragma include "ShadowMap.glsl"
-#pragma include "vct/VCTCommon.glsl"
 #pragma include "VectorFormatConversion.glsl"
+#pragma include "VoxelConeTracing//VCTCommon.glsl"
 
 
 // Uniform Locations

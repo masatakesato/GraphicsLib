@@ -1,6 +1,6 @@
 ﻿// Include Files
 #pragma include "VectorFormatConversion.glsl"
-#pragma include "vct/VCTCommon.glsl"
+#pragma include "VoxelConeTracing/VCTCommon.glsl"
 
 
 // Uniform Locations

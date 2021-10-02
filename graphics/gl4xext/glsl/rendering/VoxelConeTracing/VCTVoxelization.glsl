@@ -1,5 +1,5 @@
-﻿#pragma include "Common.glsl"
-#pragma include "vct/VCTCommon.glsl"
+﻿#pragma include "../Common.glsl"
+#pragma include "VCTCommon.glsl"
 
 
 
@@ -190,9 +190,9 @@ void main()
 #ifdef _FRAGMENT_SHADER_
 
 // Include Files
-#pragma include "LightAttribute.glsl"
-#pragma include "BRDF_Common.glsl"
-#pragma include "VectorFormatConversion.glsl"
+#pragma include "../LightAttribute.glsl"
+#pragma include "../BRDF_Common.glsl"
+#pragma include "../VectorFormatConversion.glsl"
 
 
 // Defines
