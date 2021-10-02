@@ -4,9 +4,8 @@
 #include	<iostream>
 using namespace std;
 
-
-#include	"ViewTransformBuffer.h"
-//#include	"LightAttributeBuffer.h"
+#include	<graphics/gl4x/scene/ViewTransformBuffer.h>
+//#include	<graphics/gl4x/scene/LightAttributeBuffer.h>
 
 
 

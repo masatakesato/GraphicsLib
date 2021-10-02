@@ -1,10 +1,10 @@
 ﻿#ifndef	SMAA_SHADER_H
 #define	SMAA_SHADER_H
 
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/shader/GLShader.h>
+#include	<graphics/gl4x/resource/GLRenderTarget.h>
 
-#include	"IShader.h"
-#include	"GLShader.h"
-#include	"GLRenderTarget.h"
 
 
 namespace OreOreLib

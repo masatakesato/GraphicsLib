@@ -1,7 +1,7 @@
 ﻿#include	"VCTVoxelData.h"
 
-#include	"GLHelperFunctions.h"
-#include	"GLBindPointManager.h"
+#include	<graphics/gl4x/common/GLHelperFunctions.h>
+#include	<graphics/gl4x/resource/GLBindPointManager.h>
 
 
 

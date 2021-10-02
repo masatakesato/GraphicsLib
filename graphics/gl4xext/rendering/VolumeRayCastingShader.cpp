@@ -1,11 +1,12 @@
 ﻿#include	"VolumeRayCastingShader.h"
 
+#include	<oreore/common/TString.h>
 
-#include	"./common/TString.h"
-#include	"Frustum.h"
-#include	"ViewTransformBuffer.h"
-#include	"LightAttributeBuffer.h"
-#include	"ShadowBuffer.h"
+#include	<graphics/gl4x/resource/ShadowBuffer.h>
+
+#include	<graphics/gl4x/scene/Frustum.h>
+#include	<graphics/gl4x/scene/ViewTransformBuffer.h>
+#include	<graphics/gl4x/scene/LightAttributeBuffer.h>
 
 
 

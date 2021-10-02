@@ -1,6 +1,6 @@
 ﻿#ifndef GL_SHADER_PARAMETER_H
 
-#include	"GLHelperFunctions.h"
+#include	"../common/GLHelperFunctions.h"
 
 
 

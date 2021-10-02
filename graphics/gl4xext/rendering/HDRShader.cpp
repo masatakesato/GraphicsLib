@@ -1,7 +1,6 @@
 ﻿#include	"HDRShader.h"
 
-
-#include	"GLHelperFunctions.h"
+#include	<graphics/gl4x/common/GLHelperFunctions.h>
 
 
 

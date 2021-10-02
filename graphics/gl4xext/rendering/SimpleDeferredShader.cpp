@@ -1,9 +1,9 @@
 ﻿#include	"SimpleDeferredShader.h"
 
+#include	<graphics/gl4x/scene/ViewTransformBuffer.h>
+#include	<graphics/gl4x/scene/LightAttributeBuffer.h>
+#include	<graphics/gl4x/resource/ShadowBuffer.h>
 
-#include	"ViewTransformBuffer.h"
-#include	"LightAttributeBuffer.h"
-#include	"ShadowBuffer.h"
 
 
 namespace OreOreLib

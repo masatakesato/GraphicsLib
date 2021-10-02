@@ -1,7 +1,8 @@
 ﻿#include	"LPVShader.h"
 
+#include	<graphics/gl4x/resource/Texture.h>
 
-#include	"Texture.h"
+
 
 namespace OreOreLib
 {

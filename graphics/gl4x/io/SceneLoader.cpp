@@ -1,23 +1,15 @@
 ﻿#include	"SceneLoader.h"
 
 
-
-//#if	defined(_DEBUG) & defined(_MT) & defined(_DLL)
-//#pragma comment( lib, "fbxsdk-2013.2-mdd.lib" )
-//#elif	defined(_DEBUG) & defined(_MT)
-//#pragma comment( lib, "fbxsdk-2013.2-mtd.lib" )
-//#elif	defined(_MT) & defined(_DLL)
-//#pragma comment( lib, "fbxsdk-2013.2-md.lib" )
-//#elif	defined(_MT)
-//#pragma comment( lib, "fbxsdk-2013.2-mt.lib" )
-//#endif
-
-
-
+// 2020.2 vs2017 version
 #if	defined(_MT) & defined(_DLL)
-#pragma comment( lib, "libfbxsdk-md.lib" )
+	#pragma comment( lib, "libfbxsdk-md.lib" )
+	#pragma comment( lib, "libxml2-md.lib" )
+	#pragma comment( lib, "zlib-md.lib" )
 #elif	defined(_MT)
-#pragma comment( lib, "libfbxsdk-mt.lib" )
+	#pragma comment( lib, "libfbxsdk-mt.lib" )
+	#pragma comment( lib, "libxml2-mt.lib" )
+	#pragma comment( lib, "zlib-mt.lib" )
 #endif
 
 

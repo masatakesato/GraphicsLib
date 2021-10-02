@@ -1,9 +1,8 @@
 ﻿#ifndef	LOCAL_REFLECTION_SHADER_H
 #define	LOCAL_REFLECTION_SHADER_H
 
-
-#include	"IShader.h"
-#include	"GLShader.h"
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/shader/GLShader.h>
 
 
 

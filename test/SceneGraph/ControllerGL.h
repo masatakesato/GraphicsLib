@@ -3,14 +3,15 @@
 
 #include	<process.h>
 
+#include	<oreore/ui/win/Controller.h>
+
 #include	<graphics/gl4x/app/ViewGL.h>
-#include	<graphics/gl4x/app/Controller.h>
 
 #include	"ModelGL.h"
 
 
 
-class ControllerGL : Controller
+class ControllerGL : public Controller
 {
 private:
 

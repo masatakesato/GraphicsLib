@@ -1,8 +1,6 @@
 ﻿#include	"LPVIrradianceVolume.h"
 
-
-
-#include	"./common/TString.h"
+#include	<oreore/common/TString.h>
 
 
 

@@ -1,9 +1,7 @@
 ﻿#include	"ZPrepassShader.h"
 
-
-#include	"./common/TString.h"
-#include	"ViewTransformBuffer.h"
-
+#include	<oreore/common/TString.h>
+#include	<graphics/gl4x/scene/ViewTransformBuffer.h>
 
 
 

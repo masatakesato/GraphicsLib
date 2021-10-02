@@ -1,9 +1,9 @@
 ﻿#include	"ConstantShader.h"
 
 
-#include	"./common/TString.h"
-#include	"Frustum.h"
-#include	"ViewTransformBuffer.h"
+#include	<oreore/common/TString.h>
+#include	<graphics/gl4x/scene/Frustum.h>
+#include	<graphics/gl4x/scene/ViewTransformBuffer.h>
 
 
 

@@ -1,11 +1,9 @@
 ﻿#ifndef HDR_SHADER_H
 #define HDR_SHADER_H
 
-
-
-#include	"IShader.h"
-#include	"GLShaderParameter.h"
-#include	"GLFrameBufferObject.h"
+#include	<graphics/gl4x/resource/GLFrameBufferObject.h>
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/shader/GLShaderParameter.h>
 
 
 

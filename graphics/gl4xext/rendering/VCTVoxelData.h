@@ -1,14 +1,16 @@
 ﻿#ifndef	VCT_VOXEL_DATA_H
 #define	VCT_VOXEL_DATA_H
 
+#include	<graphics/gl4x/resource/Texture.h>
+#include	<graphics/gl4x/resource/GLAtomicCounterBufferObject.h>
+#include	<graphics/gl4x/resource/GLShaderStorageBufferObject.h>
 
-#include	"IVoxelData.h"
 
 
 namespace OreOreLib
 {
 
-	class VCTVoxelData : public IVoxelData
+	class VCTVoxelData
 	{
 	public:
 

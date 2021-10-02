@@ -1,10 +1,11 @@
 ﻿#include	"LightAttributeBuffer.h"
 
+#include	<oreore/common/Utility.h>
+#include	<oreore/mathlib/GraphicsMath.h>
 
-#include	"./common/Utility.h"
-#include	"Defines.h"
-#include	"MathLib.h"
-#include	"GLBindPointManager.h"
+#include	"../common/Defines.h"
+#include	"../resource/GLBindPointManager.h"
+
 
 
 namespace OreOreLib

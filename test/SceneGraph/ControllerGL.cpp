@@ -171,7 +171,7 @@ unsigned ControllerGL::Close()
 
 unsigned ControllerGL::Destroy()
 {
-	::PostQuitMessage(0);       // メッセージループから抜け出す
+	//::PostQuitMessage(0);       // メッセージループから抜け出す
 	return 0;
 }
 

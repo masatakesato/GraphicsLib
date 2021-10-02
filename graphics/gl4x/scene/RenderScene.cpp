@@ -3,31 +3,31 @@
 #include	<Windows.h>	// GetCurrentDirectory, SetCurrentDirectoryで必要。TODO:フルパスでファイル名簡単に指定できるようプログラム改良して廃止したい(2014.04.12)
 #include	<algorithm>
 
-#include	"./common/TString.h"
-#include	"GLPrimitives.h"
+#include	<oreore/common/TString.h>
+#include	"../other/GLPrimitives.h"
 
-#include	"ConstantShader.h"
-#include	"SimpleMeshRenderer.h"
-#include	"SimpleDeferredShader.h"
-#include	"TransparentShader.h"
-#include	"RenderShadow.h"
-#include	"GbufferShader.h"
-#include	"ZPrepassShader.h"
-#include	"QuadShader.h"
-#include	"QuadShaderTexArray.h"
-#include	"VoxelShader.h"
-#include	"FXAAShader.h"
-#include	"SMAAShader.h"
-#include	"SSDOShader.h"
-#include	"SeparableSSSShader.h"
-#include	"LightShaftShader.h"
-#include	"LocalReflectionShader.h"
-#include	"DOFShader.h"
-#include	"HDRShader.h"
-#include	"ReflectiveShadowMapsShader.h"
-#include	"LPVShader.h"
-#include	"VoxelConeTracing.h"
-#include	"VolumeRayCastingShader.h"
+#include	<graphics/gl4xext/rendering/ConstantShader.h>
+#include	<graphics/gl4xext/rendering/SimpleMeshRenderer.h>
+#include	<graphics/gl4xext/rendering/SimpleDeferredShader.h>
+#include	<graphics/gl4xext/rendering/TransparentShader.h>
+#include	<graphics/gl4xext/rendering/RenderShadow.h>
+#include	<graphics/gl4xext/rendering/GbufferShader.h>
+#include	<graphics/gl4xext/rendering/ZPrepassShader.h>
+#include	<graphics/gl4xext/rendering/QuadShader.h>
+#include	<graphics/gl4xext/rendering/QuadShaderTexArray.h>
+#include	<graphics/gl4xext/rendering/VoxelShader.h>
+#include	<graphics/gl4xext/rendering/FXAAShader.h>
+#include	<graphics/gl4xext/rendering/SMAAShader.h>
+#include	<graphics/gl4xext/rendering/SSDOShader.h>
+#include	<graphics/gl4xext/rendering/SeparableSSSShader.h>
+#include	<graphics/gl4xext/rendering/LightShaftShader.h>
+#include	<graphics/gl4xext/rendering/LocalReflectionShader.h>
+#include	<graphics/gl4xext/rendering/DOFShader.h>
+#include	<graphics/gl4xext/rendering/HDRShader.h>
+#include	<graphics/gl4xext/rendering/ReflectiveShadowMapsShader.h>
+#include	<graphics/gl4xext/rendering/LPVShader.h>
+#include	<graphics/gl4xext/rendering/VoxelConeTracing.h>
+#include	<graphics/gl4xext/rendering/VolumeRayCastingShader.h>
 
 
 namespace OreOreLib
@@ -215,13 +215,6 @@ GLBindPointManager::InitBindPoints();
 		}
 
 
-
-//############## TODO: レンダーパス初期化テスト.2015.05.04 #######################################//
-m_VCTPass.Init( MAX_RENDER_QUEUE );
-
-//##############################################################################################//
-
-
 		//===================== Initialize LightList =======================//
 		//m_numLights		= 0;
 		//memset( m_LightQueue, 0, sizeof(SceneNode *) * MAX_LIGHTS );
@@ -232,10 +225,6 @@ m_VCTPass.Init( MAX_RENDER_QUEUE );
 			for( int j=0; j<MAX_LIGHTS; ++j )
 				m_LightSources[i][j] = NULL;
 		}
-
-m_TileMesh.Init(65, 3, 1.0f);
-
-
 
 
 m_bUpdateIrradianceVolume	= false;
@@ -503,10 +492,6 @@ m_bUpdateIrradianceVolume	= false;
 		for( int i=0; i<m_numVAOs; ++i )	m_GeometryObjects[i].Release();
 		m_numVAOs = 0;
 
-
-		m_VCTPass.ClearRenderQueue();
-
-
 		m_ViewTransformBuffer.UnbindFrustum();
 	}
 
@@ -522,7 +507,6 @@ m_bUpdateIrradianceVolume	= false;
 		// 各レンダーキューの登録オブジェクト数をゼロでリセットする
 		m_numShadowObjects	= 0;// 影
 		memset( m_numRenderObjects, 0, sizeof( m_numRenderObjects ) );
-		m_VCTPass.ClearRenderQueue();
 
 		// 
 		TraverseMeshTree( m_pSceneGraph->m_pMeshGroupTree );
@@ -675,9 +659,10 @@ m_bUpdateIrradianceVolume	= false;
 		
 
 		//================= Update VCT Voxel Data ========================//
-		VoxelConeTracing *pVCTShader	= (VoxelConeTracing *)m_Shaders[SHADER_VOXEL_CONE_TRACING];
-		pVCTShader->Update( m_VCTPass.NumRenderObjects(), m_VCTPass.GetRenderQueue() );// シーンデータのボクセル化で、レンダーオブジェクトのリストが必要
+		VoxelConeTracing *pVCTShader	= (VoxelConeTracing *)m_Shaders[ SHADER_VOXEL_CONE_TRACING ];
+		pVCTShader->Update( m_numRenderObjects[ SHADER_VOXEL_CONE_TRACING ], (const MovableObject**)&m_RenderObjects[ SHADER_VOXEL_CONE_TRACING ] );// シーンデータのボクセル化で、レンダーオブジェクトのリストが必要
 		
+
 #ifdef _DEBUG
 tcout << _T( "VCTVoxels updated..." ) << tendl;
 #endif // _DEBUG
@@ -1311,40 +1296,6 @@ tcout << _T( "VCTVoxels updated..." ) << tendl;
 
 
 
-	void RenderScene::RenderQuadTile()
-	{
-		int tileres[]=
-		{
-			1,2,1,0
-		};
-
-
-		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-
-		glClearColor( 0.5, 0.5, 0.5, 0.0 );
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-
-		QuadShader *pquadshader	= (QuadShader *)m_Shaders[SHADER_QUAD_TEXARRAY];
-
-		
-		m_TileMesh.Bind();
-		pquadshader->BindShader();
-
-		m_TileMesh.Draw( tileres );
-		//this->m_ScreenSpaceQuad.Draw();
-
-		pquadshader->UnbindShader();
-
-		m_TileMesh.Unbind();
-
-
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-	}
-
-
-
 	void RenderScene::Release()
 	{
 		// Unbind SceneGraph
@@ -1366,10 +1317,6 @@ tcout << _T( "VCTVoxels updated..." ) << tendl;
 			for( int j=0; j<MAX_RENDER_QUEUE; ++j )	m_RenderObjects[i][j]	= NULL;
 			m_numRenderObjects[i]	= 0;
 		}
-
-//############## TODO: レンダーパス削除テスト.2015.05.04 #######################################//
-m_VCTPass.Release();
-//##############################################################################################//
 
 		// Delete Lightsource Lists
 		for( int i=0; i<NUM_LIGHT_TYPE; ++i )
@@ -1448,7 +1395,6 @@ m_RawShadedResult.Release();
 //GLUniformBufferObject::ReleaseBindPoints();
 GLBindPointManager::ReleaseBindPoints();
 
-m_TileMesh.Release();
 	}
 
 

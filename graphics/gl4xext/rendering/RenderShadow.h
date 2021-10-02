@@ -1,10 +1,9 @@
 ﻿#ifndef	RENDER_SHADOW_H
 #define	RENDER_SHADOW_H
 
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/scene/ShadowCaster.h>
 
-
-#include	"IShader.h"
-#include	"ShadowCaster.h"
 
 
 namespace OreOreLib

@@ -1,10 +1,10 @@
 ﻿#include	"LightShaftShader.h"
 
+#include	<graphics/gl4x/resource/GLBindPointManager.h>
+#include	<graphics/gl4x/resource/ShadowBuffer.h>
 
-#include	"GLBindPointManager.h"
-#include	"ViewTransformBuffer.h"
-#include	"LightAttributeBuffer.h"
-#include	"ShadowBuffer.h"
+#include	<graphics/gl4x/scene/ViewTransformBuffer.h>
+#include	<graphics/gl4x/scene/LightAttributeBuffer.h>
 
 
 

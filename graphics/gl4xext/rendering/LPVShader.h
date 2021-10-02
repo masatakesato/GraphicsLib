@@ -1,13 +1,13 @@
 ﻿#ifndef	LIGHT_PROPAGATION_VOLUMES_H
 #define	LIGHT_PROPAGATION_VOLUMES_H
 
-
 #include	<vector>
 
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/scene/Frustum.h>
 
-#include	"IShader.h"
 #include	"LPVIrradianceVolume.h"
-#include	"Frustum.h"
+
 
 
 namespace OreOreLib

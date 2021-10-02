@@ -1,8 +1,8 @@
 ﻿#include	"SeparableSSSShader.h"
 
-#include	"GLHelperFunctions.h"
-#include	"LightAttributeBuffer.h"
-#include	"ShadowBuffer.h"
+#include	<graphics/gl4x/common/GLHelperFunctions.h>
+#include	<graphics/gl4x/scene/LightAttributeBuffer.h>
+#include	<graphics/gl4x/resource/ShadowBuffer.h>
 
 
 

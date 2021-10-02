@@ -6,11 +6,10 @@
 #endif
 #include	<fbxsdk.h>
 
+#include	<oreore/common/TString.h>
+#include	<oreore/mathlib/GraphicsMath.h>
 
-
-#include	"./common/TString.h"
-#include	"MathLib.h"
-#include	"SceneGraph.h"
+#include	"../scene/SceneGraph.h"
 
 
 

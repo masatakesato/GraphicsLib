@@ -1,9 +1,9 @@
 ﻿#ifndef	SIMPLE_DEFERRED_LIGHTING_SHADER_H
 #define	SIMPLE_DEFERRED_LIGHTING_SHADER_H
 
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/shader/GLShader.h>
 
-#include	"IShader.h"
-#include	"GLShader.h"
 
 
 namespace OreOreLib

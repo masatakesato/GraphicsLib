@@ -1,6 +1,7 @@
 ﻿#ifndef	VIEW_TRANSFORM_BUFFER_H
 #define	VIEW_TRANSFORM_BUFFER_H
 
+#include	"../resource/IBufferObject.h"
 #include	"../resource/GLUniformBufferObject.h"
 
 #include	"Frustum.h"

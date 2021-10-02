@@ -1,7 +1,7 @@
 ﻿#include	"VoxelShader.h"
 
-#include	"GLPrimitives.h"
-#include	"ViewTransformBuffer.h"
+#include	<graphics/gl4x/scene/ViewTransformBuffer.h>
+#include	<graphics/gl4x/other/GLPrimitives.h>
 
 
 

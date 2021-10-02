@@ -1,9 +1,8 @@
 ﻿#ifndef	Z_PREPASS_SHADER_H
 #define	Z_PREPASS_SHADER_H
 
+#include	<graphics/gl4x/shader/IShader.h>
 
-
-#include	"IShader.h"
 
 
 namespace OreOreLib

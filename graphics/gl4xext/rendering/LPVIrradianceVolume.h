@@ -1,8 +1,7 @@
 ﻿#ifndef	LPV_IRRADINACE_VOLUME
 #define	LPV_IRRADINACE_VOLUME
 
-
-#include	"Texture.h"
+#include	<graphics/gl4x/resource/Texture.h>
 
 
 

@@ -1,8 +1,8 @@
 ﻿#include	"ShadowBuffer.h"
 
-
-#include	"GLHelperFunctions.h"
+#include	"../common/GLHelperFunctions.h"
 #include	"GLBindPointManager.h"
+
 
 
 namespace OreOreLib

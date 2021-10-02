@@ -1,13 +1,13 @@
 ﻿#ifndef GL_ATOMIC_COUNTER_BUFFER_OBJECT_H
 #define GL_ATOMIC_COUNTER_BUFFER_OBJECT_H
 
-
-
 #include <GL/glew.h>
 #pragma comment( lib, "glew32.lib" )
 
-#include	"IGLBufferObject.h"
-#include	"./container/RingQueue.h"
+#include	<oreore/container/RingQueue.h>
+
+#include	<graphics/gl4x/resource/IGLBufferObject.h>
+
 
 
 namespace OreOreLib

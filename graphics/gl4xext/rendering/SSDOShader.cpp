@@ -1,8 +1,8 @@
 ﻿#include	"SSDOShader.h"
 
+#include	<graphics/gl4x/resource/GLBindPointManager.h>
+#include	<graphics/gl4x/scene/ViewTransformBuffer.h>
 
-#include	"GLBindPointManager.h"
-#include	"ViewTransformBuffer.h"
 
 
 namespace OreOreLib

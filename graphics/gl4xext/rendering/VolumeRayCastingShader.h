@@ -1,9 +1,8 @@
 ﻿#ifndef	VOLUME_RAY_CASTING_SHADER_H
 #define	VOLUME_RAY_CASTING_SHADER_H
 
+#include	<graphics/gl4x/shader/IShader.h>
 
-
-#include	"IShader.h"
 
 
 namespace OreOreLib

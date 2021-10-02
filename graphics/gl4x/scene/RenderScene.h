@@ -5,6 +5,7 @@
 
 
 #include	"../resource/GLBufferObject.h"
+#include	"../resource/GLBindPointManager.h"
 #include	"../resource//GLRenderTarget.h"//#include	<graphics/gl4x/resource/GLFrameBufferObject.h>
 #include	"../resource/GLVertexArrayObject.h"
 #include	"../resource/GeometryBuffer.h"
@@ -20,7 +21,7 @@
 #include	<graphics/gl4xext/rendering/SSDOBuffer.h>
 #include	<graphics/gl4xext/rendering/LPVIrradianceVolume.h>
 #include	<graphics/gl4xext/rendering/VCTVoxelData.h>
-#include	<graphics/gl4xext/rendering/VoxelConeTracingPass.h>
+//#include	<graphics/gl4xext/rendering/VoxelConeTracingPass.h>
 
 
 
@@ -95,7 +96,6 @@ bool GetIrradianceVolumeUpdateFrag()	{ return m_bUpdateIrradianceVolume; }
 
 		void ViewShadowMaps( int width, int height );
 		void ViewReflectiveShadowMaps( int width, int height );
-		void RenderQuadTile();
 
 
 	private:
@@ -120,10 +120,6 @@ bool GetIrradianceVolumeUpdateFrag()	{ return m_bUpdateIrradianceVolume; }
 		// Render Queue for Transparent Rendering
 		int						m_numTransparentObjects[NUM_SHADER_TYPE];
 		MovableObject			*m_TransparentObjects[NUM_SHADER_TYPE][MAX_RENDER_QUEUE];
-
-
-		// TODO: レンダーパスクラスの実験.VoxelConeTracingで使用する描画オブジェクトのリストを管理する (2015.05.04)
-		VoxelConeTracingPass	m_VCTPass;
 
 		// Lightsource Lists
 		int						m_numLights[NUM_LIGHT_TYPE];
@@ -203,10 +199,6 @@ bool GetIrradianceVolumeUpdateFrag()	{ return m_bUpdateIrradianceVolume; }
 
 
 
-		SeamlessTileMesh	m_TileMesh;// 実験
-
-
-
 		inline void AssignVertexArrayObject( SceneNode *pNode )
 		{
 			if( pNode == NULL || m_numVAOs >= MAX_RENDER_QUEUE )return;
@@ -243,10 +235,6 @@ bool GetIrradianceVolumeUpdateFrag()	{ return m_bUpdateIrradianceVolume; }
 				// TODO: 影生成オブジェクトも登録しておく.一旦は全部対象にする
 				if( m_numShadowObjects < MAX_RENDER_QUEUE )
 					m_RenderShadowQueue[m_numShadowObjects++] = pNode->GetAttachedObject();
-
-				// TODO: 実験. ボクセルコーントレーシング用オブジェクトを集める
-				m_VCTPass.AddRenderObject( pNode->GetAttachedObject() );
-
 			}
 
 			TraverseMeshTree( (SceneNode *)pNode->children );

@@ -1,9 +1,8 @@
 ﻿#ifndef	SSDO_SHADER_H
 #define	SSDO_SHADER_H
 
-
-#include	"IShader.h"
-#include	"GLRenderTarget.h"
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/resource/GLRenderTarget.h>
 
 #include	"SSDOBuffer.h"
 

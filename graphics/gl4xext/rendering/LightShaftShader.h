@@ -1,10 +1,10 @@
 ﻿#ifndef	LIGHT_SHAFT_SHADER_H
 #define	LIGHT_SHAFT_SHADER_H
 
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/shader/GLShader.h>
+#include	<graphics/gl4x/shader/GLComputeShader.h>
 
-#include	"IShader.h"
-#include	"GLShader.h"
-#include	"GLComputeShader.h"
 
 
 namespace OreOreLib

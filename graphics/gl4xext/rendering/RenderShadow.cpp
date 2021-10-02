@@ -1,9 +1,8 @@
 ﻿#include	"RenderShadow.h"
 
-
-#include	"./common/TString.h"
-#include	"GLHelperFunctions.h"
-#include	"ShadowBuffer.h"
+#include	<oreore./common/TString.h>
+#include	<graphics/gl4x/common/GLHelperFunctions.h>
+#include	<graphics/gl4x/resource/ShadowBuffer.h>
 
 
 

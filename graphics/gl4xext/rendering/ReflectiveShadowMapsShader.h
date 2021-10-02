@@ -1,12 +1,10 @@
 ﻿#ifndef	REFLECTIVE_SHADOWMAPS_SHADER_H
 #define	REFLECTIVE_SHADOWMAPS_SHADER_H
 
-
-
-#include	"IShader.h"
-#include	"ViewFrustum.h"
-#include	"ShadowCaster.h"
-#include	"GLUniformBufferObject.h"
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/scene/ViewFrustum.h>
+#include	<graphics/gl4x/scene/ShadowCaster.h>
+#include	<graphics/gl4x/resource/GLUniformBufferObject.h>
 
 
 

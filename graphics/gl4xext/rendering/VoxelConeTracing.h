@@ -2,11 +2,13 @@
 #define	VOXEL_CONE_TRACING_H
 
 
-#include	"IShader.h"
-#include	"GLComputeShader.h"
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/shader/GLComputeShader.h>
+#include	<graphics/gl4x/resource/GLFrameBufferObject.h>
+#include	<graphics/gl4x/scene/MovableObject.h>
+
 #include	"VCTVoxelData.h"
-#include	"GLFrameBufferObject.h"
-#include	"MovableObject.h"
+
 
 
 namespace OreOreLib

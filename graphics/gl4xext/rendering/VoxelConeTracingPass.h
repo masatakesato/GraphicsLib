@@ -1,15 +1,14 @@
 ﻿#ifndef VOXEL_CONE_TRACING_PASS_H
 
-#include	"IRenderPass.h"
+#include	<graphics/gl4x/common/Defines.h>
 
-#include	"Defines.h"
 
 
 namespace OreOreLib
 {
 
 	// TODO: ボクセルコーンとレーシングのパス.レンダーキュー管理機能の実験中. 2015.05.04
-	class VoxelConeTracingPass : public IRenderPass
+	class VoxelConeTracingPass
 	{
 	public:
 

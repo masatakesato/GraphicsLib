@@ -1,11 +1,13 @@
 ﻿#include	"LocalReflectionShader.h"
 
+#include	<oreore/common/TString.h>
 
-#include	"./common/TString.h"
-#include	"ViewTransformBuffer.h"
-#include	"LightAttributeBuffer.h"
-#include	"ShadowBuffer.h"
-#include	"MeshObject.h"
+#include	<graphics/gl4x/resource/ShadowBuffer.h>
+
+#include	<graphics/gl4x/scene/ViewTransformBuffer.h>
+#include	<graphics/gl4x/scene/LightAttributeBuffer.h>
+#include	<graphics/gl4x/scene/MeshObject.h>
+
 
 
 namespace OreOreLib

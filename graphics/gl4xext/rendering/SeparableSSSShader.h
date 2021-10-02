@@ -1,9 +1,9 @@
 ﻿#ifndef	SEPARABLE_SSS_SHADER_H
 #define	SEPARABLE_SSS_SHADER_H
 
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/resource/GLRenderTarget.h>
 
-#include	"IShader.h"
-#include	"GLRenderTarget.h"
 
 
 namespace OreOreLib

@@ -1,11 +1,9 @@
 ﻿#include	"ReflectiveShadowMapsShader.h"
 
+#include	<oreore/common/TString.h>
 
-
-#include	"./common/TString.h"
-#include	"ViewFrustum.h"
-#include	"LightAttributeBuffer.h"
-
+#include	<graphics/gl4x/scene/ViewFrustum.h>
+#include	<graphics/gl4x/scene/LightAttributeBuffer.h>
 
 
 

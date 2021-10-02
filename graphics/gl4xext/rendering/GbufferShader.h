@@ -1,10 +1,9 @@
 ﻿#ifndef	GBUFFER_SHADER_H
 #define	GBUFFER_SHADER_H
 
+#include	<graphics/gl4x/shader/IShader.h>
+#include	<graphics/gl4x/resource/GLFrameBufferObject.h>
 
-
-#include	"IShader.h"
-#include	"GLFrameBufferObject.h"
 
 
 namespace OreOreLib

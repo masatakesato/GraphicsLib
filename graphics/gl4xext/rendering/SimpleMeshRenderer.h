@@ -1,9 +1,8 @@
 ﻿#ifndef	SIMPLE_MESH_RENDERER_H
 #define	SIMPLE_MESH_RENDERER_H
 
+#include	<graphics/gl4x/shader/IShader.h>
 
-
-#include	"IShader.h"
 
 
 namespace OreOreLib

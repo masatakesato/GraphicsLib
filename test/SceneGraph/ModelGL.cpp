@@ -1,11 +1,6 @@
 ﻿#include	"ModelGL.h"
-//#include	"Bitmap.h"
 
-
-
-
-//#include	"BufferLayout.h"
-#include	<oreore/SceneLoader.h>
+#include	<graphics/gl4x/io/SceneLoader.h>
 
 
 FbxLoader	g_SceneLoader;
