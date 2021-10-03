@@ -1,22 +1,19 @@
-#version 150
-
-
-
+ï»¿
 
 uniform vec3 L = vec3(1,0.7,2);
 
-//#################### ƒo[ƒeƒbƒNƒXƒVƒF[ƒ_ ##################//
+//#################### ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ ##################//
 #ifdef _VERTEX_SHADER_
 
 
 
-// •Ï”
+// å¤‰æ•°
 uniform mat4	g_matMVP;
 uniform vec3	g_LightDir;
 uniform vec3	g_EyePos;
 
 
-// “ü—Í
+// å…¥åŠ›
 in vec4			POSITION;	//
 in vec2			TEXCOORD0;	//
 in vec3			NORMAL;		//
@@ -24,20 +21,20 @@ in vec3			TANGENT;	//
 in vec3			BINORMAL;	//
 
 
-// o—Í
+// å‡ºåŠ›
 out Vertex_Out
 {
-	vec4		Position;	// ’¸“_À•W
-	vec2		TexCoord;	// ƒeƒNƒXƒ`ƒƒÀ•W
+	vec4		Position;	// é ‚ç‚¹åº§æ¨™
+	vec2		TexCoord;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	
-//	vec3		Tangent;	// ÚüƒxƒNƒgƒ‹
-//	vec3		Binormal;	// ]–@üƒxƒNƒgƒ‹
-	vec3		Normal;		// –@üƒxƒNƒgƒ‹
+//	vec3		Tangent;	// æ¥ç·šãƒ™ã‚¯ãƒˆãƒ«
+//	vec3		Binormal;	// å¾“æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	vec3		Normal;		// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	
 }OUT;
 
 
-// ƒƒCƒ“ŠÖ”
+// ãƒ¡ã‚¤ãƒ³é–¢æ•°
 void main()
 {	
 	//vec4 pos = vec4(POSITION.xyz*0.1, POSITION.w);
@@ -56,27 +53,27 @@ void main()
 
 
 
-//##################### ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_ #################//
+//##################### ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ #################//
 #ifdef _FRAGMENT_SHADER_
 
-// “ü—Í
+// å…¥åŠ›
 in Vertex_Out
 {
-	vec4		Position;	// ’¸“_À•W
-	vec4		TexCoord;	// ƒeƒNƒXƒ`ƒƒÀ•W
+	vec4		Position;	// é ‚ç‚¹åº§æ¨™
+	vec4		TexCoord;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	
-//	vec3		Tangent;	// ÚüƒxƒNƒgƒ‹
-//	vec3		Binormal;	// ]–@üƒxƒNƒgƒ‹
-	vec3		Normal;		// –@üƒxƒNƒgƒ‹
+//	vec3		Tangent;	// æ¥ç·šãƒ™ã‚¯ãƒˆãƒ«
+//	vec3		Binormal;	// å¾“æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	vec3		Normal;		// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	
 }IN;
 
 
-// o—Í
+// å‡ºåŠ›
 out vec4 Color_out;
 
 
-// ƒƒCƒ“ŠÖ”
+// ãƒ¡ã‚¤ãƒ³é–¢æ•°
 void main()
 {
 	float I = max( dot(IN.Normal, normalize(L)), 0.0);

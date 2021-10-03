@@ -1,63 +1,84 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="リソース ファイル">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\LoadMeshData\ControllerGL.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\LoadMeshData\DDSLoader.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\test\LoadMeshData\DDSLoader_sampleMain.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\LoadMeshData\ModelGL.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\LoadMeshData\Win32_main.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\graphics\gl4x\scene\MeshData.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\graphics\gl4x\scene\Material.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\oreore\ui\win\Window.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\app\ViewGL.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\Camera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\oreore\ui\win\WindowProcedure.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\test\LoadMeshData\ControllerGL.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\test\LoadMeshData\DDSLoader.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\test\LoadMeshData\ModelGL.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\graphics\gl4x\scene\MeshData.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\graphics\gl4x\scene\Material.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\oreore\ui\win\Window.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\app\ViewGL.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\Camera.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\oreore\ui\win\WindowProcedure.h">
+      <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

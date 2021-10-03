@@ -1,16 +1,14 @@
-#version 150
+﻿
+//############################ 各種変数 ##########################//
 
 
-//############################ �e��ϐ� ##########################//
-
-
-// �O���[�o���ϐ�
+// グローバル変数
 uniform mat4	g_matMVP;
 uniform vec3	g_LightDir;
 uniform vec3	g_EyePos;
 
 
-// ���_�V�F�[�_�ւ̓��̓f�[�^
+// 頂点シェーダへの入力データ
 in vec4			POSITION;	//
 in vec3			NORMAL;		//
 in vec2			TEXCOORD0;	//
@@ -18,21 +16,21 @@ in vec3			TANGENT;	//
 in vec3			BINORMAL;	//
 
 
-// ���_�V�F�[�_����̏o�̓f�[�^
+// 頂点シェーダからの出力データ
 out Vertex_Out
 {
-	vec4		Position;	// ���_���W
-	vec2		TexCoord;	// �e�N�X�`�����W
+	vec4		Position;	// 頂点座標
+	vec2		TexCoord;	// テクスチャ座標
 	
-//	vec3		Tangent;	// �ڐ��x�N�g��
-//	vec3		Binormal;	// �]�@���x�N�g��
-	vec3		Normal;		// �@���x�N�g��
+//	vec3		Tangent;	// 接線ベクトル
+//	vec3		Binormal;	// 従法線ベクトル
+	vec3		Normal;		// 法線ベクトル
 	
 }OUT;
 
 
 
-//##################### �o�[�e�b�N�X�V�F�[�_ #####################//
+//##################### バーテックスシェーダ #####################//
 void main()
 {	
 	gl_Position		= POSITION * g_matMVP;
@@ -43,7 +41,7 @@ void main()
 	
 
 
-//============== �����x�N�g����ڋ�Ԃɕϊ� ==============//
+//============== 光源ベクトルを接空間に変換 ==============//
 
 
 }

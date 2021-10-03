@@ -248,7 +248,7 @@ void ModelGL::Init()
 	m_pRenderScene->BindSceneGraph( m_pSceneGraph );
 	m_pRenderScene->InitShadowBuffer( SHADOWMAP_SIZE, SHADOWMAP_SIZE, MAX_SHADOW_MAPS );
 	//m_pRenderScene->InitIrradianceVolume( 48, 48, 48, 1, 1.0f );
-	m_pRenderScene->InitVCTVoxelData( 96, 96, 96, 6, 1.0f );
+	m_pRenderScene->InitVCTVoxelData( 96, 96, 96, 8, 1.0f );
 	m_pRenderScene->InitRSMBuffer( /*2048, 2048*/SHADOWMAP_SIZE, SHADOWMAP_SIZE );
 
 

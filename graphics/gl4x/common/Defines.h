@@ -15,7 +15,7 @@
 
 #define	MAX_SHADOW_CASCADES		16
 #define	MAX_SHADOW_MAPS			64
-#define	SHADOWMAP_SIZE			512//2048//2048//
+#define	SHADOWMAP_SIZE			2048//512//2048//
 // 2kシャドウマップ64枚だと、GPUメモリ1GB消費.大きすぎる？
 
 #define MAX_RENDER_QUEUE		65536

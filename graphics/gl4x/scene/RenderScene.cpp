@@ -662,7 +662,7 @@ m_bUpdateIrradianceVolume	= false;
 
 		//================= Update VCT Voxel Data ========================//
 		VoxelConeTracing *pVCTShader	= (VoxelConeTracing *)m_Shaders[ SHADER_VOXEL_CONE_TRACING ];
-		pVCTShader->Update( m_numRenderObjects[ SHADER_VOXEL_CONE_TRACING ], (const MovableObject**)&m_RenderObjects[ SHADER_VOXEL_CONE_TRACING ] );// シーンデータのボクセル化で、レンダーオブジェクトのリストが必要
+		pVCTShader->Update( m_numRenderObjects[ /*SHADER_VOXEL_CONE_TRACING*/SHADER_SIMPLEMESH ], (const MovableObject**)&m_RenderObjects[ /*SHADER_VOXEL_CONE_TRACING*/SHADER_SIMPLEMESH ] );// シーンデータのボクセル化で、レンダーオブジェクトのリストが必要
 		
 
 #ifdef _DEBUG

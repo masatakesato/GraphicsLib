@@ -1,6 +1,10 @@
 ﻿#include	"ControllerGL.h"
 
 
+static float s_MoveSpeed = 0.1f;
+static float s_RollSpeed = 0.1f;
+
+
 
 ControllerGL::ControllerGL()
 {
@@ -294,14 +298,14 @@ void ControllerGL::ProcessCameraKeys()
 
 		switch(i)
 		{
-			case 'W' :{	m_Model->TranslateCamera(+0.01f, 0, 0);	break; }
-			case 'S' :{	m_Model->TranslateCamera(-0.01f, 0, 0);	break; }
-			case 'A' :{	m_Model->TranslateCamera(0, +0.01f, 0);	break; }
-			case 'D' :{ m_Model->TranslateCamera(0, -0.01f, 0);	break; }
-			case 'R' :{	m_Model->TranslateCamera(0, 0, +0.01f);	break; }
-			case 'F' :{	m_Model->TranslateCamera(0, 0, -0.01f);	break; }
-			case 'Q' :{	m_Model->RollCamera(-0.01f);			break; }
-			case 'E' :{	m_Model->RollCamera(+0.01f);			break; }
+			case 'W' :{	m_Model->TranslateCamera(+s_MoveSpeed, 0, 0);	break; }
+			case 'S' :{	m_Model->TranslateCamera(-s_MoveSpeed, 0, 0);	break; }
+			case 'A' :{	m_Model->TranslateCamera(0, +s_MoveSpeed, 0);	break; }
+			case 'D' :{ m_Model->TranslateCamera(0, -s_MoveSpeed, 0);	break; }
+			case 'R' :{	m_Model->TranslateCamera(0, 0, +s_MoveSpeed);	break; }
+			case 'F' :{	m_Model->TranslateCamera(0, 0, -s_MoveSpeed);	break; }
+			case 'Q' :{	m_Model->RollCamera(-s_RollSpeed);			break; }
+			case 'E' :{	m_Model->RollCamera(+s_RollSpeed);			break; }
 			default : {	break; }
 		}// end of switch
 		

@@ -57,7 +57,7 @@ private:
 	// メッシュ形状データ
 	vector <Vec3f>		m_Vertices;	// 頂点配列
 	vector <Vec3f>		m_Normals;	// 法線配列
-	vector <Vec3f>		m_TexCoord;	// テクスチャ座標配列
+	vector <Vec2f>		m_TexCoord;	// テクスチャ座標配列
 	vector <Material>		m_Materials;// マテリアル配列
 vector <ObjMaterialSubset>	m_MatSubs;	// マテリアルサブセット配列
 	vector <ObjFace>			m_Faces;	// 面配列
@@ -107,7 +107,7 @@ public:
 	// m_Vertices, m_Normals, m_TexCoord, m_Materials, m_MatSubs, m_Faces, m_Groupsを出力（const型なので値変更不可．参照渡しなのでアドレス変更も不可）
 	inline const vector<Vec3f>		&GetVertices() const		{ return m_Vertices; };
 	inline const vector<Vec3f>		&GetNormals() const			{ return m_Normals; };
-	inline const vector<Vec3f>		&GetTexCoords() const		{ return m_TexCoord; };
+	inline const vector<Vec2f>		&GetTexCoords() const		{ return m_TexCoord; };
 	inline const vector<Material>		&GetMaterials() const		{ return m_Materials; };
 inline const vector<ObjMaterialSubset>	&GetMaterialSubsets() const	{ return m_MatSubs; };
 	inline const vector<ObjFace>			&GetFaceIndices() const		{ return m_Faces; };

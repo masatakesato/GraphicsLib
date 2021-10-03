@@ -1,4 +1,4 @@
-#ifndef HEADER_GLSL
+﻿#ifndef HEADER_GLSL
 #define HEADER_GLSL
 
 vec4 color_gray()

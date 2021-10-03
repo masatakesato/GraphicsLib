@@ -35,35 +35,35 @@ static void DrawCube_with_tangent(	float dim,
 {
 	VertexLayout_Ext	vertices[] =
 	{
-		{ {-dim+pos.x, -dim+pos.y, -dim+pos.z}, {0,0}, {0,0,-1}, {1,0,0}, {0,1,0} },
-		{ {+dim+pos.x, -dim+pos.y, -dim+pos.z}, {1,0}, {0,0,-1}, {1,0,0}, {0,1,0} },
-		{ {+dim+pos.x, +dim+pos.y, -dim+pos.z}, {1,1}, {0,0,-1}, {1,0,0}, {0,1,0} },
-		{ {-dim+pos.x, +dim+pos.y, -dim+pos.z}, {0,1}, {0,0,-1}, {1,0,0}, {0,1,0} },
+		{ {-dim+pos.x, -dim+pos.y, -dim+pos.z}, {0,0,0}, {0,0,-1}, {1,0,0}, {0,1,0} },
+		{ {+dim+pos.x, -dim+pos.y, -dim+pos.z}, {1,0,0}, {0,0,-1}, {1,0,0}, {0,1,0} },
+		{ {+dim+pos.x, +dim+pos.y, -dim+pos.z}, {1,1,0}, {0,0,-1}, {1,0,0}, {0,1,0} },
+		{ {-dim+pos.x, +dim+pos.y, -dim+pos.z}, {0,1,0}, {0,0,-1}, {1,0,0}, {0,1,0} },
 		
-		{ {+dim+pos.x, -dim+pos.y, -dim+pos.z}, {0,0}, {1,0,0}, {0,0,1}, {0,1,0} },
-		{ {+dim+pos.x, -dim+pos.y, +dim+pos.z}, {1,0}, {1,0,0}, {0,0,1}, {0,1,0} },
-		{ {+dim+pos.x, +dim+pos.y, +dim+pos.z}, {1,1}, {1,0,0}, {0,0,1}, {0,1,0} },
-		{ {+dim+pos.x, +dim+pos.y, -dim+pos.z}, {0,1}, {1,0,0}, {0,0,1}, {0,1,0} },
+		{ {+dim+pos.x, -dim+pos.y, -dim+pos.z}, {0,0,0}, {1,0,0}, {0,0,1}, {0,1,0} },
+		{ {+dim+pos.x, -dim+pos.y, +dim+pos.z}, {1,0,0}, {1,0,0}, {0,0,1}, {0,1,0} },
+		{ {+dim+pos.x, +dim+pos.y, +dim+pos.z}, {1,1,0}, {1,0,0}, {0,0,1}, {0,1,0} },
+		{ {+dim+pos.x, +dim+pos.y, -dim+pos.z}, {0,1,0}, {1,0,0}, {0,0,1}, {0,1,0} },
 		
-		{ {+dim+pos.x, -dim+pos.y, +dim+pos.z}, {0,0}, {0,0,1}, {-1,0,0}, {0,1,0} },
-		{ {-dim+pos.x, -dim+pos.y, +dim+pos.z}, {1,0}, {0,0,1}, {-1,0,0}, {0,1,0} },
-		{ {-dim+pos.x, +dim+pos.y, +dim+pos.z}, {1,1}, {0,0,1}, {-1,0,0}, {0,1,0} },
-		{ {+dim+pos.x, +dim+pos.y, +dim+pos.z}, {0,1}, {0,0,1}, {-1,0,0}, {0,1,0} },
+		{ {+dim+pos.x, -dim+pos.y, +dim+pos.z}, {0,0,0}, {0,0,1}, {-1,0,0}, {0,1,0} },
+		{ {-dim+pos.x, -dim+pos.y, +dim+pos.z}, {1,0,0}, {0,0,1}, {-1,0,0}, {0,1,0} },
+		{ {-dim+pos.x, +dim+pos.y, +dim+pos.z}, {1,1,0}, {0,0,1}, {-1,0,0}, {0,1,0} },
+		{ {+dim+pos.x, +dim+pos.y, +dim+pos.z}, {0,1,0}, {0,0,1}, {-1,0,0}, {0,1,0} },
 	
-		{ {-dim+pos.x, -dim+pos.y, +dim+pos.z}, {0,0}, {-1,0,0}, {0,0,-1}, {0,1,0} },
-		{ {-dim+pos.x, -dim+pos.y, -dim+pos.z}, {1,0}, {-1,0,0}, {0,0,-1}, {0,1,0} },
-		{ {-dim+pos.x, +dim+pos.y, -dim+pos.z}, {1,1}, {-1,0,0}, {0,0,-1}, {0,1,0} },
-		{ {-dim+pos.x, +dim+pos.y, +dim+pos.z}, {0,1}, {-1,0,0}, {0,0,-1}, {0,1,0} },
+		{ {-dim+pos.x, -dim+pos.y, +dim+pos.z}, {0,0,0}, {-1,0,0}, {0,0,-1}, {0,1,0} },
+		{ {-dim+pos.x, -dim+pos.y, -dim+pos.z}, {1,0,0}, {-1,0,0}, {0,0,-1}, {0,1,0} },
+		{ {-dim+pos.x, +dim+pos.y, -dim+pos.z}, {1,1,0}, {-1,0,0}, {0,0,-1}, {0,1,0} },
+		{ {-dim+pos.x, +dim+pos.y, +dim+pos.z}, {0,1,0}, {-1,0,0}, {0,0,-1}, {0,1,0} },
 
-		{ {-dim+pos.x, +dim+pos.y, -dim+pos.z}, {0,0}, {0,1,0}, {1,0,0}, {0,0,1} },
-		{ {+dim+pos.x, +dim+pos.y, -dim+pos.z}, {1,0}, {0,1,0}, {1,0,0}, {0,0,1} },
-		{ {+dim+pos.x, +dim+pos.y, +dim+pos.z}, {1,1}, {0,1,0}, {1,0,0}, {0,0,1} },
-		{ {-dim+pos.x, +dim+pos.y, +dim+pos.z}, {0,1}, {0,1,0}, {1,0,0}, {0,0,1} },
+		{ {-dim+pos.x, +dim+pos.y, -dim+pos.z}, {0,0,0}, {0,1,0}, {1,0,0}, {0,0,1} },
+		{ {+dim+pos.x, +dim+pos.y, -dim+pos.z}, {1,0,0}, {0,1,0}, {1,0,0}, {0,0,1} },
+		{ {+dim+pos.x, +dim+pos.y, +dim+pos.z}, {1,1,0}, {0,1,0}, {1,0,0}, {0,0,1} },
+		{ {-dim+pos.x, +dim+pos.y, +dim+pos.z}, {0,1,0}, {0,1,0}, {1,0,0}, {0,0,1} },
 
-		{ {-dim+pos.x, -dim+pos.y, -dim+pos.z}, {0,0}, {0,-1,0}, {0,0,1}, {1,0,0} },
-		{ {-dim+pos.x, -dim+pos.y, +dim+pos.z}, {1,0}, {0,-1,0}, {0,0,1}, {1,0,0} },
-		{ {+dim+pos.x, -dim+pos.y, +dim+pos.z}, {1,1}, {0,-1,0}, {0,0,1}, {1,0,0} },
-		{ {+dim+pos.x, -dim+pos.y, -dim+pos.z}, {0,1}, {0,-1,0}, {0,0,1}, {1,0,0} },
+		{ {-dim+pos.x, -dim+pos.y, -dim+pos.z}, {0,0,0}, {0,-1,0}, {0,0,1}, {1,0,0} },
+		{ {-dim+pos.x, -dim+pos.y, +dim+pos.z}, {1,0,0}, {0,-1,0}, {0,0,1}, {1,0,0} },
+		{ {+dim+pos.x, -dim+pos.y, +dim+pos.z}, {1,1,0}, {0,-1,0}, {0,0,1}, {1,0,0} },
+		{ {+dim+pos.x, -dim+pos.y, -dim+pos.z}, {0,1,0}, {0,-1,0}, {0,0,1}, {1,0,0} },
 	};
 
 	GLint	index[] =
@@ -109,7 +109,7 @@ ModelGL::ModelGL()
 std::cout << "ModelGL::ModelGL()..." << std::endl;
 
 	m_Camera = new Camera();
-	m_Shader = new Shader();
+	m_Shader = new GLShader();
 }
 
 
@@ -134,7 +134,7 @@ void ModelGL::Init()
 				//"sir00obj.obj"
 				//"SponzaMoreMeshes.obj"
 				//"test.obj"
-				"dosei.obj"
+				//"dosei.obj"
 				//"Sponza.obj"
 				//"new_csie_b1.obj"
 				//"mba1.obj"
@@ -143,6 +143,7 @@ void ModelGL::Init()
 				//"ateneam.obj"
 				//"elepham.obj"
 				//"kiy00g.obj"
+				"D:/Repository/GraphicsLib/assets/scene/obj/testscene.obj"
 				);
 	m_mesh.Information();
 
@@ -158,7 +159,7 @@ void ModelGL::Init()
 void ModelGL::LoadShader(const char *vsFile, const char *gsFile, const char *fsFile)
 {
 	//m_Shader->Init(vsFile, fsFile);
-	m_Shader->Init("Shader/Shader.glsl",);
+	m_Shader->Init( _T("../../../test/LoadMeshData/Shader/Shader.glsl"), GLSL_430 );
 
 	vertLoc = 0;
 	normLoc = 1;
@@ -205,10 +206,10 @@ void ModelGL::Draw()
 {
 	m_Shader->Bind();
 	
-	glClearColor(0.3, 0.3, 1.0, 1.0);
+	glClearColor(0.3, 0.3, 0.3, 1.0);
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-	glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, *(m_Camera->GetViewProjectionMatrix()->m) );	
+	glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, m_Camera->GetViewProjectionMatrix()->m );	
 	glUniform3fv(g_epLightDir, 1, LightDir);
 	glUniform3fv(g_epEyePos, 1, m_Camera->GetPosition()->xyz);
 /*	
@@ -222,15 +223,17 @@ void ModelGL::Draw()
 	glBindTexture(GL_TEXTURE_2D, m_DiffuseTexture);
 */
 	
-	for(int i=0; i<10; ++i)
-		for(int j=0; j<10; ++j)
-			for(int k=0; k<10; ++k)
-			{
-				Vec3f Pos = {float(i), float(j), float(k)};
-	DrawCube_with_tangent(0.4f, vertLoc, normLoc, texcLoc, m_Tangent, m_Binormal, Pos); 
-			}
+	//for(int i=0; i<10; ++i)
+	//	for(int j=0; j<10; ++j)
+	//		for(int k=0; k<10; ++k)
+	//		{
+	//			Vec3f Pos = {float(i), float(j), float(k)};
+	//DrawCube_with_tangent(0.4f, vertLoc, normLoc, texcLoc, m_Tangent, m_Binormal, Pos); 
+	//		}
+
+
+
 	
-	/*
 	glEnableVertexAttribArray(vertLoc);
 	glEnableVertexAttribArray(texcLoc);
 	glEnableVertexAttribArray(normLoc);
@@ -240,10 +243,10 @@ void ModelGL::Draw()
 	glVertexAttribPointer(normLoc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexLayout), &(vertexlist->Normal) );
 	
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, Indices);
-	*/
-//	glDisableVertexAttribArray(vertLoc);
-//	glDisableVertexAttribArray(texcLoc);
-//	glDisableVertexAttribArray(normLoc);
+	
+	glDisableVertexAttribArray(vertLoc);
+	glDisableVertexAttribArray(texcLoc);
+	glDisableVertexAttribArray(normLoc);
 
 
 	m_Shader->Unbind();

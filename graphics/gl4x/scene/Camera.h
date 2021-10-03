@@ -3,7 +3,6 @@
 
 // 任意の場所で任意の姿勢を取れるカメラ
 #include	<oreore/mathlib/GraphicsMath.h>
-#include	"CameraObject.h"
 
 
 
@@ -91,7 +90,7 @@ public:
 		CrossProduct(m_Vertical, m_Forward, m_Horizontal);// 垂直
 
 		//============ ビュー変換行列を作成する ==========//
-		MatView( m_matView, m_Horizontal, m_Vertical, m_Forward, m_Position );
+		MatViewGL( m_matView, m_Horizontal, m_Vertical, m_Forward, m_Position );//MatView( m_matView, m_Horizontal, m_Vertical, m_Forward, m_Position );
 	};
 
 
@@ -124,31 +123,6 @@ public:
 	void Information();
 };
 
-
-
-
-
-
-
-namespace OreOreLib
-{
-
-class CameraStandAlone : public CameraObject
-{
-public:
-
-	CameraStandAlone();
-	~CameraStandAlone();
-
-
-private:
-	
-	Frustum		m_ShadowCaster;
-
-};
-
-
-}// end of namespace
 
 
 #endif /* CAMERA_H */

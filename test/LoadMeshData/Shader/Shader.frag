@@ -1,29 +1,28 @@
-#version 150
+ï»¿
+//############################ å„ç¨®å¤‰æ•° ##########################//
 
-//############################ ŠeŽí•Ï” ##########################//
 
-
-// ’¸“_ƒVƒF[ƒ_‚©‚ç‚Ì“ü—Í
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ã‹ã‚‰ã®å…¥åŠ›
 in Vertex_Out
 {
-	vec4		Position;	// ’¸“_À•W
-	vec4		TexCoord;	// ƒeƒNƒXƒ`ƒƒÀ•W
+	vec4		Position;	// é ‚ç‚¹åº§æ¨™
+	vec4		TexCoord;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	
-//	vec3		Tangent;	// ÚüƒxƒNƒgƒ‹
-//	vec3		Binormal;	// ]–@üƒxƒNƒgƒ‹
-	vec3		Normal;		// –@üƒxƒNƒgƒ‹
+//	vec3		Tangent;	// æŽ¥ç·šãƒ™ã‚¯ãƒˆãƒ«
+//	vec3		Binormal;	// å¾“æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	vec3		Normal;		// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	
 }IN;
 
 
-// ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_‚ªo—Í‚·‚éFƒf[ƒ^
+// ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãŒå‡ºåŠ›ã™ã‚‹è‰²ãƒ‡ãƒ¼ã‚¿
 out vec4 Color_out;
 
 
 
 
 
-//###################### ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_ ####################//
+//###################### ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ ####################//
 void main()
 {
 	Color_out.rgb = IN.Normal;

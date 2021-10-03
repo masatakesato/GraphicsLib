@@ -564,7 +564,7 @@ void MeshData::AddVertex(string str)
 
 void MeshData::AddTexCoord(string str)
 {
-	Vec3f newTexcoord = {0, 0, 0};
+	Vec2f newTexcoord = {0, 0};
 	vector<string> elements = Split(str, " ");
 
 	if(elements.empty())
@@ -576,7 +576,7 @@ void MeshData::AddTexCoord(string str)
 	// テクスチャ座標の格納
 	for(size_t i=0; i<min(elements.size(), 3); i++)
 	{
-		newTexcoord.xyz[i] = (float)atof(elements[i].c_str());
+		newTexcoord.xy[i] = (float)atof(elements[i].c_str());
 	}
 
 	// テクスチャ座標を追加
@@ -813,7 +813,8 @@ void MeshData::GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertex
 	// 頂点レイアウト配列(頂点座標/テクスチャ座標/法線ベクトル)を作成する
 	*vertexlist = new OreOreLib::VertexLayout[numVertAttrs];
 	int curr = 0;
-	const Vec3f	dumy = {-1, -1, -1};
+	const Vec3f	dumy3 = {-1, -1, -1};
+	const Vec2f	dumy2 = {-1, -1};
 
 	for(i=0; i<VertAttribs.size(); i++)
 	{
@@ -823,9 +824,9 @@ void MeshData::GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertex
 			int texIdx		= VertAttribs[i][j].x;	// テクスチャ座標属性へのインデックス
 			int normalIdx	= VertAttribs[i][j].y;	// 法線ベクトル属性へのインデックス
 
-			(*vertexlist)[curr].Position	= vertIdx>=0	? m_Vertices[vertIdx]	: dumy;	// -1だったら弾く
-			(*vertexlist)[curr].TexCoord	= texIdx>=0		? m_TexCoord[texIdx]	: dumy;	// -1だったら弾く
-			(*vertexlist)[curr].Normal		= normalIdx>=0	? m_Normals[normalIdx]	: dumy;	// -1だったら弾く
+			(*vertexlist)[curr].Position	= vertIdx>=0	? m_Vertices[vertIdx]	: dumy3;	// -1だったら弾く
+			(*vertexlist)[curr].TexCoord	= texIdx>=0		? m_TexCoord[texIdx]	: dumy2;	// -1だったら弾く
+			(*vertexlist)[curr].Normal		= normalIdx>=0	? m_Normals[normalIdx]	: dumy3;	// -1だったら弾く
 
 //cout << vertexlist[curr].Position.x << ", " << vertexlist[curr].Position.y << ", " << vertexlist[curr].Position.z << endl;
 
