@@ -2,8 +2,8 @@
 #include	<oreore/ui/win/WindowProcedure.h>
 #include	<graphics/gl4x/app/ViewGL.h>
 
-#include	"ModelGL.h"
-#include	"ControllerGL.h"
+#include	"ModelLoadObj.h"
+#include	"ControllerLoadObj.h"
 
 
 
@@ -21,7 +21,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 
 
 	//================ Modelインスタンス作成 ================//
-	ModelGL *model = new ModelGL();
+	ModelLoadObj *model = new ModelLoadObj();
 	
 
 	//=============== Viewインスタンス作成 ==================//

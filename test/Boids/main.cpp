@@ -5,7 +5,7 @@
 #include"valiables.h"
 #include"Models.h"
 //#include"getclock.h"
-#include<GL/glut.h>
+#include<GL/freeglut.h>
 
 
 void initialize(void){

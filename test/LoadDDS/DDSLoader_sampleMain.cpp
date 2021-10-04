@@ -14,7 +14,7 @@
 //
 #include <iostream>
 #include <GL/glew.h>
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include "DDSLoader.h"
 using namespace std;
 

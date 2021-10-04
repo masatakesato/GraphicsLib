@@ -118,7 +118,7 @@ MeshData::MeshData()
 	m_Faces.clear();
 	m_Groups.clear();
 }
-//あああ
+
 
 bool MeshData::Load( const char *filename )
 {

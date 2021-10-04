@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <math.h>
 #include <malloc.h>
 

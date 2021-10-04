@@ -3,7 +3,7 @@
 //=============================================================================
 
 #include <stdio.h>
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <math.h>
 #include <time.h>
 #include <assert.h>

@@ -7,7 +7,7 @@
 #include <GL/glew.h>
 #pragma comment(lib, "glew32.lib")
 #ifdef _DEBUG
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #endif
 
 #include	<oreore/mathlib/GraphicsMath.h>

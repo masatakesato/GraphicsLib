@@ -6,7 +6,7 @@
 #include	<graphics/gl4x/app/ViewGL.h>
 #include	<graphics/gl4x/app/Controller.h>
 
-#include	"ModelGL.h"
+#include	"ModelLoadObj.h"
 
 
 
@@ -14,7 +14,7 @@ class ControllerGL : Controller
 {
 private:
 
-	ModelGL			*m_Model;
+	ModelLoadObj			*m_Model;
 	ViewGL			*m_View;
 
 	HANDLE			m_hThread;
@@ -35,7 +35,7 @@ private:
 public:
 
 	ControllerGL();
-	ControllerGL(ModelGL *model, ViewGL *view);
+	ControllerGL(ModelLoadObj *model, ViewGL *view);
 	~ControllerGL();
 	
 	// クライアント領域設定

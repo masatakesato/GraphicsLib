@@ -12,7 +12,7 @@
 
 
 
-class ModelGL
+class ModelLoadObj
 {
 private:
 
@@ -44,8 +44,8 @@ private:
 
 public:
 
-	ModelGL();
-	~ModelGL();
+	ModelLoadObj();
+	~ModelLoadObj();
 
 	void Init();
 	void LoadShader( const char *vsFile, const char *gsFile, const char *fsFile );

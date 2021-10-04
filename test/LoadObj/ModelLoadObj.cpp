@@ -1,4 +1,4 @@
-﻿#include	"ModelGL.h"
+﻿#include	"ModelLoadObj.h"
 
 #include	<oreore/images/Bitmap.h>
 
@@ -104,18 +104,18 @@ static void DrawCube_with_tangent(	float dim,
 
 
 
-ModelGL::ModelGL()
+ModelLoadObj::ModelLoadObj()
 {
-std::cout << "ModelGL::ModelGL()..." << std::endl;
+std::cout << "ModelLoadObj::ModelLoadObj()..." << std::endl;
 
 	m_Camera = new Camera();
 	m_Shader = new GLShader();
 }
 
 
-ModelGL::~ModelGL()
+ModelLoadObj::~ModelLoadObj()
 {
-std::cout << "ModelGL:~:ModelGL()..." << std::endl;
+std::cout << "ModelLoadObj:~:ModelLoadObj()..." << std::endl;
 	delete	m_Shader;
 	delete	m_Camera;
 /*
@@ -126,8 +126,12 @@ std::cout << "ModelGL:~:ModelGL()..." << std::endl;
 }
 
 
-void ModelGL::Init()
+void ModelLoadObj::Init()
 {
+	TCHAR currdir[ MAX_PATH ];
+	GetCurrentDirectory( MAX_PATH, currdir );
+	SetCurrentDirectory( _T( "../../../assets/scene/obj" ) );
+
 	m_mesh.Load(//"a building.obj"
 				//"30x36_bc_m.obj"
 				//"mjc00.obj"
@@ -143,8 +147,11 @@ void ModelGL::Init()
 				//"ateneam.obj"
 				//"elepham.obj"
 				//"kiy00g.obj"
-				"D:/Repository/GraphicsLib/assets/scene/obj/testscene.obj"
+				"testscene.obj"
 				);
+
+	SetCurrentDirectory( currdir );
+
 	m_mesh.Information();
 
 	m_mesh.GetGroupInfo(1);
@@ -156,10 +163,10 @@ void ModelGL::Init()
 
 
 
-void ModelGL::LoadShader(const char *vsFile, const char *gsFile, const char *fsFile)
+void ModelLoadObj::LoadShader(const char *vsFile, const char *gsFile, const char *fsFile)
 {
 	//m_Shader->Init(vsFile, fsFile);
-	m_Shader->Init( _T("../../../test/LoadMeshData/Shader/Shader.glsl"), GLSL_430 );
+	m_Shader->Init( _T("../../../test/LoadObj/Shader/Shader.glsl"), GLSL_430 );
 
 	vertLoc = 0;
 	normLoc = 1;
@@ -180,7 +187,7 @@ void ModelGL::LoadShader(const char *vsFile, const char *gsFile, const char *fsF
 }
 
 
-void ModelGL::InitCamera(const Vec3f &pos, const Vec3f &dir, const Vec3f &up, float aspect_ratio, float fovy, float znear, float zfar)
+void ModelLoadObj::InitCamera(const Vec3f &pos, const Vec3f &dir, const Vec3f &up, float aspect_ratio, float fovy, float znear, float zfar)
 {
 	m_Camera->SetViewParameter(pos, dir, up);
 	m_Camera->SetProjectionParameter(aspect_ratio, fovy, znear, zfar);
@@ -188,21 +195,21 @@ void ModelGL::InitCamera(const Vec3f &pos, const Vec3f &dir, const Vec3f &up, fl
 }
 
 
-void ModelGL::SetCameraView(const Vec3f &pos, const Vec3f &dir, const Vec3f &up)
+void ModelLoadObj::SetCameraView(const Vec3f &pos, const Vec3f &dir, const Vec3f &up)
 {
 	m_Camera->SetViewParameter(pos, dir, up);
 	m_Camera->Update();
 }
 
 
-void ModelGL::SetCameraProjection(float aspect_ratio, float fovy, float znear, float zfar)
+void ModelLoadObj::SetCameraProjection(float aspect_ratio, float fovy, float znear, float zfar)
 {
 	m_Camera->SetProjectionParameter(aspect_ratio, fovy, znear, zfar);
 	m_Camera->Update();
 }
 
 
-void ModelGL::Draw()
+void ModelLoadObj::Draw()
 {
 	m_Shader->Bind();
 	

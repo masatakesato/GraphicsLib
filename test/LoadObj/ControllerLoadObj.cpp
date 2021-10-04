@@ -1,4 +1,4 @@
-﻿#include	"ControllerGL.h"
+﻿#include	"ControllerLoadObj.h"
 
 
 static float s_MoveSpeed = 0.1f;
@@ -23,7 +23,7 @@ ControllerGL::ControllerGL()
 
 
 
-ControllerGL::ControllerGL(ModelGL *model, ViewGL *view)
+ControllerGL::ControllerGL(ModelLoadObj *model, ViewGL *view)
 {
 	m_Model	= model;
 	m_View	= view;

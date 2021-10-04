@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{15398A23-EF2F-46C8-BE9E-3E1B50981145}</ProjectGuid>
+    <RootNamespace>SceneGraph</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>../../../;../../../external;D:\Lib\opengl\include;D:\Lib\freeimage\Dist\x64;C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>D:\Lib\opengl\lib\$(Platform);C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2017\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>../../../;../../../external;D:\Lib\opengl\include;D:\Lib\freeimage\Dist\x64;C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\Lib\opengl\lib\$(Platform);C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2017\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\ConstantShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\DOFShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\FXAAShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\GbufferShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\HDRShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\LightShaftShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\LocalReflectionShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\LPVIrradianceVolume.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\LPVShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\QuadShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\QuadShaderTexArray.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\ReflectiveShadowMapsShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\RenderShadow.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\SeparableSSSShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\SimpleDeferredShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\SimpleMeshRenderer.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\SMAAShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\SSDOBuffer.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\SSDOShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\TransparentShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\VCTVoxelData.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\VolumeRayCastingShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\VoxelConeTracing.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\VoxelShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4xext\rendering\ZPrepassShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\app\ViewGL.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\io\SceneLoader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\CacheDataManager.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GeometryBuffer.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLAtomicCounterBufferObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLBindPointManager.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLFrameBufferObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLRenderTarget.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLShaderStorageBufferObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLUniformBufferObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\GLVertexArrayObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\ShadowBuffer.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\resource\Texture.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\BoundingVolume.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\CameraObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\Frustum.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\LightAttributeBuffer.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\LightObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\MeshObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\MovableObject.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\Node.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\RenderScene.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\SceneGraph.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\SceneNode.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\ShadowCaster.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\TransformAttribute.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\ViewFrustum.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\ViewTransformBuffer.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\GLComputeShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShaderParameter.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\shader\IShader.cpp" />
+    <ClCompile Include="..\..\..\oreore\ui\win\Window.cpp" />
+    <ClCompile Include="..\..\..\oreore\ui\win\WindowProcedure.cpp" />
+    <ClCompile Include="..\..\..\test\SceneGraph\ControllerGL.cpp" />
+    <ClCompile Include="..\..\..\test\SceneGraph\ModelGL.cpp" />
+    <ClCompile Include="..\..\..\test\SceneGraph\win_main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\ConstantShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\DOFShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\FXAAShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\GbufferShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\HDRShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\LightShaftShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\LocalReflectionShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\LPVIrradianceVolume.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\LPVShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\QuadShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\QuadShaderTexArray.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\ReflectiveShadowMapsShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\RenderShadow.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\SeparableSSSShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\SimpleDeferredShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\SimpleMeshRenderer.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\SMAAShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\SSDOBuffer.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\SSDOShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\TransparentShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\VCTVoxelData.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\VolumeRayCastingShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\VoxelConeTracing.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\VoxelShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4xext\rendering\ZPrepassShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\app\ViewGL.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\io\SceneLoader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\CacheDataManager.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GeometryBuffer.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLAtomicCounterBufferObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLBindPointManager.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLFrameBufferObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLRenderTarget.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLShaderStorageBufferObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLUniformBufferObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\GLVertexArrayObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\ShadowBuffer.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\resource\Texture.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\BoundingVolume.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\CameraObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\Frustum.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\LightAttributeBuffer.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\LightObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\MeshObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\MovableObject.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\Node.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\RenderScene.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\SceneGraph.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\SceneNode.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\ShadowCaster.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\TransformAttribute.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\ViewFrustum.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\ViewTransformBuffer.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\GLComputeShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShaderParameter.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\shader\IShader.h" />
+    <ClInclude Include="..\..\..\oreore\ui\win\Window.h" />
+    <ClInclude Include="..\..\..\oreore\ui\win\WindowProcedure.h" />
+    <ClInclude Include="..\..\..\test\SceneGraph\ControllerGL.h" />
+    <ClInclude Include="..\..\..\test\SceneGraph\ModelGL.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

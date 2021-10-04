@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1401
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoadMeshData", "LoadMeshData\LoadMeshData.vcxproj", "{95C243FC-5E08-4B51-8E3F-625C4B9507D7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleFreeGLUT", "SimpleFreeGLUT\SimpleFreeGLUT.vcxproj", "{5DE0120D-0793-4B6F-936A-F7F79ACC1732}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{95C243FC-5E08-4B51-8E3F-625C4B9507D7}.Debug|x64.ActiveCfg = Debug|x64
-		{95C243FC-5E08-4B51-8E3F-625C4B9507D7}.Debug|x64.Build.0 = Debug|x64
-		{95C243FC-5E08-4B51-8E3F-625C4B9507D7}.Release|x64.ActiveCfg = Release|x64
-		{95C243FC-5E08-4B51-8E3F-625C4B9507D7}.Release|x64.Build.0 = Release|x64
+		{5DE0120D-0793-4B6F-936A-F7F79ACC1732}.Debug|x64.ActiveCfg = Debug|x64
+		{5DE0120D-0793-4B6F-936A-F7F79ACC1732}.Debug|x64.Build.0 = Debug|x64
+		{5DE0120D-0793-4B6F-936A-F7F79ACC1732}.Release|x64.ActiveCfg = Release|x64
+		{5DE0120D-0793-4B6F-936A-F7F79ACC1732}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {ECAECD4D-77B2-42A0-82B2-958784FB8C4E}
+		SolutionGuid = {4067B082-9D41-490D-A40A-AB783FA5CA00}
 	EndGlobalSection
 EndGlobal

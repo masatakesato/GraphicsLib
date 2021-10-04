@@ -15,18 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\test\LoadMeshData\ControllerGL.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\test\LoadMeshData\DDSLoader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\test\LoadMeshData\ModelGL.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\test\LoadMeshData\Win32_main.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\graphics\gl4x\scene\MeshData.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -34,9 +22,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\oreore\ui\win\Window.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\graphics\gl4x\app\ViewGL.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\graphics\gl4x\scene\Camera.cpp">
@@ -48,17 +33,20 @@
     <ClCompile Include="..\..\..\oreore\ui\win\WindowProcedure.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\graphics\gl4x\app\ViewGL.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\LoadObj\ControllerLoadObj.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\LoadObj\LoadObj_winmain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\LoadObj\ModelLoadObj.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\test\LoadMeshData\ControllerGL.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\test\LoadMeshData\DDSLoader.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\test\LoadMeshData\ModelGL.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\graphics\gl4x\scene\MeshData.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -78,6 +66,12 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\oreore\ui\win\WindowProcedure.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\LoadObj\ControllerLoadObj.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\LoadObj\ModelLoadObj.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

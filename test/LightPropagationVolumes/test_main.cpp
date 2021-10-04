@@ -8,7 +8,7 @@
 
 
 #include	<GL/glew.h>
-#include	<GL/glut.h>
+#include	<GL/freeglut.h>
 #pragma comment(lib, "glew32.lib")
 
 
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 #include <math.h>
 #include <stdlib.h>
 
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 
 #define _USE_MATH_DEFINES
 using namespace std;

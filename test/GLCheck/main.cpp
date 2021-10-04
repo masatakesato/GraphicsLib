@@ -1,5 +1,5 @@
-#include <iostream>
-#include <GL/glut.h>
+﻿#include <iostream>
+#include <GL/freeglut.h>
 
 int main(int argc, char *argv[])
 {
