@@ -1,9 +1,8 @@
 ﻿#include	"Material.h"
 
+#include	<oreore/common/TString.h>
 
-#include	<string.h>
-#include	<iostream>
-using namespace std;
+
 
 Material::Material()
 {
@@ -87,6 +86,4 @@ void Material::Info()
 
 	tcout << _T("Diffuse: (") << m_Diffuse.x << _T(", ")  << m_Diffuse.y << _T(", ") <<  m_Diffuse.z << _T(", ") <<  m_Diffuse.w << _T(")") << tendl;
 	tcout << _T("Specular: (") << m_Specular.x << _T(", ")  << m_Specular.y << _T(", ") <<  m_Specular.z << _T(", ") <<  m_Specular.w << _T(")") << tendl;
-	
-
 }

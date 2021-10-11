@@ -1,7 +1,6 @@
 ﻿#ifndef CAMERA_H
 #define CAMERA_H
 
-// 任意の場所で任意の姿勢を取れるカメラ
 #include	<oreore/mathlib/GraphicsMath.h>
 
 

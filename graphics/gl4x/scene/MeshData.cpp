@@ -1,6 +1,5 @@
 ﻿#include "MeshData.h"
 
-#include	<Windows.h>
 #include	<fstream>
 using namespace std;
 
@@ -574,7 +573,7 @@ void MeshData::AddTexCoord(string str)
 	}
 	
 	// テクスチャ座標の格納
-	for(size_t i=0; i<min(elements.size(), 3); i++)
+	for(size_t i=0; i<Min(elements.size(),size_t(3) ); i++)
 	{
 		newTexcoord.xy[i] = (float)atof(elements[i].c_str());
 	}
@@ -915,88 +914,80 @@ void MeshData::GetGroupInfo( int idx )
 
 
 
+//void MeshData::Draw()
+//{
+//
+//	vector<ObjFace>::iterator	Face_Iter = m_Faces.begin();
+//
+//	int pre_mat = -1, cur_mat = 0;
+//
+//	while(Face_Iter != m_Faces.end())
+//	{
+//		//　マテリアルがあるとき
+//		if(!m_Materials.empty())
+//		{
+//			//　インデックスを格納
+//			cur_mat = m_MatSubs[Face_Iter->matsub_index].material_index;
+//			
+////cout << cur_mat << endl;
+//			//　前と異なる色のとき
+//			if(pre_mat != cur_mat)
+//			{
+//				//　Object Color
+//				//glColor4fv(material[cur_mat].color);
+//
+//				//　Ambient Color
+//				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_Materials[cur_mat].GetAmbient()->rgba);
+//
+//				//　Diffuse Color
+//				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_Materials[cur_mat].GetDiffuse()->rgba);
+//
+//				//　Specular Color
+//				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_Materials[cur_mat].GetSpecular()->rgba);
+//
+//				//　Emission
+//				//glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, material[cur_mat].emission);
+//
+//				//　Shininess
+//				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_Materials[cur_mat].GetSpecularIntensity());
+//
+//				//　更新
+//				pre_mat = cur_mat;
+//			}
+//			
+//		}
+//		
+//		//　面の描画を開始
+//		vector<Vec3i>::iterator VertAttr_Iter = Face_Iter->VertexAttribIndex.begin();
+//
+//		glBegin(Face_Iter->type);
+//
+//		while(VertAttr_Iter != Face_Iter->VertexAttribIndex.end() )
+//		{
+//			//　法線ベクトル
+//			if(Face_Iter->use_normal==true)
+//			{
+//				glNormal3fv(m_Normals[VertAttr_Iter->z].xyz);
+//			}
+////cout << VertAttr_Iter->x << endl;
+//
+//			if(VertAttr_Iter->x < 0 || VertAttr_Iter->x > m_Vertices.size()-1)
+//				cout << "out of range: " << VertAttr_Iter->x << endl;
+//
+//			//　頂点
+//			glVertex3f(	m_Vertices[VertAttr_Iter->x].x,
+//						m_Vertices[VertAttr_Iter->x].y, 
+//						m_Vertices[VertAttr_Iter->x].z );
+//			
+//			VertAttr_Iter++;
+//		}
+//		//　面の描画を終了
+//		glEnd();
+//
+//		Face_Iter++;
+//	}
+//}
 
-
-
-
-
-
-
-/*
-void MeshData::Draw(float scale)
-{
-
-	vector<ObjFace>::iterator	Face_Iter = m_Faces.begin();
-
-	int pre_mat = -1, cur_mat = 0;
-
-	while(Face_Iter != m_Faces.end())
-	{
-		//　マテリアルがあるとき
-		if(!m_Materials.empty())
-		{
-			//　インデックスを格納
-			cur_mat = m_MatSubs[Face_Iter->matsub_index].material_index;
-			
-//cout << cur_mat << endl;
-			//　前と異なる色のとき
-			if(pre_mat != cur_mat)
-			{
-				//　Object Color
-				//glColor4fv(material[cur_mat].color);
-
-				//　Ambient Color
-				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_Materials[cur_mat].GetAmbient()->rgba);
-
-				//　Diffuse Color
-				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_Materials[cur_mat].GetDiffuse()->rgba);
-
-				//　Specular Color
-				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_Materials[cur_mat].GetSpecular()->rgba);
-
-				//　Emission
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, material[cur_mat].emission);
-
-				//　Shininess
-				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_Materials[cur_mat].GetSpecularIntensity());
-
-				//　更新
-				pre_mat = cur_mat;
-			}
-			
-		}
-		
-		//　面の描画を開始
-		vector<Vec3i>::iterator VertAttr_Iter = Face_Iter->VertexAttribIndex.begin();
-
-		glBegin(Face_Iter->type);
-
-		while(VertAttr_Iter != Face_Iter->VertexAttribIndex.end() )
-		{
-			//　法線ベクトル
-			if(Face_Iter->use_normal==true)
-			{
-				glNormal3fv(m_Normals[VertAttr_Iter->z].xyz);
-			}
-//cout << VertAttr_Iter->x << endl;
-
-			if(VertAttr_Iter->x < 0 || VertAttr_Iter->x > m_Vertices.size()-1)
-				cout << "out of range: " << VertAttr_Iter->x << endl;
-
-			//　頂点
-			glVertex3f(	m_Vertices[VertAttr_Iter->x].x * scale,
-						m_Vertices[VertAttr_Iter->x].y * scale, 
-						m_Vertices[VertAttr_Iter->x].z * scale);
-			
-			VertAttr_Iter++;
-		}
-		//　面の描画を終了
-		glEnd();
-
-		Face_Iter++;
-	}
-}
-*/
 
 
 

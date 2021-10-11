@@ -7,8 +7,9 @@
 #include	<iostream>
 using namespace std;
 
-
+#include	<oreore/common/Utility.h>
 #include	<oreore/mathlib/GraphicsMath.h>
+
 #include	<graphics/gl4x/resource/BufferLayout.h>
 #include	<graphics/gl4x/scene/Material.h>
 using namespace OreOreLib;
@@ -47,19 +48,17 @@ private:
 		char	name[256];	// グループ名
 		int		face_start;	// 面index先頭
 		int		face_end;	// 面index最後
-
-	//vector <ObjMaterialSubset>	matSubsets;
 	};
 	
 
 	Vec3f	m_BoundingBox[2];
 
 	// メッシュ形状データ
-	vector <Vec3f>		m_Vertices;	// 頂点配列
-	vector <Vec3f>		m_Normals;	// 法線配列
-	vector <Vec2f>		m_TexCoord;	// テクスチャ座標配列
-	vector <Material>		m_Materials;// マテリアル配列
-vector <ObjMaterialSubset>	m_MatSubs;	// マテリアルサブセット配列
+	vector <Vec3f>				m_Vertices;	// 頂点配列
+	vector <Vec3f>				m_Normals;	// 法線配列
+	vector <Vec2f>				m_TexCoord;	// テクスチャ座標配列
+	vector <Material>			m_Materials;// マテリアル配列
+	vector <ObjMaterialSubset>	m_MatSubs;	// マテリアルサブセット配列
 	vector <ObjFace>			m_Faces;	// 面配列
 	vector <ObjNamedGroup>		m_Groups;	// 名前付きグループ配列
 
@@ -67,7 +66,7 @@ vector <ObjMaterialSubset>	m_MatSubs;	// マテリアルサブセット配列
 	
 
  
-	// OBJファイルのローダー(TODO: いずれ本クラスから分離する?)
+	// OBJファイルのローダー
 	bool AllocateMemory(const string &aaa);
 	bool ParseObjFile(const string &aaa);
 
@@ -78,7 +77,7 @@ vector <ObjMaterialSubset>	m_MatSubs;	// マテリアルサブセット配列
 	int AddMaterialSubset(string str, int startidx, vector<ObjMaterialSubset> &m_MatSubs);
 	int AddNamedGroup(string str, int startidx);
 
-	void AddSmoothGroup();// TODO: 時間があったら実装
+	void AddSmoothGroup(){}// TODO: 時間があったら実装
 
 
 	// MTLファイルのロード
@@ -93,15 +92,11 @@ vector <ObjMaterialSubset>	m_MatSubs;	// マテリアルサブセット配列
 	
 public:
 
-
-//vector <MeshObject> m_MeshObject;// TODO: SceneGraphクラスのメンバ変数へ移動
-
-
 	MeshData();
-	~MeshData(){};// TODO: 作る
+	~MeshData(){};
 	bool Load( const char *filename );
 	void GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertexlist, int &numIndices, int **Indices);
-	void GenerateMeshObject();// メッシュオブジェクトを作成する
+	//void GenerateMeshObject();// メッシュオブジェクトを作成する
 	void Information();
 
 	// m_Vertices, m_Normals, m_TexCoord, m_Materials, m_MatSubs, m_Faces, m_Groupsを出力（const型なので値変更不可．参照渡しなのでアドレス変更も不可）
@@ -109,30 +104,15 @@ public:
 	inline const vector<Vec3f>		&GetNormals() const			{ return m_Normals; };
 	inline const vector<Vec2f>		&GetTexCoords() const		{ return m_TexCoord; };
 	inline const vector<Material>		&GetMaterials() const		{ return m_Materials; };
-inline const vector<ObjMaterialSubset>	&GetMaterialSubsets() const	{ return m_MatSubs; };
+	inline const vector<ObjMaterialSubset>	&GetMaterialSubsets() const	{ return m_MatSubs; };
 	inline const vector<ObjFace>			&GetFaceIndices() const		{ return m_Faces; };
 	inline const vector<ObjNamedGroup>		&GetNamedGroups() const		{ return m_Groups; };
 
 	void GetGroupInfo( int idx=0 );
 	
 	// 描画メソッド
-	//void Draw(float scale=1.0f);
+	friend void DrawObjMesh( MeshData& mesh );
 };
- 
-
-
-
-
-//============= メッシュデータの格納 ==============//
-//	頂点バッファグループの配列
-//　頂点インデックスの配列
-//	マテリアルの配列
-
-
-//============= シーン描画用の構造体 ==============//
-//	
-//	
-//	
 
 
 

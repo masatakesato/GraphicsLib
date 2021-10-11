@@ -1,52 +1,114 @@
-﻿#include <iostream>
-#include <math.h>
-#include <stdlib.h>
+﻿#include	<GL/freeglut.h>// or glut.h
 
-
-#include	<GL/glew.h>
-#include	<GL/freeglut.h>
-
-#include	<oreore/common/Utility.h>
+#include	<oreore/common/TString.h>
 #include	<oreore/mathlib/GraphicsMath.h>
 
 #include	<graphics/gl4x/scene/Camera.h>
 #include	<graphics/gl4x/scene/MeshData.h>
 
 
-#pragma comment (lib, "glew32.lib")
+// Lightsource
+const GLfloat lightPos[] = { 10 , 10 , 10 , 0 };
+const GLfloat lightCol[] = { 1 , 1 , 1 , 1 };
 
 
-//using namespace OreOreLib;
-using namespace std;
+// Camera
+Camera	g_Camera;
 
 
+// Obj Mesh 
 MeshData g_Mesh;
 
-int numVertAttrs = 0;
-VertexLayout *vertexlist = NULL;
-int numIndices = 0;
-int *Indices = 0;
+// Vertex buffer ( for glsl rendering pipeline )
+int g_NumVertices = 0;
+int g_NumIndices = 0;
+VertexLayout* g_Vertices = NULL;// vertices
+int *g_Indices = 0;// triangle indices
 
 
-
-#define	PI 3.141592f
-
-
-Camera		*cam;
 
 
 #define MAX_KEYS 256
-bool	gKeys[MAX_KEYS];
-int		mx = 0;
-int		my = 0;
+bool	gKeys[ MAX_KEYS ];// pushed key flags
+int		mx = 0;// cursor screen position x
+int		my = 0;// cursor screen position y
 bool	LeftMouseButtonPressed = false;
-
-float	gDeltaT = 1.0f;// / 60.0f;
-float	CamRotSpeed = 0.1f;
-
+float	g_CamSpeed = 0.1f;
+bool	g_bDrawVertexBuffer = false;
 
 
 
+
+
+void DrawObjMesh( MeshData& mesh )
+{
+	vector<MeshData::ObjFace>::iterator	Face_Iter = mesh.m_Faces.begin();
+
+	int pre_mat = -1, cur_mat = 0;
+
+	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	glBegin( GL_TRIANGLES );
+
+	while( Face_Iter != mesh.m_Faces.end() )// face draw loop
+	{
+		//　マテリアルがあるとき
+		if(!mesh.m_Materials.empty())
+		{
+			//　インデックスを格納
+			cur_mat = mesh.m_MatSubs[Face_Iter->matsub_index].material_index;
+			
+			//　前と異なる色のとき
+			if(pre_mat != cur_mat)
+			{
+				//　Ambient Color
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mesh.m_Materials[cur_mat].GetAmbient()->rgba);
+
+				//　Diffuse Color
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mesh.m_Materials[cur_mat].GetDiffuse()->rgba);
+
+				//　Specular Color
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mesh.m_Materials[cur_mat].GetSpecular()->rgba);
+				
+				//　Emission
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, mesh.m_Materials[cur_mat].GetLuminance()->rgb );
+
+				//　Shininess
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mesh.m_Materials[cur_mat].GetSpecularIntensity());
+
+				//　更新
+				pre_mat = cur_mat;
+			}
+			
+		}
+		
+		// Draw polygons
+		vector<Vec3i>::iterator VertAttr_Iter = Face_Iter->VertexAttribIndex.begin();
+		while( VertAttr_Iter != Face_Iter->VertexAttribIndex.end() )
+		{
+			// 法線ベクトル
+			if( Face_Iter->use_normal==true )
+				glNormal3fv(mesh.m_Normals[VertAttr_Iter->z].xyz);
+
+			if(VertAttr_Iter->x < 0 || VertAttr_Iter->x > mesh.m_Vertices.size()-1)
+				cout << "out of range: " << VertAttr_Iter->x << endl;
+
+			//　頂点
+			glVertex3f(	mesh.m_Vertices[VertAttr_Iter->x].x,
+						mesh.m_Vertices[VertAttr_Iter->x].y, 
+						mesh.m_Vertices[VertAttr_Iter->x].z );
+			
+			VertAttr_Iter++;
+		}
+
+		Face_Iter++;
+	}
+
+	glEnd();
+}
+
+
+
+// Draw world space xyz axis
 void DRAW_XYZ()
 {
 	glBegin(GL_LINES);
@@ -65,6 +127,7 @@ void DRAW_XYZ()
 }
 
 
+
 void ProcessCameraKeys()
 {
 	int	i;
@@ -75,14 +138,14 @@ void ProcessCameraKeys()
 		
 		switch(i)
 		{
-			case 'w' :{	cam->Transrate(+CamRotSpeed * gDeltaT, 0, 0);	break; }
-			case 's' :{	cam->Transrate(-CamRotSpeed * gDeltaT, 0, 0);	break; }
-			case 'a' :{	cam->Transrate(0, +CamRotSpeed * gDeltaT, 0);	break; }
-			case 'd' :{	cam->Transrate(0, -CamRotSpeed * gDeltaT, 0);	break; }
-			case 'r' :{	cam->Transrate(0, 0, +CamRotSpeed * gDeltaT);	break; }
-			case 'f' :{	cam->Transrate(0, 0, -CamRotSpeed * gDeltaT);	break; }
-			case 'q' :{	cam->Roll(-CamRotSpeed * gDeltaT);			break; }
-			case 'e' :{	cam->Roll(+CamRotSpeed * gDeltaT);			break; }
+			case 'w' :{	g_Camera.Transrate(+g_CamSpeed, 0, 0);	break; }
+			case 's' :{	g_Camera.Transrate(-g_CamSpeed, 0, 0);	break; }
+			case 'a' :{	g_Camera.Transrate(0, +g_CamSpeed, 0);	break; }
+			case 'd' :{	g_Camera.Transrate(0, -g_CamSpeed, 0);	break; }
+			case 'r' :{	g_Camera.Transrate(0, 0, +g_CamSpeed);	break; }
+			case 'f' :{	g_Camera.Transrate(0, 0, -g_CamSpeed);	break; }
+			case 'q' :{	g_Camera.Roll(-g_CamSpeed);				break; }
+			case 'e' :{	g_Camera.Roll(+g_CamSpeed);				break; }
 			default : {	break; }
 		}// end of switch
 		
@@ -96,11 +159,11 @@ void Initialize()
 {
 	glClearColor(0,0,0,1);
 	glPointSize(10.0);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
 	
-	cam = new Camera(5,5,5, -1,-1,-1, 0,0,1);
+	g_Camera.SetViewParameter( {5, 5, 5}, {-1, -1, -1}, {0, 0, 1} );// set position, direction, vertical vector
+	//cam = new Camera(5,5,5, -1,-1,-1, 0,0,1);
 
 
 
@@ -115,8 +178,8 @@ void Initialize()
 	g_Mesh.Information();
 	g_Mesh.GetGroupInfo(1);
 
-
-	g_Mesh.GenVertexList(numVertAttrs, &vertexlist, numIndices, &Indices);
+	// Extract polygon vertices/indices from MeshObj.
+	g_Mesh.GenVertexList( g_NumVertices, &g_Vertices, g_NumIndices, &g_Indices );
 
 }
 
@@ -126,34 +189,52 @@ void display()
 	ProcessCameraKeys();
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//====================================== 座標軸とかレンダリング =======================================//
+
+	//====================================== Camera setup =======================================//
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	const Vec3f &pos = *cam->GetPosition();
-	const Vec3f &dir = *cam->GetForward();
-	const Vec3f &up	= *cam->GetVertical();
+	const Vec3f &pos = *g_Camera.GetPosition();
+	const Vec3f &dir = *g_Camera.GetForward();
+	const Vec3f &up	= *g_Camera.GetVertical();
 
 	gluLookAt( pos.x, pos.y, pos.z, pos.x + dir.x, pos.y + dir.y, pos.z + dir.z, up.x, up.y, up.z );
 	
-	DRAW_XYZ();// 座標軸の描画
+
+	//============================== Draw world space axis ================================//
+	//DRAW_XYZ();
 	
 
-	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	glColor3f( 0.6f, 0.6f, 0.6f );
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-//	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	//==================================== Draw MeshData ==================================//
+	if( g_bDrawVertexBuffer )
+	{
+		// Drawing polygon mesh using Veriex/Indices.
+		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		glColor3f( 0.6f, 0.6f, 0.6f );
 
-	//glTexCoordPointer(2, GL_FLOAT, 0, TexCoordArray);
-	glVertexPointer( 3, GL_FLOAT, sizeof(VertexLayout), &(vertexlist->Position) );
+		glEnableClientState(GL_VERTEX_ARRAY);
+		//glEnableClientState(GL_TEXTURE_COORD_ARRAY);// texture is not supported.
 
-	glDrawElements( GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, Indices );
+		//glTexCoordPointer(2, GL_FLOAT, 0, TexCoordArray);// texture is not supported.
+		glVertexPointer( 3, GL_FLOAT, sizeof(VertexLayout), &(g_Vertices->Position) );
 
-	glDisableClientState(GL_VERTEX_ARRAY);
-//	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDrawElements( GL_TRIANGLES, g_NumIndices, GL_UNSIGNED_INT, g_Indices );
 
+		glDisableClientState(GL_VERTEX_ARRAY);
+		//glDisableClientState(GL_TEXTURE_COORD_ARRAY);// texture is not supported.
+	}
+	else
+	{
+		// Put default light
+		glLightfv(GL_LIGHT0 , GL_POSITION , lightPos);
+		glLightfv(GL_LIGHT0 , GL_DIFFUSE , lightCol);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
 
+		// Visualize MeshData. Using old OpenGL fixed pipeline APIs.
+		DrawObjMesh( g_Mesh );
+	}
 
 	glutSwapBuffers();
 }
@@ -173,12 +254,9 @@ void KeyboardUpCallback(unsigned char key, int x, int y)
 
 	switch (key)
 	{
-	case 27:
-		{
-			exit(0);
-			break;
-		}
-		default : { break; }
+	case 27: { exit(0);	break; }
+	case 'p': { g_bDrawVertexBuffer ^= 1; break; }
+	default : { break; }
 	}
 }
 
@@ -196,6 +274,7 @@ void reshape(int w, int h)
 	gluPerspective(45, 1.25, 0.001, 10000);
 	glMatrixMode(GL_MODELVIEW);
 }
+
 
 // マウス状態の監視
 void MouseCallback(int button, int state, int x, int y)
@@ -220,13 +299,13 @@ void MouseCallback(int button, int state, int x, int y)
 // マウス動作の監視 
 void MotionCallback(int x, int y)
 {
-	float dx = float(mx - x) * 2.0f*PI / 800;
-	float dy = float(my - y) * 2.0f*PI / 600;
+	float dx = float(mx - x) * 2.0f*M_PI / 800;
+	float dy = float(my - y) * 2.0f*M_PI / 600;
 	//cout << "dv = (" << dx << ", " << dy << ")" << endl;
 
 	if(LeftMouseButtonPressed ==true)// 左ボタンをクリックしたときだけ回転
 	{
-		cam->Rotate(dx, dy);
+		g_Camera.Rotate(dx, dy);
 	}
 
     mx = x;
@@ -248,9 +327,7 @@ int main(int argc, char **argv)
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(800, 600);
 	glutCreateWindow(argv[0]);
-	
-	glewInit();
-	
+		
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutIdleFunc(animate);
@@ -263,8 +340,6 @@ int main(int argc, char **argv)
 
 	Initialize();
 	glutMainLoop();
-
-	SafeDelete( cam );
 
 	return 0;
 }

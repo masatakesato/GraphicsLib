@@ -1,9 +1,8 @@
 ﻿#include	"Camera.h"
 
+#include	<oreore/common/TString.h>
 
-#include <iostream>
-using namespace std;
-#include <math.h>
+
 /*
 // クォータニオンの掛け算 r ← p*q
 static void qmul(float r[], const float p[], const float q[])
@@ -46,7 +45,7 @@ static void qrot(float r[], float q[])
 
 Camera::Camera()
 {
-	tcout << _T( "Camera::Camera()..." ) << tendl;
+	//tcout << _T( "Camera::Camera()..." ) << tendl;
 	InitVec( m_Position, 0.0f, 0.0f, 0.0f );
 	InitVec( m_Forward, 1.0f, 0.0f, 0.0f );
 	InitVec( m_Horizontal, 0.0f, 1.0f, 0.0f );
