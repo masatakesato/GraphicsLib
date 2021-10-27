@@ -2,9 +2,12 @@
 
 #include	<oreore/common/TString.h>
 #include	<oreore/mathlib/GraphicsMath.h>
+#include	<oreore/container/Array.h>
 
 #include	<graphics/gl4x/scene/Camera.h>
 #include	<graphics/gl4x/scene/MeshData.h>
+using namespace OreOreLib;
+
 
 
 // Lightsource
@@ -19,12 +22,16 @@ Camera	g_Camera;
 // Obj Mesh 
 MeshData g_Mesh;
 
+/*
 // Vertex buffer ( for glsl rendering pipeline )
 int g_NumVertices = 0;
 int g_NumIndices = 0;
 VertexLayout* g_Vertices = NULL;// vertices
 int *g_Indices = 0;// triangle indices
+*/
 
+Array<VertexLayout> g_Vertices;
+Array<uint32>	g_Indices;
 
 
 
@@ -171,7 +178,7 @@ void Initialize()
 	GetCurrentDirectory( MAX_PATH, currdir );
 	SetCurrentDirectory( _T( "../../../assets/scene/obj" ) );
 
-	g_Mesh.Load( "testscene.obj" );
+	g_Mesh.Load( "viking_room.obj" );
 
 	SetCurrentDirectory( currdir );
 
@@ -179,8 +186,9 @@ void Initialize()
 	g_Mesh.GetGroupInfo(1);
 
 	// Extract polygon vertices/indices from MeshObj.
-	g_Mesh.GenVertexList( g_NumVertices, &g_Vertices, g_NumIndices, &g_Indices );
+//	g_Mesh.GenVertexList( g_NumVertices, &g_Vertices, g_NumIndices, &g_Indices );
 
+	g_Mesh.GenVertexList( g_Vertices, g_Indices );
 }
 
 void display()
@@ -217,9 +225,9 @@ void display()
 		//glEnableClientState(GL_TEXTURE_COORD_ARRAY);// texture is not supported.
 
 		//glTexCoordPointer(2, GL_FLOAT, 0, TexCoordArray);// texture is not supported.
-		glVertexPointer( 3, GL_FLOAT, sizeof(VertexLayout), &(g_Vertices->Position) );
+		glVertexPointer( 3, GL_FLOAT, sizeof(VertexLayout), g_Vertices.begin() );//glVertexPointer( 3, GL_FLOAT, sizeof(VertexLayout), &(g_Vertices->Position) );
 
-		glDrawElements( GL_TRIANGLES, g_NumIndices, GL_UNSIGNED_INT, g_Indices );
+		glDrawElements( GL_TRIANGLES, g_Indices.Length(), GL_UNSIGNED_INT, g_Indices.begin() );//glDrawElements( GL_TRIANGLES, g_NumIndices, GL_UNSIGNED_INT, g_Indices );
 
 		glDisableClientState(GL_VERTEX_ARRAY);
 		//glDisableClientState(GL_TEXTURE_COORD_ARRAY);// texture is not supported.

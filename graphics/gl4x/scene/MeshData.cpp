@@ -4,6 +4,8 @@
 using namespace std;
 
 
+
+
 #define BUFFER_LENGTH 1024
 #define NAME_LENGTH 256
 
@@ -827,7 +829,7 @@ void MeshData::GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertex
 			(*vertexlist)[curr].TexCoord	= texIdx>=0		? m_TexCoord[texIdx]	: dumy2;	// -1だったら弾く
 			(*vertexlist)[curr].Normal		= normalIdx>=0	? m_Normals[normalIdx]	: dumy3;	// -1だったら弾く
 
-//cout << vertexlist[curr].Position.x << ", " << vertexlist[curr].Position.y << ", " << vertexlist[curr].Position.z << endl;
+			//cout << vertexlist[curr].Position.x << ", " << vertexlist[curr].Position.y << ", " << vertexlist[curr].Position.z << endl;
 
 			curr++;
 		}
@@ -847,24 +849,118 @@ void MeshData::GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertex
 
 			ID_VertAttrib = FaceAttribs[i][0];
 			(*Indices)[curr++] = VertAttribs[ ID_VertAttrib.x ][ ID_VertAttrib.y ].z;// 頂点ID(0)
-//cout << Indices[curr-1] << ", ";
+			//cout << Indices[curr-1] << ", ";
 
 			ID_VertAttrib = FaceAttribs[i][j];
 			(*Indices)[curr++] = VertAttribs[ ID_VertAttrib.x ][ ID_VertAttrib.y ].z;// 頂点ID(j)
-//cout << Indices[curr-1] << ", ";
+			//cout << Indices[curr-1] << ", ";
 
 			ID_VertAttrib = FaceAttribs[i][j+1];
 			(*Indices)[curr++] = VertAttribs[ ID_VertAttrib.x ][ ID_VertAttrib.y ].z;// 頂点ID(j+1)
-//cout << Indices[curr-1] << ", ";
+			//cout << Indices[curr-1] << ", ";
 
 		}// end of j loop
 
-//cout << endl;
+		//cout << endl;
 	}// end of i loop
 	
 
-//cout << curr << ":" << numIndices << endl;
+	//cout << curr << ":" << numIndices << endl;
 }
+
+
+
+void MeshData::GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreOreLib::Memory<uint32>& Indices )
+{
+	int i, j;
+	vector< vector<Vec3i> >	VertAttribs;// 頂点ごとの属性.第１次元は頂点インデックス、第2次元は頂点に付随する属性のインデックス。（x:テクスチャ座標ID/y:法線ID/z:通し番号）
+	vector< vector<Vec2i> >	FaceAttribs;// ObjFaceの頂点毎の、VertAttribs属性配列のインデックス(x:頂点番号.VertAttribsの第1次元.m_Facesと一義的に対応，y:属性インデックス.VertAttribsの第2次元)
+	
+
+	//====================== 全ての面の全頂点の属性を調べ、VertAttrib配列に格納する ======================//
+	VertAttribs.resize(m_Vertices.size());
+	FaceAttribs.resize(m_Faces.size());
+
+	int numIndices = 0;
+
+	for(i=0; i<m_Faces.size(); i++)// 各面について、、、
+	{
+		for(j=0; j<m_Faces[i].VertexAttribIndex.size(); j++)// 面を構成する頂点毎の属性をVertAttribsに登録する
+		{
+			int idx = AddVertexAttributes(m_Faces[i].VertexAttribIndex[j], VertAttribs);
+			Vec2i newAttribIdx = {m_Faces[i].VertexAttribIndex[j].x, idx};// x:頂点インデックス，y:頂点のどの属性かインデックス
+			FaceAttribs[i].push_back(newAttribIdx);
+		}
+
+		// 頂点インデックスの総数を累積する
+		numIndices += (m_Faces[i].num_verts - 2) * 3;// 3角形ポリゴン数 * 頂点インデックス数3個
+
+	}// end of i loop
+	
+	int numVertAttrs = AssignVertexIDs(VertAttribs)+1;// 全ての頂点の全ての属性に通し番号を振る.
+
+
+
+	//======================= 頂点レイアウト配列を作成する =======================//
+	
+	// 頂点レイアウト配列(頂点座標/テクスチャ座標/法線ベクトル)を作成する
+	vertexlist.Init( numVertAttrs );//*vertexlist = new OreOreLib::VertexLayout[numVertAttrs];
+	int curr = 0;
+	const Vec3f	dumy3 = {-1, -1, -1};
+	const Vec2f	dumy2 = {-1, -1};
+
+	for(i=0; i<VertAttribs.size(); i++)
+	{
+		for(j=0; j<VertAttribs[i].size(); j++)
+		{
+			int vertIdx		= i;					// 頂点配列m_Vertices上の頂点インデックス
+			int texIdx		= VertAttribs[i][j].x;	// テクスチャ座標属性へのインデックス
+			int normalIdx	= VertAttribs[i][j].y;	// 法線ベクトル属性へのインデックス
+
+			vertexlist[curr].Position	= vertIdx>=0	? m_Vertices[vertIdx]	: dumy3;	// -1だったら弾く
+			vertexlist[curr].TexCoord	= texIdx>=0		? m_TexCoord[texIdx]	: dumy2;	// -1だったら弾く
+			vertexlist[curr].Normal		= normalIdx>=0	? m_Normals[normalIdx]	: dumy3;	// -1だったら弾く
+
+			//cout << vertexlist[curr].Position.x << ", " << vertexlist[curr].Position.y << ", " << vertexlist[curr].Position.z << endl;
+
+			curr++;
+		}
+	}
+
+	
+	//====================== Facesのインデックスの配列を作る ========================//
+	Indices.Init( numIndices );//*Indices = new int[numIndices];
+	curr = 0;
+
+	for(i=0; i<FaceAttribs.size(); i++)
+	{
+		// 頂点ごとの属性をVertAttribsに追加登録する
+		for(j=1; j<FaceAttribs[i].size()-1; j++)
+		{
+			Vec2i ID_VertAttrib;
+
+			ID_VertAttrib = FaceAttribs[i][0];
+			Indices[curr++] = VertAttribs[ ID_VertAttrib.x ][ ID_VertAttrib.y ].z;// 頂点ID(0)
+			//cout << Indices[curr-1] << ", ";
+
+			ID_VertAttrib = FaceAttribs[i][j];
+			Indices[curr++] = VertAttribs[ ID_VertAttrib.x ][ ID_VertAttrib.y ].z;// 頂点ID(j)
+			//cout << Indices[curr-1] << ", ";
+
+			ID_VertAttrib = FaceAttribs[i][j+1];
+			Indices[curr++] = VertAttribs[ ID_VertAttrib.x ][ ID_VertAttrib.y ].z;// 頂点ID(j+1)
+			//cout << Indices[curr-1] << ", ";
+
+		}// end of j loop
+
+		//cout << endl;
+	}// end of i loop
+	
+
+	//cout << curr << ":" << numIndices << endl;
+}
+
+
 
 
 

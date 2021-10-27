@@ -7,12 +7,11 @@
 #include	<iostream>
 using namespace std;
 
-#include	<oreore/common/Utility.h>
 #include	<oreore/mathlib/GraphicsMath.h>
+#include	<oreore/memory/Memory.h>
 
 #include	<graphics/gl4x/resource/BufferLayout.h>
 #include	<graphics/gl4x/scene/Material.h>
-using namespace OreOreLib;
 
 
 #pragma warning(disable : 4996)
@@ -96,6 +95,8 @@ public:
 	~MeshData(){};
 	bool Load( const char *filename );
 	void GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertexlist, int &numIndices, int **Indices);
+void GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreOreLib::Memory<uint32>& Indices );
+
 	//void GenerateMeshObject();// メッシュオブジェクトを作成する
 	void Information();
 
