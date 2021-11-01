@@ -33,22 +33,95 @@ namespace vulkan
 
 
 
+	//######################################################################################//
+	//																						//
+	//									Properties retrieval								//
+	//																						//
+	//######################################################################################//
 
-	void CreateBuffer( VkPhysicalDevice, VkDevice, VkDeviceSize, VkBufferUsageFlags, VkMemoryPropertyFlags, VkBuffer&, VkDeviceMemory& );
+	inline uint32_t FindMemoryType( VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties )
+	{
+		VkPhysicalDeviceMemoryProperties memProperties;
+		vkGetPhysicalDeviceMemoryProperties( physicalDevice, &memProperties );
 
-	uint32_t FindMemoryType( VkPhysicalDevice, uint32_t, VkMemoryPropertyFlags );
+		for( uint32_t i=0; i<memProperties.memoryTypeCount; ++i )
+		{
+			if( (typeFilter & (1<<i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties )
+				return i;
+		}
+
+		ASSERT( false && "failed to find suitable memory type" );
+		//throw std::runtime_error( "failed to find suitable memory type" );
+
+		return 0;
+	}
+
+
+
+	//######################################################################################//
+	//																						//
+	//									Begin/End command									//
+	//																						//
+	//######################################################################################/
+
+	inline VkCommandBuffer BeginSingleTimeCommands( VkDevice device, VkCommandPool commandPool )
+	{
+		// Create data transfer specific commandbuffer
+		VkCommandBufferAllocateInfo allocInfo = {};
+		allocInfo.sType					= VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.level					= VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandPool			= commandPool;
+		allocInfo.commandBufferCount	= 1;
+
+		VkCommandBuffer commandBuffer;
+		vkAllocateCommandBuffers( device, &allocInfo, &commandBuffer );
+
+
+		// Record commandbuffer
+		VkCommandBufferBeginInfo beginInfo = {};
+		beginInfo.sType	= VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags	= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+		vkBeginCommandBuffer( commandBuffer, &beginInfo );
+
+		return commandBuffer;
+	}
+
+
+
+	inline void EndSingleTimeCommands( VkDevice device, VkCommandBuffer commandBuffer, VkCommandPool commandPool, VkQueue queue )
+	{
+		vkEndCommandBuffer(commandBuffer );
+
+		// Execute recorded commandbuffer immediately
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType				= VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount	= 1;
+		submitInfo.pCommandBuffers		= &commandBuffer;
+
+		vkQueueSubmit( queue, 1, &submitInfo, VK_NULL_HANDLE );
+		vkQueueWaitIdle( queue );
+
+		// Free commandbuffer
+		vkFreeCommandBuffers( device, commandPool, 1, &commandBuffer );
+	}
 
 
 
 
+	//######################################################################################//
+	//																						//
+	//										Buffer											//
+	//																						//
+	//######################################################################################//
 
-	void CreateBuffer(	VkPhysicalDevice physicalDevice, 
-						VkDevice device,
-						VkDeviceSize size,
-						VkBufferUsageFlags usage,
-						VkMemoryPropertyFlags properties,
-						VkBuffer& buffer,
-						VkDeviceMemory& bufferMemory )
+	inline void CreateBuffer(	VkPhysicalDevice physicalDevice, 
+								VkDevice device,
+								VkDeviceSize size,
+								VkBufferUsageFlags usage,
+								VkMemoryPropertyFlags properties,
+								VkBuffer& buffer,
+								VkDeviceMemory& bufferMemory )
 	{
 		// Create VkBuffer
 		VkBufferCreateInfo bufferInfo{};
@@ -73,31 +146,28 @@ namespace vulkan
 
 		// Bind allocated device memory(VkDeviceMemory) to vertexBuffer(VkBuffer)
 		VK_CHECK_RESULT( vkBindBufferMemory( device, buffer, bufferMemory, 0 ) );
-
 	}
 
 
 
-	uint32_t FindMemoryType( VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties )
-	{
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties( physicalDevice, &memProperties );
+	inline void CopyBuffer( VkDevice device, VkCommandPool commandPool, VkQueue queue, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size )
+	{		
+		VkCommandBuffer commandBuffer = BeginSingleTimeCommands( device, commandPool );
 
-		for( uint32_t i=0; i<memProperties.memoryTypeCount; ++i )
-		{
-			if( (typeFilter & (1<<i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties )
-				return i;
-		}
+			VkBufferCopy copyRegion = {};
+			copyRegion.srcOffset	= 0;
+			copyRegion.dstOffset	= 0;
+			copyRegion.size			= size;
+		
+			vkCmdCopyBuffer( commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion );
 
-		ASSERT( false && "failed to find suitable memory type" );
-		//throw std::runtime_error( "failed to find suitable memory type" );
-
-		return 0;
+		vulkan::EndSingleTimeCommands( device, commandBuffer, commandPool, queue );
 	}
 
 
 
-}
+
+}// end of vulkan namespace
 
 
 

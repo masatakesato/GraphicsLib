@@ -1,5 +1,5 @@
-﻿#ifndef UNIFORM_BUFFER_H
-#define	UNIFORM_BUFFER_H
+﻿#ifndef STAGING_BUFFER_H
+#define	STAGING_BUFFER_H
 
 #include	<vulkan/vulkan.h>
 
@@ -10,14 +10,14 @@
 namespace vulkan
 {
 
-	class UniformBuffer
+	class StagingBuffer
 	{
 	public:
 
-		UniformBuffer();
-		UniformBuffer( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice );
-		UniformBuffer( const UniformBuffer& ) = delete;
-		~UniformBuffer();
+		StagingBuffer();
+		StagingBuffer( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice );
+		StagingBuffer( const StagingBuffer& ) = delete;
+		~StagingBuffer();
 
 		void Init( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice );
 		void Release();
@@ -29,8 +29,8 @@ namespace vulkan
 
 	private:
 
-		VkBuffer		m_Buffer;//m_UniformBuffer;
-		VkDeviceMemory	m_DeviceMemory;//m_UniformBufferMemory;
+		VkBuffer		m_Buffer;
+		VkDeviceMemory	m_DeviceMemory;
 
 		VkDevice		m_refDevice;
 
@@ -42,4 +42,4 @@ namespace vulkan
 
 
 
-#endif // !UNIFORM_BUFFER_H
+#endif // !STAGING_BUFFER_H
