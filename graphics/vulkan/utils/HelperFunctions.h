@@ -166,6 +166,25 @@ namespace vulkan
 
 
 
+	//######################################################################################//
+	//																						//
+	//										Descriptor***									//
+	//																						//
+	//######################################################################################//
+	
+
+	inline void CreateDescriptorSetLayout( VkDevice device, VkDescriptorSetLayout& descSetLayout, const OreOreLib::Memory<VkDescriptorSetLayoutBinding>& bindings )
+	{
+		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+		layoutInfo.sType		= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount	= static_cast<uint32_t>( bindings.Length() );
+		layoutInfo.pBindings	= bindings.begin();
+
+		VK_CHECK_RESULT( vkCreateDescriptorSetLayout( device, &layoutInfo, nullptr, &descSetLayout ) );
+	}
+
+
+
 
 }// end of vulkan namespace
 

@@ -37,6 +37,7 @@ namespace vulkan
 	void UniformBuffer::Init( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice )
 	{
 		m_refDevice	= device;
+		m_Size		= bufferSize;
 
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
