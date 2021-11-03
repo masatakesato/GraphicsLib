@@ -15,19 +15,20 @@ namespace vulkan
 	public:
 
 		ShaderParamLayout();
-		ShaderParamLayout( std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
-
 		ShaderParamLayout( const ShaderParamLayout& ) = delete;
 		~ShaderParamLayout();
+
+
+		void Init( VkDevice device, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
 
 //		void AddLayout( int set, VkDescriptorSetLayoutBinding binding );
 //		void RemoveLayout( int set, int location );
 
-		void InitDescriptorSetLayout( VkDevice device, uint32_t numswaps );
-
+		void BindDevice( VkDevice device ) { m_refDevice = device; }
 
 		int NumSets() const	{ return m_Bindings.Length(); }
 		int NumBindins( int set ) const	{ return m_Bindings[set].Length(); }
+		int NumTotalBindings() const	{ return m_NumBindings; }
 
 		const VkDescriptorSetLayoutBinding* Bindings( int set ) const	{ return m_Bindings[ set ].begin(); }
 		const VkDescriptorSetLayoutBinding& Binding( int set, int location ) const	{ return m_Bindings[set][location]; }
@@ -39,8 +40,14 @@ namespace vulkan
 
 	private:
 
+		VkDevice	m_refDevice;
+
+		int	m_NumBindings;
 		OreOreLib::Array< OreOreLib::Array<VkDescriptorSetLayoutBinding> >	m_Bindings;
 		OreOreLib::Array< VkDescriptorSetLayout>							m_DescSetLayouts;// Set毎に1個ずつ必要
+
+
+		void InitDescriptorSetLayout();
 
 	};
 

@@ -121,16 +121,19 @@ namespace vulkan
 
 
 
-	void DescriptorSets::InitDescriptorPool( VkDevice device, VkDescriptorPool descPool, uint32_t numswaps,  const ShaderParamLayout& paramlayout )
+	void DescriptorSets::InitDescriptorPool( VkDevice device, uint32_t numswaps,  const ShaderParamLayout& paramlayout )
 	{
-		OreOreLib::Array<VkDescriptorPoolSize> poolSizes( bindings.Length() );
+		OreOreLib::Array<VkDescriptorPoolSize> poolSizes( paramlayout.NumTotalBindings() );
 
-		auto binding = bindings.begin();
-		for( auto& poolSize : poolSizes )
+		auto poolSize = poolSizes.begin();
+		for( int set_id=0; set_id<paramlayout.NumSets(); ++set_id )
 		{
-			poolSize.type				= binding->descriptorType;
-			poolSize.descriptorCount	= numswaps;
-			binding++;
+			for( int binding_id=0; binding_id<paramlayout.NumBindins( set_id ); ++binding_id )
+			{
+				poolSize->type	= paramlayout.Binding( set_id, binding_id ).descriptorType;
+				poolSize->descriptorCount	= numswaps;
+				poolSize++;
+			}
 		}
 
 		VkDescriptorPoolCreateInfo poolInfo = {};
@@ -146,15 +149,15 @@ namespace vulkan
 	}
 
 
-
-	void DescriptorSets::InitDescriptorSets( VkDevice device, OreOreLib::Array<VkDescriptorSet>& descSets, uint32_t numswaps, const ShaderParamLayout& paramlayout, VkDescriptorPool descPool )
+	void DescriptorSets::InitDescriptorSets( VkDevice device, OreOreLib::Array<VkDescriptorSet>& descSets, uint32_t numswaps, const ShaderParamLayout& paramlayout )
 	{
+		
 		OreOreLib::Array<VkDescriptorSetLayout> layouts( numswaps );
-		for( auto& layout : layouts )	layout = descSetLayout;
+		for( auto& layout : layouts )	layout = paramlayout.Layout(0);
 
 		VkDescriptorSetAllocateInfo allocInfo = {};
 		allocInfo.sType					= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool		= descPool;
+		allocInfo.descriptorPool		= m_DescPool;
 		allocInfo.descriptorSetCount	= numswaps;
 		allocInfo.pSetLayouts			= layouts.begin();
 

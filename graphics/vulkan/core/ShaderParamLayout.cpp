@@ -9,28 +9,17 @@ namespace vulkan
 
 
 	ShaderParamLayout::ShaderParamLayout()
+		: m_refDevice( VK_NULL_HANDLE )
+		, m_NumBindings( 0 )
 	{
 
-	}
-
-
-
-	ShaderParamLayout::ShaderParamLayout( std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
-	{
-		m_Bindings.Init( bindings.size() );
-		auto layoutset = m_Bindings.begin();
-
-		for( auto& binding : bindings )
-		{
-			layoutset->Init( binding );
-			layoutset++;
-		}
 	}
 
 
 
 	ShaderParamLayout::ShaderParamLayout( const ShaderParamLayout& obj )
 		: m_Bindings( obj.m_Bindings )
+		, m_NumBindings( obj.m_NumBindings )
 	{
 
 	}
@@ -39,17 +28,44 @@ namespace vulkan
 
 	ShaderParamLayout::~ShaderParamLayout()
 	{
-//		for( auto& descSetLayout : m_DescSetLayouts )
-//			vkDestroyDescriptorSetLayout( device, descSetLayout, nullptr );
+		if( m_refDevice != VK_NULL_HANDLE )
+		{
+			for( auto& descSetLayout : m_DescSetLayouts )
+				vkDestroyDescriptorSetLayout( m_refDevice, descSetLayout, nullptr );
+		}
+
+		m_refDevice	= VK_NULL_HANDLE;
 	}
 
 
 
-	void ShaderParamLayout::InitDescriptorSetLayout( VkDevice device, uint32_t numswaps )
+	void ShaderParamLayout::Init( VkDevice device, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
 	{
-		for( auto& descSetLayout : m_DescSetLayouts )
-			vkDestroyDescriptorSetLayout( device, descSetLayout, nullptr );
+		m_refDevice	= device;
+		m_NumBindings = 0;
 
+		m_Bindings.Init( bindings.size() );
+		auto layoutset = m_Bindings.begin();
+
+		for( auto& binding : bindings )
+		{
+			m_NumBindings += binding.size();
+			layoutset->Init( binding );
+			layoutset++;
+		}
+
+
+		InitDescriptorSetLayout();
+	}
+
+
+
+	void ShaderParamLayout::InitDescriptorSetLayout()
+	{
+		ASSERT( m_refDevice	!= VK_NULL_HANDLE );
+
+		for( auto& descSetLayout : m_DescSetLayouts )
+			vkDestroyDescriptorSetLayout( m_refDevice, descSetLayout, nullptr );
 
 		m_DescSetLayouts.Init( m_Bindings.Length() );
 
@@ -62,7 +78,7 @@ namespace vulkan
 			layoutInfo.bindingCount	= static_cast<uint32_t>( m_Bindings[ set_id ].Length() );
 			layoutInfo.pBindings	= m_Bindings[ set_id ].begin();
 
-			VK_CHECK_RESULT( vkCreateDescriptorSetLayout( device, &layoutInfo, nullptr, &m_DescSetLayouts[ set_id ] ) );
+			VK_CHECK_RESULT( vkCreateDescriptorSetLayout( m_refDevice, &layoutInfo, nullptr, &m_DescSetLayouts[ set_id ] ) );
 		}
 	}
 

@@ -44,21 +44,15 @@ namespace vulkan
 
 	private:
 
-		VkDevice		m_refDevice;
-		//OreOreLib::Array<VkDescriptorType> m_DescTypes;
+		VkDevice	m_refDevice;
 		uint32_t	m_NumSwaps;
 
 		VkDescriptorPool					m_DescPool;
-		OreOreLib::Array<VkDescriptorSet>	m_DescriptorSets;
-
-
-		//VkDescriptorSetLayout				m_DescSetLayout;
-
-
+		OreOreLib::Array<VkDescriptorSet>	m_DescriptorSets;// 2次元配列? [set][num_swapchain_images]  set毎に必要?
 
 		
-		void InitDescriptorPool( VkDevice device, VkDescriptorPool descPool, uint32_t numswaps, const OreOreLib::Array<VkDescriptorSetLayoutBinding>& bindings );
-		void InitDescriptorSets( VkDevice device, OreOreLib::Array<VkDescriptorSet>& descSets, uint32_t numswaps, VkDescriptorSetLayout descSetLayout, VkDescriptorPool descPool );
+		void InitDescriptorPool( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout );
+		void InitDescriptorSets( VkDevice device, OreOreLib::Array<VkDescriptorSet>& descSets, uint32_t numswaps, const ShaderParamLayout& paramlayout );
 
 	};
 
