@@ -6,6 +6,7 @@
 #include	<oreore/container/Array.h>
 
 #include	"UniformBuffer.h"
+#include	"ShaderParamLayout.h"
 
 
 
@@ -30,8 +31,10 @@ namespace vulkan
 		DescriptorSets( const DescriptorSets& ) = delete;
 		~DescriptorSets();
 
-		void InitLayout( VkDevice device, uint32_t numswaps, const OreOreLib::Array<VkDescriptorSetLayoutBinding>& bindings );
-		void InitPoolAndDescSets( VkDevice device, uint32_t numswaps, const OreOreLib::Array<VkDescriptorSetLayoutBinding>& bindings );
+		//void InitLayout( VkDevice device, uint32_t numswaps, const OreOreLib::Array<VkDescriptorSetLayoutBinding>& bindings );
+		void Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout );
+
+		void Clear();// 
 		void Release();
 
 
@@ -49,7 +52,7 @@ namespace vulkan
 		OreOreLib::Array<VkDescriptorSet>	m_DescriptorSets;
 
 
-		VkDescriptorSetLayout				m_DescSetLayout;
+		//VkDescriptorSetLayout				m_DescSetLayout;
 
 
 
