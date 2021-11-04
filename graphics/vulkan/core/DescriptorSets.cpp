@@ -10,6 +10,7 @@ namespace vulkan
 
 	ShaderParamDescs::ShaderParamDescs()
 		: m_refDevice( VK_NULL_HANDLE )
+		, m_NumSwaps( 0 )
 	{
 
 	}
@@ -35,6 +36,7 @@ namespace vulkan
 
 	void ShaderParamDescs::Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout )
 	{
+		m_NumSwaps	= numswaps;
 		m_refDevice	= device;
 
 		InitDescriptorPool( numswaps, paramlayout );
@@ -52,6 +54,7 @@ namespace vulkan
 		}
 		m_DescriptorSets.Release();
 		m_refDevice	= VK_NULL_HANDLE;
+		m_NumSwaps	= 0;
 	}
 
 

@@ -12,7 +12,8 @@
 
 namespace vulkan
 {
-
+	// TODO: poolSizes配列に、全てのset/bindingを登録する
+// TODO: VkDescriptorPoolはlayout set毎に必要なのか? -> メモリプール確保なので、VkDescriptorPool1個で必要な容量分まとめて確保すればいい
 
 	class ShaderParamDescs
 	{
@@ -31,7 +32,10 @@ namespace vulkan
 
 
 		const VkDescriptorPool& DecriptorPool() const	{ return m_DescPool; }
-		const OreOreLib::Array<VkDescriptorSet>& DescriptorSets() const	{ m_DescriptorSets; }
+		const OreOreLib::NDArray<VkDescriptorSet, 2>& DescriptorSets() const	{ return m_DescriptorSets; }
+
+		const VkDescriptorSet& DescriptorSet( int swap_id, int set_id ) const	{ return m_DescriptorSets( swap_id, set_id ); }
+
 
 
 	private:
