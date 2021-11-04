@@ -15,11 +15,11 @@ namespace vulkan
 	public:
 
 		ShaderParamLayout();
-		ShaderParamLayout( const ShaderParamLayout& ) = delete;
+		ShaderParamLayout( const ShaderParamLayout& );// = delete;
 		~ShaderParamLayout();
 
-
 		void Init( VkDevice device, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
+		void Release();
 
 //		void AddLayout( int set, VkDescriptorSetLayoutBinding binding );
 //		void RemoveLayout( int set, int location );
@@ -36,15 +36,13 @@ namespace vulkan
 		const VkDescriptorSetLayout& Layout( int set ) const	{ return m_DescSetLayouts[ set ]; }
 
 
-
-
 	private:
 
 		VkDevice	m_refDevice;
 
-		int	m_NumBindings;
+		uint32_t	m_NumBindings;
 		OreOreLib::Array< OreOreLib::Array<VkDescriptorSetLayoutBinding> >	m_Bindings;
-		OreOreLib::Array< VkDescriptorSetLayout>							m_DescSetLayouts;// Set毎に1個ずつ必要
+		OreOreLib::Array< VkDescriptorSetLayout >							m_DescSetLayouts;// Set毎に1個ずつ必要
 
 
 		void InitDescriptorSetLayout();

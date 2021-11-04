@@ -3,7 +3,7 @@
 
 #include	<vulkan/vulkan.h>
 
-#include	<oreore/container/Array.h>
+#include	<oreore/container/NDArray.h>
 
 #include	"UniformBuffer.h"
 #include	"ShaderParamLayout.h"
@@ -13,33 +13,25 @@
 namespace vulkan
 {
 
-	struct BindLayout
-	{
-		VkDescriptorType	DescType;
-		uint32_t			Set;
-		uint32_t			Binding;
-	};
 
-
-
-	class DescriptorSets
+	class ShaderParamDescs
 	{
 	public:
 
-		DescriptorSets();
-		DescriptorSets( VkDevice device, uint32_t numswaps );
-		DescriptorSets( const DescriptorSets& ) = delete;
-		~DescriptorSets();
+		ShaderParamDescs();
+		ShaderParamDescs( VkDevice device, uint32_t numswaps );
+		ShaderParamDescs( const ShaderParamDescs& ) = delete;
+		~ShaderParamDescs();
 
-		//void InitLayout( VkDevice device, uint32_t numswaps, const OreOreLib::Array<VkDescriptorSetLayoutBinding>& bindings );
 		void Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout );
-
-		void Clear();// 
 		void Release();
 
+		void UpdateUniform( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers );
+		void UpdateCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler );
 
-		void UpdateUniform( VkDevice device, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers );
-		void UpdateCombinedImageSampler( VkDevice device, uint32_t binding, VkImageView imageview, VkSampler sampler );
+
+		const VkDescriptorPool& DecriptorPool() const	{ return m_DescPool; }
+		const OreOreLib::Array<VkDescriptorSet>& DescriptorSets() const	{ m_DescriptorSets; }
 
 
 	private:
@@ -47,12 +39,12 @@ namespace vulkan
 		VkDevice	m_refDevice;
 		uint32_t	m_NumSwaps;
 
-		VkDescriptorPool					m_DescPool;
-		OreOreLib::Array<VkDescriptorSet>	m_DescriptorSets;// 2次元配列? [set][num_swapchain_images]  set毎に必要?
+		VkDescriptorPool						m_DescPool;
+		OreOreLib::NDArray<VkDescriptorSet, 2>	m_DescriptorSets;// スワップチェイン数 x セット数分だけ確保が必要
 
 		
-		void InitDescriptorPool( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout );
-		void InitDescriptorSets( VkDevice device, OreOreLib::Array<VkDescriptorSet>& descSets, uint32_t numswaps, const ShaderParamLayout& paramlayout );
+		void InitDescriptorPool( uint32_t numswaps, const ShaderParamLayout& paramlayout );
+		void InitDescriptorSets( uint32_t numswaps, const ShaderParamLayout& paramlayout );
 
 	};
 

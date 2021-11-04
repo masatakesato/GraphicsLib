@@ -28,13 +28,7 @@ namespace vulkan
 
 	ShaderParamLayout::~ShaderParamLayout()
 	{
-		if( m_refDevice != VK_NULL_HANDLE )
-		{
-			for( auto& descSetLayout : m_DescSetLayouts )
-				vkDestroyDescriptorSetLayout( m_refDevice, descSetLayout, nullptr );
-		}
-
-		m_refDevice	= VK_NULL_HANDLE;
+		Release();
 	}
 
 
@@ -44,18 +38,33 @@ namespace vulkan
 		m_refDevice	= device;
 		m_NumBindings = 0;
 
-		m_Bindings.Init( bindings.size() );
+		m_Bindings.Init( static_cast<int>( bindings.size() ) );
 		auto layoutset = m_Bindings.begin();
 
 		for( auto& binding : bindings )
 		{
-			m_NumBindings += binding.size();
+			m_NumBindings += static_cast<uint32_t>( binding.size() );
 			layoutset->Init( binding );
 			layoutset++;
 		}
 
 
 		InitDescriptorSetLayout();
+	}
+
+
+
+	void ShaderParamLayout::Release()
+	{
+		if( m_refDevice != VK_NULL_HANDLE )
+		{
+			for( auto& descSetLayout : m_DescSetLayouts )
+				vkDestroyDescriptorSetLayout( m_refDevice, descSetLayout, nullptr );
+		}
+
+		m_Bindings.Release();
+		m_DescSetLayouts.Release();
+		m_refDevice	= VK_NULL_HANDLE;
 	}
 
 
