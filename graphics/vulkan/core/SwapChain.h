@@ -1,78 +1,54 @@
 ﻿#ifndef SWAP_CHAIN_H
 #define	SWAP_CHAIN_H
 
-#include	<vulkan/vulkan.h>
+//#include	<vulkan/vulkan.h>
+//#include	<oreore/container/Array.h>
 
-#include	<oreore/container/Array.h>
+#include	"GraphicsDevice.h"
 
 
 
 namespace vulkan
 {
 
-	struct SwapChainSupportDetails
-	{
-		VkSurfaceCapabilitiesKHR				capabilities;
-		OreOreLib::Array<VkSurfaceFormatKHR>	formats;
-		OreOreLib::Array<VkPresentModeKHR>		presentModes;
-	};
-
-
-
-	struct QueueFamilyIndices
-	{
-		uint32_t	graphicsFamily;
-		uint32_t	presentFamily;
-		bool		graphicsFamilyHasValue = false;
-		bool		presentFamilyHasValue = false;
-
-		bool isComplete()	{ return graphicsFamilyHasValue && presentFamilyHasValue; }
-	};
-
-
-
-
-
 	class SwapChain
 	{
 	public:
 
-		SwapChain();
-		SwapChain( VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface );
+		SwapChain( GraphicsDevice& device, VkExtent2D extent );
 		SwapChain( const SwapChain& obj )=delete;
 		~SwapChain();
 
-		void Init( VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface );
+		void Init();
 		void Release();
 
 
 		uint32_t NumImages() const		{ return static_cast<uint32_t>( m_Images.Length() ); }
 		VkFormat ImageFormat() const	{ return m_ImageFormat; }
 		VkImageView ImageView( int i ) const	{ return m_ImageViews[i]; }
-		const VkExtent2D& Extent() const	{ return m_Extent;}
+		const VkExtent2D& Extent() const	{ return m_WindowExtent;}
 
 		VkSwapchainKHR Handle() const	{ return m_SwapChain; }
 
 
 	private:
 
-		VkDevice						m_refDevice;
-
-		VkSwapchainKHR					m_SwapChain;
-		VkExtent2D						m_Extent;
-
-		VkFormat						m_ImageFormat;
-		OreOreLib::Array<VkImage>		m_Images;
-		OreOreLib::Array<VkImageView>	m_ImageViews;
-
+		GraphicsDevice&					m_refDevice;
 		VkExtent2D						m_WindowExtent;
 
+		VkSwapchainKHR					m_SwapChain;
+		VkExtent2D						m_SwapChainExtent;
 
-		void InitSwapChain( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface );
+		VkFormat						m_ImageFormat;
+
+
+		OreOreLib::Array<VkImage>		m_Images;
+		OreOreLib::Array<VkImageView>	m_ImageViews;
+		
+
+		void InitSwapChain();
 		void InitImageViews();
 
-
-		SwapChainSupportDetails QuerySwapChainSupport( VkPhysicalDevice device, VkSurfaceKHR surface );
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat( VkFormat format, VkColorSpaceKHR colorSpace, const OreOreLib::Array<VkSurfaceFormatKHR>& availableFormats );
 		VkPresentModeKHR ChooseSwapPresentMode( VkPresentModeKHR presentmode, const OreOreLib::Array<VkPresentModeKHR>& availablePresentModes );
 		VkExtent2D ChooseSwapExtent( const VkSurfaceCapabilitiesKHR& capabilities );
