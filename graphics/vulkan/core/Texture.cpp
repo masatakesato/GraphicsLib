@@ -40,7 +40,6 @@ namespace vulkan
 	{
 		if( m_refDevice != VK_NULL_HANDLE )
 		{
-			//vkDestroySampler( m_refDevice, textureSampler, nullptr );
 			vkDestroyImageView( m_refDevice, m_ImageView, nullptr );
 			vkDestroyImage( m_refDevice, m_Image, nullptr );
 			vkFreeMemory( m_refDevice, m_DeviceMemory, nullptr );	

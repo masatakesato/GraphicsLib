@@ -12,10 +12,31 @@ namespace vulkan
 	{
 	public:
 
+		Sampler();
+		Sampler( VkPhysicalDevice physicalDevice, VkDevice device, float maxAnisotropy, float maxlod );
+		Sampler( const Sampler& )=delete;
+		~Sampler();
+
+		void Init( VkPhysicalDevice physicalDevice, VkDevice device, float maxAnisotropy, float maxlod );
+		void Release();
+
+		void SetFilter( VkFilter magFilter, VkFilter minfilter );
+		void SetAddressMode( VkSamplerAddressMode u, VkSamplerAddressMode v, VkSamplerAddressMode w );
+		void SetMaxAnisotropy( float maxAnisotropy );
+		void SetMipmapLod( VkSamplerMipmapMode mode, float minlod, float maxlod, float bias );
+
+
+		const VkSampler& Handle() const	{ return m_Sampler; }
+
+
+
 
 	private:
-			
+		
+		VkDevice	m_refDevice;
+
 		VkSampler	m_Sampler;
+		VkSamplerCreateInfo m_SamplerInfo{ VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
 
 	};
 
