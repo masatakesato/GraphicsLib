@@ -65,7 +65,7 @@ namespace vulkan
 
 
 	// Transfer data to VkDeviceMemory
-	void StagingBuffer::Update( void* pData, VkDeviceSize size )
+	void StagingBuffer::Update( const void* pData, VkDeviceSize size )
 	{
 		ASSERT( (m_refDevice != VK_NULL_HANDLE) && pData );
 

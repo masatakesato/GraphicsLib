@@ -21,7 +21,7 @@ namespace vulkan
 
 		void Init( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice );
 		void Release();
-		void Update( void* pData, VkDeviceSize size );
+		void Update( const void* pData, VkDeviceSize size );
 
 		VkBuffer Buffer() const				{ return m_Buffer; }
 		VkDeviceMemory DeviceMemory() const	{ return m_DeviceMemory; }
