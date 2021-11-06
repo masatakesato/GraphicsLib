@@ -46,18 +46,33 @@ namespace vulkan
 	GraphicsDevice::GraphicsDevice( GLFWwindow&	window )
 		: m_refWindow( window )
 	{
-
+		CreateInstance();
+		SetupDebugMessenger();
+		CreateSurface();
+		PickPhysicalDevice();
+		CreateLogicalDevice();
 	}
 
 
 
 	GraphicsDevice::~GraphicsDevice()
 	{
+		// Destroy VkCommandPool
+		vkDestroyCommandPool( m_Device, m_CommandPool, nullptr );
 
+		// Destroy VkDevice
+		vkDestroyDevice( m_Device, nullptr );
+
+		// Destroy m_DebugMessenger
+		if( m_bEnableValidationLayers )
+			DestroyDebugUtilsMessengerEXT( m_Instance, m_DebugMessenger, nullptr );
+
+		// Destroy VkSurfaceKHR
+		vkDestroySurfaceKHR( m_Instance, m_Surface, nullptr );
+
+		// Destroy VkInstance
+		vkDestroyInstance( m_Instance, nullptr );
 	}
-
-
-
 
 
 
