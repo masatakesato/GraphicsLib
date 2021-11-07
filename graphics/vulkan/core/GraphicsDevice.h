@@ -6,6 +6,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include	<GLFW/glfw3.h>
 
+#include	<oreore/memory/ReferenceWrapper.h>
 #include	<oreore/container/Array.h>
 
 
@@ -24,12 +25,15 @@ namespace vulkan
 	};
 
 
+
+
 	struct SwapChainSupportDetails
 	{
 		VkSurfaceCapabilitiesKHR				capabilities;
 		OreOreLib::Array<VkSurfaceFormatKHR>	formats;
 		OreOreLib::Array<VkPresentModeKHR>		presentModes;
 	};
+
 
 
 
@@ -101,6 +105,9 @@ namespace vulkan
 		SwapChainSupportDetails QuerySwapChainSupport( VkPhysicalDevice physicalDevice );
 
 	};
+
+
+	using GraphicsDeviceRef = OreOreLib::ReferenceWrapper<GraphicsDevice>;
 
 }
 

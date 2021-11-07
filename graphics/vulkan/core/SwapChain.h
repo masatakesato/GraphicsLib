@@ -1,9 +1,6 @@
 ﻿#ifndef SWAP_CHAIN_H
 #define	SWAP_CHAIN_H
 
-//#include	<vulkan/vulkan.h>
-//#include	<oreore/container/Array.h>
-
 #include	"GraphicsDevice.h"
 
 
@@ -15,6 +12,7 @@ namespace vulkan
 	{
 	public:
 
+		SwapChain();
 		SwapChain( GraphicsDevice& device, VkExtent2D extent );
 		SwapChain( const SwapChain& obj )=delete;
 		~SwapChain();
@@ -33,7 +31,7 @@ namespace vulkan
 
 	private:
 
-		GraphicsDevice&					m_refDevice;
+		GraphicsDeviceRef				m_refDevice;
 		VkExtent2D						m_WindowExtent;
 
 		VkSwapchainKHR					m_SwapChain;
