@@ -17,7 +17,7 @@ namespace vulkan
 		SwapChain( const SwapChain& obj )=delete;
 		~SwapChain();
 
-		void Init();
+		void Init( GraphicsDevice& device, VkExtent2D extent );
 		void Release();
 
 

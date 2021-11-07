@@ -1,7 +1,7 @@
 ﻿#ifndef SAMPLER_H
 #define	SAMPLER_H
 
-#include	<vulkan/vulkan.h>
+#include	"GraphicsDevice.h"
 
 
 
@@ -13,11 +13,11 @@ namespace vulkan
 	public:
 
 		Sampler();
-		Sampler( VkPhysicalDevice physicalDevice, VkDevice device, float maxAnisotropy, float maxlod );
+		Sampler( GraphicsDevice& device, float maxAnisotropy, float maxlod );
 		Sampler( const Sampler& )=delete;
 		~Sampler();
 
-		void Init( VkPhysicalDevice physicalDevice, VkDevice device, float maxAnisotropy, float maxlod );
+		void Init( GraphicsDevice& device, float maxAnisotropy, float maxlod );
 		void Release();
 
 		void SetFilter( VkFilter magFilter, VkFilter minfilter );
@@ -33,7 +33,7 @@ namespace vulkan
 
 	private:
 		
-		VkDevice	m_refDevice;
+		GraphicsDeviceRef	m_refDevice;
 
 		VkSampler	m_Sampler;
 		VkSamplerCreateInfo m_SamplerInfo{ VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };

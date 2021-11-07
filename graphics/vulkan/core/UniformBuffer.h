@@ -1,10 +1,10 @@
 ﻿#ifndef UNIFORM_BUFFER_H
 #define	UNIFORM_BUFFER_H
 
-#include	<vulkan/vulkan.h>
-
-
 #include	<oreore/container/Array.h>
+
+#include	"GraphicsDevice.h"
+
 
 
 namespace vulkan
@@ -15,11 +15,11 @@ namespace vulkan
 	public:
 
 		UniformBuffer();
-		UniformBuffer( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice );
+		UniformBuffer( GraphicsDevice& device, VkDeviceSize bufferSize );
 		UniformBuffer( const UniformBuffer& ) = delete;
 		~UniformBuffer();
 
-		void Init( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice );
+		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
 		void Release();
 		void Update( void* pData, VkDeviceSize size );
 
@@ -30,11 +30,11 @@ namespace vulkan
 
 	private:
 
+		GraphicsDeviceRef	m_refDevice;
+
 		VkDeviceSize	m_Size; 
 		VkBuffer		m_Buffer;//m_UniformBuffer;
 		VkDeviceMemory	m_DeviceMemory;//m_UniformBufferMemory;
-
-		VkDevice		m_refDevice;
 
 	};
 

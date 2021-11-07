@@ -1,7 +1,7 @@
 ﻿#ifndef TEXTURE_H
 #define	TEXTURE_H
 
-#include	<vulkan/vulkan.h>
+#include	"GraphicsDevice.h"
 
 
 
@@ -13,14 +13,14 @@ namespace vulkan
 	public:
 
 		Texture();
-		Texture( VkPhysicalDevice physicalDevice, VkDevice device, uint32_t width, uint32_t height, VkFormat format, bool mipmap );
+		Texture( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, bool mipmap );
 		Texture( const Texture& )=delete;
 		~Texture();
 
-		void Init( VkPhysicalDevice physicalDevice, VkDevice device, uint32_t width, uint32_t height, VkFormat format, bool mipmap );
+		void Init( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, bool mipmap );
 		void Release();
 
-		void UploadData( VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, const void* pData, VkDeviceSize size );
+		void UploadData( const void* pData, VkDeviceSize size );
 
 		uint32_t	MipLevels() const	{ return m_MipLevels; }
 
@@ -30,7 +30,7 @@ namespace vulkan
 
 	private:
 			
-		VkDevice		m_refDevice;
+		GraphicsDeviceRef	m_refDevice;
 
 		VkExtent2D		m_Dim;
 		VkFormat		m_Format;
@@ -41,7 +41,7 @@ namespace vulkan
 		VkImageView		m_ImageView;
 
 
-		void GenerateMipmaps( VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue );
+		void GenerateMipmaps();
 	};
 
 

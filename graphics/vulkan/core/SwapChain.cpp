@@ -19,13 +19,13 @@ namespace vulkan
 
 
 	SwapChain::SwapChain( GraphicsDevice& device, VkExtent2D extent )
-		: m_refDevice( device )
-		, m_WindowExtent( extent )
-		, m_SwapChain( VK_NULL_HANDLE )
+		//: m_refDevice( device )
+		//, m_WindowExtent( extent )
+		: m_SwapChain( VK_NULL_HANDLE )
 		, m_SwapChainExtent{ 0, 0 }
 		, m_ImageFormat( VK_FORMAT_UNDEFINED )
 	{
-		Init();
+		Init( device, extent );
 	}
 
 
@@ -37,8 +37,11 @@ namespace vulkan
 
 
 
-	void SwapChain::Init()
+	void SwapChain::Init( GraphicsDevice& device, VkExtent2D extent )
 	{
+		m_refDevice		= device;
+		m_WindowExtent	= extent;
+
 		InitSwapChain();
 		InitImageViews();
 	}
@@ -47,14 +50,19 @@ namespace vulkan
 
 	void SwapChain::Release()
 	{
-		for( auto& view : m_ImageViews )
-			vkDestroyImageView( m_refDevice->Device(), view, nullptr );
-		m_ImageViews.Release();
-
-		if( m_SwapChain != VK_NULL_HANDLE )
+		if( m_refDevice->Device() != VK_NULL_HANDLE )
 		{
-			vkDestroySwapchainKHR( m_refDevice->Device(), m_SwapChain, nullptr );
-			m_SwapChain = VK_NULL_HANDLE;
+			for( auto& view : m_ImageViews )
+				vkDestroyImageView( m_refDevice->Device(), view, nullptr );
+			m_ImageViews.Release();
+
+			if( m_SwapChain != VK_NULL_HANDLE )
+			{
+				vkDestroySwapchainKHR( m_refDevice->Device(), m_SwapChain, nullptr );
+				m_SwapChain = VK_NULL_HANDLE;
+			}
+
+	//		m_refDevice. = VK_NULL_HANDLE;
 		}
 
 	}

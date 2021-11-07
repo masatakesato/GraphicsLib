@@ -9,8 +9,7 @@ namespace vulkan
 {
 
 	UniformBuffer::UniformBuffer()
-		: m_refDevice( VK_NULL_HANDLE )
-		, m_Buffer( VK_NULL_HANDLE )
+		: m_Buffer( VK_NULL_HANDLE )
 		, m_DeviceMemory( VK_NULL_HANDLE )
 	{
 
@@ -18,11 +17,11 @@ namespace vulkan
 
 
 
-	UniformBuffer::UniformBuffer( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice )
+	UniformBuffer::UniformBuffer( GraphicsDevice& device, VkDeviceSize bufferSize )
 		: m_Buffer( VK_NULL_HANDLE )
 		, m_DeviceMemory( VK_NULL_HANDLE )
 	{
-		Init( device, bufferSize, physicalDevice );
+		Init( device, bufferSize );
 	}
 
 
@@ -34,15 +33,15 @@ namespace vulkan
 
 
 
-	void UniformBuffer::Init( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice )
+	void UniformBuffer::Init( GraphicsDevice& device, VkDeviceSize bufferSize )
 	{
 		m_refDevice	= device;
 		m_Size		= bufferSize;
 
-		ASSERT( m_refDevice != VK_NULL_HANDLE );
+		ASSERT( m_refDevice->Device() != VK_NULL_HANDLE );
 
-		CreateBuffer(	physicalDevice,
-						device,
+		CreateBuffer(	m_refDevice->PhysicalDevice(),
+						m_refDevice->Device(),
 						bufferSize,
 						VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 						VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -54,12 +53,12 @@ namespace vulkan
 
 	void UniformBuffer::Release()
 	{
-		if( m_refDevice != VK_NULL_HANDLE )
+		if( m_refDevice->Device() != VK_NULL_HANDLE )
 		{
-			vkDestroyBuffer( m_refDevice, m_Buffer, nullptr );
-			vkFreeMemory( m_refDevice, m_DeviceMemory, nullptr );
+			vkDestroyBuffer( m_refDevice->Device(), m_Buffer, nullptr );
+			vkFreeMemory( m_refDevice->Device(), m_DeviceMemory, nullptr );
 
-			m_refDevice	= VK_NULL_HANDLE;
+			m_refDevice.Reset();
 		}
 	}
 
@@ -68,12 +67,14 @@ namespace vulkan
 	// Transfer data to VkDeviceMemory
 	void UniformBuffer::Update( void* pData, VkDeviceSize size )
 	{
-		ASSERT( (m_refDevice != VK_NULL_HANDLE) && pData );
+		ASSERT( (m_refDevice->Device() != VK_NULL_HANDLE) && pData );
 
 		void* data;
-		vkMapMemory( m_refDevice, m_DeviceMemory, 0, size, 0, &data );
+		vkMapMemory( m_refDevice->Device(), m_DeviceMemory, 0, size, 0, &data );
 			memcpy( data, pData, size );
-		vkUnmapMemory( m_refDevice, m_DeviceMemory );
+		vkUnmapMemory( m_refDevice->Device(), m_DeviceMemory );
+
+		m_refDevice.Reset();
 	}
 
 

@@ -37,8 +37,7 @@ namespace vulkan
 
 
 	Sampler::Sampler()
-		: m_refDevice( VK_NULL_HANDLE )
-		, m_Sampler( VK_NULL_HANDLE )
+		: m_Sampler( VK_NULL_HANDLE )
 		, m_SamplerInfo( DefaultSamplerInfo() )
 	{
 
@@ -46,12 +45,11 @@ namespace vulkan
 
 
 
-	Sampler::Sampler( VkPhysicalDevice physicalDevice, VkDevice device, float maxAnisotropy, float maxlod )
-		: m_refDevice( VK_NULL_HANDLE )
-		, m_Sampler( VK_NULL_HANDLE )
+	Sampler::Sampler( GraphicsDevice& device, float maxAnisotropy, float maxlod )
+		: m_Sampler( VK_NULL_HANDLE )
 		, m_SamplerInfo( DefaultSamplerInfo() )
 	{
-		Init( physicalDevice, device, maxAnisotropy, maxlod );
+		Init( device, maxAnisotropy, maxlod );
 	}
 
 
@@ -63,7 +61,7 @@ namespace vulkan
 
 
 
-	void Sampler::Init( VkPhysicalDevice physicalDevice, VkDevice device, float maxAnisotropy, float maxlod )
+	void Sampler::Init( GraphicsDevice& device, float maxAnisotropy, float maxlod )
 	{
 		m_refDevice	= device;
 
@@ -77,7 +75,7 @@ namespace vulkan
 		//samplerInfo.addressModeW	= VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
 		VkPhysicalDeviceProperties properties = {};
-		vkGetPhysicalDeviceProperties( physicalDevice, &properties );
+		vkGetPhysicalDeviceProperties( m_refDevice->PhysicalDevice(), &properties );
 
 		m_SamplerInfo.anisotropyEnable	= maxAnisotropy==1.0f ? VK_FALSE : VK_TRUE;
 		m_SamplerInfo.maxAnisotropy		= Min( maxAnisotropy, properties.limits.maxSamplerAnisotropy );// set 1.0 if anisotropyEnable is VK_FALSE
@@ -92,17 +90,20 @@ namespace vulkan
 		//samplerInfo.mipLodBias	= 0.0f;
 
 
-		VK_CHECK_RESULT( vkCreateSampler( device, &m_SamplerInfo, nullptr, &m_Sampler ) );
+		VK_CHECK_RESULT( vkCreateSampler( m_refDevice->Device(), &m_SamplerInfo, nullptr, &m_Sampler ) );
 	}
 
 
 
 	void Sampler::Release()
 	{
-		if( m_refDevice != VK_NULL_HANDLE )
-			vkDestroySampler( m_refDevice, m_Sampler, nullptr );
+		if( m_refDevice->Device() != VK_NULL_HANDLE )
+		{
+			vkDestroySampler( m_refDevice->Device(), m_Sampler, nullptr );
+			m_Sampler = VK_NULL_HANDLE;
+		}
 
-		m_refDevice = VK_NULL_HANDLE;
+		m_refDevice.Reset();
 		m_SamplerInfo = DefaultSamplerInfo();
 	}
 

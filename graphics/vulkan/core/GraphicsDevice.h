@@ -41,9 +41,13 @@ namespace vulkan
 	{
 	public:
 
-		GraphicsDevice( GLFWwindow&	window );
+		GraphicsDevice();
+		GraphicsDevice( GLFWwindow& window );
 		GraphicsDevice( const GraphicsDevice& )=delete;
 		~GraphicsDevice();
+
+		void Init( GLFWwindow& window );
+		void Release();
 
 
 		VkSampleCountFlagBits GetMaxUsableSampleCount();
@@ -74,7 +78,7 @@ namespace vulkan
 		VkQueue						m_GraphicsQueue;
 		VkQueue						m_PresentQueue;
 
-		GLFWwindow&					m_refWindow;
+		OreOreLib::ReferenceWrapper<GLFWwindow>	m_refWindow;
 
 		#ifdef NDEBUG
 		const bool			m_bEnableValidationLayers = false;
@@ -92,7 +96,7 @@ namespace vulkan
 		void CreateSurface();
 		void PickPhysicalDevice();
 		void CreateLogicalDevice();
-
+		void CreateCommandPool();
 
 
 		bool CheckValidationLayerSupport();

@@ -1,10 +1,10 @@
 ﻿#ifndef STAGING_BUFFER_H
 #define	STAGING_BUFFER_H
 
-#include	<vulkan/vulkan.h>
-
-
 #include	<oreore/container/Array.h>
+
+#include	"GraphicsDevice.h"
+
 
 
 namespace vulkan
@@ -15,11 +15,11 @@ namespace vulkan
 	public:
 
 		StagingBuffer();
-		StagingBuffer( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice );
+		StagingBuffer( GraphicsDevice& device, VkDeviceSize bufferSize );
 		StagingBuffer( const StagingBuffer& ) = delete;
 		~StagingBuffer();
 
-		void Init( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice );
+		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
 		void Release();
 		void Update( const void* pData, VkDeviceSize size );
 
@@ -29,10 +29,10 @@ namespace vulkan
 
 	private:
 
+		GraphicsDeviceRef	m_refDevice;
+
 		VkBuffer		m_Buffer;
 		VkDeviceMemory	m_DeviceMemory;
-
-		VkDevice		m_refDevice;
 
 	};
 

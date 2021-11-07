@@ -9,8 +9,7 @@ namespace vulkan
 {
 
 	Texture::Texture()
-		: m_refDevice( VK_NULL_HANDLE )
-		, m_Dim{ 0, 0 }
+		: m_Dim{ 0, 0 }
 		, m_Format( VK_FORMAT_UNDEFINED )
 		, m_MipLevels( 0 )
 		, m_Image( VK_NULL_HANDLE )
@@ -22,9 +21,9 @@ namespace vulkan
 		
 
 
-	Texture::Texture( VkPhysicalDevice physicalDevice, VkDevice device, uint32_t width, uint32_t height, VkFormat format, bool mipmap )
+	Texture::Texture( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, bool mipmap )
 	{
-		Init( physicalDevice, device, width, height, format, mipmap );
+		Init( device, width, height, format, mipmap );
 	}
 
 
@@ -36,21 +35,7 @@ namespace vulkan
 
 
 
-	void Texture::Release()
-	{
-		if( m_refDevice != VK_NULL_HANDLE )
-		{
-			vkDestroyImageView( m_refDevice, m_ImageView, nullptr );
-			vkDestroyImage( m_refDevice, m_Image, nullptr );
-			vkFreeMemory( m_refDevice, m_DeviceMemory, nullptr );	
-		}
-
-		m_refDevice	= VK_NULL_HANDLE;
-	}
-
-
-
-	void Texture::Init( VkPhysicalDevice physicalDevice, VkDevice device, uint32_t width, uint32_t height, VkFormat format, bool mipmap )
+	void Texture::Init( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, bool mipmap )
 	{
 		m_refDevice	= device;
 		m_Dim		= { width, height };
@@ -58,7 +43,7 @@ namespace vulkan
 		m_MipLevels	= mipmap ? static_cast<uint32_t>( floor( log2( Max(width, height) ) ) ) + 1 : 1;
 		
 		// Create VkImage
-		CreateImage(	physicalDevice, device,
+		CreateImage(	m_refDevice->PhysicalDevice(), m_refDevice->Device(),
 						width, height, m_MipLevels, VK_SAMPLE_COUNT_1_BIT,
 						m_Format,
 						VK_IMAGE_TILING_OPTIMAL,
@@ -67,33 +52,47 @@ namespace vulkan
 						m_Image,
 						m_DeviceMemory );
 
-		CreateImageView( m_refDevice, m_ImageView, m_Image, m_Format, VK_IMAGE_ASPECT_COLOR_BIT, m_MipLevels );
+		CreateImageView( m_refDevice->Device(), m_ImageView, m_Image, m_Format, VK_IMAGE_ASPECT_COLOR_BIT, m_MipLevels );
 	}
 
 
 
-	void Texture::UploadData( VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, const void* pData, VkDeviceSize imageSize )
+	void Texture::Release()
 	{
-		ASSERT( m_refDevice != VK_NULL_HANDLE );
+		if( m_refDevice->Device() != VK_NULL_HANDLE )
+		{
+			vkDestroyImageView( m_refDevice->Device(), m_ImageView, nullptr );
+			vkDestroyImage( m_refDevice->Device(), m_Image, nullptr );
+			vkFreeMemory( m_refDevice->Device(), m_DeviceMemory, nullptr );	
+		}
+
+		m_refDevice.Reset();
+	}
+
+
+
+	void Texture::UploadData( const void* pData, VkDeviceSize imageSize )
+	{
+		ASSERT( m_refDevice->Device() != VK_NULL_HANDLE );
 
 		if( m_Dim.width * m_Dim.height == 0 )
 			return;
 
 		// Create staging buffer
-		StagingBuffer stagingBuffer( m_refDevice, imageSize, physicalDevice );
+		StagingBuffer stagingBuffer( (GraphicsDevice&)m_refDevice->Device(), imageSize );
 
 		// Transfer iamge data to staging buffer
 		stagingBuffer.Update( pData, static_cast<VkDeviceSize>(imageSize) );
 
 		// Set VkImage layout from "undefined" to "data transfer from host memory"
-		TransitionImageLayout( m_refDevice, commandPool, queue, m_Image, m_Format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_MipLevels );
-		CopyBufferToImage( m_refDevice, commandPool, queue, stagingBuffer.Buffer(), m_Image, m_Dim.width, m_Dim.height );
+		TransitionImageLayout( m_refDevice->Device(), m_refDevice->CommandPool(), m_refDevice->GraphicsQueue(), m_Image, m_Format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_MipLevels );
+		CopyBufferToImage( m_refDevice->Device(), m_refDevice->CommandPool(), m_refDevice->GraphicsQueue(), stagingBuffer.Buffer(), m_Image, m_Dim.width, m_Dim.height );
 
 		// Set VkImage layout from "data transfer from host memory" to "Shader Read-only"
 		if( m_MipLevels == 1 )
-			TransitionImageLayout( m_refDevice, commandPool, queue, m_Image, m_Format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_MipLevels );
+			TransitionImageLayout( m_refDevice->Device(), m_refDevice->CommandPool(), m_refDevice->GraphicsQueue(), m_Image, m_Format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_MipLevels );
 		else
-			GenerateMipmaps( physicalDevice, commandPool, queue );
+			GenerateMipmaps();
 
 		// cleanup staging memory
 		stagingBuffer.Release();
@@ -101,23 +100,23 @@ namespace vulkan
 
 
 
-	void Texture::GenerateMipmaps( VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue )
+	void Texture::GenerateMipmaps()
 	{
-		ASSERT( m_refDevice != VK_NULL_HANDLE );
+		ASSERT( m_refDevice->Device() != VK_NULL_HANDLE );
 
 		m_MipLevels	= static_cast<uint32_t>( floor( log2( Max(m_Dim.width, m_Dim.height) ) ) ) + 1;
 
-		TransitionImageLayout( m_refDevice, commandPool, queue, m_Image, m_Format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_MipLevels );
+		TransitionImageLayout( m_refDevice->Device(), m_refDevice->CommandPool(), m_refDevice->GraphicsQueue(), m_Image, m_Format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_MipLevels );
 
 
 		VkFormatProperties formatProperties;
-		vkGetPhysicalDeviceFormatProperties( physicalDevice, m_Format, &formatProperties );
+		vkGetPhysicalDeviceFormatProperties( m_refDevice->PhysicalDevice(), m_Format, &formatProperties );
 
 		if( !( formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT) )
 			throw std::runtime_error( "texture image format does not support linear blitting" );
 
 
-		VkCommandBuffer commandBuffer = BeginSingleTimeCommands( m_refDevice, commandPool );
+		VkCommandBuffer commandBuffer = BeginSingleTimeCommands( m_refDevice->Device(), m_refDevice->CommandPool() );
 
 			VkImageMemoryBarrier barrier = {};
 			barrier.sType							= VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -199,7 +198,7 @@ namespace vulkan
 									0, nullptr,
 									1, &barrier	);
 
-		EndSingleTimeCommands( m_refDevice, commandBuffer, commandPool, queue );
+		EndSingleTimeCommands( m_refDevice->Device(), commandBuffer, m_refDevice->CommandPool(), m_refDevice->GraphicsQueue() );
 	}
 
 

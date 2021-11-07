@@ -43,9 +43,39 @@ namespace vulkan
 
 
 
-	GraphicsDevice::GraphicsDevice( GLFWwindow&	window )
-		: m_refWindow( window )
+	GraphicsDevice::GraphicsDevice()
+		: m_Instance( VK_NULL_HANDLE )
+		, m_DebugMessenger( VK_NULL_HANDLE )
+		, m_Surface( VK_NULL_HANDLE )
+		, m_PhysicalDevice( VK_NULL_HANDLE )
+		, m_Device( VK_NULL_HANDLE )
+		, m_CommandPool( VK_NULL_HANDLE )
+		, m_GraphicsQueue( VK_NULL_HANDLE )
+		, m_PresentQueue( VK_NULL_HANDLE )
 	{
+
+	}
+
+
+
+	GraphicsDevice::GraphicsDevice( GLFWwindow&	window )
+	{
+		Init( window );
+	}
+
+
+
+	GraphicsDevice::~GraphicsDevice()
+	{
+		Release();
+	}
+
+
+
+	void GraphicsDevice::Init( GLFWwindow& window )
+	{
+		m_refWindow = window;
+
 		CreateInstance();
 		SetupDebugMessenger();
 		CreateSurface();
@@ -55,7 +85,7 @@ namespace vulkan
 
 
 
-	GraphicsDevice::~GraphicsDevice()
+	void GraphicsDevice::Release()
 	{
 		// Destroy VkCommandPool
 		vkDestroyCommandPool( m_Device, m_CommandPool, nullptr );
@@ -171,7 +201,7 @@ namespace vulkan
 
 	void GraphicsDevice::CreateSurface()
 	{
-		if( glfwCreateWindowSurface( m_Instance, &m_refWindow, nullptr, &m_Surface) != VK_SUCCESS )
+		if( glfwCreateWindowSurface( m_Instance, &m_refWindow.Get(), nullptr, &m_Surface) != VK_SUCCESS )
 			throw std::runtime_error( "failed to create window surface!" );
 	}
 
@@ -251,6 +281,22 @@ namespace vulkan
 		vkGetDeviceQueue( m_Device, indices.graphicsFamily, 0, &m_GraphicsQueue );
 		vkGetDeviceQueue( m_Device, indices.presentFamily, 0, &m_PresentQueue );
 	}
+
+
+
+	void GraphicsDevice::CreateCommandPool()
+	{
+		QueueFamilyIndices queueFamilyIndices = FindQueueFamilies( m_PhysicalDevice );
+
+		VkCommandPoolCreateInfo poolInfo = {};
+		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
+		poolInfo.flags = 0; // Optional
+
+		if( vkCreateCommandPool( m_Device, &poolInfo, nullptr, &m_CommandPool ) != VK_SUCCESS )
+			throw std::runtime_error( "failed to create command pool!" );
+	}
+
 
 
 
@@ -354,30 +400,67 @@ namespace vulkan
 
 
 
-	QueueFamilyIndices GraphicsDevice::FindQueueFamilies( VkPhysicalDevice physicalDevice )
+	//QueueFamilyIndices GraphicsDevice::FindQueueFamilies( VkPhysicalDevice physicalDevice )
+	//{
+	//	QueueFamilyIndices indices;
+
+	//	// Aqcuire Queuefamily property list.
+	//	uint32_t queueFamilyCount = 0;
+	//	vkGetPhysicalDeviceQueueFamilyProperties( physicalDevice, &queueFamilyCount, nullptr );
+
+	//	OreOreLib::Array<VkQueueFamilyProperties> queueFamilies( queueFamilyCount );
+	//	vkGetPhysicalDeviceQueueFamilyProperties( physicalDevice, &queueFamilyCount, queueFamilies.begin() );
+
+
+	//	// Find 
+	//	int i=0;
+	//	for( const auto& queueFamily : queueFamilies )
+	//	{
+	//		if( queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT )
+	//			indices.graphicsFamily = i;
+
+	//		VkBool32 presentSupport = false;
+	//		vkGetPhysicalDeviceSurfaceSupportKHR( physicalDevice, i, m_Surface, &presentSupport );
+
+	//		if( queueFamily.queueCount > 0 && presentSupport )
+	//			indices.presentFamily = i;
+
+	//		if( indices.isComplete() )
+	//			break;
+
+	//		i++;
+	//	}
+
+
+	//	return indices;
+	//}
+
+	QueueFamilyIndices GraphicsDevice::FindQueueFamilies( VkPhysicalDevice device )
 	{
 		QueueFamilyIndices indices;
 
-		// Aqcuire Queuefamily property list.
 		uint32_t queueFamilyCount = 0;
-		vkGetPhysicalDeviceQueueFamilyProperties( physicalDevice, &queueFamilyCount, nullptr );
+		vkGetPhysicalDeviceQueueFamilyProperties( device, &queueFamilyCount, nullptr );
 
 		OreOreLib::Array<VkQueueFamilyProperties> queueFamilies( queueFamilyCount );
-		vkGetPhysicalDeviceQueueFamilyProperties( physicalDevice, &queueFamilyCount, queueFamilies.begin() );
+		vkGetPhysicalDeviceQueueFamilyProperties( device, &queueFamilyCount, queueFamilies.begin() );
 
-
-		// Find 
 		int i=0;
 		for( const auto& queueFamily : queueFamilies )
 		{
 			if( queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT )
+			{
 				indices.graphicsFamily = i;
+				indices.graphicsFamilyHasValue = true;
+			}
 
 			VkBool32 presentSupport = false;
-			vkGetPhysicalDeviceSurfaceSupportKHR( physicalDevice, i, m_Surface, &presentSupport );
-
+			vkGetPhysicalDeviceSurfaceSupportKHR( device, i, m_Surface, &presentSupport );
 			if( queueFamily.queueCount > 0 && presentSupport )
+			{
 				indices.presentFamily = i;
+				indices.presentFamilyHasValue = true;
+			}
 
 			if( indices.isComplete() )
 				break;
@@ -385,9 +468,10 @@ namespace vulkan
 			i++;
 		}
 
-
 		return indices;
+
 	}
+
 
 
 

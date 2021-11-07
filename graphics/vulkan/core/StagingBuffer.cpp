@@ -9,8 +9,7 @@ namespace vulkan
 {
 
 	StagingBuffer::StagingBuffer()
-		: m_refDevice( VK_NULL_HANDLE )
-		, m_Buffer( VK_NULL_HANDLE )
+		: m_Buffer( VK_NULL_HANDLE )
 		, m_DeviceMemory( VK_NULL_HANDLE )
 	{
 
@@ -18,11 +17,11 @@ namespace vulkan
 
 
 
-	StagingBuffer::StagingBuffer( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice )
+	StagingBuffer::StagingBuffer( GraphicsDevice& device, VkDeviceSize bufferSize )
 		: m_Buffer( VK_NULL_HANDLE )
 		, m_DeviceMemory( VK_NULL_HANDLE )
 	{
-		Init( device, bufferSize, physicalDevice );
+		Init( device, bufferSize );
 	}
 
 
@@ -34,14 +33,14 @@ namespace vulkan
 
 
 
-	void StagingBuffer::Init( VkDevice device, VkDeviceSize bufferSize, VkPhysicalDevice physicalDevice )
+	void StagingBuffer::Init( GraphicsDevice& device, VkDeviceSize bufferSize )
 	{
 		m_refDevice	= device;
 
-		ASSERT( m_refDevice != VK_NULL_HANDLE );
+		ASSERT( m_refDevice->Device() != VK_NULL_HANDLE );
 
-		CreateBuffer(	physicalDevice,
-						m_refDevice,
+		CreateBuffer(	m_refDevice->PhysicalDevice(),
+						m_refDevice->Device(),
 						bufferSize,
 						VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 						VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -53,12 +52,15 @@ namespace vulkan
 
 	void StagingBuffer::Release()
 	{
-		if( m_refDevice != VK_NULL_HANDLE )
+		if( m_refDevice->Device() != VK_NULL_HANDLE )
 		{
-			vkDestroyBuffer( m_refDevice, m_Buffer, nullptr );
-			vkFreeMemory( m_refDevice, m_DeviceMemory, nullptr );
+			vkDestroyBuffer( m_refDevice->Device(), m_Buffer, nullptr );
+			m_Buffer = VK_NULL_HANDLE;
 
-			m_refDevice	= VK_NULL_HANDLE;
+			vkFreeMemory( m_refDevice->Device(), m_DeviceMemory, nullptr );
+			m_DeviceMemory = VK_NULL_HANDLE;
+
+			m_refDevice.Reset();
 		}
 	}
 
@@ -67,12 +69,12 @@ namespace vulkan
 	// Transfer data to VkDeviceMemory
 	void StagingBuffer::Update( const void* pData, VkDeviceSize size )
 	{
-		ASSERT( (m_refDevice != VK_NULL_HANDLE) && pData );
+		ASSERT( (m_refDevice->Device() != VK_NULL_HANDLE) && pData );
 
 		void* data;
-		vkMapMemory( m_refDevice, m_DeviceMemory, 0, size, 0, &data );
+		vkMapMemory( m_refDevice->Device(), m_DeviceMemory, 0, size, 0, &data );
 			memcpy( data, pData, size );
-		vkUnmapMemory( m_refDevice, m_DeviceMemory );
+		vkUnmapMemory( m_refDevice->Device(), m_DeviceMemory );
 	}
 
 
