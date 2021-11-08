@@ -81,6 +81,7 @@ namespace vulkan
 		CreateSurface();
 		PickPhysicalDevice();
 		CreateLogicalDevice();
+		CreateCommandPool();
 	}
 
 
@@ -88,20 +89,42 @@ namespace vulkan
 	void GraphicsDevice::Release()
 	{
 		// Destroy VkCommandPool
-		vkDestroyCommandPool( m_Device, m_CommandPool, nullptr );
+		if( m_CommandPool != VK_NULL_HANDLE )
+		{
+			vkDestroyCommandPool( m_Device, m_CommandPool, nullptr );
+			m_CommandPool = VK_NULL_HANDLE;
+		}
 
 		// Destroy VkDevice
-		vkDestroyDevice( m_Device, nullptr );
+		if( m_Device != VK_NULL_HANDLE )
+		{
+			vkDestroyDevice( m_Device, nullptr );
+			m_Device = VK_NULL_HANDLE;
+		}
 
 		// Destroy m_DebugMessenger
 		if( m_bEnableValidationLayers )
-			DestroyDebugUtilsMessengerEXT( m_Instance, m_DebugMessenger, nullptr );
+		{
+			if( m_DebugMessenger != VK_NULL_HANDLE )
+			{
+				DestroyDebugUtilsMessengerEXT( m_Instance, m_DebugMessenger, nullptr );
+				m_DebugMessenger = VK_NULL_HANDLE;
+			}
+		}
 
 		// Destroy VkSurfaceKHR
-		vkDestroySurfaceKHR( m_Instance, m_Surface, nullptr );
-
+		if( m_Surface != VK_NULL_HANDLE )
+		{
+			vkDestroySurfaceKHR( m_Instance, m_Surface, nullptr );
+			m_Surface = VK_NULL_HANDLE;
+		}
+		
 		// Destroy VkInstance
-		vkDestroyInstance( m_Instance, nullptr );
+		if( m_Instance != VK_NULL_HANDLE )
+		{
+			vkDestroyInstance( m_Instance, nullptr );
+			m_Instance = VK_NULL_HANDLE;
+		}
 	}
 
 
@@ -254,6 +277,7 @@ namespace vulkan
 
 
 		VkPhysicalDeviceFeatures deviceFeatures = {};
+		deviceFeatures.samplerAnisotropy	= VK_TRUE;
 
 		VkDeviceCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -400,41 +424,6 @@ namespace vulkan
 
 
 
-	//QueueFamilyIndices GraphicsDevice::FindQueueFamilies( VkPhysicalDevice physicalDevice )
-	//{
-	//	QueueFamilyIndices indices;
-
-	//	// Aqcuire Queuefamily property list.
-	//	uint32_t queueFamilyCount = 0;
-	//	vkGetPhysicalDeviceQueueFamilyProperties( physicalDevice, &queueFamilyCount, nullptr );
-
-	//	OreOreLib::Array<VkQueueFamilyProperties> queueFamilies( queueFamilyCount );
-	//	vkGetPhysicalDeviceQueueFamilyProperties( physicalDevice, &queueFamilyCount, queueFamilies.begin() );
-
-
-	//	// Find 
-	//	int i=0;
-	//	for( const auto& queueFamily : queueFamilies )
-	//	{
-	//		if( queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT )
-	//			indices.graphicsFamily = i;
-
-	//		VkBool32 presentSupport = false;
-	//		vkGetPhysicalDeviceSurfaceSupportKHR( physicalDevice, i, m_Surface, &presentSupport );
-
-	//		if( queueFamily.queueCount > 0 && presentSupport )
-	//			indices.presentFamily = i;
-
-	//		if( indices.isComplete() )
-	//			break;
-
-	//		i++;
-	//	}
-
-
-	//	return indices;
-	//}
-
 	QueueFamilyIndices GraphicsDevice::FindQueueFamilies( VkPhysicalDevice device )
 	{
 		QueueFamilyIndices indices;
@@ -469,7 +458,6 @@ namespace vulkan
 		}
 
 		return indices;
-
 	}
 
 

@@ -53,7 +53,7 @@ namespace vulkan
 
 	void UniformBuffer::Release()
 	{
-		if( m_refDevice->Device() != VK_NULL_HANDLE )
+		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
 			vkDestroyBuffer( m_refDevice->Device(), m_Buffer, nullptr );
 			vkFreeMemory( m_refDevice->Device(), m_DeviceMemory, nullptr );
@@ -73,8 +73,6 @@ namespace vulkan
 		vkMapMemory( m_refDevice->Device(), m_DeviceMemory, 0, size, 0, &data );
 			memcpy( data, pData, size );
 		vkUnmapMemory( m_refDevice->Device(), m_DeviceMemory );
-
-		m_refDevice.Reset();
 	}
 
 

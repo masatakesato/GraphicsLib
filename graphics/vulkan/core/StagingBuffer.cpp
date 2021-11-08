@@ -52,13 +52,19 @@ namespace vulkan
 
 	void StagingBuffer::Release()
 	{
-		if( m_refDevice->Device() != VK_NULL_HANDLE )
+		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
-			vkDestroyBuffer( m_refDevice->Device(), m_Buffer, nullptr );
-			m_Buffer = VK_NULL_HANDLE;
+			if( m_Buffer != VK_NULL_HANDLE )
+			{ 
+				vkDestroyBuffer( m_refDevice->Device(), m_Buffer, nullptr );
+				m_Buffer = VK_NULL_HANDLE;
+			}
 
-			vkFreeMemory( m_refDevice->Device(), m_DeviceMemory, nullptr );
-			m_DeviceMemory = VK_NULL_HANDLE;
+			if( m_DeviceMemory != VK_NULL_HANDLE )
+			{
+				vkFreeMemory( m_refDevice->Device(), m_DeviceMemory, nullptr );
+				m_DeviceMemory = VK_NULL_HANDLE;
+			}
 
 			m_refDevice.Reset();
 		}

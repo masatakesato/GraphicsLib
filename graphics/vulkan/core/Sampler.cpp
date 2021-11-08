@@ -97,13 +97,17 @@ namespace vulkan
 
 	void Sampler::Release()
 	{
-		if( m_refDevice->Device() != VK_NULL_HANDLE )
+		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
-			vkDestroySampler( m_refDevice->Device(), m_Sampler, nullptr );
-			m_Sampler = VK_NULL_HANDLE;
+			if( m_Sampler != VK_NULL_HANDLE )
+			{
+				vkDestroySampler( m_refDevice->Device(), m_Sampler, nullptr );
+				m_Sampler = VK_NULL_HANDLE;
+			}
+
+			m_refDevice.Reset();
 		}
 
-		m_refDevice.Reset();
 		m_SamplerInfo = DefaultSamplerInfo();
 	}
 

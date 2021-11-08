@@ -59,7 +59,7 @@ namespace vulkan
 
 	void Texture::Release()
 	{
-		if( m_refDevice->Device() != VK_NULL_HANDLE )
+		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
 			vkDestroyImageView( m_refDevice->Device(), m_ImageView, nullptr );
 			vkDestroyImage( m_refDevice->Device(), m_Image, nullptr );
@@ -77,9 +77,9 @@ namespace vulkan
 
 		if( m_Dim.width * m_Dim.height == 0 )
 			return;
-
+		
 		// Create staging buffer
-		StagingBuffer stagingBuffer( (GraphicsDevice&)m_refDevice->Device(), imageSize );
+		StagingBuffer stagingBuffer( m_refDevice, imageSize );
 
 		// Transfer iamge data to staging buffer
 		stagingBuffer.Update( pData, static_cast<VkDeviceSize>(imageSize) );
