@@ -74,7 +74,7 @@ namespace vulkan
 		VkPhysicalDevice			m_PhysicalDevice;
 		VkDevice					m_Device;
 
-		VkCommandPool				m_CommandPool;
+		VkCommandPool				m_CommandPool;// 現状は1個だけ. マルチスレッドレンダリングの場合はスレッド毎に必要. 2021.11.08
 		VkQueue						m_GraphicsQueue;
 		VkQueue						m_PresentQueue;
 
