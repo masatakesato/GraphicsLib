@@ -9,7 +9,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 #ifdef _DEBUG
@@ -341,7 +341,7 @@ namespace vulkan
 									VkBuffer buffer, VkImage image, uint32_t width, uint32_t height )
 	{
 
-		VkCommandBuffer commandBuffer = vulkan::BeginSingleTimeCommands( device, commandPool );
+		VkCommandBuffer commandBuffer = BeginSingleTimeCommands( device, commandPool );
 
 			VkBufferImageCopy region = {};
 			region.bufferOffset			= 0;
@@ -363,7 +363,7 @@ namespace vulkan
 									1,
 									&region );
 
-		vulkan::EndSingleTimeCommands( device, commandBuffer, commandPool, queue );
+		EndSingleTimeCommands( device, commandBuffer, commandPool, queue );
 	}
 
 

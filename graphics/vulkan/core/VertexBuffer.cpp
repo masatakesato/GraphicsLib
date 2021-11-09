@@ -5,7 +5,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	VertexBuffer::VertexBuffer()
@@ -40,13 +40,13 @@ namespace vulkan
 
 		ASSERT( m_refDevice->Device() != VK_NULL_HANDLE );
 
-		vulkan::CreateBuffer(	m_refDevice->PhysicalDevice(),
-								 m_refDevice->Device(),
-								bufferSize,
-								VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-								VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-								m_Buffer,
-								m_DeviceMemory );
+		CreateBuffer(	m_refDevice->PhysicalDevice(),
+						m_refDevice->Device(),
+						bufferSize,
+						VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+						VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+						m_Buffer,
+						m_DeviceMemory );
 	}
 
 

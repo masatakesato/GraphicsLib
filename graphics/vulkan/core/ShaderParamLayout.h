@@ -7,7 +7,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	class ShaderParamLayout
@@ -33,7 +33,7 @@ namespace vulkan
 		const VkDescriptorSetLayoutBinding* Bindings( int set ) const	{ return m_Bindings[ set ].begin(); }
 		const VkDescriptorSetLayoutBinding& Binding( int set, int location ) const	{ return m_Bindings[set][location]; }
 
-		const VkDescriptorSetLayout& Layout( int set ) const	{ return m_DescSetLayouts[ set ]; }
+		const VkDescriptorSetLayout& DescriptorSetLayout( int set ) const	{ return m_DescSetLayouts[ set ]; }
 
 
 	private:
@@ -50,7 +50,7 @@ namespace vulkan
 	};
 
 
-}// end of namespace vulkan
+}// end of namespace vk
 
 
 #endif // !SHADER_PARAM_LAYOUT_H

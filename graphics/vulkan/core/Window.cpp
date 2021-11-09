@@ -4,7 +4,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	Window::Window( int w, int h, std::string name )
@@ -60,4 +60,4 @@ namespace vulkan
 	}
 
 
-}// end of namespace vulkan
+}// end of namespace vk

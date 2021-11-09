@@ -5,7 +5,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	StagingBuffer::StagingBuffer()

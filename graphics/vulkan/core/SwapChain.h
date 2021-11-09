@@ -5,7 +5,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	class SwapChain
@@ -53,7 +53,7 @@ namespace vulkan
 
 	};
 
-}// end of namespace vulkan
+}// end of namespace vk
 
 
 #endif // !SWAP_CHAIN_H

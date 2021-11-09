@@ -11,7 +11,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	struct QueueFamilyIndices

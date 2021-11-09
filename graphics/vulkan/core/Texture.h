@@ -5,7 +5,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	class Texture
@@ -45,7 +45,7 @@ namespace vulkan
 	};
 
 
-}// end of namespace vulkan
+}// end of namespace vk
 
 
 #endif // !TEXTURE_H

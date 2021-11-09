@@ -5,7 +5,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	Texture::Texture()
@@ -207,4 +207,4 @@ namespace vulkan
 
 
 
-}// end of namespace vulkan
+}// end of namespace vk

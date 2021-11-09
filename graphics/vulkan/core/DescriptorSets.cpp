@@ -4,7 +4,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 
@@ -163,7 +163,7 @@ namespace vulkan
 		{
 			for( int set_id=0; set_id<paramlayout.NumSets(); ++set_id )
 			{
-				*layout++ = paramlayout.Layout( set_id );
+				*layout++ = paramlayout.DescriptorSetLayout( set_id );
 			}
 		}
 

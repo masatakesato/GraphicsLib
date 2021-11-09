@@ -5,7 +5,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	class Sampler
@@ -41,7 +41,7 @@ namespace vulkan
 	};
 
 
-}// end of namespace vulkan
+}// end of namespace vk
 
 
 #endif // !SAMPLER_H

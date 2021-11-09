@@ -7,7 +7,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	class StagingBuffer

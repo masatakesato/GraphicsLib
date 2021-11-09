@@ -5,7 +5,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(	VkDebugUtilsMessageSeverityFlagBitsEXT messageSerevity,
@@ -507,4 +507,4 @@ namespace vulkan
 	}
 
 
-}// end of namespace vulkan
+}// end of namespace vk

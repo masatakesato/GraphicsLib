@@ -4,7 +4,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	static VkSamplerCreateInfo DefaultSamplerInfo()
@@ -148,4 +148,4 @@ namespace vulkan
 
 
 
-}// end of namespace vulkan
+}// end of namespace vk

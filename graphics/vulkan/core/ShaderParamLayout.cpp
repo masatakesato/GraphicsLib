@@ -4,7 +4,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 
@@ -93,4 +93,4 @@ namespace vulkan
 
 
 
-}// end of namespace vulkan
+}// end of namespace vk

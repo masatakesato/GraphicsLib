@@ -4,7 +4,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	SwapChain::SwapChain()
@@ -194,4 +194,4 @@ namespace vulkan
 
 
 
-}// end of namespace vulkan
+}// end of namespace vk

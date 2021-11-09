@@ -9,7 +9,7 @@
 
 
 
-namespace vulkan
+namespace vk
 {
 
 	class Window
@@ -49,7 +49,7 @@ namespace vulkan
 	};
 
 
-}// end of namespace vulkan
+}// end of namespace vk
 
 
 
