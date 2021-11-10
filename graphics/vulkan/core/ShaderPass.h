@@ -55,6 +55,8 @@ namespace vk
 		void AddShaderStage( GraphicsDevice& device, VkShaderStageFlagBits stage, const tstring& filepath );
 		void BuildCreateInfo();
 
+	//	const uint32_t 
+
 		const OreOreLib::Array<VkPipelineShaderStageCreateInfo>& CreateInfoArray() const	{ return m_CreateInfos; }
 
 
