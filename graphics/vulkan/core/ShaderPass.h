@@ -12,30 +12,6 @@ namespace vk
 {
 
 
-
-	//class ShaderModule
-	//{
-	//public:
-
-	//	ShaderModule();
-	//	~ShaderModule();
-
-	//	void Init();
-	//	void Release();
-
-
-	//	VkShaderStageFlagBits
-
-
-	//private:
-
-	//	VkShaderModule	m_Module;
-	//	VkShaderStageFlagBits	m_Stage;
-	//};
-
-
-
-
 	class ShaderPass
 	{
 	public:
@@ -48,6 +24,7 @@ namespace vk
 
 
 		ShaderPass();
+		ShaderPass( const ShaderPass& )=delete;
 		~ShaderPass();
 
 		void Release( GraphicsDevice& device );

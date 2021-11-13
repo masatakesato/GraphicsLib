@@ -276,9 +276,11 @@ namespace vk
 			barrier.subresourceRange.baseArrayLayer	= 0;
 			barrier.subresourceRange.layerCount		= 1;
 
-			barrier.srcAccessMask	= 0;//TODO
-			barrier.dstAccessMask	= 0;//TODO
+			barrier.srcAccessMask	= VK_ACCESS_NONE_KHR;//TODO
+			barrier.dstAccessMask	= VK_ACCESS_NONE_KHR;//TODO
 
+
+			// Set Aspectmask ( depth/stencil or color )
 			if( newLayout== VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
 			{
 				barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
@@ -291,18 +293,19 @@ namespace vk
 			}
 
 
+			// Set pipeline stage and access mask transition according to layout transition
 			VkPipelineStageFlags sourceStage;
 			VkPipelineStageFlags destinationStage;
 
-			if( oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL )
+			if( oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL )// undefined -> transfer
 			{
-				barrier.srcAccessMask	= 0;
+				barrier.srcAccessMask	= VK_ACCESS_NONE_KHR;
 				barrier.dstAccessMask	= VK_ACCESS_TRANSFER_WRITE_BIT;
 
 				sourceStage			= VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 				destinationStage	= VK_PIPELINE_STAGE_TRANSFER_BIT;
 			}
-			else if( oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )
+			else if( oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )// transfer -> shader-read-only
 			{
 				barrier.srcAccessMask	= VK_ACCESS_TRANSFER_WRITE_BIT;
 				barrier.dstAccessMask	= VK_ACCESS_SHADER_READ_BIT;
@@ -310,9 +313,9 @@ namespace vk
 				sourceStage			= VK_PIPELINE_STAGE_TRANSFER_BIT;
 				destinationStage	= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 			}
-			else if( oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
+			else if( oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )// undefined -> depth/stencil attachment
 			{
-				barrier.srcAccessMask	= 0;
+				barrier.srcAccessMask	= VK_ACCESS_NONE_KHR;
 				barrier.dstAccessMask	= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
 				sourceStage			= VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
