@@ -27,8 +27,9 @@ namespace vk
 		VkRenderPass					m_RenderPass;
 		AttachmentDescArray				m_AttacmentDescs;
 
-		OreOreLib::Array<ShaderPass>	m_ShaderPasses;
-		SubpassDependencies				m_Dependencies;
+
+		OreOreLib::Array<ShaderPass>	m_ShaderPasses;// shader modules
+		SubpassDependencies				m_Dependencies;// 
 
 	};
 

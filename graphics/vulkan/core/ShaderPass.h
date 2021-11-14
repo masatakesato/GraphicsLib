@@ -116,6 +116,8 @@ namespace vk
 		OreOreLib::Array<VkPipelineShaderStageCreateInfo>	m_CreateInfos;
 
 
+		SubPassAttachments		m_Attachments;
+
 		void InitShaderStage( GraphicsDevice& device, ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage );
 
 
