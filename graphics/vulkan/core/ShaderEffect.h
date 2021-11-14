@@ -7,6 +7,8 @@
 
 namespace vk
 {
+	using SubpassDependencies = OreOreLib::Array<VkSubpassDependency>;
+
 
 	class ShaderEffect
 	{
@@ -22,8 +24,11 @@ namespace vk
 
 		GraphicsDeviceRef				m_refDevice;
 
-		OreOreLib::Array<ShaderPass>	m_ShaderPasses;
 		VkRenderPass					m_RenderPass;
+		AttachmentDescArray				m_AttacmentDescs;
+
+		OreOreLib::Array<ShaderPass>	m_ShaderPasses;
+		SubpassDependencies				m_Dependencies;
 
 	};
 
