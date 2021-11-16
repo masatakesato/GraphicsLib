@@ -29,13 +29,19 @@ namespace vk
 
 
 	// Rasterization settings
-	void GraphicsPipeline::SetDepthClamp( VkBool32 flag ){}
-	void GraphicsPipeline::SetRasterizerDiscard( VkBool32 flag ){}
-	void GraphicsPipeline::SetPolygonMode( VkPolygonMode mode ){}
-	void GraphicsPipeline::SetLineWidth( float width ){}
-	void GraphicsPipeline::SetCullMode( VkCullModeFlags mode ){}
-	void GraphicsPipeline::SetFrontFace( VkFrontFace mode ){}
-	void GraphicsPipeline::SetDepthBias( VkBool32 flag, float constantfactor, float biasclamp, float slopefactor ){}
+	void GraphicsPipeline::SetDepthClamp( VkBool32 flag )	{ m_RasterizeInfo.depthClampEnable = flag; }
+	void GraphicsPipeline::SetRasterizerDiscard( VkBool32 flag )	{ m_RasterizeInfo.rasterizerDiscardEnable = flag; }
+	void GraphicsPipeline::SetPolygonMode( VkPolygonMode mode )	{ m_RasterizeInfo.polygonMode = mode; }
+	void GraphicsPipeline::SetLineWidth( float width )	{ m_RasterizeInfo.lineWidth = width; }
+	void GraphicsPipeline::SetCullMode( VkCullModeFlags mode )	{ m_RasterizeInfo.cullMode = mode; }
+	void GraphicsPipeline::SetFrontFace( VkFrontFace mode )	{ m_RasterizeInfo.frontFace = mode; }
+	void GraphicsPipeline::SetDepthBias( VkBool32 flag, float constantfactor, float biasclamp, float slopefactor )
+	{
+		m_RasterizeInfo.depthBiasEnable = flag;
+		m_RasterizeInfo.depthBiasConstantFactor = constantfactor;
+		m_RasterizeInfo.depthBiasClamp = biasclamp;
+		m_RasterizeInfo.depthBiasSlopeFactor = slopefactor;
+	}
 
 
 	// Multisampe settings
@@ -84,55 +90,108 @@ namespace vk
 	}
 
 
+	// Vertex states
+	void GraphicsPipeline::SetPrimitiveType( VkPrimitiveTopology topology )
+	{
+		m_VertexInputState.inputAssemblyInfo.topology	= topology;
+	}
+
+	void GraphicsPipeline::SetVertexInputState( const IVertexLayout& vertexlayout )
+	{
+		auto bindingDescriptions = vertexlayout.BindingDescriptions();
+		auto attributeDescriptions = vertexlayout.AttributeDescriptions();
+		
+		m_VertexInputState.vertexInputInfo.vertexBindingDescriptionCount	= static_cast<uint32_t>( bindingDescriptions.Length() );
+		m_VertexInputState.vertexInputInfo.pVertexBindingDescriptions		= bindingDescriptions.begin();
+		m_VertexInputState.vertexInputInfo.vertexAttributeDescriptionCount	= static_cast<uint32_t>( attributeDescriptions.Length() );
+		m_VertexInputState.vertexInputInfo.pVertexAttributeDescriptions		= attributeDescriptions.begin();
+	}
+
+
+	// ViewportState
+	void GraphicsPipeline::SetDynamicViewport( bool flag )
+	{
+		m_ViewportState.bDynamic = flag;
+
+		if( flag==true )
+		{
+			if( !OreOreLib::Exists( m_DynamicStates.states, VK_DYNAMIC_STATE_VIEWPORT ) )
+				m_DynamicStates.states.AddToTail( VK_DYNAMIC_STATE_VIEWPORT );
+
+			if( !OreOreLib::Exists( m_DynamicStates.states, VK_DYNAMIC_STATE_SCISSOR ) )
+				m_DynamicStates.states.AddToTail( VK_DYNAMIC_STATE_SCISSOR );
+		}
+		else
+		{
+			int64 idx = OreOreLib::Find( m_DynamicStates.states, VK_DYNAMIC_STATE_VIEWPORT );
+			if( idx>=0 )	m_DynamicStates.states.Remove( idx );
+
+			idx = OreOreLib::Find( m_DynamicStates.states, VK_DYNAMIC_STATE_SCISSOR );
+			if( idx>=0 )	m_DynamicStates.states.Remove( idx );		
+		}
+
+	}
+
+	void GraphicsPipeline::AddViewportRect( const VkViewport& viewport, const VkRect2D& scissor )
+	{
+		m_ViewportState.viewports.AddToTail( viewport );
+		m_ViewportState.scissors.AddToTail( scissor );
+
+		m_ViewportState.createInfo.viewportCount	= static_cast<uint32_t>( m_ViewportState.viewports.Length() );
+		m_ViewportState.createInfo.pViewports		= m_ViewportState.viewports.begin();
+		m_ViewportState.createInfo.scissorCount		= static_cast<uint32_t>( m_ViewportState.scissors.Length() );
+		m_ViewportState.createInfo.pScissors		= m_ViewportState.scissors.begin();
+	}
 
 
 
-	void GraphicsPipeline::Build( )
+
+	void GraphicsPipeline::Build( const ShaderPass& shaderpass, const ShaderParamLayout& paramlayout )
 	{
 
-TODO: パラメータ設定メソッドを実装する
 
-//========= Shader input geometry( vertex ) ===========//
-auto bindingDescription = MyVertexLayout::getBindingDesctiption();
-auto attributeDescriptions = MyVertexLayout::getAttributeDescriptions();
-
-VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
-vertexInputInfo.sType							= VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-vertexInputInfo.vertexBindingDescriptionCount	= 1;
-vertexInputInfo.pVertexBindingDescriptions		= &bindingDescription;
-vertexInputInfo.vertexAttributeDescriptionCount	= static_cast<uint32_t>( attributeDescriptions.Length() );
-vertexInputInfo.pVertexAttributeDescriptions	= attributeDescriptions.begin();
-
-VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
-inputAssembly.sType						= VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-inputAssembly.topology					= VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-inputAssembly.primitiveRestartEnable	= VK_FALSE;
-
-
-		//========= Viewport ===========//
-
-		//viewport.width		= (float)m_SwapChain.Extent().width;
-		//viewport.height		= (float)m_SwapChain.Extent().height;
-		//viewport.minDepth	= 0.0f;
-		//viewport.maxDepth	= 1.0f;
-
-		//VkRect2D scissor	= {};
-		//scissor.offset		= { 0, 0 };
-		//scissor.extent		= m_SwapChain.Extent();
+		//========= Shader input geometry( vertex ) ===========//
+		//auto bindingDescription = MyVertexLayout::getBindingDesctiption();
+		//auto attributeDescriptions = MyVertexLayout::getAttributeDescriptions();
+		//
+		//VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+		//vertexInputInfo.sType							= VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		//vertexInputInfo.vertexBindingDescriptionCount	= 1;
+		//vertexInputInfo.pVertexBindingDescriptions		= &bindingDescription;
+		//vertexInputInfo.vertexAttributeDescriptionCount	= static_cast<uint32_t>( attributeDescriptions.Length() );
+		//vertexInputInfo.pVertexAttributeDescriptions	= attributeDescriptions.begin();
+		//
+		//VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+		//inputAssembly.sType						= VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		//inputAssembly.topology					= VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		//inputAssembly.primitiveRestartEnable	= VK_FALSE;
 
 
-		VkPipelineViewportStateCreateInfo viewportState = {};
+//========= Viewport ===========//
+//VkViewport viewport = {};
+//viewport.x			= 0.0f;
+//viewport.y			= 0.0f;
+//viewport.width		= (float)m_SwapChain.Extent().width;
+//viewport.height		= (float)m_SwapChain.Extent().height;
+//viewport.minDepth	= 0.0f;
+//viewport.maxDepth	= 1.0f;
 
-		//VkViewport viewport = {};
-		//viewport.x			= 0.0f;
-		//viewport.y			= 0.0f;
-		viewportState.sType			= VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewportState.viewportCount	= 1;
-		viewportState.pViewports	= nullptr;//&viewport;
-		viewportState.scissorCount	= 1;
-		viewportState.pScissors		= nullptr;//&scissor;
+//VkRect2D scissor	= {};
+//scissor.offset		= { 0, 0 };
+//scissor.extent		= m_SwapChain.Extent();
 
-		VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+
+//VkPipelineViewportStateCreateInfo viewportState = {};
+
+
+
+//viewportState.sType			= VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+//viewportState.viewportCount	= 1;
+//viewportState.pViewports	= nullptr;//&viewport;
+//viewportState.scissorCount	= 1;
+//viewportState.pScissors		= nullptr;//&scissor;
+
+//VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 
 
 
@@ -209,54 +268,49 @@ inputAssembly.primitiveRestartEnable	= VK_FALSE;
 		//depthStencil.back					= {};
 
 
-		//============== DynamicState ==================//
-		VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
-		dynamicStateInfo.sType	= VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-		dynamicStateInfo.pDynamicStates	= dynamicStates;
-		dynamicStateInfo.dynamicStateCount = 2;
-		dynamicStateInfo.flags = 0;
+		////============== DynamicState ==================//
+		//VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+		//dynamicStateInfo.sType	= VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		//dynamicStateInfo.pDynamicStates	= dynamicStates;
+		//dynamicStateInfo.dynamicStateCount = 2;
+		//dynamicStateInfo.flags = 0;
+	
 
 
+//============= Shader input parameter layout ============//
+VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+pipelineLayoutInfo.sType					= VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+pipelineLayoutInfo.setLayoutCount			= paramlayout.NumSets();//1;
+pipelineLayoutInfo.pSetLayouts				= &paramlayout.DescriptorSetLayout(0);
+pipelineLayoutInfo.pushConstantRangeCount	= 0; // Optional
+pipelineLayoutInfo.pPushConstantRanges		= nullptr; // Optional
 
-		//============= Shader input parameter layout ============//
-		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-		pipelineLayoutInfo.sType					= VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount			= m_ShaderParamLayout.NumSets();//1;
-		pipelineLayoutInfo.pSetLayouts				= &m_ShaderParamLayout.DescriptorSetLayout(0);
-		pipelineLayoutInfo.pushConstantRangeCount	= 0; // Optional
-		pipelineLayoutInfo.pPushConstantRanges		= nullptr; // Optional
-
-		if( vkCreatePipelineLayout( m_refDevice->Device(), &pipelineLayoutInfo, nullptr, &pipelineLayout ) != VK_SUCCESS )
-			throw std::runtime_error( "failed to create pipeline layout!" );
-
+if( vkCreatePipelineLayout( m_refDevice->Device(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout ) != VK_SUCCESS )
+	throw std::runtime_error( "failed to create pipeline layout!" );
 
 
+//============== Create GraphisPipeline ================//
 
+VkGraphicsPipelineCreateInfo pipelineInfo = {};
+pipelineInfo.sType					= VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+pipelineInfo.stageCount				= 2;
+pipelineInfo.pStages				= shaderpass.CreateInfoArray().begin();//shaderStages;
+pipelineInfo.pVertexInputState		= &m_VertexInputState.vertexInputInfo;//&vertexInputInfo;
+pipelineInfo.pInputAssemblyState	= &m_VertexInputState.inputAssemblyInfo;//&inputAssembly;
+pipelineInfo.pViewportState			= &m_ViewportState.createInfo;//&viewportState;
+pipelineInfo.pRasterizationState	= &m_RasterizeInfo;//&rasterizer;
+pipelineInfo.pMultisampleState		= &multisampling;
+pipelineInfo.pDepthStencilState		= &depthStencil;
+pipelineInfo.pColorBlendState		= &m_BlendState.colorBlending;//&colorBlending;
+pipelineInfo.pDynamicState			= &m_DynamicStates.createInfo;//&dynamicStateInfo;//nullptr; // Optional
+pipelineInfo.layout					= &m_PipelineLayout;//pipelineLayout;
+pipelineInfo.renderPass				= renderPass;
+pipelineInfo.subpass				= 0;
+pipelineInfo.basePipelineHandle		= VK_NULL_HANDLE;// Optional
+pipelineInfo.basePipelineIndex		= -1;// Optional
 
-
-
-		//============== Create GraphisPipeline ================//
-
-		VkGraphicsPipelineCreateInfo pipelineInfo = {};
-		pipelineInfo.sType					= VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-		pipelineInfo.stageCount				= 2;
-		pipelineInfo.pStages				= shaderPass.CreateInfoArray().begin();//shaderStages;
-		pipelineInfo.pVertexInputState		= &vertexInputInfo;
-		pipelineInfo.pInputAssemblyState	= &inputAssembly;
-		pipelineInfo.pViewportState			= &viewportState;
-		pipelineInfo.pRasterizationState	= &rasterizer;
-		pipelineInfo.pMultisampleState		= &multisampling;
-		pipelineInfo.pDepthStencilState		= &depthStencil;
-		pipelineInfo.pColorBlendState		= &colorBlending;
-		pipelineInfo.pDynamicState			= &dynamicStateInfo;//nullptr; // Optional
-		pipelineInfo.layout					= pipelineLayout;
-		pipelineInfo.renderPass				= renderPass;
-		pipelineInfo.subpass				= 0;
-		pipelineInfo.basePipelineHandle		= VK_NULL_HANDLE;// Optional
-		pipelineInfo.basePipelineIndex		= -1;// Optional
-
-		if( vkCreateGraphicsPipelines( m_refDevice->Device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline ) != VK_SUCCESS )
-			throw std::runtime_error( "failed to create graphics pipeline!" );
+if( vkCreateGraphicsPipelines( m_refDevice->Device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline ) != VK_SUCCESS )
+	throw std::runtime_error( "failed to create graphics pipeline!" );
 
 
 
@@ -267,6 +321,11 @@ inputAssembly.primitiveRestartEnable	= VK_FALSE;
 
 
 
+
+	void GraphicsPipeline::Release()
+	{
+
+	}
 
 
 

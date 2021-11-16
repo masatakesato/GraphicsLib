@@ -5,6 +5,7 @@
 
 #include	"ShaderPass.h"
 #include	"ShaderParamLayout.h"
+#include	"VertexLayouts.h"
 
 
 
@@ -37,8 +38,35 @@ namespace vk
 
 		struct BlendState
 		{
-			VkPipelineColorBlendAttachmentState		colorBlendAttachment;
-			VkPipelineColorBlendStateCreateInfo		colorBlending;
+			VkPipelineColorBlendAttachmentState		colorBlendAttachment = {};
+			VkPipelineColorBlendStateCreateInfo		colorBlending = {};
+		};
+
+
+		struct VertexInputState
+		{
+			VkPipelineVertexInputStateCreateInfo vertexInputInfo
+			{
+				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
+			};
+
+			VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo
+			{
+				VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+				nullptr,
+				0,
+				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+				VK_FALSE
+			};
+		};
+
+
+		struct ViewportState
+		{
+			bool bDynamic = false;
+			VkPipelineViewportStateCreateInfo	createInfo = { VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO };
+			OreOreLib::Array<VkViewport> viewports;
+			OreOreLib::Array<VkRect2D> scissors;
 		};
 
 
@@ -100,10 +128,17 @@ namespace vk
 		// Dynamic states
 		void SetDynamicStates( std::initializer_list<VkDynamicState> ilist );
 
+		// Vertex input states
+		void SetVertexInputState( const IVertexLayout& vertexlayout );
+		void SetPrimitiveType( VkPrimitiveTopology topology );
 
-		void Build();
+		// Viewport settings
+		void SetDynamicViewport( bool flag );
+		void AddViewportRect( const VkViewport& viewport, const VkRect2D& scissor );
+
+
+		void Build( const ShaderPass& shaderpass, const ShaderParamLayout& paramlayout );
 		void Release();
-
 
 
 
@@ -113,10 +148,14 @@ namespace vk
 
 
 		VkPipeline			m_Pipeline;
-		VkPipelineLayout	m_Layout;
+		VkPipelineLayout	m_PipelineLayout;
 
+
+		VkPipelineRasterizationStateCreateInfo	m_RasterizeInfo;
 
 		BlendState								m_BlendState;
+		ViewportState							m_ViewportState;
+		VertexInputState						m_VertexInputState;
 		VkPipelineDepthStencilStateCreateInfo	depthStencil;
 		VkPipelineMultisampleStateCreateInfo	multisampling;
 		DynamicStates							m_DynamicStates;
