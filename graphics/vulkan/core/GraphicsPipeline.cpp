@@ -54,19 +54,26 @@ namespace vk
 
 
 	// Color blending
-	void GraphicsPipeline::SetBlend( VkBool32 flag )									{ m_BlendState.colorBlendAttachment.blendEnable = flag; }
-	void GraphicsPipeline::SetColorBlendFactor( VkBlendFactor src, VkBlendFactor dst )	{ m_BlendState.colorBlendAttachment.srcColorBlendFactor = src; m_BlendState.colorBlendAttachment.dstColorBlendFactor = dst; }// Optional
-	void GraphicsPipeline::SetColorBlendOperation( VkBlendOp op )						{ m_BlendState.colorBlendAttachment.colorBlendOp	= op; }// Optional
-	void GraphicsPipeline::SetAlphaBlendFactor( VkBlendFactor src, VkBlendFactor dst )	{ m_BlendState.colorBlendAttachment.srcAlphaBlendFactor = src; m_BlendState.colorBlendAttachment.dstAlphaBlendFactor = dst; }// Optional
-	void GraphicsPipeline::SetAlphaBlendOperation( VkBlendOp op )						{ m_BlendState.colorBlendAttachment.alphaBlendOp = op; } //Optional
-	void GraphicsPipeline::SetWriteMask( VkColorComponentFlagBits mask )				{ m_BlendState.colorBlendAttachment.colorWriteMask = mask; }
+	void GraphicsPipeline::SetAttachmentCount( uint32_t count )
+	{
+		m_BlendState.attachmentStates.Resize( (int)count );
+		m_BlendState.createInfo.attachmentCount	= count;
+	}
 
-	void GraphicsPipeline::SetAttachmentCount( uint32_t count )							{ m_BlendState.colorBlending.attachmentCount	= count; }
-	void GraphicsPipeline::SetBlendConstants( const Vec4f& color )	{
-		m_BlendState.colorBlending.blendConstants[0] = color.r;
-		m_BlendState.colorBlending.blendConstants[1] = color.g;
-		m_BlendState.colorBlending.blendConstants[2] = color.b;
-		m_BlendState.colorBlending.blendConstants[3] = color.a; }
+	void GraphicsPipeline::SetBlendConstants( const Vec4f& color )
+	{
+		m_BlendState.createInfo.blendConstants[0] = color.r;
+		m_BlendState.createInfo.blendConstants[1] = color.g;
+		m_BlendState.createInfo.blendConstants[2] = color.b;
+		m_BlendState.createInfo.blendConstants[3] = color.a;
+	}
+
+	void GraphicsPipeline::SetBlend( VkBool32 flag, int attachment )									{ m_BlendState.attachmentStates[ attachment ].blendEnable = flag; }
+	void GraphicsPipeline::SetColorBlendFactor( VkBlendFactor src, VkBlendFactor dst, int attachment )	{ m_BlendState.attachmentStates[ attachment ].srcColorBlendFactor = src; m_BlendState.colorBlendAttachment.dstColorBlendFactor = dst; }// Optional
+	void GraphicsPipeline::SetColorBlendOperation( VkBlendOp op, int attachment )						{ m_BlendState.attachmentStates[ attachment ].colorBlendOp	= op; }// Optional
+	void GraphicsPipeline::SetAlphaBlendFactor( VkBlendFactor src, VkBlendFactor dst, int attachment )	{ m_BlendState.attachmentStates[ attachment ].srcAlphaBlendFactor = src; m_BlendState.colorBlendAttachment.dstAlphaBlendFactor = dst; }// Optional
+	void GraphicsPipeline::SetAlphaBlendOperation( VkBlendOp op, int attachment )						{ m_BlendState.attachmentStates[ attachment ].alphaBlendOp = op; } //Optional
+	void GraphicsPipeline::SetWriteMask( VkColorComponentFlagBits mask, int attachment )				{ m_BlendState.attachmentStates[ attachment ].colorWriteMask = mask; }
 
 
 	// Depth stencil
@@ -301,11 +308,11 @@ pipelineInfo.pViewportState			= &m_ViewportState.createInfo;//&viewportState;
 pipelineInfo.pRasterizationState	= &m_RasterizeInfo;//&rasterizer;
 pipelineInfo.pMultisampleState		= &multisampling;
 pipelineInfo.pDepthStencilState		= &depthStencil;
-pipelineInfo.pColorBlendState		= &m_BlendState.colorBlending;//&colorBlending;
+pipelineInfo.pColorBlendState		= &m_BlendState.createInfo;//&colorBlending;
 pipelineInfo.pDynamicState			= &m_DynamicStates.createInfo;//&dynamicStateInfo;//nullptr; // Optional
-pipelineInfo.layout					= &m_PipelineLayout;//pipelineLayout;
+pipelineInfo.layout					= m_PipelineLayout;//pipelineLayout;
 pipelineInfo.renderPass				= renderPass;
-pipelineInfo.subpass				= 0;
+pipelineInfo.subpass				= 0; TODO: Specify subpass index
 pipelineInfo.basePipelineHandle		= VK_NULL_HANDLE;// Optional
 pipelineInfo.basePipelineIndex		= -1;// Optional
 

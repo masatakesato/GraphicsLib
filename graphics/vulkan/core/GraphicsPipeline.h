@@ -38,8 +38,9 @@ namespace vk
 
 		struct BlendState
 		{
-			VkPipelineColorBlendAttachmentState		colorBlendAttachment = {};
-			VkPipelineColorBlendStateCreateInfo		colorBlending = {};
+			VkPipelineColorBlendStateCreateInfo		createInfo = {};
+			OreOreLib::Array<VkPipelineColorBlendAttachmentState>	attachmentStates;
+
 		};
 
 
@@ -107,12 +108,12 @@ namespace vk
 		void SetAlphaToOne( VkBool32 flag );
 
 		// Color blending
-		void SetBlend( VkBool32 flag );
-		void SetColorBlendFactor( VkBlendFactor src, VkBlendFactor dst );
-		void SetColorBlendOperation( VkBlendOp op );
-		void SetAlphaBlendFactor( VkBlendFactor src, VkBlendFactor dst );
-		void SetAlphaBlendOperation( VkBlendOp op );
-		void SetWriteMask( VkColorComponentFlagBits mask );
+		void SetBlend( VkBool32 flag, int attachment=0 );
+		void SetColorBlendFactor( VkBlendFactor src, VkBlendFactor dst, int attachment=0 );
+		void SetColorBlendOperation( VkBlendOp op, int attachment=0 );
+		void SetAlphaBlendFactor( VkBlendFactor src, VkBlendFactor dst, int attachment=0 );
+		void SetAlphaBlendOperation( VkBlendOp op, int attachment=0 );
+		void SetWriteMask( VkColorComponentFlagBits mask, int attachment=0 );
 		void SetAttachmentCount( uint32_t count );
 		void SetBlendConstants( const Vec4f& color );
 
