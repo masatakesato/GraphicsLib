@@ -1,16 +1,17 @@
 ﻿#include	"GraphicsPipeline.h"
 
+#include	"../utils/HelperFunctions.h"
+
 
 
 namespace vk
 {
 
-
 	GraphicsPipeline::GraphicsPipeline()
 	{
 
 	}
-		
+	
 
 	
 	GraphicsPipeline::GraphicsPipeline( GraphicsDevice& device )
@@ -28,132 +29,7 @@ namespace vk
 
 
 
-	// Rasterization settings
-	void GraphicsPipeline::SetDepthClamp( VkBool32 flag )	{ m_RasterizeInfo.depthClampEnable = flag; }
-	void GraphicsPipeline::SetRasterizerDiscard( VkBool32 flag )	{ m_RasterizeInfo.rasterizerDiscardEnable = flag; }
-	void GraphicsPipeline::SetPolygonMode( VkPolygonMode mode )	{ m_RasterizeInfo.polygonMode = mode; }
-	void GraphicsPipeline::SetLineWidth( float width )	{ m_RasterizeInfo.lineWidth = width; }
-	void GraphicsPipeline::SetCullMode( VkCullModeFlags mode )	{ m_RasterizeInfo.cullMode = mode; }
-	void GraphicsPipeline::SetFrontFace( VkFrontFace mode )	{ m_RasterizeInfo.frontFace = mode; }
-	void GraphicsPipeline::SetDepthBias( VkBool32 flag, float constantfactor, float biasclamp, float slopefactor )
-	{
-		m_RasterizeInfo.depthBiasEnable = flag;
-		m_RasterizeInfo.depthBiasConstantFactor = constantfactor;
-		m_RasterizeInfo.depthBiasClamp = biasclamp;
-		m_RasterizeInfo.depthBiasSlopeFactor = slopefactor;
-	}
-
-
-	// Multisampe settings
-	void GraphicsPipeline::SetSampleShading( VkBool32 flag )						{ multisampling.sampleShadingEnable	= flag;	}
-	void GraphicsPipeline::SetRasterizationSamples( VkSampleCountFlagBits flag )	{ multisampling.rasterizationSamples = flag; }
-	void GraphicsPipeline::SetMinSampleShading( float val )							{ multisampling.minSampleShading = 1.0f; }// Optional
-	void GraphicsPipeline::SetSampleMask( VkSampleMask* mask )						{ multisampling.pSampleMask = nullptr; }// Optional
-	void GraphicsPipeline::SetAlphaToCoverage( VkBool32 flag )						{ multisampling.alphaToCoverageEnable = flag; } // Optional
-	void GraphicsPipeline::SetAlphaToOne( VkBool32 flag )							{ multisampling.alphaToOneEnable = flag; }// Optional
-
-
-	// Color blending
-	void GraphicsPipeline::SetAttachmentCount( uint32_t count )
-	{
-		m_BlendState.attachmentStates.Resize( (int)count );
-		m_BlendState.createInfo.attachmentCount	= count;
-	}
-
-	void GraphicsPipeline::SetBlendConstants( const Vec4f& color )
-	{
-		m_BlendState.createInfo.blendConstants[0] = color.r;
-		m_BlendState.createInfo.blendConstants[1] = color.g;
-		m_BlendState.createInfo.blendConstants[2] = color.b;
-		m_BlendState.createInfo.blendConstants[3] = color.a;
-	}
-
-	void GraphicsPipeline::SetBlend( VkBool32 flag, int attachment )									{ m_BlendState.attachmentStates[ attachment ].blendEnable = flag; }
-	void GraphicsPipeline::SetColorBlendFactor( VkBlendFactor src, VkBlendFactor dst, int attachment )	{ m_BlendState.attachmentStates[ attachment ].srcColorBlendFactor = src; m_BlendState.colorBlendAttachment.dstColorBlendFactor = dst; }// Optional
-	void GraphicsPipeline::SetColorBlendOperation( VkBlendOp op, int attachment )						{ m_BlendState.attachmentStates[ attachment ].colorBlendOp	= op; }// Optional
-	void GraphicsPipeline::SetAlphaBlendFactor( VkBlendFactor src, VkBlendFactor dst, int attachment )	{ m_BlendState.attachmentStates[ attachment ].srcAlphaBlendFactor = src; m_BlendState.colorBlendAttachment.dstAlphaBlendFactor = dst; }// Optional
-	void GraphicsPipeline::SetAlphaBlendOperation( VkBlendOp op, int attachment )						{ m_BlendState.attachmentStates[ attachment ].alphaBlendOp = op; } //Optional
-	void GraphicsPipeline::SetWriteMask( VkColorComponentFlagBits mask, int attachment )				{ m_BlendState.attachmentStates[ attachment ].colorWriteMask = mask; }
-
-
-	// Depth stencil
-	void GraphicsPipeline::SetDepthTest( VkBool32 flag )										{ depthStencil.depthTestEnable = flag; }
-	void GraphicsPipeline::SetDepthWrite( VkBool32 flag )										{ depthStencil.depthWriteEnable = flag; }
-	void GraphicsPipeline::SetDepthCompareOperator( VkCompareOp op )							{ depthStencil.depthCompareOp = VK_COMPARE_OP_LESS; }
-	void GraphicsPipeline::SetDepthBoundsTest( VkBool32 flag )									{ depthStencil.depthBoundsTestEnable = flag; }
-	void GraphicsPipeline::SetDepthBounds( float minbounds, float maxbounds )					{ depthStencil.minDepthBounds = minbounds; depthStencil.maxDepthBounds = maxbounds; }
-	void GraphicsPipeline::SetStencilTest( VkBool32 flag )										{ depthStencil.stencilTestEnable = flag; }
-	void GraphicsPipeline::SetStencilOperators( VkStencilOpState front, VkStencilOpState back )	{ depthStencil.front = front; depthStencil.back = back; }
-
-	
-	// Dynamic states
-	void GraphicsPipeline::SetDynamicStates( std::initializer_list<VkDynamicState> ilist )
-	{
-		m_DynamicStates.states.Init( ilist );
-
-		m_DynamicStates.createInfo.dynamicStateCount	= m_DynamicStates.states.Length();
-		m_DynamicStates.createInfo.pDynamicStates		= m_DynamicStates.states.begin();
-		//m_DynamicStates.createInfo.flags = 0;
-	}
-
-
-	// Vertex states
-	void GraphicsPipeline::SetPrimitiveType( VkPrimitiveTopology topology )
-	{
-		m_VertexInputState.inputAssemblyInfo.topology	= topology;
-	}
-
-	void GraphicsPipeline::SetVertexInputState( const IVertexLayout& vertexlayout )
-	{
-		auto bindingDescriptions = vertexlayout.BindingDescriptions();
-		auto attributeDescriptions = vertexlayout.AttributeDescriptions();
-		
-		m_VertexInputState.vertexInputInfo.vertexBindingDescriptionCount	= static_cast<uint32_t>( bindingDescriptions.Length() );
-		m_VertexInputState.vertexInputInfo.pVertexBindingDescriptions		= bindingDescriptions.begin();
-		m_VertexInputState.vertexInputInfo.vertexAttributeDescriptionCount	= static_cast<uint32_t>( attributeDescriptions.Length() );
-		m_VertexInputState.vertexInputInfo.pVertexAttributeDescriptions		= attributeDescriptions.begin();
-	}
-
-
-	// ViewportState
-	void GraphicsPipeline::SetDynamicViewport( bool flag )
-	{
-		m_ViewportState.bDynamic = flag;
-
-		if( flag==true )
-		{
-			if( !OreOreLib::Exists( m_DynamicStates.states, VK_DYNAMIC_STATE_VIEWPORT ) )
-				m_DynamicStates.states.AddToTail( VK_DYNAMIC_STATE_VIEWPORT );
-
-			if( !OreOreLib::Exists( m_DynamicStates.states, VK_DYNAMIC_STATE_SCISSOR ) )
-				m_DynamicStates.states.AddToTail( VK_DYNAMIC_STATE_SCISSOR );
-		}
-		else
-		{
-			int64 idx = OreOreLib::Find( m_DynamicStates.states, VK_DYNAMIC_STATE_VIEWPORT );
-			if( idx>=0 )	m_DynamicStates.states.Remove( idx );
-
-			idx = OreOreLib::Find( m_DynamicStates.states, VK_DYNAMIC_STATE_SCISSOR );
-			if( idx>=0 )	m_DynamicStates.states.Remove( idx );		
-		}
-
-	}
-
-	void GraphicsPipeline::AddViewportRect( const VkViewport& viewport, const VkRect2D& scissor )
-	{
-		m_ViewportState.viewports.AddToTail( viewport );
-		m_ViewportState.scissors.AddToTail( scissor );
-
-		m_ViewportState.createInfo.viewportCount	= static_cast<uint32_t>( m_ViewportState.viewports.Length() );
-		m_ViewportState.createInfo.pViewports		= m_ViewportState.viewports.begin();
-		m_ViewportState.createInfo.scissorCount		= static_cast<uint32_t>( m_ViewportState.scissors.Length() );
-		m_ViewportState.createInfo.pScissors		= m_ViewportState.scissors.begin();
-	}
-
-
-
-
-	void GraphicsPipeline::Build( const ShaderPass& shaderpass, const ShaderParamLayout& paramlayout )
+	void GraphicsPipeline::Build( const ShaderPass& shaderpass, const PipelineState& pipelinestate )
 	{
 
 
@@ -283,7 +159,7 @@ namespace vk
 		//dynamicStateInfo.flags = 0;
 	
 
-
+/*
 //============= Shader input parameter layout ============//
 VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 pipelineLayoutInfo.sType					= VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -316,10 +192,8 @@ pipelineInfo.subpass				= 0; TODO: Specify subpass index
 pipelineInfo.basePipelineHandle		= VK_NULL_HANDLE;// Optional
 pipelineInfo.basePipelineIndex		= -1;// Optional
 
-if( vkCreateGraphicsPipelines( m_refDevice->Device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline ) != VK_SUCCESS )
-	throw std::runtime_error( "failed to create graphics pipeline!" );
-
-
+VK_CHECK_RESULT( vkCreateGraphicsPipelines( m_refDevice->Device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline ) );
+*/
 
 		// Cleanup temporary data
 		//shaderPass.Release( m_Device );

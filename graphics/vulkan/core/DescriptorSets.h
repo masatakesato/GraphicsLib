@@ -12,8 +12,7 @@
 
 namespace vk
 {
-	// TODO: poolSizes配列に、全てのset/bindingを登録する
-// TODO: VkDescriptorPoolはlayout set毎に必要なのか? -> メモリプール確保なので、VkDescriptorPool1個で必要な容量分まとめて確保すればいい
+	// サブパス1個分のディスクリプタセット群を保持するクラス.
 
 	class ShaderParamDescs
 	{

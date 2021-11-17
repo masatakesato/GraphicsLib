@@ -14,31 +14,46 @@ namespace vk
 	}
 
 
+	ShaderPass::ShaderPass( GraphicsDevice& device )
+		: m_refDevice( device )
+	{
+
+	}
+
 
 	ShaderPass::~ShaderPass()
 	{
-
+		Release();
 
 	}
 
 
 
-	void ShaderPass::Release( GraphicsDevice& device )
+	void ShaderPass::Release()
 	{
-		for( auto& shaderstage : m_ShaderStages )
-			vkDestroyShaderModule( device.Device(), shaderstage.module, nullptr );
-		m_ShaderStages.Release();
+		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
+		{
+			for( auto& shaderstage : m_ShaderStages )
+				vkDestroyShaderModule( m_refDevice->Device(), shaderstage.module, nullptr );
+			m_ShaderStages.Release();
+
+			m_refDevice.Reset();
+		}
+
+
+
+		m_ShaderParamLayout.Release();
 
 	}
 
 
 
-	void ShaderPass::AddShaderStage( GraphicsDevice& device, VkShaderStageFlagBits stage, const tstring& filepath )
+	void ShaderPass::AddShaderStage( VkShaderStageFlagBits stage, const tstring& filepath )
 	{
 		auto i = m_ShaderStages.AddToTail();
 		auto shadercode = binaryFileRead( filepath );
 
-		InitShaderStage( device, m_ShaderStages[i], shadercode, stage );
+		InitShaderStage( m_ShaderStages[i], shadercode, stage );
 
 
 	}
@@ -69,14 +84,14 @@ namespace vk
 	
 	
 
-	void ShaderPass::InitShaderStage( GraphicsDevice& device, ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage )
+	void ShaderPass::InitShaderStage( ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage )
 	{
 		VkShaderModuleCreateInfo createInfo = {};
 		createInfo.sType	= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		createInfo.codeSize	= shadercode.Length();
 		createInfo.pCode	= reinterpret_cast<const uint32_t*>( shadercode.begin() );
 
-		VK_CHECK_RESULT( vkCreateShaderModule( device.Device(), &createInfo, nullptr, &shaderstage.module ) );
+		VK_CHECK_RESULT( vkCreateShaderModule( m_refDevice->Device(), &createInfo, nullptr, &shaderstage.module ) );
 
 		shaderstage.stage	= stage;
 	}

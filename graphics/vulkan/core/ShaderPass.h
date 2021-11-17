@@ -1,10 +1,13 @@
 ﻿#ifndef SHADER_PASS_H
 #define	SHADER_PASS_H
 
-#include	<oreore/common/TString.h>
-#include	<oreore/container/Array.h>
+//#include	<oreore/common/TString.h>
+//#include	<oreore/container/Array.h>
 
-#include	"GraphicsDevice.h"
+//#include	"GraphicsDevice.h"
+
+#include	"ShaderParamLayout.h"
+#include	"DescriptorSets.h"
 
 
 
@@ -96,29 +99,44 @@ namespace vk
 
 
 		ShaderPass();
+		ShaderPass( GraphicsDevice& device );
 		ShaderPass( const ShaderPass& )=delete;
 		~ShaderPass();
 
-		void Release( GraphicsDevice& device );
+		void Release();
 
-		void AddShaderStage( GraphicsDevice& device, VkShaderStageFlagBits stage, const tstring& filepath );
+		void AddShaderStage( VkShaderStageFlagBits stage, const tstring& filepath );
 		void BuildCreateInfo();
 
-	//	const uint32_t 
+
 
 		const OreOreLib::Array<VkPipelineShaderStageCreateInfo>& CreateInfoArray() const	{ return m_CreateInfos; }
+
+
+		void InitDescriptorSetLayouts( std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
+		{
+			m_ShaderParamLayout.Init( m_refDevice->Device(), bindings );
+		}
+
+
+		const ShaderParamLayout& ParamLayout() const	{ return m_ShaderParamLayout; }
+
 
 
 
 	private:
 
+		GraphicsDeviceRef	m_refDevice;
+
 		OreOreLib::Array<ShaderStage>	m_ShaderStages;
 		OreOreLib::Array<VkPipelineShaderStageCreateInfo>	m_CreateInfos;
 
 
-		SubPassAttachments		m_Attachments;
+		SubPassAttachments	m_Attachments;
+		ShaderParamLayout	m_ShaderParamLayout;
+	
 
-		void InitShaderStage( GraphicsDevice& device, ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage );
+		void InitShaderStage( ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage );
 
 
 	};

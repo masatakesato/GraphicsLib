@@ -9,6 +9,7 @@
 
 namespace vk
 {
+	// サブパス1個分のディスクリプタセットレイアウト群を保持するクラス.
 
 	class ShaderParamLayout
 	{
@@ -33,7 +34,9 @@ namespace vk
 		const VkDescriptorSetLayoutBinding* Bindings( int set ) const	{ return m_Bindings[ set ].begin(); }
 		const VkDescriptorSetLayoutBinding& Binding( int set, int location ) const	{ return m_Bindings[set][location]; }
 
+		const OreOreLib::Array<VkDescriptorSetLayout>& DescriptorSetLayouts() const	{ return m_DescSetLayouts; }
 		const VkDescriptorSetLayout& DescriptorSetLayout( int set ) const	{ return m_DescSetLayouts[ set ]; }
+
 
 
 	private:
