@@ -23,18 +23,6 @@ namespace vk
 	{
 		//========= Viewport ===========//
 
-		//VkViewport viewport = {};
-		//viewport.x			= 0.0f;
-		//viewport.y			= 0.0f;
-		//viewport.width		= (float)m_SwapChain.Extent().width;
-		//viewport.height		= (float)m_SwapChain.Extent().height;
-		//viewport.minDepth	= 0.0f;
-		//viewport.maxDepth	= 1.0f;
-
-		//VkRect2D scissor	= {};
-		//scissor.offset		= { 0, 0 };
-		//scissor.extent		= m_SwapChain.Extent();
-
 		m_bDynamicViewport = true;
 		m_Viewports.Release();
 		m_Scissors.Release();
@@ -42,9 +30,9 @@ namespace vk
 		m_ViewportState = {};
 		m_ViewportState.sType			= VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 		m_ViewportState.viewportCount	= 1;
-		m_ViewportState.pViewports		= nullptr;//&viewport;
+		m_ViewportState.pViewports		= nullptr;
 		m_ViewportState.scissorCount	= 1;
-		m_ViewportState.pScissors		= nullptr;//&scissor;
+		m_ViewportState.pScissors		= nullptr;
 
 
 		//=========== Rasterization ==============//
@@ -139,6 +127,15 @@ namespace vk
 	}
 
 
+	void PipelineState::Release()
+	{
+		m_Viewports.Release();
+		m_Scissors.Release();
+		m_ColorBlendAttachmentStates.Release();
+		m_States.Release();
+	}
+
+
 
 	//==================== ViewportState ====================//
 
@@ -223,8 +220,24 @@ namespace vk
 
 	void PipelineState::SetAttachmentCount( uint32_t count )
 	{
-		m_ColorBlendState.attachmentCount	= count;
+		//m_ColorBlendState.attachmentCount	= count;
 		m_ColorBlendAttachmentStates.Resize( (int)count );
+
+		for( auto& attachment : m_ColorBlendAttachmentStates )
+		{
+			attachment = {};
+			attachment.colorWriteMask		= VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+			attachment.blendEnable			= VK_FALSE;
+			attachment.srcColorBlendFactor	= VK_BLEND_FACTOR_ONE; // Optional
+			attachment.dstColorBlendFactor	= VK_BLEND_FACTOR_ZERO; // Optional
+			attachment.colorBlendOp			= VK_BLEND_OP_ADD; // Optional
+			attachment.srcAlphaBlendFactor	= VK_BLEND_FACTOR_ONE; // Optional
+			attachment.dstAlphaBlendFactor	= VK_BLEND_FACTOR_ZERO; // Optioanl
+			attachment.alphaBlendOp			= VK_BLEND_OP_ADD; //Optional
+		}
+
+		m_ColorBlendState.attachmentCount	= static_cast<uint32_t>( m_ColorBlendAttachmentStates.Length() );
+		m_ColorBlendState.pAttachments		= m_ColorBlendAttachmentStates.begin();
 	}
 
 	void PipelineState::SetBlendConstants( const Vec4f& color )
@@ -351,15 +364,14 @@ namespace vk
 		m_InputAssemblyState.topology	= topology;
 	}
 
-	void PipelineState::SetVertexInputState( const IVertexLayout& vertexlayout )
+
+	void PipelineState::SetVertexInputState(	const OreOreLib::Memory<VkVertexInputBindingDescription>& bindingDescs,
+												const OreOreLib::Memory<VkVertexInputAttributeDescription>& attribDescs )
 	{
-		auto& bindingDescriptions = vertexlayout.BindingDescriptions();
-		auto& attributeDescriptions = vertexlayout.AttributeDescriptions();
-		
-		m_VertexInputState.vertexBindingDescriptionCount	= static_cast<uint32_t>( bindingDescriptions.Length() );
-		m_VertexInputState.pVertexBindingDescriptions		= bindingDescriptions.begin();
-		m_VertexInputState.vertexAttributeDescriptionCount	= static_cast<uint32_t>( attributeDescriptions.Length() );
-		m_VertexInputState.pVertexAttributeDescriptions		= attributeDescriptions.begin();
+		m_VertexInputState.vertexBindingDescriptionCount	= static_cast<uint32_t>( bindingDescs.Length() );
+		m_VertexInputState.pVertexBindingDescriptions		= bindingDescs.begin();
+		m_VertexInputState.vertexAttributeDescriptionCount	= static_cast<uint32_t>( attribDescs.Length() );
+		m_VertexInputState.pVertexAttributeDescriptions		= attribDescs.begin();
 	}
 
 
@@ -374,6 +386,7 @@ namespace vk
 		m_DynamicState.pDynamicStates		= m_States.begin();
 		//m_DynamicState.flags = 0;
 	}
+
 
 
 }// end of namespace vk

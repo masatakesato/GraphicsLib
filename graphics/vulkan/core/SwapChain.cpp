@@ -50,7 +50,7 @@ namespace vk
 
 	void SwapChain::Release()
 	{
-		if( m_refDevice->Device() != VK_NULL_HANDLE )
+		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
 			for( auto& view : m_ImageViews )
 				vkDestroyImageView( m_refDevice->Device(), view, nullptr );
@@ -62,7 +62,7 @@ namespace vk
 				m_SwapChain = VK_NULL_HANDLE;
 			}
 
-	//		m_refDevice. = VK_NULL_HANDLE;
+			m_refDevice.Reset();
 		}
 
 	}

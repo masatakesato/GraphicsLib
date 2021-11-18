@@ -8,6 +8,8 @@ namespace vk
 {
 
 	GraphicsPipeline::GraphicsPipeline()
+		: m_Pipeline( VK_NULL_HANDLE )
+		, m_PipelineLayout( VK_NULL_HANDLE )
 	{
 
 	}
@@ -16,6 +18,8 @@ namespace vk
 	
 	GraphicsPipeline::GraphicsPipeline( GraphicsDevice& device )
 		: m_refDevice( device )
+		, m_Pipeline( VK_NULL_HANDLE )
+		, m_PipelineLayout( VK_NULL_HANDLE )
 	{
 
 	}
@@ -29,26 +33,8 @@ namespace vk
 
 
 
-	void GraphicsPipeline::Build( const ShaderPass& shaderpass, const PipelineState& pipelinestate )
+	void GraphicsPipeline::Init( const ShaderPass& shaderpass, const PipelineState& pipelinestate, VkRenderPass renderPass, uint32_t subpass )
 	{
-
-
-		//========= Shader input geometry( vertex ) ===========//
-		//auto bindingDescription = MyVertexLayout::getBindingDesctiption();
-		//auto attributeDescriptions = MyVertexLayout::getAttributeDescriptions();
-		//
-		//VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
-		//vertexInputInfo.sType							= VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		//vertexInputInfo.vertexBindingDescriptionCount	= 1;
-		//vertexInputInfo.pVertexBindingDescriptions		= &bindingDescription;
-		//vertexInputInfo.vertexAttributeDescriptionCount	= static_cast<uint32_t>( attributeDescriptions.Length() );
-		//vertexInputInfo.pVertexAttributeDescriptions	= attributeDescriptions.begin();
-		//
-		//VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
-		//inputAssembly.sType						= VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		//inputAssembly.topology					= VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		//inputAssembly.primitiveRestartEnable	= VK_FALSE;
-
 
 //========= Viewport ===========//
 //VkViewport viewport = {};
@@ -159,44 +145,59 @@ namespace vk
 		//dynamicStateInfo.flags = 0;
 	
 
-/*
+
+		//========= Shader input geometry( vertex ) ===========//
+		//auto bindingDescription = MyVertexLayout::getBindingDesctiption();
+		//auto attributeDescriptions = MyVertexLayout::getAttributeDescriptions();
+		//
+		//VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+		//vertexInputInfo.sType							= VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		//vertexInputInfo.vertexBindingDescriptionCount	= 1;
+		//vertexInputInfo.pVertexBindingDescriptions		= &bindingDescription;
+		//vertexInputInfo.vertexAttributeDescriptionCount	= static_cast<uint32_t>( attributeDescriptions.Length() );
+		//vertexInputInfo.pVertexAttributeDescriptions	= attributeDescriptions.begin();
+		//
+		//VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+		//inputAssembly.sType						= VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		//inputAssembly.topology					= VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		//inputAssembly.primitiveRestartEnable	= VK_FALSE;
+
+
+
 //============= Shader input parameter layout ============//
 VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 pipelineLayoutInfo.sType					= VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-pipelineLayoutInfo.setLayoutCount			= paramlayout.NumSets();//1;
-pipelineLayoutInfo.pSetLayouts				= &paramlayout.DescriptorSetLayout(0);
+pipelineLayoutInfo.setLayoutCount			= static_cast<uint32_t>( shaderpass.ParamLayout().NumSets() );
+pipelineLayoutInfo.pSetLayouts				= shaderpass.ParamLayout().DescriptorSetLayouts().begin();
 pipelineLayoutInfo.pushConstantRangeCount	= 0; // Optional
 pipelineLayoutInfo.pPushConstantRanges		= nullptr; // Optional
 
-if( vkCreatePipelineLayout( m_refDevice->Device(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout ) != VK_SUCCESS )
-	throw std::runtime_error( "failed to create pipeline layout!" );
+VK_CHECK_RESULT( vkCreatePipelineLayout( m_refDevice->Device(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout ) );
+
 
 
 //============== Create GraphisPipeline ================//
 
 VkGraphicsPipelineCreateInfo pipelineInfo = {};
 pipelineInfo.sType					= VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-pipelineInfo.stageCount				= 2;
-pipelineInfo.pStages				= shaderpass.CreateInfoArray().begin();//shaderStages;
-pipelineInfo.pVertexInputState		= &m_VertexInputState.vertexInputInfo;//&vertexInputInfo;
-pipelineInfo.pInputAssemblyState	= &m_VertexInputState.inputAssemblyInfo;//&inputAssembly;
-pipelineInfo.pViewportState			= &m_ViewportState.createInfo;//&viewportState;
-pipelineInfo.pRasterizationState	= &m_RasterizeInfo;//&rasterizer;
-pipelineInfo.pMultisampleState		= &multisampling;
-pipelineInfo.pDepthStencilState		= &depthStencil;
-pipelineInfo.pColorBlendState		= &m_BlendState.createInfo;//&colorBlending;
-pipelineInfo.pDynamicState			= &m_DynamicStates.createInfo;//&dynamicStateInfo;//nullptr; // Optional
-pipelineInfo.layout					= m_PipelineLayout;//pipelineLayout;
+pipelineInfo.stageCount				= shaderpass.CreateInfos().Length();
+pipelineInfo.pStages				= shaderpass.CreateInfos().begin();
+pipelineInfo.pVertexInputState		= &pipelinestate.m_VertexInputState;
+pipelineInfo.pInputAssemblyState	= &pipelinestate.m_InputAssemblyState;
+pipelineInfo.pViewportState			= &pipelinestate.m_ViewportState;
+pipelineInfo.pRasterizationState	= &pipelinestate.m_RasterizationState;
+pipelineInfo.pMultisampleState		= &pipelinestate.m_MultisampleState;
+pipelineInfo.pDepthStencilState		= &pipelinestate.m_DepthStencilState;
+pipelineInfo.pColorBlendState		= &pipelinestate.m_ColorBlendState;
+pipelineInfo.pDynamicState			= &pipelinestate.m_DynamicState;
+pipelineInfo.layout					= m_PipelineLayout;
 pipelineInfo.renderPass				= renderPass;
-pipelineInfo.subpass				= 0; TODO: Specify subpass index
+pipelineInfo.subpass				= subpass;
 pipelineInfo.basePipelineHandle		= VK_NULL_HANDLE;// Optional
 pipelineInfo.basePipelineIndex		= -1;// Optional
 
 VK_CHECK_RESULT( vkCreateGraphicsPipelines( m_refDevice->Device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline ) );
-*/
 
-		// Cleanup temporary data
-		//shaderPass.Release( m_Device );
 
 	}
 
@@ -205,7 +206,22 @@ VK_CHECK_RESULT( vkCreateGraphicsPipelines( m_refDevice->Device(), VK_NULL_HANDL
 
 	void GraphicsPipeline::Release()
 	{
+		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
+		{
+			if( m_Pipeline != VK_NULL_HANDLE )
+			{
+				vkDestroyPipeline( m_refDevice->Device(), m_Pipeline, nullptr );
+				m_Pipeline = VK_NULL_HANDLE;
+			}
 
+			if( m_PipelineLayout != VK_NULL_HANDLE )
+			{
+				vkDestroyPipelineLayout( m_refDevice->Device(), m_PipelineLayout, nullptr );
+				m_PipelineLayout = VK_NULL_HANDLE;
+			}
+
+			m_refDevice.Reset();
+		}
 	}
 
 

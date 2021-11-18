@@ -6,8 +6,6 @@
 #include	<oreore/mathlib/GraphicsMath.h>
 #include	<oreore/container/Array.h>
 
-#include	"VertexLayouts.h"
-
 
 
 namespace vk
@@ -22,6 +20,7 @@ namespace vk
 		~PipelineState();
 
 		void Init();
+		void Release();
 
 
 		// Viewport
@@ -65,7 +64,7 @@ namespace vk
 		void SetAlphaToOne( VkBool32 flag );
 
 		// Vertex input
-		void SetVertexInputState( const IVertexLayout& vertexlayout );
+		void SetVertexInputState( const OreOreLib::Memory<VkVertexInputBindingDescription>& bindingDescs, const OreOreLib::Memory<VkVertexInputAttributeDescription>& attribDescs );
 		void SetPrimitiveType( VkPrimitiveTopology topology );
 
 		// Dynamic states
@@ -96,6 +95,9 @@ namespace vk
 		// Vertex input state
 		VkPipelineVertexInputStateCreateInfo					m_VertexInputState;
 		VkPipelineInputAssemblyStateCreateInfo					m_InputAssemblyState;
+
+		// 
+
 
 		// Dynamic state
 		VkPipelineDynamicStateCreateInfo						m_DynamicState;

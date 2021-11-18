@@ -22,7 +22,7 @@ namespace vk
 		GraphicsPipeline( const GraphicsPipeline& ) = delete;
 		~GraphicsPipeline();
 
-		void Build( const ShaderPass& shaderpass, const PipelineState& pipelinestate );
+		void Init( const ShaderPass& shaderpass, const PipelineState& pipelinestate, VkRenderPass renderPass, uint32_t subpass );
 		void Release();
 
 
