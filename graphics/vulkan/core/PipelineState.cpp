@@ -23,6 +23,18 @@ namespace vk
 	{
 		//========= Viewport ===========//
 
+		//VkViewport viewport = {};
+		//viewport.x			= 0.0f;
+		//viewport.y			= 0.0f;
+		//viewport.width		= (float)m_SwapChain.Extent().width;
+		//viewport.height		= (float)m_SwapChain.Extent().height;
+		//viewport.minDepth	= 0.0f;
+		//viewport.maxDepth	= 1.0f;
+
+		//VkRect2D scissor	= {};
+		//scissor.offset		= { 0, 0 };
+		//scissor.extent		= m_SwapChain.Extent();
+
 		m_bDynamicViewport = true;
 		m_Viewports.Release();
 		m_Scissors.Release();
@@ -30,9 +42,9 @@ namespace vk
 		m_ViewportState = {};
 		m_ViewportState.sType			= VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 		m_ViewportState.viewportCount	= 1;
-		m_ViewportState.pViewports		= nullptr;
+		m_ViewportState.pViewports		= nullptr;//&viewport;
 		m_ViewportState.scissorCount	= 1;
-		m_ViewportState.pScissors		= nullptr;
+		m_ViewportState.pScissors		= nullptr;//&scissor;
 
 
 		//=========== Rasterization ==============//

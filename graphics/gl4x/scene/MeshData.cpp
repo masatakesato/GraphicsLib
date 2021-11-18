@@ -1,5 +1,6 @@
 ﻿#include "MeshData.h"
 
+#include	<string>
 #include	<fstream>
 using namespace std;
 
@@ -57,21 +58,21 @@ static string textFileRead(const char *FilePass)
 // @param string str 分割したい文字列
 // @param string delim デリミタ
 // @return list<string> 分割された文字列
-static vector<string> Split(string str, string delim)
+static OreOreLib::Array<string> Split( string str, string delim )
 {
-    vector<string> result;
+    OreOreLib::Array<string> result;
     size_t cutAt;
     while( (cutAt = str.find_first_of(delim)) != str.npos )
     {
         if(cutAt > 0)
         {
-            result.push_back(str.substr(0, cutAt));
+            result.AddToTail( str.substr(0, cutAt) );
         }
         str = str.substr(cutAt + 1);
     }
     if(str.length() > 0)
     {
-        result.push_back(str);
+        result.AddToTail(str);
     }
 	return result;
 }
@@ -90,14 +91,14 @@ Vec3f ExtractVector3D(string str, string delim)
         if(cutAt > 0)
         {
 			if(curr<3)	vec3f.xyz[curr++] = (float)atof(str.substr(0, cutAt).c_str());
-          //result.push_back(str.substr(0, cutAt));
+          //result.AddToTail(str.substr(0, cutAt));
         }
         str = str.substr(cutAt + 1);
     }
     if(str.length() > 0)
     {
 		if(curr<3)	vec3f.xyz[curr++] = (float)atof(str.substr(0, cutAt).c_str());
-       // result.push_back(str);
+       // result.AddToTail(str);
     }
 
 	return vec3f;
@@ -112,12 +113,12 @@ MeshData::MeshData()
 	InitVec(m_BoundingBox[0], 0.0f, 0.0f, 0.0f);
 	InitVec(m_BoundingBox[1], 0.0f, 0.0f, 0.0f);
 
-	m_Vertices.clear();
-	m_Normals.clear();
-	m_Materials.clear();
-//	m_MatSubs.clear();
-	m_Faces.clear();
-	m_Groups.clear();
+	m_Vertices.Release();
+	m_Normals.Release();
+	m_Materials.Release();
+//	m_MatSubs.Release();
+	m_Faces.Release();
+	m_Groups.Release();
 }
 
 
@@ -142,17 +143,17 @@ void MeshData::Information()
 	cout << "//====================== MeshData Info... ====================//" << endl;
 	//cout << "* OBJファイル名：" << objFileName << endl;
 	//cout << "* MTLファイル名：" << mtlFileName << endl;
-	cout << "頂点数：" << m_Vertices.size() << endl;
-	cout << "法線数：" << m_Normals.size() << endl;
-	cout << "面　数：" << m_Faces.size() << endl;
-	cout << "マテリアル数：" << m_Materials.size() << endl;
+	cout << "頂点数：" << m_Vertices.Length() << endl;
+	cout << "法線数：" << m_Normals.Length() << endl;
+	cout << "面　数：" << m_Faces.Length() << endl;
+	cout << "マテリアル数：" << m_Materials.Length() << endl;
 	cout << "BoundingBox_Min：" << m_BoundingBox[0].x << ", " << m_BoundingBox[0].y << ", " << m_BoundingBox[0].z << endl;
 	cout << "BoundingBox_Max：" << m_BoundingBox[1].x << ", " << m_BoundingBox[1].y << ", " << m_BoundingBox[1].z << endl;
 	cout << endl;
 
 	/*
 	cout << "//====================== マテリアル ====================//" << endl;
-	for(int i=0; i<(int)m_Materials.size(); i++)
+	for(int i=0; i<(int)m_Materials.Length(); i++)
 	{
 		const Vec4f &Ka = *m_Materials[i].GetAmbient();
 		const Vec4f &Kd = *m_Materials[i].GetDiffuse();
@@ -168,7 +169,7 @@ void MeshData::Information()
 	*/
 	/*
 	cout << "//================ 名前付きグループ ====================//" << endl;
-	for(int i=0; i<m_Groups.size(); i++)
+	for(int i=0; i<m_Groups.Length(); i++)
 	{
 		cout << "GroupName: " << m_Groups[i].name << endl;
 		cout << " Faces:     " << m_Groups[i].face_start << "-" << m_Groups[i].face_end << endl;
@@ -182,7 +183,7 @@ void MeshData::Information()
 ///////////////////////// private functions ////////////////////////////
 
 
-bool MeshData::AllocateMemory(const string &aaa)
+bool MeshData::AllocateMemory( const string &aaa )
 {
 	
 	int num_v = 0, num_vt = 0, num_vn = 0, num_g = 0, num_f = 0;
@@ -239,13 +240,13 @@ bool MeshData::AllocateMemory(const string &aaa)
 		//cout << one_line << endl;
 
 	}// end of while
-
-	if(num_v>0)		m_Vertices.reserve(num_v);
-	if(num_vt>0)	m_TexCoord.reserve(num_vt);
-	if(num_vn>0)	m_Normals.reserve(num_vn);
-	if(num_g>0)		m_Groups.reserve(num_g);
-	if(num_f>0)		m_Faces.reserve(num_f);
-
+	/*
+	if(num_v>0)		m_Vertices.Init( num_v );
+	if(num_vt>0)	m_TexCoord.Init( num_vt );
+	if(num_vn>0)	m_Normals.Init( num_vn );
+	if(num_g>0)		m_Groups.Init( num_g );
+	if(num_f>0)		m_Faces.Init( num_f );
+	*/
 	//cout << "#vertices: " << num_v << endl;
 	//cout << "#texcoords: " << num_vt << endl;
 	//cout << "#normals: " << num_vn << endl;
@@ -282,7 +283,7 @@ bool MeshData::ParseObjFile(const string &aaa)
 
 	// デフォルトのマテリアルを作成してm_Materialsに登録しておく
 	int tmp = 0;
-	m_Materials.resize(1);
+	m_Materials.Resize(1);
 	m_Materials[0].SetName("default_material");			// strcpy(m_Materials[0].name, "default_material");
 	m_Materials[0].SetAmbient(0.2f, 0.2f, 0.2f, 0.0f);	// InitVec(m_Materials[0].Ka, 0.2, 0.2, 0.2, 0.0);
 	m_Materials[0].SetDiffuse(0.2f, 0.2f, 0.2f, 0.0f);	// InitVec(m_Materials[0].Kd, 0.2, 0.2, 0.2, 0.0);
@@ -348,8 +349,8 @@ bool MeshData::ParseObjFile(const string &aaa)
 			// マテリアルサブセットがないときは，デフォルトマテリアルを作る→直前のマテリアルをコピーする
 			if(CurrMatSub==INVALID)
 			{/*
-				CurrMatSub = m_MatSubs.size();
-				m_MatSubs.push_back(m_MatSubs[CurrMatSub-1]);
+				CurrMatSub = m_MatSubs.Length();
+				m_MatSubs.AddToTail(m_MatSubs[CurrMatSub-1]);
 				m_MatSubs[CurrMatSub].face_start = CurrFace+1;
 				m_MatSubs[CurrMatSub].face_end = CurrFace+1;
 				*/
@@ -395,7 +396,7 @@ CurrMatSub = AddMaterialSubset(one_line, CurrFace+1, m_MatSubs );
 	//======================= BoundingBoxを求める =====================//
 	m_BoundingBox[0] = m_BoundingBox[1] = m_Vertices[0];
 
-	for(int i=1; i< m_Vertices.size(); i++)
+	for(int i=1; i< m_Vertices.Length(); i++)
 	{
 		// 最小点
 		m_BoundingBox[0].x = m_Vertices[i].x < m_BoundingBox[0].x ? m_Vertices[i].x : m_BoundingBox[0].x;
@@ -417,7 +418,7 @@ bool MeshData::ExtractMaterialComponent(Material &mat, std::ifstream &file, std:
 {
 	bool flag = true;
 	char buf[BUFFER_LENGTH];
-	vector<string> elements;
+	OreOreLib::Array<string> elements;
 	
 	size_t pivot;
 
@@ -484,7 +485,7 @@ bool MeshData::Load_OBJMTL(const char *filename)
 	int CurrentMaterialID = -1;
 	char buf[BUFFER_LENGTH];
 	float tmp_float=0.0f;
-	vector<string> elements;
+	OreOreLib::Array<string> elements;
 	string oneline;
 
 
@@ -523,7 +524,7 @@ bool MeshData::Load_OBJMTL(const char *filename)
 			ExtractMaterialComponent(newMat, file, oneline);
 			
 			// m_Materialに追加する
-			m_Materials.push_back(newMat);//AddMaterial(buf, CurrentMaterialID);
+			m_Materials.AddToTail(newMat);//AddMaterial(buf, CurrentMaterialID);
 		}
 		else
 		{
@@ -547,9 +548,9 @@ bool MeshData::Load_OBJMTL(const char *filename)
 void MeshData::AddVertex(string str)
 {
 	Vec3f	 newVertex;
-	vector<string> elements = Split(str, " ");
+	OreOreLib::Array<string> elements = Split(str, " ");
 
-	if(elements.size() < 3)
+	if(elements.Length() < 3)
 	{
 		cerr << "Error : Invalid Vertex." << endl;
 		return;
@@ -558,7 +559,7 @@ void MeshData::AddVertex(string str)
 	InitVec( newVertex, (float)atof(elements[0].c_str()), (float)atof(elements[1].c_str()), (float)atof(elements[2].c_str()) );
 			
 	// 頂点座標を追加
-	m_Vertices.push_back(newVertex);
+	m_Vertices.AddToTail(newVertex);
 }
 
 
@@ -566,22 +567,20 @@ void MeshData::AddVertex(string str)
 void MeshData::AddTexCoord(string str)
 {
 	Vec2f newTexcoord = {0, 0};
-	vector<string> elements = Split(str, " ");
+	OreOreLib::Array<string> elements = Split(str, " ");
 
-	if(elements.empty())
+	if(elements.Empty())
 	{
 		cerr << "Error : Invalid Texture Coordinate." << endl;
 		return;
 	}
 	
 	// テクスチャ座標の格納
-	for(size_t i=0; i<Min(elements.size(),size_t(3) ); i++)
-	{
+	for( int i=0; i<Min( elements.Length(), 3 ); ++i )
 		newTexcoord.xy[i] = (float)atof(elements[i].c_str());
-	}
 
 	// テクスチャ座標を追加
-	m_TexCoord.push_back(newTexcoord);
+	m_TexCoord.AddToTail(newTexcoord);
 }
 
 
@@ -589,9 +588,9 @@ void MeshData::AddNormal(string str)
 {
 	Vec3f newNormal;
 	
-	vector<string> elements = Split(str, " ");
+	OreOreLib::Array<string> elements = Split(str, " ");
 
-	if(elements.size() < 3)
+	if(elements.Length() < 3)
 	{
 		cerr << "Error : Invalid Normal." << endl;
 		return;
@@ -601,32 +600,32 @@ void MeshData::AddNormal(string str)
 	InitVec( newNormal, (float)atof(elements[0].c_str()), (float)atof(elements[1].c_str()), (float)atof(elements[2].c_str()) );
 	
 	// 法線ベクトルを追加
-	m_Normals.push_back(newNormal);
+	m_Normals.AddToTail(newNormal);
 }
 
 
 
 
 // 1行分の文字列strから面情報を取得し，m_Facesに追加する
-int MeshData::AddFace(string str, int matsub_id)
+int MeshData::AddFace( string str, int matsub_id )
 {
 	int i;
 	ObjFace	newFace;
 	Vec3i	VertexAttrib = {-1, -1, -1};
 
 	// スペースで区切られた文字列に分割する
-	vector<string> chunks = Split(str, " ");
+	OreOreLib::Array<string> chunks = Split( str, " " );
 	
 	// 面構造体のメモリを確保化する
-	newFace.num_verts		= (int)chunks.size();
+	newFace.num_verts		= (int)chunks.Length();
 	newFace.matsub_index	= matsub_id;
-	newFace.VertexAttribIndex.resize(newFace.num_verts, VertexAttrib);
+	newFace.VertexAttribIndex.Resize( newFace.num_verts, VertexAttrib );
 	newFace.use_normal		= false;
 
 	// 文字列chunkごとに頂点情報を格納する
 	for(i=0; i<newFace.num_verts; i++)
 	{
-		vector<string> elements;
+		OreOreLib::Array<string> elements;
 
 		if(chunks[i].find("//") !=string::npos)// Vertex//normal
 		{
@@ -640,13 +639,13 @@ int MeshData::AddFace(string str, int matsub_id)
 		{
 			elements = Split(chunks[i], "/");// "/"で分割する
 			
-			if(elements.size()==2)// Vertex/Texture
+			if(elements.Length()==2)// Vertex/Texture
 			{
 				newFace.VertexAttribIndex[i].x = atoi(elements[0].c_str())-1;// Vertex index
 				newFace.VertexAttribIndex[i].z = atoi(elements[1].c_str())-1;// Texture index
 				newFace.use_normal		= false;
 			}
-			else if(elements.size()==3)// Vertex/Texture/Normal
+			else if(elements.Length()==3)// Vertex/Texture/Normal
 			{
 				newFace.VertexAttribIndex[i].x = atoi(elements[0].c_str())-1;// Vertex index
 				newFace.VertexAttribIndex[i].y = atoi(elements[1].c_str())-1;// Texture index
@@ -666,14 +665,14 @@ int MeshData::AddFace(string str, int matsub_id)
 	}// end of i loop
 
 	// 面構造体を追加する
-	m_Faces.push_back(newFace);
+	m_Faces.AddToTail(newFace);
 
-	return (int)m_Faces.size()-1;
+	return (int)m_Faces.Length()-1;
 }
 
 
 
-int MeshData::AddMaterialSubset(string str, int startidx, vector<ObjMaterialSubset> &m_MatSubs)
+int MeshData::AddMaterialSubset( string str, int startidx, OreOreLib::Array<ObjMaterialSubset> &m_MatSubs )
 {
 	int i;
 	int lastsubset = 0;
@@ -684,7 +683,7 @@ int MeshData::AddMaterialSubset(string str, int startidx, vector<ObjMaterialSubs
 	sscanf(str.c_str(), "usemtl %s", &matname);
 
 	// mtlファイルから読み込んだマテリアル群から名前が一致するものを検索
-	for(i=0; i<(int)m_Materials.size(); i++)
+	for(i=0; i<(int)m_Materials.Length(); i++)
 	{
 		// 名前が一致したら,,,
 		if(strcmpi(m_Materials[i].GetName(), matname) == 0)
@@ -694,13 +693,13 @@ int MeshData::AddMaterialSubset(string str, int startidx, vector<ObjMaterialSubs
 			newMatSub.face_start		= startidx;
 			newMatSub.face_end			= newMatSub.face_start;
 			
-			m_MatSubs.push_back(newMatSub);
+			m_MatSubs.AddToTail(newMatSub);
 
 			break;
 		}
 	}
 
-	return (int)m_MatSubs.size()-1;	
+	return (int)m_MatSubs.Length()-1;	
 }
 
 
@@ -715,13 +714,13 @@ int MeshData::AddNamedGroup(string str, int startidx)
 	strcpy(newGroup.name, groupname);
 			
 	// 頂点インデックスをセット
-	newGroup.face_start = (int)m_Faces.size();
+	newGroup.face_start = (int)m_Faces.Length();
 	newGroup.face_end = (int)newGroup.face_start;
 			
 	// 名前付きグループを追加する
-	m_Groups.push_back(newGroup);
+	m_Groups.AddToTail(newGroup);
 
-	return (int)m_Groups.size()-1;
+	return (int)m_Groups.Length()-1;
 }
 
 
@@ -732,14 +731,14 @@ int MeshData::AddNamedGroup(string str, int startidx)
 //  Attribs: 頂点の属性。配列データ
 // [出力]
 //  Attribs配列の対応する要素インデックス
-int MeshData::AddVertexAttributes(const Vec3i &Query, vector< vector<Vec3i> > &Attribs)
+int MeshData::AddVertexAttributes( const Vec3i &Query, OreOreLib::Array< OreOreLib::Array<Vec3i> > &Attribs )
 {
 	int i;
 	Vec3i newAttrib;
-	vector<Vec3i> &currAttribs = Attribs[Query.x];
+	OreOreLib::Array<Vec3i>& currAttribs = Attribs[ Query.x ];
 	
 	//============== AttribArrayに既にQueryが登録済みかどうか調べる ===============//
-	for(i=0; i<currAttribs.size(); i++)
+	for(i=0; i<currAttribs.Length(); i++)
 	{
 		if(Query.y==currAttribs[i].x && Query.z==currAttribs[i].y)
 			return i;// Queryが登録済みの場合は処理を中止する
@@ -747,24 +746,23 @@ int MeshData::AddVertexAttributes(const Vec3i &Query, vector< vector<Vec3i> > &A
 	
 	//=== Queryのテクスチャ座標インデックス/法線インデックスを新たに登録する =====//
 	InitVec(newAttrib, Query.y, Query.z, -1);// 通し番号はまだ未確定なので-1
-	currAttribs.push_back(newAttrib);
+	currAttribs.AddToTail(newAttrib);
 
-	return (int)currAttribs.size()-1;
+	return (int)currAttribs.Length()-1;
 }
 
 
 // 頂点がに通し番号（頂点インデックス）を付ける
 // Attribs: 
-int MeshData::AssignVertexIDs(vector< vector<Vec3i> > &Attribs)
+int MeshData::AssignVertexIDs( OreOreLib::Array< OreOreLib::Array<Vec3i> >& Attribs )
 {
 	int numAttribVertices = 0;// ユニークな属性を持った頂点の総数
 
-	for(int i=0; i<Attribs.size(); i++)// 全ての頂点をスキャンする
+	for(int i=0; i<Attribs.Length(); i++)// 全ての頂点をスキャンする
 	{
-		for(int j=0; j<Attribs[i].size(); j++)// 各頂点に付随する属性（複数の頂点/法線の組み合わせが考えられる）も全てスキャンする
+		for(int j=0; j<Attribs[i].Length(); j++)// 各頂点に付随する属性（複数の頂点/法線の組み合わせが考えられる）も全てスキャンする
 		{
-			Attribs[i][j].z = numAttribVertices;// 個々の属性レベルで通し番号を振っていく
-			numAttribVertices++;
+			Attribs[i][j].z = numAttribVertices++;// 個々の属性レベルで通し番号を振っていく
 		}
 	}
 
@@ -781,23 +779,23 @@ int MeshData::AssignVertexIDs(vector< vector<Vec3i> > &Attribs)
 void MeshData::GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertexlist, int &numIndices, int **Indices)
 {
 	int i, j;
-	vector< vector<Vec3i> >	VertAttribs;// 頂点ごとの属性.第１次元は頂点インデックス、第2次元は頂点に付随する属性のインデックス。（x:テクスチャ座標ID/y:法線ID/z:通し番号）
-	vector< vector<Vec2i> >	FaceAttribs;// ObjFaceの頂点毎の、VertAttribs属性配列のインデックス(x:頂点番号.VertAttribsの第1次元.m_Facesと一義的に対応，y:属性インデックス.VertAttribsの第2次元)
+	OreOreLib::Array< OreOreLib::Array<Vec3i> >	VertAttribs;// 頂点ごとの属性.第１次元は頂点インデックス、第2次元は頂点に付随する属性のインデックス。（x:テクスチャ座標ID/y:法線ID/z:通し番号）
+	OreOreLib::Array< OreOreLib::Array<Vec2i> >	FaceAttribs;// ObjFaceの頂点毎の、VertAttribs属性配列のインデックス(x:頂点番号.VertAttribsの第1次元.m_Facesと一義的に対応，y:属性インデックス.VertAttribsの第2次元)
 	
 
 	//====================== 全ての面の全頂点の属性を調べ、VertAttrib配列に格納する ======================//
-	VertAttribs.resize(m_Vertices.size());
-	FaceAttribs.resize(m_Faces.size());
+	VertAttribs.Resize(m_Vertices.Length());
+	FaceAttribs.Resize(m_Faces.Length());
 
 	numIndices = 0;
 
-	for(i=0; i<m_Faces.size(); i++)// 各面について、、、
+	for(i=0; i<m_Faces.Length(); i++)// 各面について、、、
 	{
-		for(j=0; j<m_Faces[i].VertexAttribIndex.size(); j++)// 面を構成する頂点毎の属性をVertAttribsに登録する
+		for(j=0; j<m_Faces[i].VertexAttribIndex.Length(); j++)// 面を構成する頂点毎の属性をVertAttribsに登録する
 		{
 			int idx = AddVertexAttributes(m_Faces[i].VertexAttribIndex[j], VertAttribs);
 			Vec2i newAttribIdx = {m_Faces[i].VertexAttribIndex[j].x, idx};// x:頂点インデックス，y:頂点のどの属性かインデックス
-			FaceAttribs[i].push_back(newAttribIdx);
+			FaceAttribs[i].AddToTail(newAttribIdx);
 		}
 
 		// 頂点インデックスの総数を累積する
@@ -805,7 +803,7 @@ void MeshData::GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertex
 
 	}// end of i loop
 	
-	numVertAttrs = AssignVertexIDs(VertAttribs)+1;// 全ての頂点の全ての属性に通し番号を振る.
+	numVertAttrs = AssignVertexIDs(VertAttribs);// 全ての頂点の全ての属性に通し番号を振る.
 
 
 
@@ -817,9 +815,9 @@ void MeshData::GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertex
 	const Vec3f	dumy3 = {-1, -1, -1};
 	const Vec2f	dumy2 = {-1, -1};
 
-	for(i=0; i<VertAttribs.size(); i++)
+	for(i=0; i<VertAttribs.Length(); i++)
 	{
-		for(j=0; j<VertAttribs[i].size(); j++)
+		for(j=0; j<VertAttribs[i].Length(); j++)
 		{
 			int vertIdx		= i;					// 頂点配列m_Vertices上の頂点インデックス
 			int texIdx		= VertAttribs[i][j].x;	// テクスチャ座標属性へのインデックス
@@ -840,10 +838,10 @@ void MeshData::GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertex
 	*Indices = new int[numIndices];
 	curr = 0;
 
-	for(i=0; i<FaceAttribs.size(); i++)
+	for(i=0; i<FaceAttribs.Length(); i++)
 	{
 		// 頂点ごとの属性をVertAttribsに追加登録する
-		for(j=1; j<FaceAttribs[i].size()-1; j++)
+		for(j=1; j<FaceAttribs[i].Length()-1; j++)
 		{
 			Vec2i ID_VertAttrib;
 
@@ -873,23 +871,23 @@ void MeshData::GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertex
 void MeshData::GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreOreLib::Memory<uint32>& Indices )
 {
 	int i, j;
-	vector< vector<Vec3i> >	VertAttribs;// 頂点ごとの属性.第１次元は頂点インデックス、第2次元は頂点に付随する属性のインデックス。（x:テクスチャ座標ID/y:法線ID/z:通し番号）
-	vector< vector<Vec2i> >	FaceAttribs;// ObjFaceの頂点毎の、VertAttribs属性配列のインデックス(x:頂点番号.VertAttribsの第1次元.m_Facesと一義的に対応，y:属性インデックス.VertAttribsの第2次元)
+	OreOreLib::Array< OreOreLib::Array<Vec3i> >	VertAttribs;// 頂点ごとの属性.第１次元は頂点インデックス、第2次元は頂点に付随する属性のインデックス。（x:テクスチャ座標ID/y:法線ID/z:通し番号）
+	OreOreLib::Array< OreOreLib::Array<Vec2i> >	FaceAttribs;// ObjFaceの頂点毎の、VertAttribs属性配列のインデックス(x:頂点番号.VertAttribsの第1次元.m_Facesと一義的に対応，y:属性インデックス.VertAttribsの第2次元)
 	
 
 	//====================== 全ての面の全頂点の属性を調べ、VertAttrib配列に格納する ======================//
-	VertAttribs.resize(m_Vertices.size());
-	FaceAttribs.resize(m_Faces.size());
+	VertAttribs.Resize(m_Vertices.Length());
+	FaceAttribs.Resize(m_Faces.Length());
 
 	int numIndices = 0;
 
-	for(i=0; i<m_Faces.size(); i++)// 各面について、、、
+	for(i=0; i<m_Faces.Length(); i++)// 各面について、、、
 	{
-		for(j=0; j<m_Faces[i].VertexAttribIndex.size(); j++)// 面を構成する頂点毎の属性をVertAttribsに登録する
+		for(j=0; j<m_Faces[i].VertexAttribIndex.Length(); j++)// 面を構成する頂点毎の属性をVertAttribsに登録する
 		{
 			int idx = AddVertexAttributes(m_Faces[i].VertexAttribIndex[j], VertAttribs);
 			Vec2i newAttribIdx = {m_Faces[i].VertexAttribIndex[j].x, idx};// x:頂点インデックス，y:頂点のどの属性かインデックス
-			FaceAttribs[i].push_back(newAttribIdx);
+			FaceAttribs[i].AddToTail(newAttribIdx);
 		}
 
 		// 頂点インデックスの総数を累積する
@@ -897,7 +895,7 @@ void MeshData::GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertex
 
 	}// end of i loop
 	
-	int numVertAttrs = AssignVertexIDs(VertAttribs)+1;// 全ての頂点の全ての属性に通し番号を振る.
+	int numVertAttrs = AssignVertexIDs(VertAttribs);// 全ての頂点の全ての属性に通し番号を振る.
 
 
 
@@ -909,9 +907,9 @@ void MeshData::GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertex
 	const Vec3f	dumy3 = {-1, -1, -1};
 	const Vec2f	dumy2 = {-1, -1};
 
-	for(i=0; i<VertAttribs.size(); i++)
+	for(i=0; i<VertAttribs.Length(); i++)
 	{
-		for(j=0; j<VertAttribs[i].size(); j++)
+		for(j=0; j<VertAttribs[i].Length(); j++)
 		{
 			int vertIdx		= i;					// 頂点配列m_Vertices上の頂点インデックス
 			int texIdx		= VertAttribs[i][j].x;	// テクスチャ座標属性へのインデックス
@@ -932,10 +930,10 @@ void MeshData::GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertex
 	Indices.Init( numIndices );//*Indices = new int[numIndices];
 	curr = 0;
 
-	for(i=0; i<FaceAttribs.size(); i++)
+	for(i=0; i<FaceAttribs.Length(); i++)
 	{
 		// 頂点ごとの属性をVertAttribsに追加登録する
-		for(j=1; j<FaceAttribs[i].size()-1; j++)
+		for(j=1; j<FaceAttribs[i].Length()-1; j++)
 		{
 			Vec2i ID_VertAttrib;
 
@@ -968,9 +966,9 @@ void MeshData::GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertex
 
 void MeshData::GetGroupInfo( int idx )
 {
-	cout << "Num of Groups = " << m_Groups.size() << endl;
+	cout << "Num of Groups = " << m_Groups.Length() << endl;
 
-	if( idx >= m_Groups.size() ) return;
+	if( idx >= m_Groups.Length() ) return;
 
 	//=================== グループの基本情報 =================//
 	int numFaces = m_Groups[idx].face_end - m_Groups[idx].face_start + 1;
@@ -997,7 +995,7 @@ void MeshData::GetGroupInfo( int idx )
 			pMtl->Info();
 
 			cout << " Vertex Indices..." << endl;
-			for(int k=0; k<m_Faces[i].VertexAttribIndex.size(); ++k)
+			for(int k=0; k<m_Faces[i].VertexAttribIndex.Length(); ++k)
 				cout << m_Faces[i].VertexAttribIndex[k].x;
 
 
@@ -1067,7 +1065,7 @@ void MeshData::GetGroupInfo( int idx )
 //			}
 ////cout << VertAttr_Iter->x << endl;
 //
-//			if(VertAttr_Iter->x < 0 || VertAttr_Iter->x > m_Vertices.size()-1)
+//			if(VertAttr_Iter->x < 0 || VertAttr_Iter->x > m_Vertices.Length()-1)
 //				cout << "out of range: " << VertAttr_Iter->x << endl;
 //
 //			//　頂点
@@ -1095,11 +1093,11 @@ void MeshData::GenerateMeshObject()
 	cout << "SceneGraph::AddMesh()..." << endl;
 
 	
-	m_MeshObject.resize(m_Groups.size());
+	m_MeshObject.Resize(m_Groups.Length());
 
 
 
-	for(int k=0; k<m_Groups.size(); k++)// グループ単位で属性付き頂点配列とインデックス配列を作成する
+	for(int k=0; k<m_Groups.Length(); k++)// グループ単位で属性付き頂点配列とインデックス配列を作成する
 	{
 		vector< vector<Vec3i> >	VertexLayoutPointer;	// 頂点ごとの属性.第１次元は頂点インデックス、第2次元は頂点に付随する属性のインデックス。（x:テクスチャ座標ID/y:法線ID/z:通し番号）
 		vector< vector<Vec2i> >	FaceVertexPointer;		// 面を構成する頂点毎の、VertAttribs属性配列のインデックス(x:頂点番号.VertAttribsの第1次元，y:属性インデックス.VertAttribsの第2次元)
@@ -1109,18 +1107,18 @@ void MeshData::GenerateMeshObject()
 		//====================== 全ての面の全頂点の属性を調べ、VertAttrib配列に格納する ======================//
 		int numgFaces = m_Groups[k].face_end - m_Groups[k].face_start +1;// グループの頂点数を取得する
 
-		VertexLayoutPointer.resize(m_Vertices.size());	// 1グループ分の頂点
-		FaceVertexPointer.resize(numgFaces);			// 面の各頂点の属性
+		VertexLayoutPointer.Resize(m_Vertices.Length());	// 1グループ分の頂点
+		FaceVertexPointer.Resize(numgFaces);			// 面の各頂点の属性
 		
 		// メッシュオブジェクトの初期化
 		m_MeshObject[k].numVertices		= 0;
 		m_MeshObject[k].VertexBuffers	= NULL;
-		m_MeshObject[k].numSubMeshs		= m_Groups[k].matSubsets.size();					// サブメッシュ配列を確保する
+		m_MeshObject[k].numSubMeshs		= m_Groups[k].matSubsets.Length();					// サブメッシュ配列を確保する
 		m_MeshObject[k].subMeshes		= new SubMeshObject[ m_MeshObject[k].numSubMeshs ];
 
 
 		// マテリアルサブセット単位で初期化
-		for(int f=0; f<m_Groups[k].matSubsets.size(); ++f)
+		for(int f=0; f<m_Groups[k].matSubsets.Length(); ++f)
 		{
 			SubMeshObject	*pSubMesh = &m_MeshObject[k].subMeshes[f];	// サブメッシュオブジェクトへのポインタ
 			ObjMaterialSubset	*pMatSub = &m_Groups[k].matSubsets[f];		// マテリアルサブグループへのポインタ
@@ -1134,11 +1132,11 @@ void MeshData::GenerateMeshObject()
 			{
 				int face_idx_ingroup = l - m_Groups[k].face_start;// グループ内の相対インデックスを取得する
 
-				for(int j=0; j<m_Faces[l].VertexAttribIndex.size(); j++)// ObjFaceの頂点毎に、、、
+				for(int j=0; j<m_Faces[l].VertexAttribIndex.Length(); j++)// ObjFaceの頂点毎に、、、
 				{
 					int idx				= AddVertexAttributes( m_Faces[l].VertexAttribIndex[j], VertexLayoutPointer );// VertAttribs配列に、属性付き頂点の情報を格納する
 					Vec2i newAttribIdx	= { m_Faces[l].VertexAttribIndex[j].x, idx };// x:頂点インデックス，y:頂点のどの属性かインデックス
-					FaceVertexPointer[ face_idx_ingroup ].push_back(newAttribIdx);
+					FaceVertexPointer[ face_idx_ingroup ].AddToTail(newAttribIdx);
 				}// end of j loop
 
 				pSubMesh->numIndices	+= (m_Faces[l].num_verts - 2) * 3;
@@ -1160,9 +1158,9 @@ void MeshData::GenerateMeshObject()
 		int curr = 0;// 属性情報を登録する頂点レイアウトの配列インデックス。登録後にインクリメントする
 
 		// 頂点レイアウトデータ(頂点座標/テクスチャ座標/法線ベクトル)を書き出す
-		for(int i=0; i<VertexLayoutPointer.size(); i++)// 各頂点について、、、
+		for(int i=0; i<VertexLayoutPointer.Length(); i++)// 各頂点について、、、
 		{
-			for(int j=0; j<VertexLayoutPointer[i].size(); j++)// 各頂点の各属性について、、、
+			for(int j=0; j<VertexLayoutPointer[i].Length(); j++)// 各頂点の各属性について、、、
 			{
 				int vertIdx		= i;
 				int texIdx		= VertexLayoutPointer[i][j].x;	// テクスチャ座標インデックス
@@ -1196,7 +1194,7 @@ void MeshData::GenerateMeshObject()
 				vector <Vec2i> &pFaceVertptr = FaceVertexPointer[face_idx_ingroup];
 				
 				// 3角形に分割した頂点インデックス群をVertAttribsに追加登録する
-				for(int j=1; j<pFaceVertptr.size()-1; j++)//　ポリゴン "ObjFace i"の j 番目の頂点 
+				for(int j=1; j<pFaceVertptr.Length()-1; j++)//　ポリゴン "ObjFace i"の j 番目の頂点 
 				{
 					Vec2i ID_VertAttrib;
 
@@ -1239,7 +1237,7 @@ void MeshData::GenerateMeshObject()
 
 
 		// 作成したGeometryNodeをシーングラフに登録する
-	//	m_GeometryList.push_back(newGeomNode);
+	//	m_GeometryList.AddToTail(newGeomNode);
 
 		
 		//================= MaterialNodeをシーングラフに登録する =================//
@@ -1254,14 +1252,14 @@ void MeshData::GenerateMeshObject()
 		//matattr->SpecularPower		= m_Materials[m_MatSubsets[k].material_index].GetSpecularPower();
 		//matattr->Luminance			= *m_Materials[m_MatSubsets[k].material_index].GetLuminance();
 
-		//m_MaterialList.push_back(newMaterial);
+		//m_MaterialList.AddToTail(newMaterial);
 		//
 		//Object newObj;
 
 		//newObj.m_prtGeometry	= &m_GeometryList.back();
 		//newObj.ptr_Material		= &m_MaterialList.back();
 
-		//m_Objects.push_back(newObj);
+		//m_Objects.AddToTail(newObj);
 		
 
 	}// end of m_Groups loop

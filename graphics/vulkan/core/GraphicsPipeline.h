@@ -25,6 +25,9 @@ namespace vk
 		void Init( const ShaderPass& shaderpass, const PipelineState& pipelinestate, VkRenderPass renderPass, uint32_t subpass );
 		void Release();
 
+		const VkPipeline& Pipeline() const	{ return m_Pipeline; }
+		const VkPipelineLayout& Layout() const	{ return m_PipelineLayout; }
+
 
 	private:
 

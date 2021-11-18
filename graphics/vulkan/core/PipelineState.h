@@ -71,7 +71,7 @@ namespace vk
 		void SetDynamicStates( std::initializer_list<VkDynamicState> ilist );
 
 
-	private:
+//	private:
 
 		// Viewport state
 		bool													m_bDynamicViewport;
