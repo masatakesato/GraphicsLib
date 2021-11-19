@@ -7,7 +7,7 @@
 
 #include	<graphics/gl4x/shader/GLShader.h>
 #include	<graphics/gl4x/scene/Camera.h>
-#include	<graphics/gl4x/scene/MeshData.h>
+#include	<graphics/gl4x/scene/OBJLoader.h>
 
 
 
@@ -16,7 +16,7 @@ class ModelLoadObj
 {
 private:
 
-	GLShader	*m_Shader;// シェーダ
+	OreOreLib::GLShader	*m_Shader;// シェーダ
 	Camera	*m_Camera;// カメラ
 
 	//=============== シェーダ変数 =============//
@@ -39,7 +39,7 @@ private:
 	GLuint	m_DiffuseTexture;
 */
 
-	MeshData m_mesh;
+	OBJLoader m_OBJLoader;
 
 
 public:

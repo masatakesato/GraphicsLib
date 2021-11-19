@@ -80,7 +80,7 @@ unsigned ControllerGL::Create()
 	GLenum errCode;
 		if((errCode=glGetError()) != GL_NO_ERROR)
 		{
-			cout << "gl error atControllerGL::Create()..." << gluErrorString(errCode) << endl;
+			tcout << _T("gl error atControllerGL::Create()...") << gluErrorString(errCode) << tendl;
 			//return;
 		}
 #endif

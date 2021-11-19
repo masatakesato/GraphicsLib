@@ -5,7 +5,7 @@
 #include	<oreore/container/Array.h>
 
 #include	<graphics/gl4x/scene/Camera.h>
-#include	<graphics/gl4x/scene/MeshData.h>
+#include	<graphics/gl4x/scene/OBJLoader.h>
 using namespace OreOreLib;
 
 
@@ -20,7 +20,7 @@ Camera	g_Camera;
 
 
 // Obj Mesh 
-MeshData g_Mesh;
+OBJLoader g_OBJLoader;
 
 /*
 // Vertex buffer ( for glsl rendering pipeline )
@@ -47,40 +47,44 @@ bool	g_bDrawVertexBuffer = false;
 
 
 
-void DrawObjMesh( MeshData& mesh )
+void DrawObjMesh( OBJLoader& mesh )
 {
-	vector<MeshData::ObjFace>::iterator	Face_Iter = mesh.m_Faces.begin();
+	auto& vertices		= mesh.GetVertices();
+	auto& normals		= mesh.GetNormals();
+	auto& faces			= mesh.GetFaceIndices();
+	auto& mats			= mesh.GetMaterials();
+	auto& matsubsets	= mesh.GetMaterialSubsets();
 
 	int pre_mat = -1, cur_mat = 0;
 
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	glBegin( GL_TRIANGLES );
 
-	while( Face_Iter != mesh.m_Faces.end() )// face draw loop
+	for( auto& Face_Iter : faces/* != mesh.GetFaceIndices().end()*/ )// face draw loop
 	{
 		//　マテリアルがあるとき
-		if(!mesh.m_Materials.empty())
+		if( !mesh.GetMaterials().Empty() )
 		{
 			//　インデックスを格納
-			cur_mat = mesh.m_MatSubs[Face_Iter->matsub_index].material_index;
+			cur_mat = matsubsets[ Face_Iter.matsub_index ].material_index;
 			
 			//　前と異なる色のとき
 			if(pre_mat != cur_mat)
 			{
 				//　Ambient Color
-				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mesh.m_Materials[cur_mat].GetAmbient()->rgba);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mats[cur_mat].GetAmbient()->rgba);
 
 				//　Diffuse Color
-				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mesh.m_Materials[cur_mat].GetDiffuse()->rgba);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mats[cur_mat].GetDiffuse()->rgba);
 
 				//　Specular Color
-				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mesh.m_Materials[cur_mat].GetSpecular()->rgba);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mats[cur_mat].GetSpecular()->rgba);
 				
 				//　Emission
-				//glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, mesh.m_Materials[cur_mat].GetLuminance()->rgb );
+				//glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, mats[cur_mat].GetLuminance()->rgb );
 
 				//　Shininess
-				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mesh.m_Materials[cur_mat].GetSpecularIntensity());
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mats[cur_mat].GetSpecularIntensity());
 
 				//　更新
 				pre_mat = cur_mat;
@@ -89,25 +93,22 @@ void DrawObjMesh( MeshData& mesh )
 		}
 		
 		// Draw polygons
-		vector<Vec3i>::iterator VertAttr_Iter = Face_Iter->VertexAttribIndex.begin();
-		while( VertAttr_Iter != Face_Iter->VertexAttribIndex.end() )
+		const auto& vertAttrIndices = Face_Iter.VertexAttribIndex;
+		for( auto& VertAttr_Iter : vertAttrIndices )
 		{
 			// 法線ベクトル
-			if( Face_Iter->use_normal==true )
-				glNormal3fv(mesh.m_Normals[VertAttr_Iter->z].xyz);
+			if( Face_Iter.use_normal==true )
+				glNormal3fv( normals[ VertAttr_Iter.z ].xyz);
 
-			if(VertAttr_Iter->x < 0 || VertAttr_Iter->x > mesh.m_Vertices.size()-1)
-				cout << "out of range: " << VertAttr_Iter->x << endl;
+			if( VertAttr_Iter.x < 0 || VertAttr_Iter.x > vertices.Length()-1 )
+				tcout << _T("out of range: ") << VertAttr_Iter.x << tendl;
 
 			//　頂点
-			glVertex3f(	mesh.m_Vertices[VertAttr_Iter->x].x,
-						mesh.m_Vertices[VertAttr_Iter->x].y, 
-						mesh.m_Vertices[VertAttr_Iter->x].z );
-			
-			VertAttr_Iter++;
+			glVertex3f(	vertices[ VertAttr_Iter.x ].x,
+						vertices[ VertAttr_Iter.x ].y, 
+						vertices[ VertAttr_Iter.x ].z );
 		}
 
-		Face_Iter++;
 	}
 
 	glEnd();
@@ -178,17 +179,16 @@ void Initialize()
 	GetCurrentDirectory( MAX_PATH, currdir );
 	SetCurrentDirectory( _T( "../../../assets/scene/obj" ) );
 
-	g_Mesh.Load( "viking_room.obj" );
+	g_OBJLoader.Load( "viking_room.obj" );
 
 	SetCurrentDirectory( currdir );
 
-	g_Mesh.Information();
-	g_Mesh.GetGroupInfo(1);
+	g_OBJLoader.Information();
+	g_OBJLoader.GetGroupInfo(1);
 
 	// Extract polygon vertices/indices from MeshObj.
-//	g_Mesh.GenVertexList( g_NumVertices, &g_Vertices, g_NumIndices, &g_Indices );
-
-	g_Mesh.GenVertexList( g_Vertices, g_Indices );
+	//g_OBJLoader.GenVertexList( g_NumVertices, &g_Vertices, g_NumIndices, &g_Indices );
+	g_OBJLoader.GenVertexList( g_Vertices, g_Indices );
 }
 
 void display()
@@ -214,7 +214,7 @@ void display()
 	
 
 
-	//==================================== Draw MeshData ==================================//
+	//==================================== Draw OBJLoader ==================================//
 	if( g_bDrawVertexBuffer )
 	{
 		// Drawing polygon mesh using Veriex/Indices.
@@ -240,8 +240,8 @@ void display()
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0);
 
-		// Visualize MeshData. Using old OpenGL fixed pipeline APIs.
-		DrawObjMesh( g_Mesh );
+		// Visualize OBJLoader. Using old OpenGL fixed pipeline APIs.
+		DrawObjMesh( g_OBJLoader );
 	}
 
 	glutSwapBuffers();

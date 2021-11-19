@@ -76,13 +76,13 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\graphics\gl4x\scene\Camera.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\scene\Material.cpp" />
-    <ClCompile Include="..\..\..\graphics\gl4x\scene\MeshData.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\OBJLoader.cpp" />
     <ClCompile Include="..\..\..\test\LoadObj\LoadObj_main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\graphics\gl4x\scene\Camera.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\scene\Material.h" />
-    <ClInclude Include="..\..\..\graphics\gl4x\scene\MeshData.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\OBJLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

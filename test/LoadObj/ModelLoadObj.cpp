@@ -106,7 +106,7 @@ static void DrawCube_with_tangent(	float dim,
 
 ModelLoadObj::ModelLoadObj()
 {
-std::cout << "ModelLoadObj::ModelLoadObj()..." << std::endl;
+tcout << _T("ModelLoadObj::ModelLoadObj()...\n");
 
 	m_Camera = new Camera();
 	m_Shader = new GLShader();
@@ -115,7 +115,7 @@ std::cout << "ModelLoadObj::ModelLoadObj()..." << std::endl;
 
 ModelLoadObj::~ModelLoadObj()
 {
-std::cout << "ModelLoadObj:~:ModelLoadObj()..." << std::endl;
+tcout << _T("ModelLoadObj:~:ModelLoadObj()...");
 	delete	m_Shader;
 	delete	m_Camera;
 /*
@@ -132,32 +132,32 @@ void ModelLoadObj::Init()
 	GetCurrentDirectory( MAX_PATH, currdir );
 	SetCurrentDirectory( _T( "../../../assets/scene/obj" ) );
 
-	m_mesh.Load(//"a building.obj"
-				//"30x36_bc_m.obj"
-				//"mjc00.obj"
-				//"sir00obj.obj"
-				//"SponzaMoreMeshes.obj"
-				//"test.obj"
-				//"dosei.obj"
-				//"Sponza.obj"
-				//"new_csie_b1.obj"
-				//"mba1.obj"
-				//"mba2.obj"
-				//"chinese.obj"
-				//"ateneam.obj"
-				//"elepham.obj"
-				//"kiy00g.obj"
-				"testscene.obj"
-				);
+	m_OBJLoader.Load(	//"a building.obj"
+						//"30x36_bc_m.obj"
+						//"mjc00.obj"
+						//"sir00obj.obj"
+						//"SponzaMoreMeshes.obj"
+						//"test.obj"
+						//"dosei.obj"
+						//"Sponza.obj"
+						//"new_csie_b1.obj"
+						//"mba1.obj"
+						//"mba2.obj"
+						//"chinese.obj"
+						//"ateneam.obj"
+						//"elepham.obj"
+						//"kiy00g.obj"
+						_T("testscene.obj")
+					);
 
 	SetCurrentDirectory( currdir );
 
-	m_mesh.Information();
+	m_OBJLoader.Information();
 
-	m_mesh.GetGroupInfo(1);
+	m_OBJLoader.GetGroupInfo(1);
 
 
-	m_mesh.GenVertexList(numVertAttrs, &vertexlist, numIndices, &Indices);
+	m_OBJLoader.GenVertexList(numVertAttrs, &vertexlist, numIndices, &Indices);
 //	m_mesh.GenerateMeshObject();
 }
 

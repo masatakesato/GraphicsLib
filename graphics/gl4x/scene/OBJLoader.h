@@ -1,5 +1,7 @@
-﻿#ifndef MESHDATA_H
-#define MESHDATA_H
+﻿#ifndef OBJ_LOADER_H
+#define	OBJ_LOADER_H
+
+#pragma warning(disable : 4996)
 
 #include	<oreore/mathlib/GraphicsMath.h>
 #include	<oreore/container/Array.h>
@@ -8,11 +10,8 @@
 #include	<graphics/gl4x/scene/Material.h>
 
 
-#pragma warning(disable : 4996)
 
-
-
-class MeshData
+class OBJLoader
 {
 	// face
 	struct ObjFace
@@ -42,8 +41,8 @@ class MeshData
 
 public:
 
-	MeshData();
-	~MeshData(){};
+	OBJLoader();
+	~OBJLoader(){}
 	bool Load( /*const char *filename*/const tstring& filename );
 	void GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertexlist, int &numIndices, int **Indices);
 	void GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreOreLib::Memory<uint32>& Indices );
@@ -63,7 +62,7 @@ public:
 
 
 	// 描画メソッド
-	//friend void DrawObjMesh( MeshData& mesh );
+	//friend void DrawObjMesh( OBJLoader& mesh );
 
 
 private:
@@ -106,5 +105,4 @@ private:
 };
 
 
-
-#endif /* MESHDATA_H */
+#endif // !OBJ_LOADER_H

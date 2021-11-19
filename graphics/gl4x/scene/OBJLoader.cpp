@@ -1,10 +1,11 @@
-﻿#include "MeshData.h"
+﻿#include "OBJLoader.h"
 
 #define BUFFER_LENGTH 1024
 #define NAME_LENGTH 256
 
 #define DEFAULT_MATERIAL "default_material"
 #define INVALID	-1
+
 
 
 // Same implementation as FileIO.h
@@ -77,7 +78,7 @@ static OreOreLib::Array<tstring> splitString( const tstring &str, const tstring 
 
 
 
-MeshData::MeshData()
+OBJLoader::OBJLoader()
 {
 	InitVec(m_BoundingBox[0], 0.0f, 0.0f, 0.0f);
 	InitVec(m_BoundingBox[1], 0.0f, 0.0f, 0.0f);
@@ -91,7 +92,7 @@ MeshData::MeshData()
 }
 
 
-bool MeshData::Load( const tstring& filename )
+bool OBJLoader::Load( const tstring& filename )
 {
 	tstring FileString = textFileRead( filename );
 
@@ -110,7 +111,7 @@ bool MeshData::Load( const tstring& filename )
 
 
 // 頂点配列とインデックス配列を作成する
-void MeshData::GenVertexList( int &numVertAttrs, OreOreLib::VertexLayout **vertexlist, int &numIndices, int **Indices )
+void OBJLoader::GenVertexList( int &numVertAttrs, OreOreLib::VertexLayout **vertexlist, int &numIndices, int **Indices )
 {
 	int i, j;
 	OreOreLib::Array< OreOreLib::Array<Vec3i> >	VertAttribs;// 頂点ごとの属性.第１次元は頂点インデックス、第2次元は頂点に付随する属性のインデックス。（x:テクスチャ座標ID/y:法線ID/z:通し番号）
@@ -186,7 +187,7 @@ void MeshData::GenVertexList( int &numVertAttrs, OreOreLib::VertexLayout **verte
 
 
 
-void MeshData::GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreOreLib::Memory<uint32>& Indices )
+void OBJLoader::GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreOreLib::Memory<uint32>& Indices )
 {
 	int i, j;
 	OreOreLib::Array< OreOreLib::Array<Vec3i> >	VertAttribs;// 頂点ごとの属性.第１次元は頂点インデックス、第2次元は頂点に付随する属性のインデックス。（x:テクスチャ座標ID/y:法線ID/z:通し番号）
@@ -263,9 +264,9 @@ void MeshData::GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertex
 
 
 
-void MeshData::Information()
+void OBJLoader::Information()
 {
-	tcout << _T("//====================== MeshData Info... ====================//\n");
+	tcout << _T("//====================== OBJLoader Info... ====================//\n");
 	//tcout << "* OBJファイル名：" << objFileName << tendl;
 	//tcout << "* MTLファイル名：" << mtlFileName << tendl;
 	tcout << _T("#vertices: ") << m_Vertices.Length() << tendl;
@@ -304,7 +305,7 @@ void MeshData::Information()
 
 
 
-void MeshData::GetGroupInfo( int idx )
+void OBJLoader::GetGroupInfo( int idx )
 {
 	tcout << _T("Num of Groups = ") << m_Groups.Length() << tendl;
 
@@ -347,7 +348,7 @@ void MeshData::GetGroupInfo( int idx )
 
 
 
-bool MeshData::AllocateMemory( /*const string &aaa*/const tstring& aaa )
+bool OBJLoader::AllocateMemory( /*const string &aaa*/const tstring& aaa )
 {
 	
 	int num_v = 0, num_vt = 0, num_vn = 0, num_g = 0, num_f = 0;
@@ -422,7 +423,7 @@ bool MeshData::AllocateMemory( /*const string &aaa*/const tstring& aaa )
 
 
 
-bool MeshData::ParseObjFile( const tstring& aaa )
+bool OBJLoader::ParseObjFile( const tstring& aaa )
 {
 	size_t		pivot;
 	int			CurrMatSub;
@@ -577,7 +578,7 @@ CurrMatSub = AddMaterialSubset(one_line, CurrFace+1, m_MatSubs );
 
 
 
-bool MeshData::Load_OBJMTL( const tstring& filename )
+bool OBJLoader::Load_OBJMTL( const tstring& filename )
 {
 	size_t pivot;
 	tifstream file;
@@ -638,7 +639,7 @@ bool MeshData::Load_OBJMTL( const tstring& filename )
 
 
 // ファイルをスキャンし，マテリアル1個分の属性を読み取る
-bool MeshData::ExtractMaterialComponent( Material& mat, tifstream& file, tstring& one_line )
+bool OBJLoader::ExtractMaterialComponent( Material& mat, tifstream& file, tstring& one_line )
 {
 	bool flag = true;
 	/*char*/TCHAR buf[ BUFFER_LENGTH ];
@@ -722,7 +723,7 @@ bool MeshData::ExtractMaterialComponent( Material& mat, tifstream& file, tstring
 
 
 
-Vec3f MeshData::ExtractVector3D( const tstring& str, const tstring& delim )
+Vec3f OBJLoader::ExtractVector3D( const tstring& str, const tstring& delim )
 {
 	int curr = 0;
 	Vec3f vec3f = {0.0f, 0.0f, 0.0f};
@@ -747,7 +748,7 @@ Vec3f MeshData::ExtractVector3D( const tstring& str, const tstring& delim )
 
 
 
-void MeshData::AddVertex( const tstring& str )
+void OBJLoader::AddVertex( const tstring& str )
 {
 	Vec3f newVertex;
 	auto elements = splitString( str, _T(" ") );
@@ -766,7 +767,7 @@ void MeshData::AddVertex( const tstring& str )
 
 
 
-void MeshData::AddTexCoord( const tstring& str )
+void OBJLoader::AddTexCoord( const tstring& str )
 {
 	Vec2f newTexcoord = {0, 0};
 	auto elements = splitString( str, _T(" ") );
@@ -787,7 +788,7 @@ void MeshData::AddTexCoord( const tstring& str )
 
 
 
-void MeshData::AddNormal( const tstring& str )
+void OBJLoader::AddNormal( const tstring& str )
 {
 	Vec3f newNormal;
 	auto elements = splitString( str, _T(" ") );
@@ -808,7 +809,7 @@ void MeshData::AddNormal( const tstring& str )
 
 
 // 1行分の文字列strから面情報を取得し，m_Facesに追加する
-int MeshData::AddFace( const tstring& str, int matsub_id )
+int OBJLoader::AddFace( const tstring& str, int matsub_id )
 {
 	int i;
 	ObjFace	newFace;
@@ -873,7 +874,7 @@ int MeshData::AddFace( const tstring& str, int matsub_id )
 
 
 
-int MeshData::AddMaterialSubset( const tstring& str, int startidx, OreOreLib::Array<ObjMaterialSubset>& m_MatSubs )
+int OBJLoader::AddMaterialSubset( const tstring& str, int startidx, OreOreLib::Array<ObjMaterialSubset>& m_MatSubs )
 {
 	int i;
 	int lastsubset = 0;
@@ -905,7 +906,7 @@ int MeshData::AddMaterialSubset( const tstring& str, int startidx, OreOreLib::Ar
 
 
 
-int MeshData::AddNamedGroup( const tstring& str, int startidx )
+int OBJLoader::AddNamedGroup( const tstring& str, int startidx )
 {
 	TCHAR groupname[128];
 	ObjNamedGroup newGroup;
@@ -932,7 +933,7 @@ int MeshData::AddNamedGroup( const tstring& str, int startidx )
 //  Attribs: 頂点の属性。配列データ
 // [出力]
 //  Attribs配列の対応する要素インデックス
-int MeshData::AddVertexAttributes( const Vec3i &Query, OreOreLib::Array< OreOreLib::Array<Vec3i> > &Attribs )
+int OBJLoader::AddVertexAttributes( const Vec3i &Query, OreOreLib::Array< OreOreLib::Array<Vec3i> > &Attribs )
 {
 	int i;
 	Vec3i newAttrib;
@@ -956,7 +957,7 @@ int MeshData::AddVertexAttributes( const Vec3i &Query, OreOreLib::Array< OreOreL
 
 // 頂点がに通し番号（頂点インデックス）を付ける
 // Attribs: 
-int MeshData::AssignVertexIDs( OreOreLib::Array< OreOreLib::Array<Vec3i> >& Attribs )
+int OBJLoader::AssignVertexIDs( OreOreLib::Array< OreOreLib::Array<Vec3i> >& Attribs )
 {
 	int numAttribVertices = 0;// ユニークな属性を持った頂点の総数
 
@@ -978,7 +979,7 @@ int MeshData::AssignVertexIDs( OreOreLib::Array< OreOreLib::Array<Vec3i> >& Attr
 
 
 
-//void MeshData::Draw()
+//void OBJLoader::Draw()
 //{
 //
 //	vector<ObjFace>::iterator	Face_Iter = m_Faces.begin();

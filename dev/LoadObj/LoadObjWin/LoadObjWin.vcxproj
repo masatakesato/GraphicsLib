@@ -77,7 +77,7 @@
     <ClCompile Include="..\..\..\graphics\gl4x\app\ViewGL.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\scene\Camera.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\scene\Material.cpp" />
-    <ClCompile Include="..\..\..\graphics\gl4x\scene\MeshData.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\OBJLoader.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp" />
     <ClCompile Include="..\..\..\oreore\ui\win\Window.cpp" />
     <ClCompile Include="..\..\..\oreore\ui\win\WindowProcedure.cpp" />
@@ -89,7 +89,7 @@
     <ClInclude Include="..\..\..\graphics\gl4x\app\ViewGL.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\scene\Camera.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\scene\Material.h" />
-    <ClInclude Include="..\..\..\graphics\gl4x\scene\MeshData.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\OBJLoader.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h" />
     <ClInclude Include="..\..\..\oreore\ui\win\Window.h" />
     <ClInclude Include="..\..\..\oreore\ui\win\WindowProcedure.h" />
