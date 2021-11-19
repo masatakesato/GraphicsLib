@@ -1,12 +1,6 @@
 ﻿#ifndef MESHDATA_H
 #define MESHDATA_H
 
-
-#include	<string>
-//#include	<vector>
-//#include	<iostream>
-using namespace std;
-
 #include	<oreore/mathlib/GraphicsMath.h>
 #include	<oreore/container/Array.h>
 
@@ -20,20 +14,16 @@ using namespace std;
 
 class MeshData
 {
-private:
-
-
-	// 面
+	// face
 	struct ObjFace
 	{	
 		int		num_verts;		// 頂点数
 		int		matsub_index;	// マテリアルサブセットへのインデックス
-
 		OreOreLib::Array<Vec3i> VertexAttribIndex;// (x,y,z) = (頂点座標インデックス, テクスチャ座標インデックス, 法線インデックス)
 		bool	use_normal;		// 法線ベクトル利用の有無
 	};
 
-	// マテリアルグループ
+	// material group struct
 	struct ObjMaterialSubset
 	{
 		int	material_index;	// マテリアルへのインデックス
@@ -41,64 +31,26 @@ private:
 		int	face_end;		// 終了面インデックス
 	};
 
-	// 名前付きグループ
+	// named group struct
 	struct ObjNamedGroup
 	{
-		char	name[256];	// グループ名
+		TCHAR	name[256];	// グループ名
 		int		face_start;	// 面index先頭
 		int		face_end;	// 面index最後
 	};
-	
-
-	Vec3f	m_BoundingBox[2];
-
-	// メッシュ形状データ
-	OreOreLib::Array<Vec3f>				m_Vertices;	// 頂点配列
-	OreOreLib::Array<Vec3f>				m_Normals;	// 法線配列
-	OreOreLib::Array<Vec2f>				m_TexCoord;	// テクスチャ座標配列
-	OreOreLib::Array<Material>			m_Materials;// マテリアル配列
-	OreOreLib::Array<ObjMaterialSubset>	m_MatSubs;	// マテリアルサブセット配列
-	OreOreLib::Array<ObjFace>			m_Faces;	// 面配列
-	OreOreLib::Array<ObjNamedGroup>		m_Groups;	// 名前付きグループ配列
 
 
-	
-
- 
-	// OBJファイルのローダー
-	bool AllocateMemory( const string &aaa );
-	bool ParseObjFile(const string &aaa);
-
-	void AddVertex( string str );
-	void AddTexCoord( string str );
-	void AddNormal( string str );
-	int AddFace( string str, int matsub_id );
-	int AddMaterialSubset( string str, int startidx, OreOreLib::Array<ObjMaterialSubset> &m_MatSubs );
-	int AddNamedGroup( string str, int startidx );
-
-	void AddSmoothGroup(){}// TODO: 時間があったら実装
-
-
-	// MTLファイルのロード
-	bool Load_OBJMTL(const char *filename);
-	bool ExtractMaterialComponent(Material &mat, std::ifstream &file, std::string &oneline);// ファイルを読んでmatに属性を追記する
-
-
-	// 頂点リストの作成
-	int AddVertexAttributes(const Vec3i &Query, OreOreLib::Array< OreOreLib::Array<Vec3i> > &Attribs );	// TODO: SceneGraphクラスへ移動
-	int AssignVertexIDs( OreOreLib::Array< OreOreLib::Array<Vec3i> > &Attribs);							// TODO: SceneGraphクラスへ移動
-	
-	
 public:
 
 	MeshData();
 	~MeshData(){};
-	bool Load( const char *filename );
+	bool Load( /*const char *filename*/const tstring& filename );
 	void GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertexlist, int &numIndices, int **Indices);
-void GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreOreLib::Memory<uint32>& Indices );
+	void GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreOreLib::Memory<uint32>& Indices );
 
 	//void GenerateMeshObject();// メッシュオブジェクトを作成する
 	void Information();
+	void GetGroupInfo( int idx=0 );
 
 	// m_Vertices, m_Normals, m_TexCoord, m_Materials, m_MatSubs, m_Faces, m_Groupsを出力（const型なので値変更不可．参照渡しなのでアドレス変更も不可）
 	inline const OreOreLib::Array<Vec3f>& GetVertices() const						{ return m_Vertices; };
@@ -109,10 +61,48 @@ void GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreO
 	inline const OreOreLib::Array<ObjFace>& GetFaceIndices() const					{ return m_Faces; };
 	inline const OreOreLib::Array<ObjNamedGroup>& GetNamedGroups() const			{ return m_Groups; };
 
-	void GetGroupInfo( int idx=0 );
-	
+
 	// 描画メソッド
 	//friend void DrawObjMesh( MeshData& mesh );
+
+
+private:
+
+	Vec3f	m_BoundingBox[2];
+
+	// obj mesh data
+	OreOreLib::Array<Vec3f>				m_Vertices;	// vertices
+	OreOreLib::Array<Vec3f>				m_Normals;	// vertex normals
+	OreOreLib::Array<Vec2f>				m_TexCoord;	// vertex texcoords
+	OreOreLib::Array<Material>			m_Materials;// materials
+	OreOreLib::Array<ObjMaterialSubset>	m_MatSubs;	// material subset groups
+	OreOreLib::Array<ObjFace>			m_Faces;	// face list
+	OreOreLib::Array<ObjNamedGroup>		m_Groups;	// named face groups
+
+ 
+	// Loading obj file
+	bool AllocateMemory( const tstring& str );
+	bool ParseObjFile( const tstring& str );
+
+	// Loading mlt file
+	bool Load_OBJMTL( const tstring& filename );
+	bool ExtractMaterialComponent( Material& mat, tifstream& file, tstring& one_line );
+	Vec3f ExtractVector3D( const tstring& str, const tstring& delim );
+
+	// Adding geometry/material data from file string
+	void AddVertex( const tstring& str );
+	void AddTexCoord( const tstring& str );
+	void AddNormal( const tstring& str );
+	int AddFace( const tstring& str, int matsub_id );
+	int AddMaterialSubset( const tstring& str, int startidx, OreOreLib::Array<ObjMaterialSubset> &m_MatSubs );
+	int AddNamedGroup( const tstring& str, int startidx );
+	void AddSmoothGroup(){}// TODO: 時間があったら実装
+
+	// VetexAttribute data construction
+	int AddVertexAttributes( const Vec3i &Query, OreOreLib::Array< OreOreLib::Array<Vec3i> > &Attribs );
+	int AssignVertexIDs( OreOreLib::Array< OreOreLib::Array<Vec3i> > &Attribs);
+	
+	
 };
 
 

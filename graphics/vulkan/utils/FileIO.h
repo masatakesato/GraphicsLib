@@ -174,10 +174,11 @@ namespace vk
 
 
 
-	// strをdelimで分割して文字列を返す
-	static std::vector<tstring> split( const tstring &str, const tstring &delim )
+	// split str by delim.
+	// (http://goodjob.boy.jp/chirashinoura/id/100.html)
+	static OreOreLib::Array<tstring> splitString( const tstring &str, const tstring &delim )
 	{
-		std::vector<tstring> res;
+		OreOreLib::Array<tstring> res;
 		size_t	current = 0,
 			found,
 			delimlen = delim.size();
@@ -186,12 +187,13 @@ namespace vk
 			tstring aaa = tstring( str, current, found - current );
 
 			if( aaa.size() > 0 )
-				res.push_back( aaa/*tstring(str, current, found - current)*/ );
+				res.AddToTail( aaa/*tstring(str, current, found - current)*/ );
 			current = found + delimlen;
 		}
 		tstring aaa = tstring( str, current, str.size() - current );
 		if( aaa.size() > 0 )
-			res.push_back( aaa/*tstring(str, current, str.size() - current)*/ );
+			res.AddToTail( aaa/*tstring(str, current, str.size() - current)*/ );
+
 		return res;
 	}
 

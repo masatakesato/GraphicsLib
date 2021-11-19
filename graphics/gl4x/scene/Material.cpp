@@ -16,9 +16,9 @@ Material::Material()
 }
 
 
-void Material::SetName(const char *name)
+void Material::SetName( const tstring& matname )
 {
-	strcpy_s(m_Name, sizeof(m_Name), name);
+	m_Name = matname;
 }
 
 void Material::SetAmbient(float r, float g, float b, float a)
