@@ -4,8 +4,8 @@
 #include	<oreore/mathlib/GraphicsMath.h>
 #include	<oreore/container/Array.h>
 
+#include	<graphics/gl4x/scene/MeshLoader.h>
 #include	<graphics/gl4x/scene/Camera.h>
-#include	<graphics/gl4x/scene/OBJLoader.h>
 using namespace OreOreLib;
 
 
@@ -20,7 +20,8 @@ Camera	g_Camera;
 
 
 // Obj Mesh 
-OBJLoader g_OBJLoader;
+MeshLoader	g_MeshLoader;
+
 
 /*
 // Vertex buffer ( for glsl rendering pipeline )
@@ -47,7 +48,7 @@ bool	g_bDrawVertexBuffer = false;
 
 
 
-void DrawObjMesh( OBJLoader& mesh )
+void DrawObjMesh( const MeshLoader& mesh )
 {
 	auto& vertices		= mesh.GetVertices();
 	auto& normals		= mesh.GetNormals();
@@ -179,16 +180,16 @@ void Initialize()
 	GetCurrentDirectory( MAX_PATH, currdir );
 	SetCurrentDirectory( _T( "../../../assets/scene/obj" ) );
 
-	g_OBJLoader.Load( "viking_room.obj" );
+	g_MeshLoader.Load( "viking_room.obj" );
 
 	SetCurrentDirectory( currdir );
 
-	g_OBJLoader.Information();
-	g_OBJLoader.GetGroupInfo(1);
+	g_MeshLoader.Information();
+	//g_MeshLoader.GetGroupInfo(1);
 
 	// Extract polygon vertices/indices from MeshObj.
-	//g_OBJLoader.GenVertexList( g_NumVertices, &g_Vertices, g_NumIndices, &g_Indices );
-	g_OBJLoader.GenVertexList( g_Vertices, g_Indices );
+	g_MeshLoader.GenVertexList( g_Vertices, g_Indices );
+
 }
 
 void display()
@@ -241,7 +242,7 @@ void display()
 		glEnable(GL_LIGHT0);
 
 		// Visualize OBJLoader. Using old OpenGL fixed pipeline APIs.
-		DrawObjMesh( g_OBJLoader );
+		DrawObjMesh( /*g_OBJLoader*/g_MeshLoader );
 	}
 
 	glutSwapBuffers();

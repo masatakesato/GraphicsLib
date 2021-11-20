@@ -6,7 +6,6 @@
 #include	<oreore/mathlib/GraphicsMath.h>
 #include	<oreore/container/Array.h>
 
-#include	<graphics/gl4x/resource/BufferLayout.h>
 #include	<graphics/gl4x/scene/Material.h>
 
 
@@ -42,10 +41,15 @@ class OBJLoader
 public:
 
 	OBJLoader();
-	~OBJLoader(){}
-	bool Load( /*const char *filename*/const tstring& filename );
-	void GenVertexList(int &numVertAttrs, OreOreLib::VertexLayout **vertexlist, int &numIndices, int **Indices);
-	void GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreOreLib::Memory<uint32>& Indices );
+	virtual ~OBJLoader();
+
+	bool Load( const tstring& filename );
+
+	void LoadPositions( void* pBuffer, size_t offset, size_t stride );
+	void LoadNormals( void* pBuffer, size_t offset, size_t stride );
+	void LoadTexCoords( void* pBuffer, size_t offset, size_t stride );
+	void LoadIndices( void* pBuffer, size_t offset, size_t stride );
+
 
 	//void GenerateMeshObject();// メッシュオブジェクトを作成する
 	void Information();
@@ -65,7 +69,7 @@ public:
 	//friend void DrawObjMesh( OBJLoader& mesh );
 
 
-private:
+protected:
 
 	Vec3f	m_BoundingBox[2];
 
@@ -78,7 +82,12 @@ private:
 	OreOreLib::Array<ObjFace>			m_Faces;	// face list
 	OreOreLib::Array<ObjNamedGroup>		m_Groups;	// named face groups
 
- 
+	OreOreLib::Array< OreOreLib::Array<Vec3i> >	VertAttribs;// 頂点ごとの属性.第１次元は頂点インデックス、第2次元は頂点に付随する属性のインデックス。（x:テクスチャ座標ID/y:法線ID/z:通し番号）
+	OreOreLib::Array< OreOreLib::Array<Vec2i> >	FaceAttribs;// ObjFaceの頂点毎の、VertAttribs属性配列のインデックス(x:頂点番号.VertAttribsの第1次元.m_Facesと一義的に対応，y:属性インデックス.VertAttribsの第2次元)
+	int numVertAttrs;
+	int numIndices;
+
+
 	// Loading obj file
 	bool AllocateMemory( const tstring& str );
 	bool ParseObjFile( const tstring& str );
@@ -98,6 +107,7 @@ private:
 	void AddSmoothGroup(){}// TODO: 時間があったら実装
 
 	// VetexAttribute data construction
+	void ConstructVertexAttributes();
 	int AddVertexAttributes( const Vec3i &Query, OreOreLib::Array< OreOreLib::Array<Vec3i> > &Attribs );
 	int AssignVertexIDs( OreOreLib::Array< OreOreLib::Array<Vec3i> > &Attribs);
 	
