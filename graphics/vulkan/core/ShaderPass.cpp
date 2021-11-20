@@ -1,6 +1,7 @@
 ﻿#include	"ShaderPass.h"
 
-#include	"../utils/FileIO.h"
+#include	<oreore/io/FileIO.h>
+
 #include	"../utils/HelperFunctions.h"
 
 
@@ -51,7 +52,7 @@ namespace vk
 	void ShaderPass::AddShaderStage( VkShaderStageFlagBits stage, const tstring& filepath )
 	{
 		auto i = m_ShaderStages.AddToTail();
-		auto shadercode = binaryFileRead( filepath );
+		auto shadercode = OreOreLib::binaryFileRead( filepath );
 
 		InitShaderStage( m_ShaderStages[i], shadercode, stage );
 

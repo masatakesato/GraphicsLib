@@ -2,31 +2,37 @@
 
 
 
-void MeshLoader::GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertices, OreOreLib::Memory<uint32>& indices )
+namespace vk
 {
-	vertices.Init( numVertAttrs );
-	indices.Init( numIndices );
 
-	LoadPositions( vertices.begin(), offsetof(OreOreLib::VertexLayout, Position), sizeof(OreOreLib::VertexLayout) );
-	LoadNormals( vertices.begin(), offsetof(OreOreLib::VertexLayout, Normal), sizeof(OreOreLib::VertexLayout) );
-	LoadTexCoords( vertices.begin(), offsetof(OreOreLib::VertexLayout, TexCoord), sizeof(OreOreLib::VertexLayout) );
-	LoadIndices( indices.begin(), 0, sizeof(uint32) );
-}
+	void MeshLoader::GenVertexList( OreOreLib::Memory<VertexLayout::Vertex>& vertices, OreOreLib::Memory<uint32>& indices )
+	{
+		vertices.Init( numVertAttrs );
+		indices.Init( numIndices );
+
+		LoadPositions( vertices.begin(), offsetof(VertexLayout::Vertex, Position), sizeof(VertexLayout::Vertex) );
+		LoadNormals( vertices.begin(), offsetof(VertexLayout::Vertex, Normal), sizeof(VertexLayout::Vertex) );
+		LoadTexCoords( vertices.begin(), offsetof(VertexLayout::Vertex, TexCoord), sizeof(VertexLayout::Vertex) );
+		LoadIndices( indices.begin(), 0, sizeof(uint32) );
+	}
 
 
 
-void MeshLoader::GenVertexList( int& numVertAttrs, OreOreLib::VertexLayout*& vertices, int &numIndices, uint32*& indices )
-{
-	numVertAttrs	= this->numVertAttrs;
-	numIndices		= this->numIndices;
-	vertices		= new OreOreLib::VertexLayout[ numVertAttrs ];
-	indices			= new uint32[ numIndices ];
+	void MeshLoader::GenVertexList( int& numVertAttrs, VertexLayout::Vertex*& vertices, int &numIndices, uint32*& indices )
+	{
+		numVertAttrs	= this->numVertAttrs;
+		numIndices		= this->numIndices;
+		vertices		= new VertexLayout::Vertex[ numVertAttrs ];
+		indices			= new uint32[ numIndices ];
 
-	LoadPositions( vertices, offsetof(OreOreLib::VertexLayout, Position), sizeof(OreOreLib::VertexLayout) );
-	LoadNormals( vertices, offsetof(OreOreLib::VertexLayout, Normal), sizeof(OreOreLib::VertexLayout) );
-	LoadTexCoords( vertices, offsetof(OreOreLib::VertexLayout, TexCoord), sizeof(OreOreLib::VertexLayout) );
-	LoadIndices( indices, 0, sizeof(uint32) );
-}
+		LoadPositions( vertices, offsetof(VertexLayout::Vertex, Position), sizeof(VertexLayout::Vertex) );
+		LoadNormals( vertices, offsetof(VertexLayout::Vertex, Normal), sizeof(VertexLayout::Vertex) );
+		LoadTexCoords( vertices, offsetof(VertexLayout::Vertex, TexCoord), sizeof(VertexLayout::Vertex) );
+		LoadIndices( indices, 0, sizeof(uint32) );
+	}
+
+
+}// end of namespace vk
 
 
 

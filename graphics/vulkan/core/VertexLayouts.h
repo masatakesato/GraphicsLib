@@ -36,7 +36,9 @@ namespace vk
 			Vec3f	Color;
 		};
 
-
+// https://gist.github.com/SaschaWillems/428d15ed4b5d71ead462bc63adffa93a
+//TODO: VkVertexInputBindingDescription::bindingは一体何？ -> 頂点アトリビュートをグループ化するインデックス(例えば、頂点座標をbinding=0, スキンメッシュ情報をbinding=1とか)
+//TODO: VkPipelineVertexInputStateCreateInfo::pVertexBindingDescriptionsは複数個保持できるようになってるけど、なんで？ -> binding毎に頂点データ分けて管理できるようにするため
 		static const OreOreLib::StaticArray<VkVertexInputBindingDescription, 1> BindingDescs =
 		{
 			{ 0, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX }

@@ -1,18 +1,24 @@
 ﻿#pragma once
 
 #include	<graphics/common/OBJLoader.h>
-#include	"../resource/BufferLayout.h"
+#include	"../core/VertexLayouts.h"
 
 
 
-class MeshLoader : public OBJLoader
+namespace vk
 {
-public:
 
-	MeshLoader() : OBJLoader(){}
-	~MeshLoader(){}
+	class MeshLoader : public OBJLoader
+	{
+	public:
 
-	void GenVertexList( OreOreLib::Memory<OreOreLib::VertexLayout>& vertexlist, OreOreLib::Memory<uint32>& indices );
-	void GenVertexList( int& numVertAttrs, OreOreLib::VertexLayout*& vertices, int &numIndices, uint32*& indices );
+		MeshLoader() : OBJLoader(){}
+		~MeshLoader(){}
 
-};
+		void GenVertexList( OreOreLib::Memory<VertexLayout::Vertex>& vertexlist, OreOreLib::Memory<uint32>& indices );
+		void GenVertexList( int& numVertAttrs, VertexLayout::Vertex*& vertices, int &numIndices, uint32*& indices );
+
+	};
+
+
+}// end of namespace vk
