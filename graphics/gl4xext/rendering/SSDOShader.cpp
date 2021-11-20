@@ -106,7 +106,7 @@ namespace OreOreLib
 
 
 		//========================= Initialize Occlusion_SH pass =========================//
-		GL_SHADER_MACRO Defines[] =	{ GL_SHADER_MACRO( _T(""), _T("") ), GL_SHADER_MACRO( _T(""), _T("") ), };
+		MACRO Defines[] =	{ MACRO( _T(""), _T("") ), MACRO( _T(""), _T("") ), };
 
 		// create shader
 		Defines[0].Name	= _T("PASS_OCCLUSION_SH");
@@ -156,7 +156,7 @@ namespace OreOreLib
 		/*
 		//======================= Initialize Vertical Blur pass ========================//
 		// create shader
-		m_Pass[ SHADER_PASS_BLUR_VERTICAL ].Init( filepath, &GL_SHADER_MACRO( "PASS_BLUR_VERTICAL", "" ) );
+		m_Pass[ SHADER_PASS_BLUR_VERTICAL ].Init( filepath, &MACRO( "PASS_BLUR_VERTICAL", "" ) );
 		program_id			= m_Pass[ SHADER_PASS_BLUR_VERTICAL ].ID();
 
 		// initialize attribute location

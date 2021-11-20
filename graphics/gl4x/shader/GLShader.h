@@ -18,11 +18,11 @@ namespace OreOreLib
 		GLShader( const GLShader &obj );
 		~GLShader();
 
-		void Init( const TCHAR *filename, GLSL_VERSION version, const GL_SHADER_MACRO *pDefines=NULL );
-		void Init( const TCHAR *vsFile, const TCHAR *fsFile, GLSL_VERSION version, const GL_SHADER_MACRO *pDefines=NULL );
-		void Init( const TCHAR *vsFile, const TCHAR *gsFile, const TCHAR *fsFile, GLSL_VERSION version, const GL_SHADER_MACRO *pDefines=NULL );
-		//void Init( const char *vsFile, const char *tcsFile, const char *tesFile, const char *fsFile, GLSL_VERSION version, const GL_SHADER_MACRO *pDefines=NULL );	// TODO: 必要なら追加実装する
-		//void Init( const char *vsFile, const char *tcsFile, const char *tesFile, const char *gsFile, const char *fsFile, GLSL_VERSION version, const GL_SHADER_MACRO *pDefines=NULL );// TODO: 必要なら追加実装する
+		void Init( const TCHAR *filename, GLSL_VERSION version, const MACRO *pDefines=NULL );
+		void Init( const TCHAR *vsFile, const TCHAR *fsFile, GLSL_VERSION version, const MACRO *pDefines=NULL );
+		void Init( const TCHAR *vsFile, const TCHAR *gsFile, const TCHAR *fsFile, GLSL_VERSION version, const MACRO *pDefines=NULL );
+		//void Init( const char *vsFile, const char *tcsFile, const char *tesFile, const char *fsFile, GLSL_VERSION version, const MACRO *pDefines=NULL );	// TODO: 必要なら追加実装する
+		//void Init( const char *vsFile, const char *tcsFile, const char *tesFile, const char *gsFile, const char *fsFile, GLSL_VERSION version, const MACRO *pDefines=NULL );// TODO: 必要なら追加実装する
 
 		void Release();
 

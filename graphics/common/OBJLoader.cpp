@@ -3,80 +3,10 @@
 #include	<oreore/io/FileIO.h>
 
 
+
 const size_t BUFFER_LENGTH	= 1024;
 const size_t NAME_LENGTH	= 256;
 const int32 INVALID = -1;
-
-
-
-// Same implementation as FileIO.h
-//static tstring textFileRead( const tstring& filepath )
-//{
-//	//setlocale( LC_ALL, "japanese" );
-//	TCHAR		*buf;
-//	tifstream	fin;
-//
-//	fin.open( filepath );
-//
-//	if( !fin.is_open() )
-//	{
-//		tcout << _T( "Could not open file: " ) << filepath << _T( "..." ) << tendl;
-//		return tstring( _T( "" ) );
-//	}
-//
-//	fin.seekg( 0, std::ios::end ).tellg();// ファイル末尾を探す
-//	size_t eofPos = size_t( fin.tellg() );// ファイル末尾インデックスを取得する
-//
-//	fin.clear();
-//
-//	fin.seekg( 0, tifstream::beg );	// ファイル先頭に戻る
-//	//bool hasBom = SkipBOM( fin );// BOMがある場合は無視する. // TODO: これやってもUNICODEで正しくシェーダー読み込めない。日本語が原因かも. 2017.11.18
-//
-//	size_t begPos = size_t( fin.tellg() );
-//	size_t filesize = eofPos - begPos;
-//	//tcout << "file size = " << filesize << " [bytes]" << endl;
-//
-//	buf	= new TCHAR[filesize+1];
-//	memset( buf, 0, filesize );// 0クリアしておく
-//
-//	fin.read( buf, filesize );
-//
-//	fin.close();
-//	buf[filesize] = '\0';
-//	tstring str( buf );
-//	//	tcout << str;
-//
-//	delete[] buf;
-//
-//	return str;
-//}
-
-
-
-// Same implementation as FileIO.h
-//static OreOreLib::Array<tstring> splitString( const tstring &str, const tstring &delim )
-//{
-//	OreOreLib::Array<tstring> res;
-//	size_t	current = 0,
-//		found,
-//		delimlen = delim.size();
-//	while( ( found = str.find( delim, current ) ) != tstring::npos )
-//	{
-//		tstring aaa = tstring( str, current, found - current );
-//
-//		if( aaa.size() > 0 )
-//			res.AddToTail( aaa/*tstring(str, current, found - current)*/ );
-//		current = found + delimlen;
-//	}
-//	tstring aaa = tstring( str, current, str.size() - current );
-//	if( aaa.size() > 0 )
-//		res.AddToTail( aaa/*tstring(str, current, str.size() - current)*/ );
-//
-//	return res;
-//}
-
-
-
 
 
 OBJLoader::OBJLoader()

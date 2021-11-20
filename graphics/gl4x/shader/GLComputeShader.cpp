@@ -1,7 +1,7 @@
 ﻿#include "GLComputeShader.h"
 
 #include	<oreore/common/Utility.h>
-#include	<oreore/io/FileIO.h>//"../io/FileIO.h"
+#include	<oreore/io/FileIO.h>
 
 
 
@@ -52,7 +52,7 @@ namespace OreOreLib
 
 
 
-	void GLComputeShader::Init( const TCHAR *filename, GLSL_VERSION version, const GL_SHADER_MACRO *pDefines )
+	void GLComputeShader::Init( const TCHAR *filename, GLSL_VERSION version, const MACRO *pDefines )
 	{
 		tcout << "GLComputeShader::Init( " << filename << " )..."<< tendl;
 

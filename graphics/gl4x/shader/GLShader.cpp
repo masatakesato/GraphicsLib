@@ -3,7 +3,7 @@
 #include	<windows.h>
 
 #include	<oreore/common/Utility.h>
-#include	<oreore/io/FileIO.h>//"../io/FileIO.h"
+#include	<oreore/io/FileIO.h>
 
 
 
@@ -57,7 +57,7 @@ namespace OreOreLib
 
 
 
-	void GLShader::Init( const TCHAR *filename, GLSL_VERSION version, const GL_SHADER_MACRO *pDefines )
+	void GLShader::Init( const TCHAR *filename, GLSL_VERSION version, const MACRO *pDefines )
 	{
 //		tcout << "GLShader::Init( " << filename << " )..."<< tendl;
 		
@@ -145,7 +145,7 @@ namespace OreOreLib
 
 
 
-	void GLShader::Init( const TCHAR *vsFile, const TCHAR *fsFile, GLSL_VERSION version, const GL_SHADER_MACRO *pDefines )
+	void GLShader::Init( const TCHAR *vsFile, const TCHAR *fsFile, GLSL_VERSION version, const MACRO *pDefines )
 	{
 		//=============== ファイルからソースコードを読み込む ===============//
 		tstring	vsText = textFileRead(vsFile);// バーテックスシェーダ読み込み
@@ -183,7 +183,7 @@ namespace OreOreLib
 
 
 
-	void GLShader::Init( const TCHAR *vsFile, const TCHAR *gsFile, const TCHAR *fsFile, GLSL_VERSION version, const GL_SHADER_MACRO *pDefines )
+	void GLShader::Init( const TCHAR *vsFile, const TCHAR *gsFile, const TCHAR *fsFile, GLSL_VERSION version, const MACRO *pDefines )
 	{
 		//=============== ファイルからソースコードを読み込む ===============//
 		tstring	vsText = textFileRead(vsFile);// バーテックスシェーダ読み込み

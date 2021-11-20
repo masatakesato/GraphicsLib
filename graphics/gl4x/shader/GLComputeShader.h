@@ -18,7 +18,7 @@ namespace OreOreLib
 		GLComputeShader( const GLComputeShader &obj );
 		~GLComputeShader();
 
-		void Init( const TCHAR *filename, GLSL_VERSION version, const GL_SHADER_MACRO *pDefines=NULL );
+		void Init( const TCHAR *filename, GLSL_VERSION version, const MACRO *pDefines=NULL );
 		void Release();
 
 		inline void Link() const		{ glLinkProgram(m_Shader_id); };

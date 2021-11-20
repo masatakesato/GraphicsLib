@@ -43,10 +43,10 @@ namespace OreOreLib
 	{
 		GLuint	program_id;
 
-		GL_SHADER_MACRO Defines[] =
+		MACRO Defines[] =
 		{
-			GL_SHADER_MACRO( _T( "THREADS_PER_BLOCK" ), to_tstring( THREADS_PER_BLOCK ) ),
-			GL_SHADER_MACRO( _T( "" ), _T( "" ) ),
+			MACRO( _T( "THREADS_PER_BLOCK" ), to_tstring( THREADS_PER_BLOCK ) ),
+			MACRO( _T( "" ), _T( "" ) ),
 		};
 
 
