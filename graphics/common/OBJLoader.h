@@ -3,10 +3,9 @@
 
 #pragma warning(disable : 4996)
 
-#include	<oreore/mathlib/GraphicsMath.h>
 #include	<oreore/container/Array.h>
 
-#include	<graphics/gl4x/scene/Material.h>
+#include	"Material.h"
 
 
 

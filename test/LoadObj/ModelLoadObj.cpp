@@ -13,7 +13,7 @@ using namespace OreOreLib;
 int numVertAttrs = 0;
 VertexLayout *vertexlist = NULL;
 int numIndices = 0;
-int *Indices = 0;
+uint32 *Indices = 0;
 
 
 
@@ -132,7 +132,7 @@ void ModelLoadObj::Init()
 	GetCurrentDirectory( MAX_PATH, currdir );
 	SetCurrentDirectory( _T( "../../../assets/scene/obj" ) );
 
-	m_OBJLoader.Load(	//"a building.obj"
+	m_MeshLoader.Load(	//"a building.obj"
 						//"30x36_bc_m.obj"
 						//"mjc00.obj"
 						//"sir00obj.obj"
@@ -152,12 +152,12 @@ void ModelLoadObj::Init()
 
 	SetCurrentDirectory( currdir );
 
-	m_OBJLoader.Information();
+	m_MeshLoader.Information();
 
-	m_OBJLoader.GetGroupInfo(1);
+	m_MeshLoader.GetGroupInfo(1);
 
 
-	m_OBJLoader.GenVertexList(numVertAttrs, &vertexlist, numIndices, &Indices);
+	m_MeshLoader.GenVertexList( numVertAttrs, vertexlist, numIndices, Indices );
 //	m_mesh.GenerateMeshObject();
 }
 

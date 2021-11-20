@@ -7,7 +7,7 @@
 
 #include	<graphics/gl4x/shader/GLShader.h>
 #include	<graphics/gl4x/scene/Camera.h>
-#include	<graphics/gl4x/scene/OBJLoader.h>
+#include	<graphics/gl4x/scene/MeshLoader.h>
 
 
 
@@ -39,7 +39,7 @@ private:
 	GLuint	m_DiffuseTexture;
 */
 
-	OBJLoader m_OBJLoader;
+	MeshLoader m_MeshLoader;
 
 
 public:
