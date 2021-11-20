@@ -3,8 +3,8 @@
 #include	<windows.h>
 
 #include	<oreore/common/Utility.h>
+#include	<oreore/io/FileIO.h>//"../io/FileIO.h"
 
-#include	"../io/FileIO.h"
 
 
 namespace OreOreLib

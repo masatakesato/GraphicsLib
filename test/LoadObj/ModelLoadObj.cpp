@@ -154,7 +154,7 @@ void ModelLoadObj::Init()
 
 	m_MeshLoader.Information();
 
-	m_MeshLoader.GetGroupInfo(1);
+	m_MeshLoader.GetGroupInfo(0);
 
 
 	m_MeshLoader.GenVertexList( numVertAttrs, vertexlist, numIndices, Indices );

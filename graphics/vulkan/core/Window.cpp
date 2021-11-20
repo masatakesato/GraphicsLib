@@ -7,7 +7,7 @@
 namespace vk
 {
 
-	Window::Window( int w, int h, std::string name )
+	Window::Window( int w, int h, const charstring& name )
 		: width(w)
 		, height(h)
 		, windowName( name )

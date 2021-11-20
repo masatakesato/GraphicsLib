@@ -1,78 +1,79 @@
 ﻿#include "OBJLoader.h"
 
-#define BUFFER_LENGTH 1024
-#define NAME_LENGTH 256
-
-#define DEFAULT_MATERIAL "default_material"
-#define INVALID	-1
+#include	<oreore/io/FileIO.h>
 
 
-
-// Same implementation as FileIO.h
-static tstring textFileRead( const tstring& filepath )
-{
-	//setlocale( LC_ALL, "japanese" );
-	TCHAR		*buf;
-	tifstream	fin;
-
-	fin.open( filepath );
-
-	if( !fin.is_open() )
-	{
-		tcout << _T( "Could not open file: " ) << filepath << _T( "..." ) << tendl;
-		return tstring( _T( "" ) );
-	}
-
-	fin.seekg( 0, std::ios::end ).tellg();// ファイル末尾を探す
-	size_t eofPos = size_t( fin.tellg() );// ファイル末尾インデックスを取得する
-
-	fin.clear();
-
-	fin.seekg( 0, tifstream::beg );	// ファイル先頭に戻る
-	//bool hasBom = SkipBOM( fin );// BOMがある場合は無視する. // TODO: これやってもUNICODEで正しくシェーダー読み込めない。日本語が原因かも. 2017.11.18
-
-	size_t begPos = size_t( fin.tellg() );
-	size_t filesize = eofPos - begPos;
-	//tcout << "file size = " << filesize << " [bytes]" << endl;
-
-	buf	= new TCHAR[filesize+1];
-	memset( buf, 0, filesize );// 0クリアしておく
-
-	fin.read( buf, filesize );
-
-	fin.close();
-	buf[filesize] = '\0';
-	tstring str( buf );
-	//	tcout << str;
-
-	delete[] buf;
-
-	return str;
-}
+const size_t BUFFER_LENGTH	= 1024;
+const size_t NAME_LENGTH	= 256;
+const int32 INVALID = -1;
 
 
 
 // Same implementation as FileIO.h
-static OreOreLib::Array<tstring> splitString( const tstring &str, const tstring &delim )
-{
-	OreOreLib::Array<tstring> res;
-	size_t	current = 0,
-		found,
-		delimlen = delim.size();
-	while( ( found = str.find( delim, current ) ) != tstring::npos )
-	{
-		tstring aaa = tstring( str, current, found - current );
+//static tstring textFileRead( const tstring& filepath )
+//{
+//	//setlocale( LC_ALL, "japanese" );
+//	TCHAR		*buf;
+//	tifstream	fin;
+//
+//	fin.open( filepath );
+//
+//	if( !fin.is_open() )
+//	{
+//		tcout << _T( "Could not open file: " ) << filepath << _T( "..." ) << tendl;
+//		return tstring( _T( "" ) );
+//	}
+//
+//	fin.seekg( 0, std::ios::end ).tellg();// ファイル末尾を探す
+//	size_t eofPos = size_t( fin.tellg() );// ファイル末尾インデックスを取得する
+//
+//	fin.clear();
+//
+//	fin.seekg( 0, tifstream::beg );	// ファイル先頭に戻る
+//	//bool hasBom = SkipBOM( fin );// BOMがある場合は無視する. // TODO: これやってもUNICODEで正しくシェーダー読み込めない。日本語が原因かも. 2017.11.18
+//
+//	size_t begPos = size_t( fin.tellg() );
+//	size_t filesize = eofPos - begPos;
+//	//tcout << "file size = " << filesize << " [bytes]" << endl;
+//
+//	buf	= new TCHAR[filesize+1];
+//	memset( buf, 0, filesize );// 0クリアしておく
+//
+//	fin.read( buf, filesize );
+//
+//	fin.close();
+//	buf[filesize] = '\0';
+//	tstring str( buf );
+//	//	tcout << str;
+//
+//	delete[] buf;
+//
+//	return str;
+//}
 
-		if( aaa.size() > 0 )
-			res.AddToTail( aaa/*tstring(str, current, found - current)*/ );
-		current = found + delimlen;
-	}
-	tstring aaa = tstring( str, current, str.size() - current );
-	if( aaa.size() > 0 )
-		res.AddToTail( aaa/*tstring(str, current, str.size() - current)*/ );
 
-	return res;
-}
+
+// Same implementation as FileIO.h
+//static OreOreLib::Array<tstring> splitString( const tstring &str, const tstring &delim )
+//{
+//	OreOreLib::Array<tstring> res;
+//	size_t	current = 0,
+//		found,
+//		delimlen = delim.size();
+//	while( ( found = str.find( delim, current ) ) != tstring::npos )
+//	{
+//		tstring aaa = tstring( str, current, found - current );
+//
+//		if( aaa.size() > 0 )
+//			res.AddToTail( aaa/*tstring(str, current, found - current)*/ );
+//		current = found + delimlen;
+//	}
+//	tstring aaa = tstring( str, current, str.size() - current );
+//	if( aaa.size() > 0 )
+//		res.AddToTail( aaa/*tstring(str, current, str.size() - current)*/ );
+//
+//	return res;
+//}
 
 
 
@@ -102,7 +103,7 @@ OBJLoader::~OBJLoader()
 
 bool OBJLoader::Load( const tstring& filename )
 {
-	tstring FileString = textFileRead( filename );
+	tstring FileString = OreOreLib::textFileRead( filename );
 
 	if(FileString.empty())
 		return false;
@@ -211,10 +212,10 @@ void OBJLoader::Information()
 	//tcout << "* MTLファイル名：" << mtlFileName << tendl;
 	tcout << _T("#vertices: ") << m_Vertices.Length() << tendl;
 	tcout << _T("#normals: ") << m_Normals.Length() << tendl;
-	tcout << _T("#faces：") << m_Faces.Length() << tendl;
-	tcout << _T("#materias：") << m_Materials.Length() << tendl;
-	tcout << _T("BoundingBox_Min：") << m_BoundingBox[0].x << _T(", ") << m_BoundingBox[0].y << _T(", ") << m_BoundingBox[0].z << tendl;
-	tcout << _T("BoundingBox_Max：") << m_BoundingBox[1].x << _T(", ") << m_BoundingBox[1].y << _T(", ") << m_BoundingBox[1].z << tendl;
+	tcout << _T("#faces: ") << m_Faces.Length() << tendl;
+	tcout << _T("#materias: ") << m_Materials.Length() << tendl;
+	tcout << _T("BoundingBox_Min: ") << m_BoundingBox[0].x << _T(", ") << m_BoundingBox[0].y << _T(", ") << m_BoundingBox[0].z << tendl;
+	tcout << _T("BoundingBox_Max: ") << m_BoundingBox[1].x << _T(", ") << m_BoundingBox[1].y << _T(", ") << m_BoundingBox[1].z << tendl;
 	tcout << tendl;
 
 	/*
@@ -254,14 +255,14 @@ void OBJLoader::GetGroupInfo( int idx )
 	//=================== グループの基本情報 =================//
 	int numFaces = m_Groups[idx].face_end - m_Groups[idx].face_start + 1;
 
-	tcout << _T(" GroupName : ") << m_Groups[idx].name << tendl;
-	tcout << _T(" Face : ") << m_Groups[idx].face_start << " - " << m_Groups[idx].face_end << tendl;
-	tcout << _T(" numFaces") << numFaces << tendl;
+	tcout << _T(" GroupName: ") << m_Groups[idx].name << tendl;
+	tcout << _T(" Face: ") << m_Groups[idx].face_start << " - " << m_Groups[idx].face_end << tendl;
+	tcout << _T(" numFaces: ") << numFaces << tendl;
 
 	//======== 同じマテリアルのサブグループを見つける ========//
 	int currMtl = -1;//m_Faces[ m_Groups[idx].face_start ].matsub_index;
 
-	for(int i= m_Groups[idx].face_start; i<=m_Groups[idx].face_end; ++i )
+	for( int i= m_Groups[idx].face_start; i<=m_Groups[idx].face_end; ++i )
 	{
 		if( m_Faces[i].matsub_index != currMtl )
 		{
@@ -275,6 +276,7 @@ void OBJLoader::GetGroupInfo( int idx )
 			tcout << _T(" Vertex Indices...\n");
 			for(int k=0; k<m_Faces[i].VertexAttribIndex.Length(); ++k)
 				tcout << m_Faces[i].VertexAttribIndex[k].x;
+			tcout << tendl;
 		}
 	}
 }
@@ -642,14 +644,14 @@ bool OBJLoader::ExtractMaterialComponent( Material& mat, tifstream& file, tstrin
 		// d
 		else if( (pivot=one_line.find( _T("d ") )) != tstring::npos )
 		{
-			elements = splitString( one_line.substr(pivot+2), _T(" ") );
+			elements = OreOreLib::splitString( one_line.substr(pivot+2), _T(" ") );
 			float tmp_float = (float)tatof( elements[0].c_str() );
 			mat.SetAlpha(tmp_float);
 		}
 		//　Ns
 		else if( (pivot=one_line.find( _T("Ns ") )) != tstring::npos )
 		{
-			elements = splitString(one_line.substr(pivot+2), _T(" ") );
+			elements = OreOreLib::splitString(one_line.substr(pivot+2), _T(" ") );
 			mat.SetSpecularIntensity( (float)tatof( elements[0].c_str() ) );
 		}
 		else
@@ -691,7 +693,7 @@ Vec3f OBJLoader::ExtractVector3D( const tstring& str, const tstring& delim )
 void OBJLoader::AddVertex( const tstring& str )
 {
 	Vec3f newVertex;
-	auto elements = splitString( str, _T(" ") );
+	auto elements = OreOreLib::splitString( str, _T(" ") );
 
 	if(elements.Length() < 3)
 	{
@@ -710,7 +712,7 @@ void OBJLoader::AddVertex( const tstring& str )
 void OBJLoader::AddTexCoord( const tstring& str )
 {
 	Vec2f newTexcoord = {0, 0};
-	auto elements = splitString( str, _T(" ") );
+	auto elements = OreOreLib::splitString( str, _T(" ") );
 
 	if(elements.Empty())
 	{
@@ -731,7 +733,7 @@ void OBJLoader::AddTexCoord( const tstring& str )
 void OBJLoader::AddNormal( const tstring& str )
 {
 	Vec3f newNormal;
-	auto elements = splitString( str, _T(" ") );
+	auto elements = OreOreLib::splitString( str, _T(" ") );
 
 	if(elements.Length() < 3)
 	{
@@ -756,7 +758,7 @@ int OBJLoader::AddFace( const tstring& str, int matsub_id )
 	Vec3i	VertexAttrib = {-1, -1, -1};
 
 	// スペースで区切られた文字列に分割する
-	auto chunks = splitString( str, _T(" ") );
+	auto chunks = OreOreLib::splitString( str, _T(" ") );
 	
 	// 面構造体のメモリを確保化する
 	newFace.num_verts		= (int)chunks.Length();
@@ -771,7 +773,7 @@ int OBJLoader::AddFace( const tstring& str, int matsub_id )
 
 		if( chunks[i].find( _T("//") ) != tstring::npos )// Vertex//normal
 		{
-			elements = splitString( chunks[i], _T("//") );// "//"で文字列分割する
+			elements = OreOreLib::splitString( chunks[i], _T("//") );// "//"で文字列分割する
 
 			newFace.VertexAttribIndex[i].x	= tatoi( elements[0].c_str() ) - 1;// Vertex index
 			newFace.VertexAttribIndex[i].z	= tatoi( elements[1].c_str() ) - 1;// Normal index
@@ -779,7 +781,7 @@ int OBJLoader::AddFace( const tstring& str, int matsub_id )
 		}
 		else if(chunks[i].find( _T("/") ) != tstring::npos )// "/"で区切られている場合→要素2つなら法線と頂点
 		{
-			elements = splitString( chunks[i], _T("/") );// "/"で分割する
+			elements = OreOreLib::splitString( chunks[i], _T("/") );// "/"で分割する
 			
 			if(elements.Length()==2)// Vertex/Texture
 			{

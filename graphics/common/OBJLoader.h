@@ -64,10 +64,6 @@ public:
 	inline const OreOreLib::Array<ObjNamedGroup>& GetNamedGroups() const			{ return m_Groups; };
 
 
-	// 描画メソッド
-	//friend void DrawObjMesh( OBJLoader& mesh );
-
-
 protected:
 
 	Vec3f	m_BoundingBox[2];

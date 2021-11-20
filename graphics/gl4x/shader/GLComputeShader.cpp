@@ -1,8 +1,7 @@
 ﻿#include "GLComputeShader.h"
 
 #include	<oreore/common/Utility.h>
-
-#include	"../io/FileIO.h"
+#include	<oreore/io/FileIO.h>//"../io/FileIO.h"
 
 
 

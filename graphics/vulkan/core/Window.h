@@ -16,7 +16,7 @@ namespace vk
 	{
 	public:
 
-		Window( int w, int h, std::string name );
+		Window( int w, int h, const charstring& name );
 		~Window();
 
 		Window( const Window& ) = delete;
@@ -42,7 +42,7 @@ namespace vk
 		int height;
 		bool framebufferResiszed=false;
 
-		std::string windowName;
+		const charstring windowName;
 
 		void InitWindow();
 

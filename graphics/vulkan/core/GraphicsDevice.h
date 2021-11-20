@@ -90,7 +90,6 @@ namespace vk
 		const OreOreLib::Array<const char*> m_DeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 
-
 		void CreateInstance();
 		void SetupDebugMessenger();
 		void CreateSurface();
@@ -107,6 +106,9 @@ namespace vk
 		QueueFamilyIndices FindQueueFamilies( VkPhysicalDevice physicalDevice );
 		bool CheckDeviceExtensionSupport( VkPhysicalDevice physicalDevice );
 		SwapChainSupportDetails QuerySwapChainSupport( VkPhysicalDevice physicalDevice );
+
+		bool CheckAvailableExtensions( const OreOreLib::Array<const char*>& requiredexts );
+
 
 	};
 
