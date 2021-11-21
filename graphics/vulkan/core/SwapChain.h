@@ -2,31 +2,69 @@
 #define	SWAP_CHAIN_H
 
 #include	"GraphicsDevice.h"
+#include	"Texture.h"
 
 
 
 namespace vk
 {
 
+	//class MultiSampleBuffer
+	//{
+	//public:
+
+	//	MultiSampleBuffer();
+	//	MultiSampleBuffer( GraphicsDevice& device, VkFormat format, VkExtent2D extent, VkSampleCountFlagBits msaasamples );
+	//	~MultiSampleBuffer();
+
+	//	void Init( GraphicsDevice& device, VkFormat format, VkExtent2D extent, VkSampleCountFlagBits msaasamples );
+	//	void Release();
+
+
+	//private:
+
+	//	GraphicsDeviceRef	m_refDevice;
+
+	//	VkSampleCountFlagBits	msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+	//	VkImage					colorImage;
+	//	VkDeviceMemory			colorImageMemory;
+	//	VkImageView				colorImageView;
+
+
+	//	friend class SwapChain;
+
+	//};
+
+
+
+
+
 	class SwapChain
 	{
 	public:
 
 		SwapChain();
-		SwapChain( GraphicsDevice& device, VkExtent2D extent );
+		SwapChain( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples=VK_SAMPLE_COUNT_1_BIT );
 		SwapChain( const SwapChain& obj )=delete;
 		~SwapChain();
 
-		void Init( GraphicsDevice& device, VkExtent2D extent );
+		void Init( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples=VK_SAMPLE_COUNT_1_BIT );
 		void Release();
 
-
-		uint32_t NumImages() const		{ return static_cast<uint32_t>( m_Images.Length() ); }
-		VkFormat ImageFormat() const	{ return m_ImageFormat; }
-		VkImageView ImageView( int i ) const	{ return m_ImageViews[i]; }
-		const VkExtent2D& Extent() const	{ return m_WindowExtent;}
-
 		VkSwapchainKHR Handle() const	{ return m_SwapChain; }
+
+		uint32_t NumImages() const		{ return static_cast<uint32_t>( m_ColorImages.Length() ); }
+		VkFormat ImageFormat() const	{ return m_ImageFormat; }
+		VkImageView ImageView( int i ) const	{ return m_ColorImageViews[i]; }
+
+		VkFormat DepthFormat() const	{ return m_DepthFormat; }
+		VkImageView DepthView() const	{ return m_DepthImageView; }
+
+		VkSampleCountFlagBits MultiSampleCount() const { return msaaSamples; }
+		VkImageView	MultiSampleView() const	{ return colorImageView; }
+
+
+		const VkExtent2D& Extent() const	{ return m_WindowExtent; }
 
 
 	private:
@@ -37,15 +75,30 @@ namespace vk
 		VkSwapchainKHR					m_SwapChain;
 		VkExtent2D						m_SwapChainExtent;
 
+		// Color
 		VkFormat						m_ImageFormat;
-
-
-		OreOreLib::Array<VkImage>		m_Images;
-		OreOreLib::Array<VkImageView>	m_ImageViews;
+		OreOreLib::Array<VkImage>		m_ColorImages;
+		OreOreLib::Array<VkImageView>	m_ColorImageViews;
 		
+		// Depth
+		VkFormat						m_DepthFormat;
+		VkImage							m_DepthImage;
+		VkDeviceMemory					m_DepthImageMemory;
+		VkImageView						m_DepthImageView;
+
+		// Multisample
+		VkSampleCountFlagBits	msaaSamples;
+		VkImage					colorImage;
+		VkDeviceMemory			colorImageMemory;
+		VkImageView				colorImageView;
+
+
+
 
 		void InitSwapChain();
 		void InitImageViews();
+		void InitDepthResources();
+		void InitMsaaResources();
 
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat( VkFormat format, VkColorSpaceKHR colorSpace, const OreOreLib::Array<VkSurfaceFormatKHR>& availableFormats );
 		VkPresentModeKHR ChooseSwapPresentMode( VkPresentModeKHR presentmode, const OreOreLib::Array<VkPresentModeKHR>& availablePresentModes );

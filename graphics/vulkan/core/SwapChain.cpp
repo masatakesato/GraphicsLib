@@ -7,23 +7,111 @@
 namespace vk
 {
 
+	//MultiSampleBuffer::MultiSampleBuffer()
+	//	: m_refDevice()
+	//	, msaaSamples( VK_SAMPLE_COUNT_1_BIT )
+	//	, colorImage( VK_NULL_HANDLE )
+	//	, colorImageMemory( VK_NULL_HANDLE )
+	//	, colorImageView( VK_NULL_HANDLE )
+	//{
+
+	//}
+
+
+	//MultiSampleBuffer::MultiSampleBuffer( GraphicsDevice& device, VkFormat format, VkExtent2D extent, VkSampleCountFlagBits msaasamples )
+	//{
+	//	Init( device, format, extent, msaasamples );
+	//}
+
+
+	//MultiSampleBuffer::~MultiSampleBuffer()
+	//{
+
+	//}
+
+
+
+	//void MultiSampleBuffer::Init( GraphicsDevice& device, VkFormat format, VkExtent2D extent, VkSampleCountFlagBits msaasamples )
+	//{
+	//	m_refDevice	= device;
+	//	msaaSamples	= msaasamples;
+
+	//	// https://github.com/Overv/VulkanTutorial/issues/118
+	//	// https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/vk__mem__alloc_8h.html
+	//	CreateImage(	m_refDevice->PhysicalDevice(), m_refDevice->Device(),
+	//					extent.width, extent.height, 1, msaaSamples, format,
+	//					VK_IMAGE_TILING_OPTIMAL,
+	//					VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+	//					VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,//VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT,//LAZIY***はモバイルプラットフォーム向け.
+	//					colorImage, colorImageMemory );
+
+	//	CreateImageView(	m_refDevice->Device(),
+	//						colorImageView,
+	//						colorImage,
+	//						format,
+	//						VK_IMAGE_ASPECT_COLOR_BIT, 1 );
+	//}
+
+
+
+	//void MultiSampleBuffer::Release()
+	//{
+
+	//	if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
+	//	{
+	//		// Delete Multisampling relevant variables
+	//		if( colorImageView != VK_NULL_HANDLE )
+	//		{
+	//			vkDestroyImageView( m_refDevice->Device(), colorImageView, nullptr );
+	//			colorImageView = VK_NULL_HANDLE;
+	//		}
+
+	//		if( colorImage != VK_NULL_HANDLE )
+	//		{
+	//			vkDestroyImage( m_refDevice->Device(), colorImage, nullptr );
+	//			colorImage = VK_NULL_HANDLE;
+	//		}
+
+	//		if( colorImageMemory != VK_NULL_HANDLE )
+	//		{
+	//			vkFreeMemory( m_refDevice->Device(), colorImageMemory, nullptr );
+	//			colorImageMemory = VK_NULL_HANDLE;
+	//		}
+
+	//		// Reset GraphicsDevice
+	//		m_refDevice.Reset();
+	//	}
+	//}
+
+
+
+
+
+
+
+
 	SwapChain::SwapChain()
 		: m_refDevice()
 		, m_WindowExtent{ 0, 0 }
 		, m_SwapChain( VK_NULL_HANDLE )
 		, m_SwapChainExtent{ 0, 0 }
 		, m_ImageFormat( VK_FORMAT_UNDEFINED )
+
+		, m_DepthFormat( VK_FORMAT_UNDEFINED )
+		, m_DepthImage( VK_NULL_HANDLE )
+		, m_DepthImageMemory( VK_NULL_HANDLE )
+		, m_DepthImageView( VK_NULL_HANDLE )
+		//, msaaSamples( VK_SAMPLE_COUNT_1_BIT )
 	{
 
 	}
 
 
-	SwapChain::SwapChain( GraphicsDevice& device, VkExtent2D extent )
-		//: m_refDevice( device )
-		//, m_WindowExtent( extent )
+	SwapChain::SwapChain( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples )
 		: m_SwapChain( VK_NULL_HANDLE )
 		, m_SwapChainExtent{ 0, 0 }
 		, m_ImageFormat( VK_FORMAT_UNDEFINED )
+		, m_DepthFormat( VK_FORMAT_UNDEFINED )
 	{
 		Init( device, extent );
 	}
@@ -37,34 +125,83 @@ namespace vk
 
 
 
-	void SwapChain::Init( GraphicsDevice& device, VkExtent2D extent )
+	void SwapChain::Init( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples )
 	{
 		m_refDevice		= device;
 		m_WindowExtent	= extent;
+		msaaSamples		= msaasamples;
 
 		InitSwapChain();
 		InitImageViews();
+		InitDepthResources();
+		InitMsaaResources();
 	}
 
 
 
 	void SwapChain::Release()
 	{
+
 		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
-			for( auto& view : m_ImageViews )
-				vkDestroyImageView( m_refDevice->Device(), view, nullptr );
-			m_ImageViews.Release();
 
+			// Delete Multisampling buffers
+			if( colorImageView != VK_NULL_HANDLE )
+			{
+				vkDestroyImageView( m_refDevice->Device(), colorImageView, nullptr );
+				colorImageView = VK_NULL_HANDLE;
+			}
+
+			if( colorImage != VK_NULL_HANDLE )
+			{
+				vkDestroyImage( m_refDevice->Device(), colorImage, nullptr );
+				colorImage = VK_NULL_HANDLE;
+			}
+
+			if( colorImageMemory != VK_NULL_HANDLE )
+			{
+				vkFreeMemory( m_refDevice->Device(), colorImageMemory, nullptr );
+				colorImageMemory = VK_NULL_HANDLE;
+			}
+
+
+			// Delete Depth buffer
+			if( m_DepthImageView != VK_NULL_HANDLE )
+			{
+				vkDestroyImageView( m_refDevice->Device(), m_DepthImageView, nullptr );
+				m_DepthImageView = VK_NULL_HANDLE;
+			}
+
+			if( m_DepthImage != VK_NULL_HANDLE )
+			{
+				vkDestroyImage( m_refDevice->Device(), m_DepthImage, nullptr );
+				m_DepthImage = VK_NULL_HANDLE;
+			}
+
+			if( m_DepthImageMemory != VK_NULL_HANDLE )
+			{
+				vkFreeMemory( m_refDevice->Device(), m_DepthImageMemory, nullptr );
+				m_DepthImageMemory = VK_NULL_HANDLE;
+			}
+
+
+			// Delete m_ColorImageViews
+			for( auto& view : m_ColorImageViews )
+				vkDestroyImageView( m_refDevice->Device(), view, nullptr );
+			m_ColorImageViews.Release();
+
+
+			// Delete m_SwapChain
 			if( m_SwapChain != VK_NULL_HANDLE )
 			{
 				vkDestroySwapchainKHR( m_refDevice->Device(), m_SwapChain, nullptr );
 				m_SwapChain = VK_NULL_HANDLE;
 			}
 
+
+			// Reset GraphicsDevice
 			m_refDevice.Reset();
 		}
-
 	}
 
 
@@ -121,8 +258,8 @@ namespace vk
 		VK_CHECK_RESULT( vkCreateSwapchainKHR( m_refDevice->Device(), &createInfo, nullptr, &m_SwapChain ) );
 
 		vkGetSwapchainImagesKHR( m_refDevice->Device(), m_SwapChain, &imageCount, nullptr );
-		m_Images.Resize( imageCount );
-		vkGetSwapchainImagesKHR( m_refDevice->Device(), m_SwapChain, &imageCount, m_Images.begin() );
+		m_ColorImages.Resize( imageCount );
+		vkGetSwapchainImagesKHR( m_refDevice->Device(), m_SwapChain, &imageCount, m_ColorImages.begin() );
 
 		m_ImageFormat		= surfaceFormat.format;
 		m_SwapChainExtent	= extent;
@@ -133,13 +270,70 @@ namespace vk
 
 	void SwapChain::InitImageViews()
 	{
-		m_ImageViews.Resize( m_Images.Length() );
+		m_ColorImageViews.Resize( m_ColorImages.Length() );
 
-		for( size_t i=0; i<m_Images.Length(); i++ )
-			CreateImageView( m_refDevice->Device(), m_ImageViews[i], m_Images[i], m_ImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1 );
+		for( size_t i=0; i<m_ColorImages.Length(); i++ )
+			CreateImageView( m_refDevice->Device(), m_ColorImageViews[i], m_ColorImages[i], m_ImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1 );
 	}
 
 
+
+	void SwapChain::InitDepthResources()
+	{
+		m_DepthFormat = FindDepthFormat( m_refDevice->PhysicalDevice() );
+
+		// Create VkImage and allocate VkDeviceMemory
+		CreateImage(	m_refDevice->PhysicalDevice(),  m_refDevice->Device(),
+						m_WindowExtent.width, m_WindowExtent.height, 1, msaaSamples, m_DepthFormat,
+						VK_IMAGE_TILING_OPTIMAL,
+						VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+						VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+						m_DepthImage, m_DepthImageMemory );
+
+		// Create VkImageView
+		CreateImageView(	m_refDevice->Device(),
+							m_DepthImageView,
+							m_DepthImage,
+							m_DepthFormat,
+							VK_IMAGE_ASPECT_DEPTH_BIT,
+							1 );
+
+		// renderpass implicitly deals with transition.
+		TransitionImageLayout(	m_refDevice->Device(), m_refDevice->CommandPool(), m_refDevice->GraphicsQueue(),
+								m_DepthImage,
+								m_DepthFormat,
+								VK_IMAGE_LAYOUT_UNDEFINED,
+								VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+								1 );
+
+		//TODO: テクスチャアセットではなく、フレームバッファとして確保したい  VK_IMAGE_USAGE_***_ATTACHMENT_BIT
+		//m_DepthBuffer.Init( m_Device, m_SwapChain.Extent().width, m_SwapChain.Extent().height, depthFormat, false );
+
+	}
+
+
+
+	void SwapChain::InitMsaaResources()
+	{
+		if( msaaSamples == VK_SAMPLE_COUNT_1_BIT )
+			return;
+
+		// https://github.com/Overv/VulkanTutorial/issues/118
+		// https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/vk__mem__alloc_8h.html
+		CreateImage(	m_refDevice->PhysicalDevice(), m_refDevice->Device(),
+						m_WindowExtent.width, m_WindowExtent.height, 1, msaaSamples, m_ImageFormat,
+						VK_IMAGE_TILING_OPTIMAL,
+						VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+						VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,//VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT,//LAZIY***はモバイルプラットフォーム向け.
+						colorImage, colorImageMemory );
+
+		CreateImageView(	m_refDevice->Device(),
+							colorImageView,
+							colorImage,
+							m_ImageFormat,
+							VK_IMAGE_ASPECT_COLOR_BIT, 1 );
+
+	}
 
 
 
