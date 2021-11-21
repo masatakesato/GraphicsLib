@@ -12,19 +12,6 @@
 namespace vk
 {
 
-	// bindingDescs/attribDescs
-	// 勝手に外部からデータ改編できなくしたい
-
-	//class IVertexLayout
-	//{
-	//public:
-
-	//	virtual const OreOreLib::Memory<VkVertexInputBindingDescription>& BindingDescriptions() const = 0;
-	//	virtual const OreOreLib::Memory<VkVertexInputAttributeDescription>& AttributeDescriptions() const = 0;
-	//};
-
-
-
 	namespace VertexLayout
 	{
 

@@ -415,6 +415,46 @@ namespace vk
 
 
 
+	//######################################################################################//
+	//																						//
+	//										SafeDelete										//
+	//																						//
+	//######################################################################################//
+
+
+	inline static void SafeDeleteImage( VkDevice device, VkImage& image )
+	{
+		if( image != VK_NULL_HANDLE )
+		{
+			vkDestroyImage( device, image, nullptr );
+			image = VK_NULL_HANDLE;
+		}
+	}
+
+
+
+	inline static void SafeDeleteImageView( VkDevice device, VkImageView& view )
+	{
+		if( view != VK_NULL_HANDLE )
+		{
+			vkDestroyImageView( device, view, nullptr );
+			view = VK_NULL_HANDLE;
+		}
+	}
+
+
+
+	inline static void SafeDeleteDeviceMemory( VkDevice device, VkDeviceMemory& mem )
+	{
+		if( mem != VK_NULL_HANDLE )
+		{
+			vkFreeMemory( device, mem, nullptr );
+			mem = VK_NULL_HANDLE;
+		}
+	}
+
+
+
 }// end of vulkan namespace
 
 

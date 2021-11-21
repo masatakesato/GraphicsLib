@@ -61,12 +61,12 @@ namespace vk
 	{
 		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
-			vkDestroyImageView( m_refDevice->Device(), m_ImageView, nullptr );
-			vkDestroyImage( m_refDevice->Device(), m_Image, nullptr );
-			vkFreeMemory( m_refDevice->Device(), m_DeviceMemory, nullptr );	
-		}
+			SafeDeleteImageView( m_refDevice->Device(), m_ImageView );
+			SafeDeleteImage( m_refDevice->Device(), m_Image );
+			SafeDeleteDeviceMemory( m_refDevice->Device(), m_DeviceMemory );
 
-		m_refDevice.Reset();
+			m_refDevice.Reset();
+		}
 	}
 
 
