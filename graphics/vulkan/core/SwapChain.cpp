@@ -95,6 +95,7 @@ namespace vk
 		, m_WindowExtent{ 0, 0 }
 		, m_SwapChain( VK_NULL_HANDLE )
 		, m_SwapChainExtent{ 0, 0 }
+		, m_NumImages( 0 )
 		, m_ImageFormat( VK_FORMAT_UNDEFINED )
 
 		, m_DepthFormat( VK_FORMAT_UNDEFINED )
@@ -142,6 +143,7 @@ namespace vk
 		InitDepthResources();
 		InitMsaaResources();
 		InitFramebufferAttachments();
+		InitFences();
 	}
 
 
@@ -206,7 +208,7 @@ namespace vk
 				m_SwapChain = VK_NULL_HANDLE;
 			}
 
-
+			m_NumImages = 0;
 			// Reset GraphicsDevice
 			//m_refDevice.Reset();
 		}
@@ -224,15 +226,15 @@ namespace vk
 		VkPresentModeKHR presentMode = ChooseSwapPresentMode( VK_PRESENT_MODE_MAILBOX_KHR, swapChainSupport.presentModes );
 		VkExtent2D extent = ChooseSwapExtent( swapChainSupport.capabilities );
 
-		uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-		if( swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount )
-			imageCount = swapChainSupport.capabilities.maxImageCount;
+		m_NumImages = swapChainSupport.capabilities.minImageCount + 1;
+		if( swapChainSupport.capabilities.maxImageCount > 0 && m_NumImages > swapChainSupport.capabilities.maxImageCount )
+			m_NumImages = swapChainSupport.capabilities.maxImageCount;
 
 		VkSwapchainCreateInfoKHR createInfo = {};
 		createInfo.sType			= VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 		createInfo.surface			= m_refDevice->Surface();
 
-		createInfo.minImageCount	= imageCount;
+		createInfo.minImageCount	= m_NumImages;
 		createInfo.imageFormat		= surfaceFormat.format;
 		createInfo.imageColorSpace	= surfaceFormat.colorSpace;
 		createInfo.imageExtent		= extent;
@@ -265,9 +267,9 @@ namespace vk
 
 		VK_CHECK_RESULT( vkCreateSwapchainKHR( m_refDevice->Device(), &createInfo, nullptr, &m_SwapChain ) );
 
-		vkGetSwapchainImagesKHR( m_refDevice->Device(), m_SwapChain, &imageCount, nullptr );
-		m_ColorImages.Resize( imageCount );
-		vkGetSwapchainImagesKHR( m_refDevice->Device(), m_SwapChain, &imageCount, m_ColorImages.begin() );
+		vkGetSwapchainImagesKHR( m_refDevice->Device(), m_SwapChain, &m_NumImages, nullptr );
+		m_ColorImages.Resize( m_NumImages );
+		vkGetSwapchainImagesKHR( m_refDevice->Device(), m_SwapChain, &m_NumImages, m_ColorImages.begin() );
 
 		m_ImageFormat		= surfaceFormat.format;
 		m_SwapChainExtent	= extent;
@@ -278,7 +280,7 @@ namespace vk
 
 	void SwapChain::InitImageViews()
 	{
-		m_ColorImageViews.Resize( m_ColorImages.Length() );
+		m_ColorImageViews.Resize( m_NumImages );
 
 		for( size_t i=0; i<m_ColorImages.Length(); i++ )
 			CreateImageView( m_refDevice->Device(), m_ColorImageViews[i], m_ColorImages[i], m_ImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1 );
@@ -349,7 +351,7 @@ namespace vk
 	{
 		if( m_bEnableMultisample )
 		{
-			m_FramebufferAttachments.Init( m_ColorImageViews.Length(), 3 );
+			m_FramebufferAttachments.Init( (int)m_NumImages, 3 );
 
 			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )
 			{
@@ -360,7 +362,7 @@ namespace vk
 		}
 		else
 		{
-			m_FramebufferAttachments.Init( m_ColorImageViews.Length(), 2 );
+			m_FramebufferAttachments.Init( (int)m_NumImages, 2 );
 
 			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )
 			{
@@ -371,6 +373,14 @@ namespace vk
 
 
 	}
+
+
+
+	void SwapChain::InitFences()
+	{
+		imagesInFlight.Resize( m_NumImages, VK_NULL_HANDLE );
+	}
+
 
 
 

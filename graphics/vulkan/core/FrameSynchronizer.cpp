@@ -8,13 +8,15 @@ namespace vk
 {
 
 	FrameSynchronizer::FrameSynchronizer()
+		: currentFrame( 0 )
 	{
 
 	}
 	
 
 	
-	FrameSynchronizer::FrameSynchronizer( GraphicsDevice& device, int numswaps, int maxConcurrentFrames )
+	FrameSynchronizer::FrameSynchronizer( GraphicsDevice& device, int numswaps, uint32_t maxConcurrentFrames )
+		: currentFrame( 0 )
 	{
 		Init( device, numswaps, maxConcurrentFrames );
 	}
@@ -29,15 +31,15 @@ namespace vk
 
 
 
-	void FrameSynchronizer::Init( GraphicsDevice& device, int numswaps, int maxConcurrentFrames )
+	void FrameSynchronizer::Init( GraphicsDevice& device, int numswaps, uint32_t maxConcurrentFrames )
 	{
 		m_refDevice				= device;
 		m_MaxConcurrentFrames	= maxConcurrentFrames;
 
-		imageAvailableSemaphores.Resize( maxConcurrentFrames );
-		renderFinishedSemaphores.Resize( maxConcurrentFrames );
+		imageAvailableSemaphores.Resize( (int)maxConcurrentFrames );
+		renderFinishedSemaphores.Resize( (int)maxConcurrentFrames );
 		inFlightFences.Resize( maxConcurrentFrames );
-		imagesInFlight.Resize( numswaps, VK_NULL_HANDLE );
+//		imagesInFlight.Resize( numswaps, VK_NULL_HANDLE );
 
 		VkSemaphoreCreateInfo semaphoreInfo = {};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -92,6 +94,13 @@ namespace vk
 	}
 
 
+
+	void FrameSynchronizer::WaitForCurrentFrame()
+	{
+		// グラフィックスキューにサブミットしたcurrentFrameジョブ完了してinFlightFencesがシグナル状態になるまでCPU待機する
+		vkWaitForFences( m_refDevice->Device(), 1, &inFlightFences[ currentFrame ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
+		
+	}
 
 
 }// end of namespace vk

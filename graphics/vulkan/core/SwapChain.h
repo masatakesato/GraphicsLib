@@ -55,7 +55,7 @@ namespace vk
 
 		VkSwapchainKHR Handle() const	{ return m_SwapChain; }
 
-		uint32_t NumImages() const		{ return static_cast<uint32_t>( m_ColorImages.Length() ); }
+		uint32_t NumImages() const		{ return m_NumImages; }
 		VkFormat ImageFormat() const	{ return m_ImageFormat; }
 		VkImageView ImageView( int i ) const	{ return m_ColorImageViews[i]; }
 
@@ -68,6 +68,10 @@ namespace vk
 		const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 
 		const VkExtent2D& Extent() const	{ return m_WindowExtent; }
+		const VkFence& ImagesInFlight( int i ) const { return imagesInFlight[i]; }
+
+		void SetImagesInFlight( int i, VkFence fence ){ imagesInFlight[i]=fence; }
+
 
 
 	private:
@@ -79,6 +83,7 @@ namespace vk
 		VkExtent2D						m_SwapChainExtent;
 
 		// Color
+		uint32_t						m_NumImages;
 		VkFormat						m_ImageFormat;
 		OreOreLib::Array<VkImage>		m_ColorImages;
 		OreOreLib::Array<VkImageView>	m_ColorImageViews;
@@ -99,12 +104,16 @@ namespace vk
 		// Attachment views for Framebuffer
 		OreOreLib::NDArray<VkImageView, 2>	m_FramebufferAttachments;
 
+		// レンダリング同期オブジェクト(参照)
+		OreOreLib::Array<VkFence>		imagesInFlight;
+
 
 		void InitSwapChain();
 		void InitImageViews();
 		void InitDepthResources();
 		void InitMsaaResources();
 		void InitFramebufferAttachments();
+		void InitFences();
 
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat( VkFormat format, VkColorSpaceKHR colorSpace, const OreOreLib::Array<VkSurfaceFormatKHR>& availableFormats );
 		VkPresentModeKHR ChooseSwapPresentMode( VkPresentModeKHR presentmode, const OreOreLib::Array<VkPresentModeKHR>& availablePresentModes );
