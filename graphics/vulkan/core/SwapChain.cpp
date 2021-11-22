@@ -101,7 +101,12 @@ namespace vk
 		, m_DepthImage( VK_NULL_HANDLE )
 		, m_DepthImageMemory( VK_NULL_HANDLE )
 		, m_DepthImageView( VK_NULL_HANDLE )
-		//, msaaSamples( VK_SAMPLE_COUNT_1_BIT )
+
+		, m_bEnableMultisample( false )
+		, msaaSamples( VK_SAMPLE_COUNT_1_BIT )
+		, colorImage( VK_NULL_HANDLE )
+		, colorImageMemory( VK_NULL_HANDLE )
+		, colorImageView( VK_NULL_HANDLE )
 	{
 
 	}
@@ -127,14 +132,16 @@ namespace vk
 
 	void SwapChain::Init( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples )
 	{
-		m_refDevice		= device;
-		m_WindowExtent	= extent;
-		msaaSamples		= msaasamples;
+		m_refDevice				= device;
+		m_WindowExtent			= extent;
+		m_bEnableMultisample	= msaasamples != VK_SAMPLE_COUNT_1_BIT;
+		msaaSamples				= msaasamples;
 
 		InitSwapChain();
 		InitImageViews();
 		InitDepthResources();
 		InitMsaaResources();
+		InitFramebufferAttachments();
 	}
 
 
@@ -144,6 +151,7 @@ namespace vk
 
 		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
+			m_FramebufferAttachments.Release();
 
 			// Delete Multisampling buffers
 			if( colorImageView != VK_NULL_HANDLE )
@@ -200,7 +208,7 @@ namespace vk
 
 
 			// Reset GraphicsDevice
-			m_refDevice.Reset();
+			//m_refDevice.Reset();
 		}
 	}
 
@@ -335,6 +343,34 @@ namespace vk
 
 	}
 
+
+
+	void SwapChain::InitFramebufferAttachments()
+	{
+		if( m_bEnableMultisample )
+		{
+			m_FramebufferAttachments.Init( m_ColorImageViews.Length(), 3 );
+
+			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )
+			{
+				m_FramebufferAttachments(i, 0) = colorImageView;
+				m_FramebufferAttachments(i, 1) = m_DepthImageView;
+				m_FramebufferAttachments(i, 2) = m_ColorImageViews[i];
+			}
+		}
+		else
+		{
+			m_FramebufferAttachments.Init( m_ColorImageViews.Length(), 2 );
+
+			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )
+			{
+				m_FramebufferAttachments(i, 0) = m_ColorImageViews[i];
+				m_FramebufferAttachments(i, 1) = m_DepthImageView;
+			}
+		}
+
+
+	}
 
 
 

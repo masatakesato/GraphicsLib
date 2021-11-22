@@ -105,7 +105,7 @@ namespace vk
 				m_Sampler = VK_NULL_HANDLE;
 			}
 
-			m_refDevice.Reset();
+			//m_refDevice.Reset();
 		}
 
 		m_SamplerInfo = DefaultSamplerInfo();

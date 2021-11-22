@@ -88,7 +88,7 @@ namespace vk
 				m_PipelineLayout = VK_NULL_HANDLE;
 			}
 
-			m_refDevice.Reset();
+			//m_refDevice.Reset();
 		}
 	}
 

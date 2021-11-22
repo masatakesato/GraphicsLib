@@ -14,7 +14,7 @@ namespace vk
 	
 
 	
-	Framebuffer::Framebuffer( GraphicsDevice& device, VkRenderPass renderPass, int numswaps, uint32_t width, uint32_t height, const OreOreLib::Memory<VkImageView>& attachmentViews )
+	Framebuffer::Framebuffer( GraphicsDevice& device, VkRenderPass renderPass, int numswaps, uint32_t width, uint32_t height, const OreOreLib::NDArray<VkImageView, 2>& attachmentViews )
 	{
 		Init( device, renderPass, numswaps, width, height, attachmentViews );
 	}
@@ -29,7 +29,7 @@ namespace vk
 
 
 
-	void Framebuffer::Init( GraphicsDevice& device, VkRenderPass renderPass, int numswaps, uint32_t width, uint32_t height, const OreOreLib::Memory<VkImageView>& attachmentViews )
+	void Framebuffer::Init( GraphicsDevice& device, VkRenderPass renderPass, int numswaps, uint32_t width, uint32_t height, const OreOreLib::NDArray<VkImageView, 2>& attachmentViews )
 	{
 		m_refDevice	= device;
 		swapChainFramebuffers.Resize( numswaps );
@@ -39,8 +39,8 @@ namespace vk
 			VkFramebufferCreateInfo framebufferInfo = {};
 			framebufferInfo.sType			= VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			framebufferInfo.renderPass		= renderPass;
-			framebufferInfo.attachmentCount	= static_cast<uint32_t>( attachmentViews.Length() );
-			framebufferInfo.pAttachments	= attachmentViews.begin();
+			framebufferInfo.attachmentCount	= static_cast<uint32_t>( attachmentViews.Dim(1) );
+			framebufferInfo.pAttachments	= &attachmentViews(i, 0);
 			framebufferInfo.width			= width;
 			framebufferInfo.height			= height;
 			framebufferInfo.layers			= 1;

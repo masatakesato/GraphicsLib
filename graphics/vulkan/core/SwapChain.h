@@ -1,6 +1,8 @@
 ﻿#ifndef SWAP_CHAIN_H
 #define	SWAP_CHAIN_H
 
+#include	<oreore/container/NDArray.h>
+
 #include	"GraphicsDevice.h"
 #include	"Texture.h"
 
@@ -38,7 +40,7 @@ namespace vk
 
 
 
-
+	// TODO: Enable/Disable depth
 	class SwapChain
 	{
 	public:
@@ -63,6 +65,7 @@ namespace vk
 		VkSampleCountFlagBits MultiSampleCount() const { return msaaSamples; }
 		VkImageView	MultiSampleView() const	{ return colorImageView; }
 
+		const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 
 		const VkExtent2D& Extent() const	{ return m_WindowExtent; }
 
@@ -87,18 +90,21 @@ namespace vk
 		VkImageView						m_DepthImageView;
 
 		// Multisample
+		bool							m_bEnableMultisample;
 		VkSampleCountFlagBits	msaaSamples;
 		VkImage					colorImage;
 		VkDeviceMemory			colorImageMemory;
 		VkImageView				colorImageView;
 
-
+		// Attachment views for Framebuffer
+		OreOreLib::NDArray<VkImageView, 2>	m_FramebufferAttachments;
 
 
 		void InitSwapChain();
 		void InitImageViews();
 		void InitDepthResources();
 		void InitMsaaResources();
+		void InitFramebufferAttachments();
 
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat( VkFormat format, VkColorSpaceKHR colorSpace, const OreOreLib::Array<VkSurfaceFormatKHR>& availableFormats );
 		VkPresentModeKHR ChooseSwapPresentMode( VkPresentModeKHR presentmode, const OreOreLib::Array<VkPresentModeKHR>& availablePresentModes );

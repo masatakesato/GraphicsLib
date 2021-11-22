@@ -58,7 +58,7 @@ namespace vk
 			vkDestroyBuffer( m_refDevice->Device(), m_Buffer, nullptr );
 			vkFreeMemory( m_refDevice->Device(), m_DeviceMemory, nullptr );
 
-			m_refDevice.Reset();
+			//m_refDevice.Reset();
 		}
 	}
 

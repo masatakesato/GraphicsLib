@@ -38,7 +38,9 @@ namespace vk
 				vkDestroyShaderModule( m_refDevice->Device(), shaderstage.module, nullptr );
 			m_ShaderStages.Release();
 
-			m_refDevice.Reset();
+			m_CreateInfos.Release();
+
+			//m_refDevice.Reset();
 		}
 
 

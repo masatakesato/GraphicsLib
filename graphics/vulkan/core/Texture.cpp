@@ -65,7 +65,7 @@ namespace vk
 			SafeDeleteImage( m_refDevice->Device(), m_Image );
 			SafeDeleteDeviceMemory( m_refDevice->Device(), m_DeviceMemory );
 
-			m_refDevice.Reset();
+			//m_refDevice.Reset();
 		}
 	}
 

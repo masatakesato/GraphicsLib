@@ -210,17 +210,14 @@ namespace vk
 		VkDebugUtilsMessengerCreateInfoEXT createInfo;
 		PopulateDebugMessengerCreateInfo( createInfo );
 
-		if( CreateDebugUtilsMessengerEXT( m_Instance, &createInfo, nullptr, &m_DebugMessenger ) != VK_SUCCESS )
-			throw std::runtime_error( "failed to set up debug messenger!" );
-
+		VK_CHECK_RESULT( CreateDebugUtilsMessengerEXT( m_Instance, &createInfo, nullptr, &m_DebugMessenger ) );
 	}
 
 
 
 	void GraphicsDevice::CreateSurface()
 	{
-		if( glfwCreateWindowSurface( m_Instance, &m_refWindow.Get(), nullptr, &m_Surface) != VK_SUCCESS )
-			throw std::runtime_error( "failed to create window surface!" );
+		VK_CHECK_RESULT( glfwCreateWindowSurface( m_Instance, &m_refWindow.Get(), nullptr, &m_Surface) );
 	}
 
 
@@ -295,8 +292,7 @@ namespace vk
 			createInfo.enabledLayerCount = 0;
 		}
 
-		if( vkCreateDevice( m_PhysicalDevice, &createInfo, nullptr, &m_Device ) != VK_SUCCESS )
-			throw std::runtime_error( "failed to create logical device" );
+		VK_CHECK_RESULT( vkCreateDevice( m_PhysicalDevice, &createInfo, nullptr, &m_Device ) );
 
 		vkGetDeviceQueue( m_Device, indices.graphicsFamily, 0, &m_GraphicsQueue );
 		vkGetDeviceQueue( m_Device, indices.presentFamily, 0, &m_PresentQueue );
@@ -309,12 +305,11 @@ namespace vk
 		QueueFamilyIndices queueFamilyIndices = FindQueueFamilies( m_PhysicalDevice );
 
 		VkCommandPoolCreateInfo poolInfo = {};
-		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
-		poolInfo.flags = 0; // Optional
+		poolInfo.sType				= VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		poolInfo.queueFamilyIndex	= queueFamilyIndices.graphicsFamily;
+		poolInfo.flags				= 0; // Optional
 
-		if( vkCreateCommandPool( m_Device, &poolInfo, nullptr, &m_CommandPool ) != VK_SUCCESS )
-			throw std::runtime_error( "failed to create command pool!" );
+		VK_CHECK_RESULT( vkCreateCommandPool( m_Device, &poolInfo, nullptr, &m_CommandPool ) );
 	}
 
 

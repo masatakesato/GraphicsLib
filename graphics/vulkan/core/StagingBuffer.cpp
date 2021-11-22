@@ -66,7 +66,7 @@ namespace vk
 				m_DeviceMemory = VK_NULL_HANDLE;
 			}
 
-			m_refDevice.Reset();
+			//m_refDevice.Reset();
 		}
 	}
 
