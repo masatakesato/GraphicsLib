@@ -59,7 +59,7 @@ namespace vk
 
 
 
-	GraphicsDevice::GraphicsDevice( GLFWwindow&	window )
+	GraphicsDevice::GraphicsDevice( Window& window )
 	{
 		Init( window );
 	}
@@ -73,7 +73,7 @@ namespace vk
 
 
 
-	void GraphicsDevice::Init( GLFWwindow& window )
+	void GraphicsDevice::Init( Window& window )
 	{
 		m_refWindow = window;
 
@@ -217,7 +217,7 @@ namespace vk
 
 	void GraphicsDevice::CreateSurface()
 	{
-		VK_CHECK_RESULT( glfwCreateWindowSurface( m_Instance, &m_refWindow.Get(), nullptr, &m_Surface) );
+		m_refWindow->CreateWindowSurface( m_Instance, &m_Surface );
 	}
 
 

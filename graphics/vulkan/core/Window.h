@@ -23,13 +23,17 @@ namespace vk
 		Window &operator=( const Window& ) = delete;
 
 
-		bool shouldClose(){ return glfwWindowShouldClose(window); }
-		VkExtent2D getExtent() { return { static_cast<uint32_t>(width),  static_cast<uint32_t>(height) }; }
-		bool wasWindowResized(){ return framebufferResiszed; }
+		void Release();
+
+		bool ShouldClose(){ return glfwWindowShouldClose(window); }
+		const VkExtent2D& Extent() const { return m_Extent; }
+		//bool IsValidExtent() const	{ return m_Extent.width>0 && m_Extent.height>0; }
+		bool Resized() const	{ return framebufferResiszed; }
 		void ResetWindowResizedFlag(){ framebufferResiszed=false; }
 
+		void CreateWindowSurface( VkInstance instance, VkSurfaceKHR* surface );
 
-		void createWindowSurface( VkInstance instance, VkSurfaceKHR* surface );
+		void WaitForRaise() const;
 
 
 	private:
@@ -37,12 +41,11 @@ namespace vk
 		static void framebufferResizeCallback( GLFWwindow* window, int width, int height );
 
 		GLFWwindow*	window;
+		const charstring windowName;
+		VkExtent2D	m_Extent;
 
-		int width;
-		int height;
 		bool framebufferResiszed=false;
 
-		const charstring windowName;
 
 		void InitWindow();
 

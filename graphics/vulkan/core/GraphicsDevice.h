@@ -3,11 +3,10 @@
 
 #include	<vulkan/vulkan.h>
 
-#define GLFW_INCLUDE_VULKAN
-#include	<GLFW/glfw3.h>
-
 #include	<oreore/memory/ReferenceWrapper.h>
 #include	<oreore/container/Array.h>
+
+#include	"Window.h"
 
 
 
@@ -26,7 +25,6 @@ namespace vk
 
 
 
-
 	struct SwapChainSupportDetails
 	{
 		VkSurfaceCapabilitiesKHR				capabilities;
@@ -42,11 +40,11 @@ namespace vk
 	public:
 
 		GraphicsDevice();
-		GraphicsDevice( GLFWwindow& window );
+		GraphicsDevice( Window& window );
 		GraphicsDevice( const GraphicsDevice& )=delete;
 		~GraphicsDevice();
 
-		void Init( GLFWwindow& window );
+		void Init( Window& window );
 		void Release();
 
 
@@ -78,7 +76,7 @@ namespace vk
 		VkQueue						m_GraphicsQueue;
 		VkQueue						m_PresentQueue;
 
-		OreOreLib::ReferenceWrapper<GLFWwindow>	m_refWindow;
+		OreOreLib::ReferenceWrapper<Window>	m_refWindow;
 
 		#ifdef NDEBUG
 		const bool			m_bEnableValidationLayers = false;

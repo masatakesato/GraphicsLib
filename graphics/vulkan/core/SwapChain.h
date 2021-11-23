@@ -73,6 +73,19 @@ namespace vk
 		void SetImagesInFlight( int i, VkFence fence ){ imagesInFlight[i]=fence; }
 
 
+		VkResult AquireNextImage( VkSemaphore semaphore, VkFence fence )
+		{
+			return vkAcquireNextImageKHR( m_refDevice->Device(), m_SwapChain, std::numeric_limits<uint64_t>::max(), semaphore, fence, &imageIndex );		
+		}
+
+		
+		void WaitForAvailable( int imageIndex )
+		{
+			if( imagesInFlight[ imageIndex ] != VK_NULL_HANDLE )
+				vkWaitForFences( m_refDevice->Device(), 1, &imagesInFlight[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
+		}
+
+
 
 	private:
 

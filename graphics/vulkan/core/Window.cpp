@@ -1,6 +1,6 @@
 ﻿#include	"Window.h"
 
-#include	<stdexcept>
+#include	"../utils/HelperFunctions.h"
 
 
 
@@ -8,8 +8,7 @@ namespace vk
 {
 
 	Window::Window( int w, int h, const charstring& name )
-		: width(w)
-		, height(h)
+		: m_Extent{ static_cast<uint32_t>(w),  static_cast<uint32_t>(h) }
 		, windowName( name )
 	{
 		InitWindow();
@@ -19,8 +18,8 @@ namespace vk
 
 	Window::~Window()
 	{
-		glfwDestroyWindow( window );
-		glfwTerminate();
+		Release();
+		//glfwTerminate();
 	}
 
 
@@ -31,7 +30,7 @@ namespace vk
 		glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );// disable opengl context creation (glfw is oridinally designed for OpenGL)
 		glfwWindowHint( GLFW_RESIZABLE, GLFW_TRUE );// tutorial 10 win cover manual resizing
 
-		window = glfwCreateWindow( width, height, windowName.c_str(), nullptr, nullptr );
+		window = glfwCreateWindow( static_cast<int32>(m_Extent.width), static_cast<int32>(m_Extent.height), windowName.c_str(), nullptr, nullptr );
 		glfwSetWindowUserPointer( window, this );
 		glfwSetFramebufferSizeCallback( window, framebufferResizeCallback );
 
@@ -39,24 +38,42 @@ namespace vk
 
 
 
-	void Window::createWindowSurface( VkInstance instance, VkSurfaceKHR* surface )
+	void Window::Release()
 	{
-		if( glfwCreateWindowSurface( instance, window, nullptr, surface ) != VK_SUCCESS )
+		if( window )
 		{
-			throw std::runtime_error("failed to create window surface");
+			glfwDestroyWindow( window );
+			window = nullptr;
 		}
+		glfwTerminate();// デストラクタで実行した方がいい?
 	}
+
+
+
+	void Window::CreateWindowSurface( VkInstance instance, VkSurfaceKHR* surface )
+	{
+		VK_CHECK_RESULT( glfwCreateWindowSurface( instance, window, nullptr, surface ) );
+	}
+
+
+
+	void Window::WaitForRaise() const
+	{
+		while( m_Extent.width==0 || m_Extent.height==0 )
+			glfwWaitEvents();
+	}
+
 
 		
 	void Window::framebufferResizeCallback( GLFWwindow* window, int width, int height )
 	{
-		auto lveWindow = reinterpret_cast<Window*>( glfwGetWindowUserPointer(window) );
-		lveWindow->framebufferResiszed = true;
+		auto pWindow = reinterpret_cast<Window*>( glfwGetWindowUserPointer(window) );
+		pWindow->framebufferResiszed = true;
 
-		lveWindow->width = width;
-		lveWindow->height = height;
-
-
+		pWindow->m_Extent.width = static_cast<uint32_t>(width);
+		pWindow->m_Extent.height = static_cast<uint32_t>(height);
+		//lveWindow->width = width;
+		//lveWindow->height = height;
 	}
 
 

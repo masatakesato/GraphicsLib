@@ -15,11 +15,11 @@ namespace vk
 	public:
 
 		FrameSynchronizer();
-		FrameSynchronizer( GraphicsDevice& device, int numswaps, uint32_t maxConcurrentFrames );
+		FrameSynchronizer( GraphicsDevice& device, uint32_t maxConcurrentFrames );
 		FrameSynchronizer( const FrameSynchronizer& ) = delete;
 		~FrameSynchronizer();
 
-		void Init( GraphicsDevice& device, int numswaps, uint32_t maxConcurrentFrames );
+		void Init( GraphicsDevice& device, uint32_t maxConcurrentFrames );
 		void Release();
 
 		uint32_t MaxConcurrentFrames() const	{ return m_MaxConcurrentFrames; }
