@@ -8,7 +8,7 @@ namespace vk
 	ShaderEffect::ShaderEffect()
 		: m_refDevice()
 	{
-		m_AttacmentDescs.Reserve(16);
+		
 	}
 
 
@@ -25,64 +25,6 @@ namespace vk
 	{
 
 	}
-
-
-
-	void ShaderEffect::AddColorAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, VkImageLayout layout )
-	{
-		const auto& loadstoreop = LoadStoreOps[ static_cast<int>(ops) ];
-
-		m_AttacmentDescs.AddToTail();
-
-		auto& attachmentDesc = m_AttacmentDescs.Back();
-
-		attachmentDesc.format			= format;
-		attachmentDesc.samples			= msaaSamples;
-		attachmentDesc.loadOp			= loadstoreop.first;
-		attachmentDesc.storeOp			= loadstoreop.second;
-		attachmentDesc.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		attachmentDesc.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		attachmentDesc.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
-		attachmentDesc.finalLayout		= layout;
-	}
-
-
-
-	void ShaderEffect::AddDepthAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, VkImageLayout layout )
-	{
-		const auto& loadstoreop = LoadStoreOps[ static_cast<int>(ops) ];
-
-		m_AttacmentDescs.AddToTail();
-
-		auto& attachmentDesc = m_AttacmentDescs.Back();
-
-		attachmentDesc.format			= format;
-		attachmentDesc.samples			= msaaSamples;
-		attachmentDesc.loadOp			= loadstoreop.first;
-		attachmentDesc.storeOp			= loadstoreop.second;
-		attachmentDesc.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		attachmentDesc.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		attachmentDesc.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
-		attachmentDesc.finalLayout		= layout;
-	}
-
-
-
-	void ShaderEffect::AddReslveAttachmentDesc( VkFormat format )
-	{
-
-		VkAttachmentDescription colorAttachmentResolve = {};
-		colorAttachmentResolve.format			= format;
-		colorAttachmentResolve.samples			= VK_SAMPLE_COUNT_1_BIT;
-		colorAttachmentResolve.loadOp			= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachmentResolve.storeOp			= VK_ATTACHMENT_STORE_OP_DONT_CARE;// https://github.com/Overv/VulkanTutorial/issues/118
-		colorAttachmentResolve.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachmentResolve.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		colorAttachmentResolve.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
-		colorAttachmentResolve.finalLayout		= VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-	}
-
-
 
 
 

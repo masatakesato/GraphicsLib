@@ -47,7 +47,7 @@ namespace vk
 		fenceInfo.sType	= VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 		fenceInfo.flags	= VK_FENCE_CREATE_SIGNALED_BIT;
 
-		for( int i=0; i<m_MaxConcurrentFrames; ++i )
+		for( uint32_t i=0; i<m_MaxConcurrentFrames; ++i )
 		{
 			VK_CHECK_RESULT( vkCreateSemaphore( m_refDevice->Device(), &semaphoreInfo, nullptr, &m_PresentFinishedSemaphores[i] ) );
 			VK_CHECK_RESULT( vkCreateSemaphore( m_refDevice->Device(), &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i] ) );
