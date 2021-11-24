@@ -378,7 +378,7 @@ namespace vk
 
 	void SwapChain::InitFences()
 	{
-		imagesInFlight.Resize( m_NumImages, VK_NULL_HANDLE );
+		m_refRenderFinishedFences.Resize( m_NumImages, VK_NULL_HANDLE );
 	}
 
 

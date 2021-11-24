@@ -36,8 +36,8 @@ namespace vk
 		m_refDevice				= device;
 		m_MaxConcurrentFrames	= maxConcurrentFrames;
 
-		imageAvailableSemaphores.Resize( (int)maxConcurrentFrames );
-		renderFinishedSemaphores.Resize( (int)maxConcurrentFrames );
+		m_PresentFinishedSemaphores.Resize( (int)maxConcurrentFrames );
+		m_RenderFinishedSemaphores.Resize( (int)maxConcurrentFrames );
 		inFlightFences.Resize( maxConcurrentFrames );
 
 		VkSemaphoreCreateInfo semaphoreInfo = {};
@@ -49,8 +49,8 @@ namespace vk
 
 		for( int i=0; i<m_MaxConcurrentFrames; ++i )
 		{
-			VK_CHECK_RESULT( vkCreateSemaphore( m_refDevice->Device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i] ) );
-			VK_CHECK_RESULT( vkCreateSemaphore( m_refDevice->Device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i] ) );
+			VK_CHECK_RESULT( vkCreateSemaphore( m_refDevice->Device(), &semaphoreInfo, nullptr, &m_PresentFinishedSemaphores[i] ) );
+			VK_CHECK_RESULT( vkCreateSemaphore( m_refDevice->Device(), &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i] ) );
 			VK_CHECK_RESULT( vkCreateFence( m_refDevice->Device(), &fenceInfo, nullptr, &inFlightFences[i] ) );
 		}
 	}
@@ -64,16 +64,16 @@ namespace vk
 
 			for( size_t i=0; i<m_MaxConcurrentFrames; ++i )
 			{
-				if( renderFinishedSemaphores[i] != VK_NULL_HANDLE )
+				if( m_RenderFinishedSemaphores[i] != VK_NULL_HANDLE )
 				{
-					vkDestroySemaphore( m_refDevice->Device(), renderFinishedSemaphores[i], nullptr );
-					renderFinishedSemaphores[i] = VK_NULL_HANDLE;
+					vkDestroySemaphore( m_refDevice->Device(), m_RenderFinishedSemaphores[i], nullptr );
+					m_RenderFinishedSemaphores[i] = VK_NULL_HANDLE;
 				}
 
-				if( imageAvailableSemaphores[i] != VK_NULL_HANDLE )
+				if( m_PresentFinishedSemaphores[i] != VK_NULL_HANDLE )
 				{
-					vkDestroySemaphore( m_refDevice->Device(), imageAvailableSemaphores[i], nullptr );
-					imageAvailableSemaphores[i] = VK_NULL_HANDLE;
+					vkDestroySemaphore( m_refDevice->Device(), m_PresentFinishedSemaphores[i], nullptr );
+					m_PresentFinishedSemaphores[i] = VK_NULL_HANDLE;
 				}
 
 				if( inFlightFences[i] != VK_NULL_HANDLE )
@@ -83,8 +83,8 @@ namespace vk
 				}
 			}
 
-			renderFinishedSemaphores.Release();
-			imageAvailableSemaphores.Release();
+			m_RenderFinishedSemaphores.Release();
+			m_PresentFinishedSemaphores.Release();
 			inFlightFences.Release();
 
 			m_MaxConcurrentFrames = 0;

@@ -68,21 +68,21 @@ namespace vk
 		const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 
 		const VkExtent2D& Extent() const	{ return m_WindowExtent; }
-		const VkFence& ImagesInFlight( int i ) const { return imagesInFlight[i]; }
+		const VkFence& RenderFinishedFence( int i ) const { return m_refRenderFinishedFences[i]; }
 
-		void SetImagesInFlight( int i, VkFence fence ){ imagesInFlight[i]=fence; }
+		void BindInFlightFence( int i, VkFence fence ){ m_refRenderFinishedFences[i] = fence; }
 
 
-		VkResult AquireNextImage( VkSemaphore semaphore, VkFence fence )
-		{
-			return vkAcquireNextImageKHR( m_refDevice->Device(), m_SwapChain, std::numeric_limits<uint64_t>::max(), semaphore, fence, &imageIndex );		
-		}
+//		VkResult AquireNextImage( VkSemaphore semaphore, VkFence fence )
+//		{
+//			return vkAcquireNextImageKHR( m_refDevice->Device(), m_SwapChain, std::numeric_limits<uint64_t>::max(), semaphore, fence, &imageIndex );		
+//		}
 
 		
 		void WaitForAvailable( int imageIndex )
 		{
-			if( imagesInFlight[ imageIndex ] != VK_NULL_HANDLE )
-				vkWaitForFences( m_refDevice->Device(), 1, &imagesInFlight[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
+			if( m_refRenderFinishedFences[ imageIndex ] != VK_NULL_HANDLE )
+				vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
 		}
 
 
@@ -118,7 +118,7 @@ namespace vk
 		OreOreLib::NDArray<VkImageView, 2>	m_FramebufferAttachments;
 
 		// レンダリング同期オブジェクト(参照)
-		OreOreLib::Array<VkFence>		imagesInFlight;
+		OreOreLib::Array<VkFence>		m_refRenderFinishedFences;
 
 
 		void InitSwapChain();

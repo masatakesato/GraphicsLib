@@ -29,8 +29,8 @@ namespace vk
 
 
 		const VkFence& CurrentInFlightFence() const { return inFlightFences[ currentFrame ]; }
-		const VkSemaphore& CurrentImageAvailableSemaphore() const	{ return imageAvailableSemaphores[ currentFrame ]; }
-		const VkSemaphore& CurrentRenderFinishedSemaphore() const	{ return renderFinishedSemaphores[ currentFrame ]; }
+		const VkSemaphore& CurrentPresentFinishedSemaphore() const	{ return m_PresentFinishedSemaphores[ currentFrame ]; }
+		const VkSemaphore& CurrentRenderFinishedSemaphore() const	{ return m_RenderFinishedSemaphores[ currentFrame ]; }
 
 		void WaitForCurrentFrame();
 
@@ -44,10 +44,9 @@ namespace vk
 		GraphicsDeviceRef	m_refDevice;
 		uint32_t					m_MaxConcurrentFrames;
 
-		OreOreLib::Array<VkSemaphore>	imageAvailableSemaphores;// MAX_CONCURRENT_FRAMES
-		OreOreLib::Array<VkSemaphore>	renderFinishedSemaphores;// MAX_CONCURRENT_FRAMES
-		OreOreLib::Array<VkFence>		inFlightFences;// MAX_CONCURRENT_FRAMES
-//		OreOreLib::Array<VkFence>		imagesInFlight;// スワップチェイン画像枚数分
+		OreOreLib::Array<VkSemaphore>	m_PresentFinishedSemaphores;// 描画処理完了(PresentQueueにサブミットしたジョブの完了)時にシグナル状態になるセマフォ
+		OreOreLib::Array<VkSemaphore>	m_RenderFinishedSemaphores;// プレゼント処理完了(RenderQueueにサブミットしたジョブの完了)時にシグナル状態になるセマフォ
+		OreOreLib::Array<VkFence>		inFlightFences;// スワップチェーンのフェンス.
 
 		uint32_t						currentFrame;
 	};
