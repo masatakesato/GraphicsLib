@@ -42,7 +42,39 @@ namespace vk
 
 	void SubpassAttachments::Release()
 	{
+		m_InputAttachments.Release();
+		m_ColorAttachments.Release();
+		m_ResolveAttachments.Release();
 
+	}
+
+
+
+	void SubpassAttachments::SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	{
+		m_InputAttachments.Init( ilist );
+	}
+
+
+
+	void SubpassAttachments::SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	{
+		m_ColorAttachments.Init( ilist );
+	}
+
+
+
+	void SubpassAttachments::SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	{
+		ASSERT( m_ColorAttachments.Length() == (int)ilist.size() );
+		m_ResolveAttachments.Init( ilist );
+	}
+
+
+
+	void SubpassAttachments::SetDepthAttachment( VkAttachmentReference attachref )
+	{
+		m_DepthStencilAttachment = attachref;
 	}
 
 
@@ -70,8 +102,10 @@ namespace vk
 
 
 	RenderPassAttachments::RenderPassAttachments()
-		: m_ResolveSlot( -1 )
-		, m_DepthSlot( -1 )
+		: /*m_NumColors( 0 )
+		, m_DepthIndex( -1 )
+		, m_NumResolves( 0 )
+		,*/ m_ActiveResolves( 0 )
 	{
 		
 	}
@@ -80,13 +114,28 @@ namespace vk
 
 	RenderPassAttachments::~RenderPassAttachments()
 	{
-
+		Release();
 	}
 
 
 
-	void RenderPassAttachments::Init( int numattachments )
+	void RenderPassAttachments::Init( int numColors, bool enableDepth, int numResolves )
 	{
+		m_ActiveResolves	= 0;
+
+		// Init AttachmentDescriptor Array
+		m_AttacmentDescs.Resize( numColors + static_cast<int32>(enableDepth) + numResolves );
+
+		// Init ArrayViews
+		m_ColorDescs.Init( &m_AttacmentDescs[0], numColors );
+
+		if( enableDepth )
+			m_DepthDescs.Init( &m_AttacmentDescs[numColors], 1 );
+
+		if( numResolves>0 )
+			m_ResolveDescs.Init( &m_AttacmentDescs[ numColors + static_cast<int32>(enableDepth) ], numResolves );
+
+		m_ColorToResolve.Resize( numColors, -1 );
 
 	}
 
@@ -94,18 +143,51 @@ namespace vk
 	
 	void RenderPassAttachments::Release()
 	{
+		m_ActiveResolves = 0;
+		m_ColorToResolve.Release();
 
+		m_ColorDescs.Release();
+		m_DepthDescs.Release();
+		m_ResolveDescs.Release();
+
+		m_AttacmentDescs.Release();
 	}
 
 
 
-	void RenderPassAttachments::SetColorAttachmentDesc( uint8 slot, VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, VkImageLayout layout )
+	void RenderPassAttachments::SetColorAttachmentDesc( uint32 attachment, VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, bool presentable )
 	{
-		ASSERT( slot< m_AttacmentDescs.Length() );
+		ASSERT( attachment < m_ColorDescs.Length() );
+
+		bool resolve = msaaSamples != VK_SAMPLE_COUNT_1_BIT;
 
 		const auto& loadstoreop = LoadStoreOps[ static_cast<int>(ops) ];
 
-		auto& desc = m_AttacmentDescs[ slot ];
+		auto& desc = m_AttacmentDescs[ attachment ];
+		desc.format			= format;
+		desc.samples		= msaaSamples;
+		desc.loadOp			= loadstoreop.first;
+		desc.storeOp		= loadstoreop.second;
+		desc.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		desc.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		desc.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
+		desc.finalLayout	= (presentable && !resolve) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		if( presentable && resolve )
+		{
+			InitResolveAttachmentDesc( attachment, format, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR );
+		}
+	}
+
+
+
+	void RenderPassAttachments::SetDepthAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, VkImageLayout layout )
+	{
+		ASSERT( m_DepthDescs );
+
+		const auto& loadstoreop = LoadStoreOps[ static_cast<int>(ops) ];
+
+		auto& desc = m_DepthDescs[0];
 		desc.format			= format;
 		desc.samples		= msaaSamples;
 		desc.loadOp			= loadstoreop.first;
@@ -118,34 +200,14 @@ namespace vk
 
 
 
-	void RenderPassAttachments::SetDepthAttachmentDesc( uint8 slot, VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, VkImageLayout layout )
+	void RenderPassAttachments::InitResolveAttachmentDesc( uint32 attachment, VkFormat format, VkImageLayout layout )
 	{
-		ASSERT( slot< m_AttacmentDescs.Length() );
+		ASSERT( attachment < m_ColorDescs.Length() && m_ActiveResolves < m_ResolveDescs.Length() );
 
-		m_DepthSlot = static_cast<int32>( slot );
+		auto& resolveslot = m_ColorToResolve[ attachment ];
+		if( resolveslot==-1 )	resolveslot = m_ActiveResolves++;
 
-		const auto& loadstoreop = LoadStoreOps[ static_cast<int>(ops) ];
-
-		auto& desc = m_AttacmentDescs[ m_DepthSlot ];
-		desc.format			= format;
-		desc.samples		= msaaSamples;
-		desc.loadOp			= loadstoreop.first;
-		desc.storeOp		= loadstoreop.second;
-		desc.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		desc.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		desc.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
-		desc.finalLayout	= layout;
-	}
-
-
-
-	void RenderPassAttachments::SetResolveAttachmentDesc( uint8 slot, VkFormat format )
-	{
-		ASSERT( slot< m_AttacmentDescs.Length() );
-
-		m_ResolveSlot = static_cast<int32>( slot );
-
-		auto& desc = m_AttacmentDescs[ m_ResolveSlot ];
+		auto& desc = m_ResolveDescs[ resolveslot ];
 		desc.format			= format;
 		desc.samples		= VK_SAMPLE_COUNT_1_BIT;
 		desc.loadOp			= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -153,30 +215,9 @@ namespace vk
 		desc.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		desc.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		desc.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
-		desc.finalLayout	= VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		desc.finalLayout	= layout;
 	}
 
-
-
-	bool RenderPassAttachments::DeleteDepthAttachment()
-	{
-		if( !HasDepth() )	return false;
-
-		m_AttacmentDescs[ m_DepthSlot ] = {};
-
-		return true;
-	}
-
-
-
-	bool RenderPassAttachments::DeleteResolveAttachment()
-	{
-		if( !HasResolve() )	return false;
-
-		m_AttacmentDescs[ m_ResolveSlot ] = {};
-
-		return true;
-	}
 
 
 }// end of namespace vk
