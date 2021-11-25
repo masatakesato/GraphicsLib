@@ -102,10 +102,7 @@ namespace vk
 
 
 	RenderPassAttachments::RenderPassAttachments()
-		: /*m_NumColors( 0 )
-		, m_DepthIndex( -1 )
-		, m_NumResolves( 0 )
-		,*/ m_ActiveResolves( 0 )
+		: m_ActiveResolves( 0 )
 	{
 		
 	}
@@ -121,7 +118,7 @@ namespace vk
 
 	void RenderPassAttachments::Init( int numColors, bool enableDepth, int numResolves )
 	{
-		m_ActiveResolves	= 0;
+		m_ActiveResolves = 0;
 
 		// Init AttachmentDescriptor Array
 		m_AttacmentDescs.Resize( numColors + static_cast<int32>(enableDepth) + numResolves );
@@ -135,8 +132,7 @@ namespace vk
 		if( numResolves>0 )
 			m_ResolveDescs.Init( &m_AttacmentDescs[ numColors + static_cast<int32>(enableDepth) ], numResolves );
 
-		m_ColorToResolve.Resize( numColors, -1 );
-
+		m_ColorToResolve.Resize( numColors, VK_ATTACHMENT_UNUSED );
 	}
 
 	
@@ -200,12 +196,41 @@ namespace vk
 
 
 
+	void RenderPassAttachments::CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments )
+	{
+		for( const auto& attachment : activeattachments )
+		{
+			refs.AddToTail( { attachment, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+		}
+	}
+
+
+	
+	void RenderPassAttachments::CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments )
+	{
+		for( const auto& attachmentId : activeattachments )
+		{
+			const auto& attachment = m_ColorToResolve[ attachmentId ];
+			refs.AddToTail( { attachment, attachment==VK_ATTACHMENT_UNUSED ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+		}	
+	}
+
+
+
+	void RenderPassAttachments::CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs )
+	{
+		if( m_DepthDescs )
+			refs.AddToTail( { static_cast<uint32_t>( m_ColorDescs.Length() ), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+	}
+
+
+
 	void RenderPassAttachments::InitResolveAttachmentDesc( uint32 attachment, VkFormat format, VkImageLayout layout )
 	{
-		ASSERT( attachment < m_ColorDescs.Length() && m_ActiveResolves < m_ResolveDescs.Length() );
+		ASSERT( attachment < m_ColorDescs.Length() && m_ActiveResolves < (uint32_t)m_ResolveDescs.Length() );
 
 		auto& resolveslot = m_ColorToResolve[ attachment ];
-		if( resolveslot==-1 )	resolveslot = m_ActiveResolves++;
+		if( resolveslot==VK_ATTACHMENT_UNUSED )	resolveslot = m_ActiveResolves++;
 
 		auto& desc = m_ResolveDescs[ resolveslot ];
 		desc.format			= format;

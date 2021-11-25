@@ -60,8 +60,8 @@ namespace vk
 
 
 
-	//[0]                   [ m_DepthSlot ]         [ m_ResolveSlot ]
-	// |----- ColorAttachments -----|-- DepthAttachment --|--- ResolveAttachments -----|
+	
+	// |----- ColorAttachments -----|-- DepthAttachment --|--- ResolveAttachments ---|
 
 	class RenderPassAttachments
 	{
@@ -80,35 +80,9 @@ namespace vk
 		void SetDepthAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, VkImageLayout layout=VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 
 
-		// {0, 2, 3}
-		void InitColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments )
-		{
-			for( const auto& attachment : activeattachments )
-			{
-				refs.AddToTail( { attachment, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
-			}
-		}
-
-
-		// {0, 2, 3}
-		void InitResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments )
-		{
-			for( const auto& attachment : activeattachments )
-			{
-				if( m_ColorToResolve[ attachment ] == -1 )
-					refs.AddToTail( { VK_ATTACHMENT_UNUSED, VK_IMAGE_LAYOUT_UNDEFINED } );
-				else
-					refs.AddToTail( { static_cast<uint32_t>( m_ColorToResolve[ attachment ] ), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
-			}	
-		}
-
-
-		void InitDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs )
-		{
-			if( m_DepthDescs )
-				refs.AddToTail( { static_cast<uint32_t>( m_ColorDescs.Length() ), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
-		}
-
+		void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments );
+		void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments );
+		void CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs );
 
 
 
@@ -120,10 +94,10 @@ namespace vk
 		OreOreLib::ArrayView<VkAttachmentDescription>	m_DepthDescs;
 		OreOreLib::ArrayView<VkAttachmentDescription>	m_ResolveDescs;
 
-		int32	m_ActiveResolves;
+		uint32_t	m_ActiveResolves;
 
 
-		OreOreLib::Array<int32>	m_ColorToResolve;// マルチサンプルしない場合は-1, する場合はインデックス入れておく
+		OreOreLib::Array<uint32_t>	m_ColorToResolve;// アタッチメントに対応したリゾルブのインデックスを格納する. マルチサンプルしない場合はVK_ATTACHMENT_UNUSED入れておく
 //pResolveAttachments
 // マルチサンプルしたい時に必要
 // 専用のVkAttachmentDescriptionを用意する必要がある
