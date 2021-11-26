@@ -210,6 +210,7 @@ namespace vk
 	{
 		for( const auto& attachmentId : activeattachments )
 		{
+			ASSERT( attachmentId < static_cast<uint32_t>(m_ColorToResolve.Length()) );
 			const auto& attachment = m_ColorToResolve[ attachmentId ];
 			refs.AddToTail( { attachment, attachment==VK_ATTACHMENT_UNUSED ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 		}	
@@ -220,7 +221,7 @@ namespace vk
 	void RenderPassAttachments::CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs )
 	{
 		if( m_DepthDescs )
-			refs.AddToTail( { static_cast<uint32_t>( m_ColorDescs.Length() ), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+			refs.AddToTail( { static_cast<uint32_t>( m_ColorDescs.Length() ), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } );
 	}
 
 

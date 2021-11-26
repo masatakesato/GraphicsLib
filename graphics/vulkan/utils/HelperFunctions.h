@@ -64,20 +64,56 @@ namespace vk
 	//																						//
 	//######################################################################################//
 
+
+	inline bool IsSupportedFormat( VkPhysicalDevice physicalDevice, VkFormat format, VkImageTiling tiling, VkFormatFeatureFlags features )
+	{
+		VkFormatProperties props;
+		vkGetPhysicalDeviceFormatProperties( physicalDevice, format, &props );
+
+		if( tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features )
+			return true;
+		else if( tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features )
+			return true;
+		
+		ASSERT( false && "unsupported format" );
+		return false;
+	}
+
+
+
 	inline VkFormat FindSupportedFormat( VkPhysicalDevice physicalDevice, const OreOreLib::Memory<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features )
 	{
 		for( VkFormat format : candidates )
-		{ 
-			VkFormatProperties props;
-			vkGetPhysicalDeviceFormatProperties( physicalDevice, format, &props );
-
-			if( tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features )
-				return format;
-			else if( tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features )
+		{
+			if( IsSupportedFormat( physicalDevice, format, tiling, features ) )
 				return format;
 		}
 
-		throw std::runtime_error( "failed to find supported format" );
+		ASSERT( false && "failed to find supported format" );
+		return VK_FORMAT_UNDEFINED;
+	}
+
+
+
+	inline VkFormat FindDepthFormat( VkPhysicalDevice physicalDevice )
+	{
+		return FindSupportedFormat( physicalDevice,
+									{
+										VK_FORMAT_D32_SFLOAT,
+										VK_FORMAT_D32_SFLOAT_S8_UINT,
+										VK_FORMAT_D24_UNORM_S8_UINT,
+										VK_FORMAT_D16_UNORM,
+										VK_FORMAT_D16_UNORM_S8_UINT,
+									},
+									VK_IMAGE_TILING_OPTIMAL,
+									VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT );
+	}
+
+
+
+	inline bool IsValidDepthFormat( VkPhysicalDevice physicalDevice, VkFormat format )
+	{
+		return IsSupportedFormat( physicalDevice, format, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT );
 	}
 
 
@@ -86,17 +122,6 @@ namespace vk
 	{
 		return format==VK_FORMAT_D32_SFLOAT_S8_UINT || format==VK_FORMAT_D24_UNORM_S8_UINT;
 	}
-
-
-
-	inline VkFormat FindDepthFormat( VkPhysicalDevice physicalDevice )
-	{
-		return FindSupportedFormat( physicalDevice,
-									{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
-									VK_IMAGE_TILING_OPTIMAL,
-									VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT );
-	}
-
 
 
 
