@@ -4,7 +4,8 @@
 #include	<oreore/container/NDArray.h>
 
 #include	"GraphicsDevice.h"
-#include	"Texture.h"
+#include	"RenderBuffer.h"//#include	"Texture.h"
+
 
 
 
@@ -113,6 +114,11 @@ namespace vk
 		VkImage							m_ResolveImage;
 		VkDeviceMemory					m_ResolveImageMemory;
 		VkImageView						m_ResolveImageView;
+
+		RenderBuffer					m_ResolveBuffer;
+
+
+
 
 //TODO: VkFramebufferに登録するアタッチメントはスワップチェーンのビューだけとは限らない. 例えば、遅延レンダリングで位置/法線/アルベドを書き込むVkImageViewも含まれる
 //https://github.com/SaschaWillems/Vulkan/blob/master/examples/subpasses/subpasses.cpp　Line 251

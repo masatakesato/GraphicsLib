@@ -160,6 +160,9 @@ namespace vk
 			SafeDeleteImage( m_refDevice->Device(), m_ResolveImage );
 			SafeDeleteDeviceMemory( m_refDevice->Device(), m_ResolveImageMemory );
 
+			m_ResolveBuffer.Release();
+
+
 			// Delete Depth buffer
 			SafeDeleteImageView( m_refDevice->Device(), m_DepthImageView );
 			SafeDeleteImage( m_refDevice->Device(), m_DepthImage );
@@ -311,6 +314,10 @@ namespace vk
 							m_ResolveImage,
 							m_ImageFormat,
 							VK_IMAGE_ASPECT_COLOR_BIT, 1 );
+
+
+
+		m_ResolveBuffer.Init( m_refDevice, m_WindowExtent.width, m_WindowExtent.height, m_ImageFormat, msaaSamples, true, false );
 
 	}
 

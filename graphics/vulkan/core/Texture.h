@@ -25,10 +25,11 @@ namespace vk
 
 
 		// Virtual function override
-		uint32_t MipLevels() const	{ return m_MipLevels; }
-
-		const VkImageView& View() const	{ return m_ImageView; }
-
+		virtual VkFormat Format() const							{ return m_Format; }
+		virtual const VkExtent2D& Extent() const				{ return m_Dim; }
+		virtual const VkImageView& View() const					{ return m_ImageView; }
+		virtual VkSampleCountFlagBits MultiSampleCount() const	{ return VK_SAMPLE_COUNT_1_BIT; }
+		virtual uint32_t MipLevels() const						{ return m_MipLevels; }
 
 
 	private:

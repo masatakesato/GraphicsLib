@@ -5,7 +5,8 @@
 
 #include	<oreore/common/Utility.h>
 #include	<oreore/common/TString.h>
-#include	<oreore/memory/Memory.h>
+//#include	<oreore/memory/Memory.h>
+#include	<oreore/container/StaticArray.h>
 
 
 
@@ -64,7 +65,6 @@ namespace vk
 	//																						//
 	//######################################################################################//
 
-
 	inline bool IsSupportedFormat( VkPhysicalDevice physicalDevice, VkFormat format, VkImageTiling tiling, VkFormatFeatureFlags features )
 	{
 		VkFormatProperties props;
@@ -118,9 +118,21 @@ namespace vk
 
 
 
+	inline bool HasDepthComponent( VkFormat format )
+	{
+		return	format == VK_FORMAT_D32_SFLOAT ||
+				format == VK_FORMAT_D32_SFLOAT_S8_UINT ||
+				format == VK_FORMAT_D24_UNORM_S8_UINT ||
+				format == VK_FORMAT_D16_UNORM ||
+				format == VK_FORMAT_D16_UNORM_S8_UINT;
+	}
+
+
+
 	inline bool HasStencilComponent( VkFormat format )
 	{
-		return format==VK_FORMAT_D32_SFLOAT_S8_UINT || format==VK_FORMAT_D24_UNORM_S8_UINT;
+		return	format == VK_FORMAT_D32_SFLOAT_S8_UINT ||
+				format == VK_FORMAT_D24_UNORM_S8_UINT;
 	}
 
 
