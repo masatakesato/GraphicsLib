@@ -2,13 +2,14 @@
 #define	TEXTURE_H
 
 #include	"GraphicsDevice.h"
+#include	"ImageBuffer.h"
 
 
 
 namespace vk
 {
 
-	class Texture
+	class Texture : ImageBuffer
 	{
 	public:
 
@@ -22,7 +23,9 @@ namespace vk
 
 		void UploadData( const void* pData, VkDeviceSize size );
 
-		uint32_t	MipLevels() const	{ return m_MipLevels; }
+
+		// Virtual function override
+		uint32_t MipLevels() const	{ return m_MipLevels; }
 
 		const VkImageView& View() const	{ return m_ImageView; }
 

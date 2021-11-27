@@ -231,9 +231,10 @@ namespace vk
 		ASSERT( attachment < m_ColorDescs.Length() && m_ActiveResolves < (uint32_t)m_ResolveDescs.Length() );
 
 		auto& resolveslot = m_ColorToResolve[ attachment ];
-		if( resolveslot==VK_ATTACHMENT_UNUSED )	resolveslot = m_ActiveResolves++;
+		if( resolveslot==VK_ATTACHMENT_UNUSED )
+			resolveslot = static_cast<uint32_t>( m_ResolveDescs.begin() - m_AttacmentDescs.begin() ) + m_ActiveResolves;
 
-		auto& desc = m_ResolveDescs[ resolveslot ];
+		auto& desc = m_ResolveDescs[ m_ActiveResolves++ ];
 		desc.format			= format;
 		desc.samples		= VK_SAMPLE_COUNT_1_BIT;
 		desc.loadOp			= VK_ATTACHMENT_LOAD_OP_DONT_CARE;

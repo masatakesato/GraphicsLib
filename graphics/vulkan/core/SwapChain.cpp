@@ -105,21 +105,21 @@ namespace vk
 
 		, m_bEnableMultisample( false )
 		, msaaSamples( VK_SAMPLE_COUNT_1_BIT )
-		, colorImage( VK_NULL_HANDLE )
-		, colorImageMemory( VK_NULL_HANDLE )
-		, colorImageView( VK_NULL_HANDLE )
+		, m_ResolveImage( VK_NULL_HANDLE )
+		, m_ResolveImageMemory( VK_NULL_HANDLE )
+		, m_ResolveImageView( VK_NULL_HANDLE )
 	{
 
 	}
 
 
-	SwapChain::SwapChain( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples )
+	SwapChain::SwapChain( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples,  bool srgb, VkFormat depthformat )
 		: m_SwapChain( VK_NULL_HANDLE )
 		, m_SwapChainExtent{ 0, 0 }
 		, m_ImageFormat( VK_FORMAT_UNDEFINED )
 		, m_DepthFormat( VK_FORMAT_UNDEFINED )
 	{
-		Init( device, extent );
+		Init( device, extent, msaasamples, srgb, depthformat );
 	}
 
 
@@ -131,16 +131,16 @@ namespace vk
 
 
 
-	void SwapChain::Init( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples )
+	void SwapChain::Init( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples, bool srgb, VkFormat depthformat )
 	{
 		m_refDevice				= device;
 		m_WindowExtent			= extent;
 		m_bEnableMultisample	= msaasamples != VK_SAMPLE_COUNT_1_BIT;
 		msaaSamples				= msaasamples;
 
-		InitSwapChain();
+		InitSwapChain( srgb );
 		InitImageViews();
-		InitDepthResources();
+		InitDepthResources( depthformat );
 		InitMsaaResources();
 		InitFramebufferAttachments();
 		InitFences();
@@ -156,59 +156,25 @@ namespace vk
 			m_FramebufferAttachments.Release();
 
 			// Delete Multisampling buffers
-			if( colorImageView != VK_NULL_HANDLE )
-			{
-				vkDestroyImageView( m_refDevice->Device(), colorImageView, nullptr );
-				colorImageView = VK_NULL_HANDLE;
-			}
-
-			if( colorImage != VK_NULL_HANDLE )
-			{
-				vkDestroyImage( m_refDevice->Device(), colorImage, nullptr );
-				colorImage = VK_NULL_HANDLE;
-			}
-
-			if( colorImageMemory != VK_NULL_HANDLE )
-			{
-				vkFreeMemory( m_refDevice->Device(), colorImageMemory, nullptr );
-				colorImageMemory = VK_NULL_HANDLE;
-			}
-
+			SafeDeleteImageView( m_refDevice->Device(), m_ResolveImageView );
+			SafeDeleteImage( m_refDevice->Device(), m_ResolveImage );
+			SafeDeleteDeviceMemory( m_refDevice->Device(), m_ResolveImageMemory );
 
 			// Delete Depth buffer
-			if( m_DepthImageView != VK_NULL_HANDLE )
-			{
-				vkDestroyImageView( m_refDevice->Device(), m_DepthImageView, nullptr );
-				m_DepthImageView = VK_NULL_HANDLE;
-			}
-
-			if( m_DepthImage != VK_NULL_HANDLE )
-			{
-				vkDestroyImage( m_refDevice->Device(), m_DepthImage, nullptr );
-				m_DepthImage = VK_NULL_HANDLE;
-			}
-
-			if( m_DepthImageMemory != VK_NULL_HANDLE )
-			{
-				vkFreeMemory( m_refDevice->Device(), m_DepthImageMemory, nullptr );
-				m_DepthImageMemory = VK_NULL_HANDLE;
-			}
-
+			SafeDeleteImageView( m_refDevice->Device(), m_DepthImageView );
+			SafeDeleteImage( m_refDevice->Device(), m_DepthImage );
+			SafeDeleteDeviceMemory( m_refDevice->Device(), m_DepthImageMemory );
 
 			// Delete m_ColorImageViews
 			for( auto& view : m_ColorImageViews )
-				vkDestroyImageView( m_refDevice->Device(), view, nullptr );
+				SafeDeleteImageView( m_refDevice->Device(), view );
 			m_ColorImageViews.Release();
 
-
 			// Delete m_SwapChain
-			if( m_SwapChain != VK_NULL_HANDLE )
-			{
-				vkDestroySwapchainKHR( m_refDevice->Device(), m_SwapChain, nullptr );
-				m_SwapChain = VK_NULL_HANDLE;
-			}
+			SafeDeleteSwapChain(  m_refDevice->Device(), m_SwapChain );
 
 			m_NumImages = 0;
+
 			// Reset GraphicsDevice
 			//m_refDevice.Reset();
 		}
@@ -217,12 +183,12 @@ namespace vk
 
 
 
-	void SwapChain::InitSwapChain()
+	void SwapChain::InitSwapChain( bool srgb )
 	{
 	
 		SwapChainSupportDetails swapChainSupport = m_refDevice->GetSwapChainSupport();
 
-		VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat( VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR, swapChainSupport.formats );
+		VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat( srgb ? VK_FORMAT_B8G8R8A8_SRGB : VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR, swapChainSupport.formats );
 		VkPresentModeKHR presentMode = ChooseSwapPresentMode( VK_PRESENT_MODE_MAILBOX_KHR, swapChainSupport.presentModes );
 		VkExtent2D extent = ChooseSwapExtent( swapChainSupport.capabilities );
 
@@ -288,9 +254,12 @@ namespace vk
 
 
 
-	void SwapChain::InitDepthResources()
+	void SwapChain::InitDepthResources( VkFormat format )
 	{
-		m_DepthFormat = FindDepthFormat( m_refDevice->PhysicalDevice() );
+		// Set depth format
+		m_DepthFormat = format;
+		if( !IsValidDepthFormat( m_refDevice->PhysicalDevice(), m_DepthFormat ) )
+			m_DepthFormat = FindDepthFormat( m_refDevice->PhysicalDevice() );
 
 		// Create VkImage and allocate VkDeviceMemory
 		CreateImage(	m_refDevice->PhysicalDevice(),  m_refDevice->Device(),
@@ -335,11 +304,11 @@ namespace vk
 						VK_IMAGE_TILING_OPTIMAL,
 						VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 						VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,//VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT,//LAZIY***はモバイルプラットフォーム向け.
-						colorImage, colorImageMemory );
+						m_ResolveImage, m_ResolveImageMemory );
 
 		CreateImageView(	m_refDevice->Device(),
-							colorImageView,
-							colorImage,
+							m_ResolveImageView,
+							m_ResolveImage,
 							m_ImageFormat,
 							VK_IMAGE_ASPECT_COLOR_BIT, 1 );
 
@@ -353,9 +322,11 @@ namespace vk
 		{
 			m_FramebufferAttachments.Init( (int)m_NumImages, 3 );
 
-			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )
+			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
 			{
-				m_FramebufferAttachments(i, 0) = colorImageView;
+
+// TODO: VkImageView配列要素の並び順はどうやって決める？
+				m_FramebufferAttachments(i, 0) = m_ResolveImageView;
 				m_FramebufferAttachments(i, 1) = m_DepthImageView;
 				m_FramebufferAttachments(i, 2) = m_ColorImageViews[i];
 			}
@@ -364,8 +335,9 @@ namespace vk
 		{
 			m_FramebufferAttachments.Init( (int)m_NumImages, 2 );
 
-			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )
+			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
 			{
+// TODO: VkImageView配列要素の並び順はどうやって決める？
 				m_FramebufferAttachments(i, 0) = m_ColorImageViews[i];
 				m_FramebufferAttachments(i, 1) = m_DepthImageView;
 			}

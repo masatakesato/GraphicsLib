@@ -480,6 +480,18 @@ namespace vk
 
 
 
+	inline static void SafeDeleteSwapChain( VkDevice device, VkSwapchainKHR& swapchain )
+	{
+		if( swapchain != VK_NULL_HANDLE )
+		{
+			vkDestroySwapchainKHR( device, swapchain, nullptr );
+			swapchain = VK_NULL_HANDLE;
+		}
+	}
+
+
+
+
 }// end of vulkan namespace
 
 

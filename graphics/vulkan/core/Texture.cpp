@@ -1,6 +1,7 @@
 ﻿#include	"Texture.h"
 
 #include	"../utils/HelperFunctions.h"
+#include	"ImageBuffer.h"
 #include	"StagingBuffer.h"
 
 

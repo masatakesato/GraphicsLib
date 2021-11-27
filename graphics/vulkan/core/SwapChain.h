@@ -46,11 +46,11 @@ namespace vk
 	public:
 
 		SwapChain();
-		SwapChain( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples=VK_SAMPLE_COUNT_1_BIT );
+		SwapChain( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples=VK_SAMPLE_COUNT_1_BIT, bool srgb=true, VkFormat depthformat=VK_FORMAT_D32_SFLOAT );
 		SwapChain( const SwapChain& obj )=delete;
 		~SwapChain();
 
-		void Init( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples=VK_SAMPLE_COUNT_1_BIT );
+		void Init( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples=VK_SAMPLE_COUNT_1_BIT, bool srgb=true, VkFormat depthformat=VK_FORMAT_D32_SFLOAT );
 		void Release();
 
 		VkSwapchainKHR Handle() const	{ return m_SwapChain; }
@@ -63,7 +63,7 @@ namespace vk
 		VkImageView DepthView() const	{ return m_DepthImageView; }
 
 		VkSampleCountFlagBits MultiSampleCount() const { return msaaSamples; }
-		VkImageView	MultiSampleView() const	{ return colorImageView; }
+		VkImageView	MultiSampleView() const	{ return m_ResolveImageView; }
 
 		const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 
@@ -110,9 +110,12 @@ namespace vk
 		// Multisample
 		bool							m_bEnableMultisample;
 		VkSampleCountFlagBits	msaaSamples;
-		VkImage					colorImage;
-		VkDeviceMemory			colorImageMemory;
-		VkImageView				colorImageView;
+		VkImage							m_ResolveImage;
+		VkDeviceMemory					m_ResolveImageMemory;
+		VkImageView						m_ResolveImageView;
+
+//TODO: VkFramebufferに登録するアタッチメントはスワップチェーンのビューだけとは限らない. 例えば、遅延レンダリングで位置/法線/アルベドを書き込むVkImageViewも含まれる
+//https://github.com/SaschaWillems/Vulkan/blob/master/examples/subpasses/subpasses.cpp　Line 251
 
 		// Attachment views for Framebuffer
 		OreOreLib::NDArray<VkImageView, 2>	m_FramebufferAttachments;
@@ -121,9 +124,9 @@ namespace vk
 		OreOreLib::Array<VkFence>		m_refRenderFinishedFences;
 
 
-		void InitSwapChain();
+		void InitSwapChain( bool srgb );
 		void InitImageViews();
-		void InitDepthResources();
+		void InitDepthResources( VkFormat format );
 		void InitMsaaResources();
 		void InitFramebufferAttachments();
 		void InitFences();
