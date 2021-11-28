@@ -259,8 +259,8 @@ m_ColorBuffers.Init( m_refDevice, m_SwapChain, surfaceFormat.format );
 			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
 			{
 
-// TODO: VkImageView配列要素の並び順はどうやって決める？
-				m_FramebufferAttachments(i, 0) = m_ResolveBuffer.View();//m_ResolveImageView;
+// TODO: VkImageView配列要素の並び順はどうやって決める？ -> VkRenderPass作成時の
+				m_FramebufferAttachments(i, 0) = m_ResolveBuffer.View();//m_ResolveImageView;// MultiSampleView
 				m_FramebufferAttachments(i, 1) = m_DepthBuffer.View();//m_DepthImageView;
 				m_FramebufferAttachments(i, 2) = m_ColorBuffers.View(i);//m_ColorImageViews[i];
 			}

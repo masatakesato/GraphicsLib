@@ -118,16 +118,16 @@ namespace vk
 
 	void RenderPassAttachments::Init( std::initializer_list<ImageBuffer*> buffers )
 	{
-		m_AttacmentDescs.Init( buffers.size() );
+		//m_AttacmentDescs.Init( buffers.size() );
 
-		int numColors = 0;
-		bool enableDepth = 0;
-		int numResolves = 0;
+		//int numColors = 0;
+		//bool enableDepth = 0;
+		//int numResolves = 0;
 
-		for( const auto& buffer : buffers )
-		{
-			buffer->;
-		}
+		//for( const auto& buffer : buffers )
+		//{
+		//	buffer->;
+		//}
 
 	}
 
@@ -146,10 +146,11 @@ namespace vk
 		if( enableDepth )
 			m_DepthDescs.Init( &m_AttacmentDescs[numColors], 1 );
 
-		if( numResolves>0 )
+		if( numResolves > 0 )
+		{
 			m_ResolveDescs.Init( &m_AttacmentDescs[ numColors + static_cast<int32>(enableDepth) ], numResolves );
-
-		m_ColorToResolve.Resize( numColors, VK_ATTACHMENT_UNUSED );
+			m_ColorToResolve.Resize( numColors, VK_ATTACHMENT_UNUSED );
+		}
 	}
 
 	
@@ -225,6 +226,8 @@ namespace vk
 	
 	void RenderPassAttachments::CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments )
 	{
+		if( !m_ColorToResolve )	return;
+
 		for( const auto& attachmentId : activeattachments )
 		{
 			ASSERT( attachmentId < static_cast<uint32_t>(m_ColorToResolve.Length()) );
