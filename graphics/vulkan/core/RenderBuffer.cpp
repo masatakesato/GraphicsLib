@@ -52,11 +52,13 @@ namespace vk
 		VkImageAspectFlags aspect = ( isdepth ? ( VK_IMAGE_ASPECT_DEPTH_BIT | (hasstencil ? VK_IMAGE_ASPECT_STENCIL_BIT : 0) ) : VK_IMAGE_ASPECT_COLOR_BIT );
 
 
+		// https://github.com/Overv/VulkanTutorial/issues/118
+		// https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/vk__mem__alloc_8h.html
 		CreateImage(	m_refDevice->PhysicalDevice(), m_refDevice->Device(),
 						width, height, 1, m_MsaaSamples, m_Format,
 						VK_IMAGE_TILING_OPTIMAL,
 						usage,
-						VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+						VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,//VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT,//LAZIY***はモバイルプラットフォーム向け.
 						m_Image,
 						m_DeviceMemory );
 

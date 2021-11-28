@@ -1,10 +1,10 @@
 ﻿#ifndef ATTACHMENT_H
 #define	ATTACHMENT_H
 
-#include	<vulkan/vulkan.h>
-
 #include	<oreore/container/Array.h>
 #include	<oreore/container/ArrayView.h>
+
+#include	"ImageBuffer.h"
 
 
 
@@ -69,6 +69,8 @@ namespace vk
 
 		RenderPassAttachments();
 		~RenderPassAttachments();
+
+		void Init( std::initializer_list<ImageBuffer*> buffers );
 
 		void Init( int numColors, bool enableDepth, int numResolves=0 );
 		void Release();

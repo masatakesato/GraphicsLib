@@ -5,41 +5,12 @@
 
 #include	"GraphicsDevice.h"
 #include	"RenderBuffer.h"//#include	"Texture.h"
-
+#include	"SwapChainBuffer.h"
 
 
 
 namespace vk
 {
-
-	//class MultiSampleBuffer
-	//{
-	//public:
-
-	//	MultiSampleBuffer();
-	//	MultiSampleBuffer( GraphicsDevice& device, VkFormat format, VkExtent2D extent, VkSampleCountFlagBits msaasamples );
-	//	~MultiSampleBuffer();
-
-	//	void Init( GraphicsDevice& device, VkFormat format, VkExtent2D extent, VkSampleCountFlagBits msaasamples );
-	//	void Release();
-
-
-	//private:
-
-	//	GraphicsDeviceRef	m_refDevice;
-
-	//	VkSampleCountFlagBits	msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-	//	VkImage					colorImage;
-	//	VkDeviceMemory			colorImageMemory;
-	//	VkImageView				colorImageView;
-
-
-	//	friend class SwapChain;
-
-	//};
-
-
-
 
 	// TODO: Enable/Disable depth
 	class SwapChain
@@ -56,15 +27,15 @@ namespace vk
 
 		VkSwapchainKHR Handle() const	{ return m_SwapChain; }
 
-		uint32_t NumImages() const		{ return m_NumImages; }
-		VkFormat ImageFormat() const	{ return m_ImageFormat; }
-		VkImageView ImageView( int i ) const	{ return m_ColorImageViews[i]; }
+		uint32_t NumImages() const		{ return /*m_NumImages*/m_ColorBuffers.NumImages(); }
+		VkFormat ImageFormat() const	{ return /*m_ImageFormat*/m_ColorBuffers.Format(); }
+		VkImageView ImageView( int i ) const	{ return /*m_ColorImageViews[i]*/m_ColorBuffers.View(i); }
 
-		VkFormat DepthFormat() const	{ return m_DepthFormat; }
-		VkImageView DepthView() const	{ return m_DepthImageView; }
+		VkFormat DepthFormat() const	{ return /*m_DepthFormat*/m_DepthBuffer.Format(); }
+		VkImageView DepthView() const	{ return /*m_DepthImageView*/m_DepthBuffer.View(); }
 
-		VkSampleCountFlagBits MultiSampleCount() const { return msaaSamples; }
-		VkImageView	MultiSampleView() const	{ return m_ResolveImageView; }
+		VkSampleCountFlagBits MultiSampleCount() const { return /*msaaSamples*/m_ResolveBuffer.MultiSampleCount(); }
+		VkImageView	MultiSampleView() const	{ return /*m_ResolveImageView*/m_ResolveBuffer.View(); }
 
 		const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 
@@ -97,23 +68,27 @@ namespace vk
 		VkExtent2D						m_SwapChainExtent;
 
 		// Color
-		uint32_t						m_NumImages;
-		VkFormat						m_ImageFormat;
-		OreOreLib::Array<VkImage>		m_ColorImages;
-		OreOreLib::Array<VkImageView>	m_ColorImageViews;
+//		uint32_t						m_NumImages;
+//		VkFormat						m_ImageFormat;
+//		OreOreLib::Array<VkImage>		m_ColorImages;
+//		OreOreLib::Array<VkImageView>	m_ColorImageViews;
 		
+		SwapChainBuffer					m_ColorBuffers;
+
 		// Depth
-		VkFormat						m_DepthFormat;
-		VkImage							m_DepthImage;
-		VkDeviceMemory					m_DepthImageMemory;
-		VkImageView						m_DepthImageView;
+//		VkFormat						m_DepthFormat;
+//		VkImage							m_DepthImage;
+//		VkDeviceMemory					m_DepthImageMemory;
+//		VkImageView						m_DepthImageView;
+
+		RenderBuffer					m_DepthBuffer;
 
 		// Multisample
-		bool							m_bEnableMultisample;
-		VkSampleCountFlagBits	msaaSamples;
-		VkImage							m_ResolveImage;
-		VkDeviceMemory					m_ResolveImageMemory;
-		VkImageView						m_ResolveImageView;
+		//bool							m_bEnableMultisample;
+		//VkSampleCountFlagBits	msaaSamples;
+		//VkImage							m_ResolveImage;
+		//VkDeviceMemory					m_ResolveImageMemory;
+		//VkImageView						m_ResolveImageView;
 
 		RenderBuffer					m_ResolveBuffer;
 
@@ -132,8 +107,8 @@ namespace vk
 
 		void InitSwapChain( bool srgb );
 		void InitImageViews();
-		void InitDepthResources( VkFormat format );
-		void InitMsaaResources();
+		void InitDepthResources( VkFormat format, VkSampleCountFlagBits msaaSamples );
+		void InitMsaaResources( VkFormat format, VkSampleCountFlagBits msaaSamples );
 		void InitFramebufferAttachments();
 		void InitFences();
 

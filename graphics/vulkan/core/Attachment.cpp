@@ -116,6 +116,23 @@ namespace vk
 
 
 
+	void RenderPassAttachments::Init( std::initializer_list<ImageBuffer*> buffers )
+	{
+		m_AttacmentDescs.Init( buffers.size() );
+
+		int numColors = 0;
+		bool enableDepth = 0;
+		int numResolves = 0;
+
+		for( const auto& buffer : buffers )
+		{
+			buffer->;
+		}
+
+	}
+
+
+
 	void RenderPassAttachments::Init( int numColors, bool enableDepth, int numResolves )
 	{
 		m_ActiveResolves = 0;
