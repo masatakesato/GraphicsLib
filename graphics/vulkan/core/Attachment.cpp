@@ -2,6 +2,8 @@
 
 #include	<oreore/container/Pair.h>
 
+#include	"../utils/HelperFunctions.h"
+
 
 
 namespace vk
@@ -14,68 +16,68 @@ namespace vk
 	//##################################################################################//
 
 
-	SubpassAttachments::SubpassAttachments()
-	{
+	//SubpassAttachments::SubpassAttachments()
+	//{
 
-	}
+	//}
 
-	
+	//
 
-	SubpassAttachments::~SubpassAttachments()
-	{
-		Release();
-	}
-
-
-
-	void SubpassAttachments::Init( int numInputs, int numColorAttachments, bool depthStencil )
-	{
-		m_InputAttachments.Resize( numInputs );
-
-		m_ColorAttachments.Resize( numInputs );
-		m_ResolveAttachments.Resize( numInputs, { VK_ATTACHMENT_UNUSED } );
-
-		m_DepthStencilAttachment = {};
-	}
+	//SubpassAttachments::~SubpassAttachments()
+	//{
+	//	Release();
+	//}
 
 
 
-	void SubpassAttachments::Release()
-	{
-		m_InputAttachments.Release();
-		m_ColorAttachments.Release();
-		m_ResolveAttachments.Release();
+	//void SubpassAttachments::Init( int numInputs, int numColorAttachments, bool depthStencil )
+	//{
+	//	m_InputAttachments.Resize( numInputs );
 
-	}
+	//	m_ColorAttachments.Resize( numInputs );
+	//	m_ResolveAttachments.Resize( numInputs, { VK_ATTACHMENT_UNUSED } );
 
-
-
-	void SubpassAttachments::SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist )
-	{
-		m_InputAttachments.Init( ilist );
-	}
+	//	m_DepthStencilAttachment = {};
+	//}
 
 
 
-	void SubpassAttachments::SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist )
-	{
-		m_ColorAttachments.Init( ilist );
-	}
+	//void SubpassAttachments::Release()
+	//{
+	//	m_InputAttachments.Release();
+	//	m_ColorAttachments.Release();
+	//	m_ResolveAttachments.Release();
+
+	//}
 
 
 
-	void SubpassAttachments::SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist )
-	{
-		ASSERT( m_ColorAttachments.Length() == (int)ilist.size() );
-		m_ResolveAttachments.Init( ilist );
-	}
+	//void SubpassAttachments::SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	m_InputAttachments.Init( ilist );
+	//}
 
 
 
-	void SubpassAttachments::SetDepthAttachment( VkAttachmentReference attachref )
-	{
-		m_DepthStencilAttachment = attachref;
-	}
+	//void SubpassAttachments::SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	m_ColorAttachments.Init( ilist );
+	//}
+
+
+
+	//void SubpassAttachments::SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	ASSERT( m_ColorAttachments.Length() == (int)ilist.size() );
+	//	m_ResolveAttachments.Init( ilist );
+	//}
+
+
+
+	//void SubpassAttachments::SetDepthAttachment( VkAttachmentReference attachref )
+	//{
+	//	m_DepthStencilAttachment = attachref;
+	//}
 
 
 
@@ -116,20 +118,11 @@ namespace vk
 
 
 
-	void RenderPassAttachments::Init( std::initializer_list<ImageBuffer*> buffers )
-	{
-		//m_AttacmentDescs.Init( buffers.size() );
+	//void RenderPassAttachments::Init( int numAttachments )
+	//{
+	//	m_AttacmentDescs.Init( numAttachments );
 
-		//int numColors = 0;
-		//bool enableDepth = 0;
-		//int numResolves = 0;
-
-		//for( const auto& buffer : buffers )
-		//{
-		//	buffer->;
-		//}
-
-	}
+	//}
 
 
 
@@ -169,7 +162,7 @@ namespace vk
 
 
 
-	void RenderPassAttachments::SetColorAttachmentDesc( uint32 attachment, VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, bool presentable )
+	void RenderPassAttachments::SetColorAttachmentDesc( uint32 attachment, VkFormat format, VkSampleCountFlagBits msaaSamples, LoadStoreOp ops, bool presentable )
 	{
 		ASSERT( attachment < m_ColorDescs.Length() );
 
@@ -195,7 +188,7 @@ namespace vk
 
 
 
-	void RenderPassAttachments::SetDepthAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, VkImageLayout layout )
+	void RenderPassAttachments::SetDepthAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, LoadStoreOp ops, VkImageLayout layout )
 	{
 		ASSERT( m_DepthDescs );
 

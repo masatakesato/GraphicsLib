@@ -27,15 +27,18 @@ namespace vk
 
 		VkSwapchainKHR Handle() const	{ return m_SwapChain; }
 
-		uint32_t NumImages() const		{ return /*m_NumImages*/m_ColorBuffers.NumImages(); }
-		VkFormat ImageFormat() const	{ return /*m_ImageFormat*/m_ColorBuffers.Format(); }
-		VkImageView ImageView( int i ) const	{ return /*m_ColorImageViews[i]*/m_ColorBuffers.View(i); }
+		const SwapChainBuffer& ColorBuffers() const	{ return m_ColorBuffers; }
+		uint32_t NumImages() const					{ return /*m_NumImages*/m_ColorBuffers.NumImages(); }
+		VkFormat ImageFormat() const				{ return /*m_ImageFormat*/m_ColorBuffers.Format(); }
+		VkImageView ImageView( int i ) const		{ return /*m_ColorImageViews[i]*/m_ColorBuffers.View(i); }
 
-		VkFormat DepthFormat() const	{ return /*m_DepthFormat*/m_DepthBuffer.Format(); }
-		VkImageView DepthView() const	{ return /*m_DepthImageView*/m_DepthBuffer.View(); }
+		const RenderBuffer& DepthBuffer() const		{ return m_DepthBuffer; }
+		VkFormat DepthFormat() const				{ return /*m_DepthFormat*/m_DepthBuffer.Format(); }
+		VkImageView DepthView() const				{ return /*m_DepthImageView*/m_DepthBuffer.View(); }
 
-		VkSampleCountFlagBits MultiSampleCount() const { return /*msaaSamples*/m_ResolveBuffer.MultiSampleCount(); }
-		VkImageView	MultiSampleView() const	{ return /*m_ResolveImageView*/m_ResolveBuffer.View(); }
+		const RenderBuffer& ResolveBuffer() const		{ return m_ResolveBuffer; }
+		VkSampleCountFlagBits MultiSampleCount() const	{ return /*msaaSamples*/m_ResolveBuffer.MultiSampleCount(); }
+		VkImageView	MultiSampleView() const				{ return /*m_ResolveImageView*/m_ResolveBuffer.View(); }
 
 		const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 

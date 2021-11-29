@@ -12,6 +12,9 @@ namespace vk
 	{
 	public:
 
+		ImageBuffer(){}
+		virtual ~ImageBuffer(){}
+
 		virtual VkFormat Format() const	= 0;//		{ return VK_FORMAT_UNDEFINED; }
 		virtual const VkExtent2D& Extent() const = 0;
 		virtual const VkImageView& View( int i=0 ) const = 0;//	{ return VK_NULL_HANDLE; }

@@ -35,6 +35,13 @@ namespace vk
 
 
 
+void RenderBuffer::Init( GraphicsDevice& device, const RenderBufferDesc& config )
+{
+
+}
+
+
+
 	void RenderBuffer::Init( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, VkSampleCountFlagBits msaasamples, bool transient, bool enableinput )
 	{
 		m_refDevice		= device;

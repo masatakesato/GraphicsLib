@@ -4,63 +4,88 @@
 #include	<oreore/container/Array.h>
 #include	<oreore/container/ArrayView.h>
 
-#include	"ImageBuffer.h"
+#include	"RenderBuffer.h"
 
 
 
 namespace vk
 {
 
-	enum class AttachmentOps
+	//class SubpassAttachments
+	//{
+	//public:
+
+	//	SubpassAttachments();
+	//	SubpassAttachments( const SubpassAttachments& )=delete;
+	//	~SubpassAttachments();
+
+	//	void Init( int numInputs, int numColorAttachments, bool depthStencil );
+	//	void Release();
+
+	//	void SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist );
+	//	void SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist );
+	//	void SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist );
+	//	void SetDepthAttachment( VkAttachmentReference attachref );
+
+
+	//private:
+
+	//	OreOreLib::Array<VkAttachmentReference>	m_InputAttachments;
+
+	//	OreOreLib::Array<VkAttachmentReference>	m_ColorAttachments;
+	//	OreOreLib::Array<VkAttachmentReference>	m_ResolveAttachments;
+	//	// https://qiita.com/Pctg-x8/items/2b3d5c8a861f42aa533f
+	//	// for Multisampling.
+	//	// m_ResolveAttachments.Length() must be equal to m_ColorAttachments.Length()
+	//	// set VkAttachmentReference::attachment to VK_ATTACHMENT_UNUSED if you want to invalidate multisampling
+
+	//	VkAttachmentReference	m_DepthStencilAttachment{};
+
+	//};
+
+
+
+	enum class LoadStoreOp
 	{
-		/*const uint8*/ Load_Store,
-		/*const uint8*/ Load_None,
-		/*const uint8*/ Clear_Store,
-		/*const uint8*/ Clear_None,
-		/*const uint8*/ None_Store,
-		/*const uint8*/ None_None,
+		Load_Store,
+		Load_DontCare,
+		Clear_Store,
+		Clear_DontCare,
+		DontCare_Store,
+		DontCare_DontCare,
 	};
 
 
 
-
-	class SubpassAttachments
+	struct AttachmentDesc
 	{
-	public:
-
-		SubpassAttachments();
-		SubpassAttachments( const SubpassAttachments& )=delete;
-		~SubpassAttachments();
-
-		void Init( int numInputs, int numColorAttachments, bool depthStencil );
-		void Release();
-
-		void SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist );
-		void SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist );
-		void SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist );
-		void SetDepthAttachment( VkAttachmentReference attachref );
-
-
-	private:
-
-		OreOreLib::Array<VkAttachmentReference>	m_InputAttachments;
-
-		OreOreLib::Array<VkAttachmentReference>	m_ColorAttachments;
-		OreOreLib::Array<VkAttachmentReference>	m_ResolveAttachments;
-		// https://qiita.com/Pctg-x8/items/2b3d5c8a861f42aa533f
-		// for Multisampling.
-		// m_ResolveAttachments.Length() must be equal to m_ColorAttachments.Length()
-		// set VkAttachmentReference::attachment to VK_ATTACHMENT_UNUSED if you want to invalidate multisampling
-
-		VkAttachmentReference	m_DepthStencilAttachment{};
-
+		LoadStoreOp		Operations;
+		VkImageLayout	FinalLayout;
 	};
-
-
-
 
 
 	
+
+	struct RenderTargetDesc
+	{
+		RenderBufferDesc	RenderBuffer;
+		AttachmentDesc		Attachment;
+
+		//RenderTargetDesc( VkExtent2D dim, VkFormat format, VkSampleCountFlagBits msaaflag, Usage usage, LoadStoreOp ops, VkImageLayout finallayout )
+		//	: RenderBuffer{ dim, format, msaaflag, usage }
+		//	, Attachment{ ops, finallayout }
+		//{
+
+		//}
+
+	};
+
+
+
+
+
+
+
 	// |----- ColorAttachments -----|-- DepthAttachment --|--- ResolveAttachments ---|
 
 	class RenderPassAttachments
@@ -70,7 +95,9 @@ namespace vk
 		RenderPassAttachments();
 		~RenderPassAttachments();
 
-		void Init( std::initializer_list<ImageBuffer*> buffers );
+//void Init( int numAttachments );
+
+//void Init( std::initializer_list<RenderBufferConfig> buf, std::initializer_list<AttachmentConfig> buf );
 
 		void Init( int numColors, bool enableDepth, int numResolves=0 );
 		void Release();
@@ -78,8 +105,8 @@ namespace vk
 		bool HasDepth() const	{ return m_DepthDescs; }
 		bool HasResolve() const	{ return m_ResolveDescs; }
 
-		void SetColorAttachmentDesc( uint32 attachment, VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, bool presentable );
-		void SetDepthAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, AttachmentOps ops, VkImageLayout layout=VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+		void SetColorAttachmentDesc( uint32 attachment, VkFormat format, VkSampleCountFlagBits msaaSamples, LoadStoreOp ops, bool presentable );
+		void SetDepthAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, LoadStoreOp ops, VkImageLayout layout=VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 
 		void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments );
 		void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments );
