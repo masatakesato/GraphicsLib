@@ -35,9 +35,27 @@ namespace vk
 
 
 
-void RenderBuffer::Init( GraphicsDevice& device, const RenderBufferDesc& config )
+void RenderBuffer::Init( GraphicsDevice& device, const RenderBufferDesc& desc )
 {
+		m_refDevice		= device;
+		//m_Dim			= { width, height };
+		m_Format		= desc.Format;
+		m_MsaaSamples	= desc.MultiSampleFlag;
+		
+		bool isdepth = HasDepthComponent( m_Format );
+		bool hasstencil = HasStencilComponent( m_Format );
+		VkImageAspectFlags aspect = ( isdepth ? ( VK_IMAGE_ASPECT_DEPTH_BIT | (hasstencil ? VK_IMAGE_ASPECT_STENCIL_BIT : 0) ) : VK_IMAGE_ASPECT_COLOR_BIT );
 
+
+		CreateImage(	m_refDevice->PhysicalDevice(), m_refDevice->Device(),
+						desc.Dim.width, desc.Dim.height, 1, m_MsaaSamples, m_Format,
+						VK_IMAGE_TILING_OPTIMAL,
+						desc.UsageFlags,
+						VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,//VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT,//LAZIY***はモバイルプラットフォーム向け.
+						m_Image,
+						m_DeviceMemory );
+
+		CreateImageView( m_refDevice->Device(), m_ImageView, m_Image, m_Format, aspect, 1 );
 }
 
 

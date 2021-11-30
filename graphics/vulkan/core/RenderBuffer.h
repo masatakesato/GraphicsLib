@@ -9,21 +9,20 @@
 namespace vk
 {
 
-	enum class Usage
+	namespace RenderBufferUsage
 	{
 		// color or depth, support input or not, transient or not
-			
-		ColorWrite					= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		ColorWrite_Transient		= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+		const VkImageUsageFlags ColorWrite					= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		const VkImageUsageFlags ColorWrite_Transient		= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
 
-		ColorReadWrite				= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
-		ColorReadWrite_Transient	= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+		const VkImageUsageFlags ColorReadWrite				= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+		const VkImageUsageFlags ColorReadWrite_Transient	= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
 
-		DepthWrite					= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-		DepthWrite_Transient		= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+		const VkImageUsageFlags DepthWrite					= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		const VkImageUsageFlags DepthWrite_Transient		= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
 
-		DepthReadWrite				= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
-		DepthReadWrite_Transient	= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+		const VkImageUsageFlags DepthReadWrite				= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+		const VkImageUsageFlags DepthReadWrite_Transient	= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
 	};
 
 
@@ -32,7 +31,7 @@ namespace vk
 		VkExtent2D				Dim;
 		VkFormat				Format;
 		VkSampleCountFlagBits	MultiSampleFlag;
-		Usage					UsageFlags;
+		VkImageUsageFlags		UsageFlags;
 	};
 
 
@@ -48,7 +47,7 @@ namespace vk
 		RenderBuffer( const RenderBuffer& )=delete;
 		~RenderBuffer();
 		
-void Init( GraphicsDevice& device, const RenderBufferDesc& config );
+void Init( GraphicsDevice& device, const RenderBufferDesc& desc );
 
 		void Init( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, VkSampleCountFlagBits msaasamples,  bool transient, bool enableinput );
 		void Release();

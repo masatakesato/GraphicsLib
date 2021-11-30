@@ -45,14 +45,22 @@ namespace vk
 
 
 
-	enum class LoadStoreOp
+
+	struct LoadStoreOp
 	{
-		Load_Store,
-		Load_DontCare,
-		Clear_Store,
-		Clear_DontCare,
-		DontCare_Store,
-		DontCare_DontCare,
+		VkAttachmentLoadOp LoadOp;
+		VkAttachmentStoreOp StoreOp;
+	};
+
+
+	namespace AttachmentOp
+	{
+		const LoadStoreOp Load_Store{ VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_STORE };		// Load / Store
+		const LoadStoreOp Load_DontCare{ VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_DONT_CARE };	// Load / DontCare
+		const LoadStoreOp Clear_Store{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE };		// Clear / Store
+		const LoadStoreOp Clear_DontCare{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_DONT_CARE };	// Clear / DontCare
+		const LoadStoreOp DontCare_Store{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_STORE };	// DontCare / Store
+		const LoadStoreOp DontCare_DontCare{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE };// DontCare / DontCare
 	};
 
 
@@ -70,19 +78,7 @@ namespace vk
 	{
 		RenderBufferDesc	RenderBuffer;
 		AttachmentDesc		Attachment;
-
-		//RenderTargetDesc( VkExtent2D dim, VkFormat format, VkSampleCountFlagBits msaaflag, Usage usage, LoadStoreOp ops, VkImageLayout finallayout )
-		//	: RenderBuffer{ dim, format, msaaflag, usage }
-		//	, Attachment{ ops, finallayout }
-		//{
-
-		//}
-
 	};
-
-
-
-
 
 
 
@@ -97,7 +93,7 @@ namespace vk
 
 //void Init( int numAttachments );
 
-//void Init( std::initializer_list<RenderBufferConfig> buf, std::initializer_list<AttachmentConfig> buf );
+void Init( std::initializer_list<RenderTargetDesc> redertargetdescs );
 
 		void Init( int numColors, bool enableDepth, int numResolves=0 );
 		void Release();

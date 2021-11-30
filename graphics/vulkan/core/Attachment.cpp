@@ -1,7 +1,5 @@
 ﻿#include	"Attachment.h"
 
-#include	<oreore/container/Pair.h>
-
 #include	"../utils/HelperFunctions.h"
 
 
@@ -88,21 +86,6 @@ namespace vk
 	//																					//
 	//##################################################################################//
 
-
-	const Pair<VkAttachmentLoadOp, VkAttachmentStoreOp> LoadStoreOps[] =
-	{
-		{ VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_STORE },		// Load / Store
-		{ VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_DONT_CARE },	// Load / DontCare
-		{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE },		// Clear / Store
-		{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_DONT_CARE },	// Clear / DontCare
-		{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_STORE },	// DontCare / Store
-		{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE }// DontCare / DontCare
-	};
-
-
-
-
-
 	RenderPassAttachments::RenderPassAttachments()
 		: m_ActiveResolves( 0 )
 	{
@@ -118,11 +101,25 @@ namespace vk
 
 
 
-	//void RenderPassAttachments::Init( int numAttachments )
-	//{
-	//	m_AttacmentDescs.Init( numAttachments );
+	void RenderPassAttachments::Init( std::initializer_list<RenderTargetDesc> redertargetdescs )
+	{
+		m_AttacmentDescs.Resize( redertargetdescs.size() );
 
-	//}
+		auto attachmentdesc = m_AttacmentDescs.begin();
+		for( const auto& rtdesc : redertargetdescs )
+		{
+			attachmentdesc->format			= rtdesc.RenderBuffer.Format;
+			attachmentdesc->samples			= rtdesc.RenderBuffer.MultiSampleFlag;
+			attachmentdesc->loadOp			= rtdesc.Attachment.Operations.LoadOp;
+			attachmentdesc->storeOp			= rtdesc.Attachment.Operations.StoreOp;
+			attachmentdesc->stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			attachmentdesc->stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			attachmentdesc->initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
+			attachmentdesc->finalLayout		= rtdesc.Attachment.FinalLayout;
+
+			attachmentdesc++;
+		}
+	}
 
 
 
@@ -168,13 +165,11 @@ namespace vk
 
 		bool resolve = msaaSamples != VK_SAMPLE_COUNT_1_BIT;
 
-		const auto& loadstoreop = LoadStoreOps[ static_cast<int>(ops) ];
-
 		auto& desc = m_AttacmentDescs[ attachment ];
 		desc.format			= format;
 		desc.samples		= msaaSamples;
-		desc.loadOp			= loadstoreop.first;
-		desc.storeOp		= loadstoreop.second;
+		desc.loadOp			= ops.LoadOp;
+		desc.storeOp		= ops.StoreOp;
 		desc.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		desc.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		desc.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
@@ -192,13 +187,11 @@ namespace vk
 	{
 		ASSERT( m_DepthDescs );
 
-		const auto& loadstoreop = LoadStoreOps[ static_cast<int>(ops) ];
-
 		auto& desc = m_DepthDescs[0];
 		desc.format			= format;
 		desc.samples		= msaaSamples;
-		desc.loadOp			= loadstoreop.first;
-		desc.storeOp		= loadstoreop.second;
+		desc.loadOp			= ops.LoadOp;
+		desc.storeOp		= ops.StoreOp;
 		desc.stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		desc.stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		desc.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
