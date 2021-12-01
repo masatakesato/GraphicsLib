@@ -137,7 +137,7 @@ namespace OreOreLib
 	{
 		if( !pBuffer->pData || !m_VBO )	return false;
 
-		m_BufferDesc.buffer_size	= pBuffer->elmSize * pBuffer->numElms;
+		m_BufferDesc.buffer_size	= static_cast<GLsizei>( pBuffer->elmSize * pBuffer->numElms );
 		m_BufferDesc.target			= target;
 		m_BufferDesc.usage			= usage;
 
@@ -181,7 +181,7 @@ namespace OreOreLib
 	{
 		m_numIndices	= pBuffer->numElms;
 
-		m_IndexDesc.buffer_size	= m_numIndices * pBuffer->elmSize;
+		m_IndexDesc.buffer_size	= static_cast<GLsizei>( m_numIndices * pBuffer->elmSize );
 		//m_IndexDesc.target		= GL_ELEMENT_ARRAY_BUFFER;
 		m_IndexDesc.usage		= usage;
 

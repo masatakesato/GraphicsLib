@@ -34,9 +34,9 @@ namespace OreOreLib
 
 
 		ssquad.Init();
-		ssquad.SetVertexAttributes( layout, ArraySize(layout), PRIMITIVE_TYPE::PRIM_TRIANGLE );
+		ssquad.SetVertexAttributes( layout, ArraySize<int>(layout), PRIMITIVE_TYPE::PRIM_TRIANGLE );
 		ssquad.SetVertexBuffers( quadmesh, sizeof(quadmesh), GL_ARRAY_BUFFER, GL_STATIC_DRAW );
-		ssquad.SetIndexBuffer( quad_indices, ArraySize(quad_indices), DATA_FORMAT::FORMAT_R8_UINT, GL_STATIC_DRAW );
+		ssquad.SetIndexBuffer( quad_indices, ArraySize<int>(quad_indices), DATA_FORMAT::FORMAT_R8_UINT, GL_STATIC_DRAW );
 		ssquad.Update();
 	}
 
@@ -68,9 +68,9 @@ namespace OreOreLib
 
 
 		ssquad.Init();
-		ssquad.SetVertexAttributes( layout, ArraySize( layout ), PRIMITIVE_TYPE::PRIM_TRIANGLE );
+		ssquad.SetVertexAttributes( layout, ArraySize<int>( layout ), PRIMITIVE_TYPE::PRIM_TRIANGLE );
 		ssquad.SetVertexBuffers( quadmesh, sizeof( quadmesh ), GL_ARRAY_BUFFER, GL_STATIC_DRAW );
-		ssquad.SetIndexBuffer( quad_indices, ArraySize( quad_indices ), DATA_FORMAT::FORMAT_R8_UINT, GL_STATIC_DRAW );
+		ssquad.SetIndexBuffer( quad_indices, ArraySize<int>( quad_indices ), DATA_FORMAT::FORMAT_R8_UINT, GL_STATIC_DRAW );
 		ssquad.Update();
 
 	}
@@ -112,9 +112,9 @@ namespace OreOreLib
 
 
 		vao.Init();
-		vao.SetVertexAttributes( layout, ArraySize( layout ), PRIMITIVE_TYPE::PRIM_TRIANGLE );
+		vao.SetVertexAttributes( layout, ArraySize<int>( layout ), PRIMITIVE_TYPE::PRIM_TRIANGLE );
 		vao.SetVertexBuffers( cubemesh, sizeof( cubemesh ), GL_ARRAY_BUFFER, GL_STATIC_DRAW );
-		vao.SetIndexBuffer( cube_indices, ArraySize( cube_indices ), DATA_FORMAT::FORMAT_R8_UINT, GL_STATIC_DRAW );
+		vao.SetIndexBuffer( cube_indices, ArraySize<int>( cube_indices ), DATA_FORMAT::FORMAT_R8_UINT, GL_STATIC_DRAW );
 		vao.Update();
 
 	}

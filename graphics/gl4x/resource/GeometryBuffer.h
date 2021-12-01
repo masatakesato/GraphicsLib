@@ -43,7 +43,7 @@ namespace OreOreLib
 				return;
 
 			const Vec2ui *pFaceGroup = m_refFaceGroup->FaceGroup( grpidx );
-			m_VAO.Draw( (unsigned int *)( pFaceGroup->x ), pFaceGroup->y );
+			m_VAO.Draw( (unsigned int *)( static_cast<sizeType>(pFaceGroup->x) ), pFaceGroup->y );//m_VAO.Draw( (unsigned int *)( pFaceGroup->x ), pFaceGroup->y );
 		}
 
 		inline void DrawGroups() const
@@ -54,7 +54,7 @@ namespace OreOreLib
 			for( int i = 0; i < m_refFaceGroup->numElms; ++i )
 			{
 				const Vec2ui *pFaceGroup = m_refFaceGroup->FaceGroup( i );
-				m_VAO.Draw( (unsigned int *)( pFaceGroup->x ), pFaceGroup->y );
+				m_VAO.Draw( (unsigned int *)( static_cast<sizeType>(pFaceGroup->x) ), pFaceGroup->y );//m_VAO.Draw( (unsigned int *)( pFaceGroup->x ), pFaceGroup->y );
 			}
 		}
 		

@@ -549,7 +549,10 @@ namespace OreOreLib
 
 		// フォーマット不明 or 未対応の場合はファイル読み込みを中止する
 		if( fif == FIF_UNKNOWN || FreeImage_FIFSupportsReading( fif ) == FALSE )
+		{
+			SafeDeleteArray( file_name );
 			return;
+		}
 
 		// 画像ファイルからメモリ上にデータを読み込む
 		FIBITMAP *dib	= FreeImage_Load( fif, file_name );
@@ -561,6 +564,8 @@ namespace OreOreLib
 
 		target_format				= GetDataFormat( fitype, bpp );//	 FreeImageから取得したフォーマットをもとにDATA_FORMATを決める
 
+
+		SafeDeleteArray( file_name );
 
 		//=============== initialize OpenGL Texture ===============//
 		Release();
@@ -648,6 +653,8 @@ namespace OreOreLib
 		ilDeleteImage( ImgId );
 
 #endif	// IL_SUPPORT //
+
+		SafeDeleteArray( file_name );
 
 	}
 
@@ -747,6 +754,7 @@ namespace OreOreLib
 			{
 				ILenum err = ilGetError();
 				tcerr << _T( "Failed loading... " ) << iluErrorString( err ) << tendl;
+				SafeDeleteArray( file_name );
 				return;//return 0;
 			}
 			subWidth		= Min( ilGetInteger( IL_IMAGE_WIDTH ), texDesc.Width );
@@ -784,6 +792,8 @@ namespace OreOreLib
 
 		SafeDeleteArray( m_pSubData );
 #endif	// IL_SUPPORT //
+
+		SafeDeleteArray( file_name );
 	}
 
 
@@ -1036,7 +1046,10 @@ namespace OreOreLib
 
 		// フォーマット不明 or 未対応フォーマットの場合は処理を中止する
 		if( fif == FIF_UNKNOWN || FreeImage_FIFSupportsReading( fif ) == FALSE )
+		{
+			SafeDeleteArray( file_name );
 			return;
+		}
 
 		FREE_IMAGE_TYPE fit	= GetFreeImageType( texDesc.DataFormat );
 		int pixel_bytesize	= SizeOfFormatElement( texDesc.DataFormat );
@@ -1078,6 +1091,8 @@ namespace OreOreLib
 		//const char *err = ilGetString( ilError );
 
 #endif	// IL_SUPPORT //
+
+		SafeDeleteArray( file_name );
 	}
 
 
@@ -1179,7 +1194,10 @@ namespace OreOreLib
 
 		// フォーマット不明 or 未対応の場合はファイル読み込みを中止する
 		if (fif == FIF_UNKNOWN || FreeImage_FIFSupportsReading(fif) == FALSE)
+		{
+			SafeDeleteArray( file_name );
 			return;
+		}
 
 		// 画像ファイルからメモリ上にデータを読み込む
 		FIBITMAP *dib = FreeImage_Load(fif, file_name);
@@ -1221,6 +1239,7 @@ namespace OreOreLib
 			if( !ilLoadImage( file_name ) )// DevILの文字列がUnicode未対応. 強制的に型変換
 			{
 				tcerr << _T("Failed loading ") << file_name << tendl;
+				SafeDeleteArray( file_name );
 				return;//return 0;
 			}
 			subWidth		= Min( ilGetInteger( IL_IMAGE_WIDTH ), texDesc.Width );
@@ -1259,6 +1278,7 @@ namespace OreOreLib
 		ReadBack2CPU();
 
 		SafeDeleteArray(m_pSubData);
+		SafeDeleteArray( file_name );
 
 	}
 
@@ -1477,7 +1497,7 @@ namespace OreOreLib
 
 			for( int miplv=0; miplv <= texDesc.MipLevels; ++miplv )
 			{
-				GL_SAFE_CALL( glTexImage3D( GL_TEXTURE_3D, miplv, texDesc.InternalFormat, texDesc.Width / powf( 2, miplv ), texDesc.Height / powf( 2, miplv ), texDesc.Depth / powf( 2, miplv ), 0, texDesc.Format, texDesc.Type, m_pData ) );
+				GL_SAFE_CALL( glTexImage3D( GL_TEXTURE_3D, miplv, texDesc.InternalFormat, texDesc.Width / powf( 2, (float)miplv ), texDesc.Height / powf( 2, (float)miplv ), texDesc.Depth / powf( 2, (float)miplv ), 0, texDesc.Format, texDesc.Type, m_pData ) );
 			}
 
 		}
