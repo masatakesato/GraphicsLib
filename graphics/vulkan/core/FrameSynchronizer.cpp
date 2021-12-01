@@ -62,7 +62,7 @@ namespace vk
 		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
 
-			for( size_t i=0; i<m_MaxConcurrentFrames; ++i )
+			for( uint32 i=0; i<m_MaxConcurrentFrames; ++i )
 			{
 				if( m_RenderFinishedSemaphores[i] != VK_NULL_HANDLE )
 				{

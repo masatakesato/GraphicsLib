@@ -78,7 +78,7 @@ namespace vk
 
 		m_DescSetLayouts.Init( m_Bindings.Length() );
 
-		for( int set_id=0; set_id<m_DescSetLayouts.Length(); ++set_id )
+		for( uint32 set_id=0; set_id<m_DescSetLayouts.Length(); ++set_id )
 		{
 			VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 			layoutInfo.sType		= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;

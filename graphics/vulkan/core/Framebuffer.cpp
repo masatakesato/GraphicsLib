@@ -34,13 +34,13 @@ namespace vk
 		m_refDevice	= device;
 		swapChainFramebuffers.Resize( numswaps );
 
-		for( int i=0; i<swapChainFramebuffers.Length(); ++i )
+		for( uint32 i=0; i<swapChainFramebuffers.Length(); ++i )
 		{
 			VkFramebufferCreateInfo framebufferInfo = {};
 			framebufferInfo.sType			= VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			framebufferInfo.renderPass		= renderPass;
 			framebufferInfo.attachmentCount	= static_cast<uint32_t>( attachmentViews.Dim(1) );
-			framebufferInfo.pAttachments	= &attachmentViews(i, 0);
+			framebufferInfo.pAttachments	= &attachmentViews( i, (uint32)0 );
 			framebufferInfo.width			= width;
 			framebufferInfo.height			= height;
 			framebufferInfo.layers			= 1;

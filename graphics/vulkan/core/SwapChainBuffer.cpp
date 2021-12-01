@@ -44,7 +44,7 @@ namespace vk
 		vkGetSwapchainImagesKHR( m_refDevice->Device(), swapchain, &numimages, m_Images.begin() );
 
 		m_ImageViews.Resize( static_cast<int>(numimages) );
-		for( size_t i=0; i<m_Images.Length(); i++ )
+		for( uint32 i=0; i<m_Images.Length(); ++i )
 			CreateImageView( m_refDevice->Device(), m_ImageViews[i], m_Images[i], m_Format, VK_IMAGE_ASPECT_COLOR_BIT, 1 );
 	}
 

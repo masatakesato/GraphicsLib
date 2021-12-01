@@ -53,9 +53,9 @@ void OBJLoader::LoadPositions( void* pBuffer, size_t offset, size_t stride )
 	int curr = 0;
 	const Vec3f	dumy3 = {-1, -1, -1};
 
-	for( int i=0; i<VertAttribs.Length(); ++i )
+	for( uint32 i=0; i<VertAttribs.Length(); ++i )
 	{
-		for( int j=0; j<VertAttribs[i].Length(); ++j )
+		for( uint32 j=0; j<VertAttribs[i].Length(); ++j )
 		{
 			*reinterpret_cast<Vec3f*>( reinterpret_cast<uint8*>(pBuffer) + offset + curr * stride ) = i>=0 ? m_Vertices[i] : dumy3;// -1だったら弾く
 			curr++;
@@ -70,9 +70,9 @@ void OBJLoader::LoadNormals( void* pBuffer, size_t offset, size_t stride )
 	int curr = 0;
 	const Vec3f	dumy3 = {-1, -1, -1};
 
-	for( int i=0; i<VertAttribs.Length(); ++i )
+	for( uint32 i=0; i<VertAttribs.Length(); ++i )
 	{
-		for( int j=0; j<VertAttribs[i].Length(); ++j )
+		for( uint32 j=0; j<VertAttribs[i].Length(); ++j )
 		{
 			int normalIdx = VertAttribs[i][j].y;	// 法線ベクトル属性へのインデックス
 			*reinterpret_cast<Vec3f*>( reinterpret_cast<uint8*>(pBuffer) + offset + curr * stride ) = normalIdx>=0 ? m_Normals[ normalIdx ] : dumy3;// -1だったら弾く
@@ -88,9 +88,9 @@ void OBJLoader::LoadTexCoords( void* pBuffer, size_t offset, size_t stride )
 	int curr = 0;
 	const Vec2f	dumy2 = {-1, -1};
 
-	for( int i=0; i<VertAttribs.Length(); ++i )
+	for( uint32 i=0; i<VertAttribs.Length(); ++i )
 	{
-		for( int j=0; j<VertAttribs[i].Length(); ++j )
+		for( uint32 j=0; j<VertAttribs[i].Length(); ++j )
 		{
 			int texIdx = VertAttribs[i][j].x;
 			*reinterpret_cast<Vec2f*>( reinterpret_cast<uint8*>(pBuffer) + offset + curr * stride ) = texIdx>=0 ? m_TexCoord[texIdx] : dumy2;// -1だったら弾く
@@ -106,10 +106,10 @@ void OBJLoader::LoadIndices( void* pBuffer, size_t offset, size_t stride )
 {
 	int curr = 0;
 
-	for( int i=0; i<FaceAttribs.Length(); ++i )
+	for( uint32 i=0; i<FaceAttribs.Length(); ++i )
 	{
 		// 頂点ごとの属性をVertAttribsに追加登録する
-		for( int j=1; j<FaceAttribs[i].Length()-1; ++j )
+		for( uint32 j=1; j<FaceAttribs[i].Length()-1; ++j )
 		{
 			Vec2i ID_VertAttrib;
 
@@ -180,7 +180,7 @@ void OBJLoader::GetGroupInfo( int idx )
 {
 	tcout << _T("Num of Groups = ") << m_Groups.Length() << tendl;
 
-	if( idx >= m_Groups.Length() ) return;
+	if( idx >= (int)m_Groups.Length() ) return;
 
 	//=================== グループの基本情報 =================//
 	int numFaces = m_Groups[idx].face_end - m_Groups[idx].face_start + 1;
@@ -204,7 +204,7 @@ void OBJLoader::GetGroupInfo( int idx )
 			pMtl->Info();
 
 			tcout << _T(" Vertex Indices...\n");
-			for(int k=0; k<m_Faces[i].VertexAttribIndex.Length(); ++k)
+			for( uint32 k=0; k<m_Faces[i].VertexAttribIndex.Length(); ++k )
 				tcout << m_Faces[i].VertexAttribIndex[k].x;
 			tcout << tendl;
 		}
@@ -432,7 +432,7 @@ CurrMatSub = AddMaterialSubset(one_line, CurrFace+1, m_MatSubs );
 	//======================= BoundingBoxを求める =====================//
 	m_BoundingBox[0] = m_BoundingBox[1] = m_Vertices[0];
 
-	for(int i=1; i< m_Vertices.Length(); i++)
+	for( uint32 i=1; i< m_Vertices.Length(); ++i )
 	{
 		// 最小点
 		m_BoundingBox[0].x = m_Vertices[i].x < m_BoundingBox[0].x ? m_Vertices[i].x : m_BoundingBox[0].x;
@@ -651,7 +651,7 @@ void OBJLoader::AddTexCoord( const tstring& str )
 	}
 	
 	// テクスチャ座標の格納
-	for( int i=0; i<Min( elements.Length(), 3 ); ++i )
+	for( int i=0; i<Min( (int)elements.Length(), 3 ); ++i )
 		newTexcoord.xy[i] = (float)tatof( elements[i].c_str() );
 
 	// テクスチャ座標を追加
@@ -809,9 +809,9 @@ void OBJLoader::ConstructVertexAttributes()
 
 	numIndices = 0;
 
-	for( int i=0; i<m_Faces.Length(); ++i )// 各面について、、、
+	for( uint32 i=0; i<m_Faces.Length(); ++i )// 各面について、、、
 	{
-		for( int j=0; j<m_Faces[i].VertexAttribIndex.Length(); ++j )// 面を構成する頂点毎の属性をVertAttribsに登録する
+		for( uint32 j=0; j<m_Faces[i].VertexAttribIndex.Length(); ++j )// 面を構成する頂点毎の属性をVertAttribsに登録する
 		{
 			int idx = AddVertexAttributes( m_Faces[i].VertexAttribIndex[j], VertAttribs );
 			Vec2i newAttribIdx = {m_Faces[i].VertexAttribIndex[j].x, idx};// x:頂点インデックス，y:頂点のどの属性かインデックス
@@ -837,12 +837,11 @@ void OBJLoader::ConstructVertexAttributes()
 //  Attribs配列の対応する要素インデックス
 int OBJLoader::AddVertexAttributes( const Vec3i &Query, OreOreLib::Array< OreOreLib::Array<Vec3i> > &Attribs )
 {
-	int i;
 	Vec3i newAttrib;
 	OreOreLib::Array<Vec3i>& currAttribs = Attribs[ Query.x ];
 	
 	//============== AttribArrayに既にQueryが登録済みかどうか調べる ===============//
-	for(i=0; i<currAttribs.Length(); i++)
+	for( uint32 i=0; i<currAttribs.Length(); ++i )
 	{
 		if(Query.y==currAttribs[i].x && Query.z==currAttribs[i].y)
 			return i;// Queryが登録済みの場合は処理を中止する
@@ -863,9 +862,9 @@ int OBJLoader::AssignVertexIDs( OreOreLib::Array< OreOreLib::Array<Vec3i> >& Att
 {
 	int numAttribVertices = 0;// ユニークな属性を持った頂点の総数
 
-	for(int i=0; i<Attribs.Length(); i++)// 全ての頂点をスキャンする
+	for( uint32 i=0; i<Attribs.Length(); ++i )// 全ての頂点をスキャンする
 	{
-		for(int j=0; j<Attribs[i].Length(); j++)// 各頂点に付随する属性（複数の頂点/法線の組み合わせが考えられる）も全てスキャンする
+		for( uint32 j=0; j<Attribs[i].Length(); ++j )// 各頂点に付随する属性（複数の頂点/法線の組み合わせが考えられる）も全てスキャンする
 		{
 			Attribs[i][j].z = numAttribVertices++;// 個々の属性レベルで通し番号を振っていく
 		}

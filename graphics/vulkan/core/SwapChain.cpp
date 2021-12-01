@@ -256,24 +256,24 @@ m_ColorBuffers.Init( m_refDevice, m_SwapChain, surfaceFormat.format );
 		{
 			m_FramebufferAttachments.Init( /*(int)m_NumImages*/(int)m_ColorBuffers.NumImages(), 3 );
 
-			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
+			for( uint32 i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
 			{
 
 // TODO: VkImageView配列要素の並び順はどうやって決める？ -> VkRenderPass作成時の
-				m_FramebufferAttachments(i, 0) = m_ResolveBuffer.View();//m_ResolveImageView;// MultiSampleView
-				m_FramebufferAttachments(i, 1) = m_DepthBuffer.View();//m_DepthImageView;
-				m_FramebufferAttachments(i, 2) = m_ColorBuffers.View(i);//m_ColorImageViews[i];
+				m_FramebufferAttachments(i, (uint32)0) = m_ResolveBuffer.View();//m_ResolveImageView;// MultiSampleView
+				m_FramebufferAttachments(i, (uint32)1) = m_DepthBuffer.View();//m_DepthImageView;
+				m_FramebufferAttachments(i, (uint32)2) = m_ColorBuffers.View(i);//m_ColorImageViews[i];
 			}
 		}
 		else
 		{
 			m_FramebufferAttachments.Init( /*(int)m_NumImages*/(int)m_ColorBuffers.NumImages(), 2 );
 
-			for( int i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
+			for( uint32 i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
 			{
 // TODO: VkImageView配列要素の並び順はどうやって決める？
-				m_FramebufferAttachments(i, 0) = m_ColorBuffers.View(i);//m_ColorImageViews[i];
-				m_FramebufferAttachments(i, 1) = m_DepthBuffer.View();//m_DepthImageView;
+				m_FramebufferAttachments(i, (uint32)0) = m_ColorBuffers.View(i);//m_ColorImageViews[i];
+				m_FramebufferAttachments(i, (uint32)1) = m_DepthBuffer.View();//m_DepthImageView;
 			}
 		}
 
