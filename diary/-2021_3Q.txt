@@ -1,0 +1,434 @@
+﻿[ シャドウマップのサンプル解析 ]
+https://github.com/SaschaWillems/Vulkan/blob/master/examples/shadowmapping/shadowmapping.cpp
+・preparePipelines()実装
+　→レンダーパス２つある
+　　→メインのレンダリングパスから持ってきてるrenderPass
+　　→影専用のoffscreenPass.renderPass
+
+
+
+[ フレームバッファ/アタッチメントを楽に初期化したい ]
+・RenderPass::InitAttachments
+　→VkImage, VkDeviceMemory, VkImageView初期化に必要な情報を渡す
+　→フレームバッファ情報も渡しておく
+・AddAttachmentsの処理フロー
+　→RenderBuffer群を確保する(スワップチェーン除く)
+　→VkAttachmentDescriptor配列を作成する ( スワップチェインからも取り込む)
+ 　→VkFramebufferをスワップチェイン画像毎分作成する(スワップチェインからも取り込む)
+　　→レンダーバッファ配列
+・AddAttachmentsの入力データ
+
+	struct RenderBufferDesc {
+		VkExtent2D				Dim;
+		VkFormat				Format;
+		VkSampleCountFlagBits	MultiSampleFlag;
+		Usage					UsageFlags;
+	};
+		struct AttachmentDesc{
+		AttachmentOps	LoadStoreOp;
+		VkImageLayout	FinalLayout;
+	};
+
+
+	RenderTargetDesc
+   {
+		RenderBufferDesc RenderBuffer;
+		AttachmentDesc Attachment;
+	};
+
+#######################################################################################################################
+・スワップチェーン使う場合は自動検出してRenderBufferDesc埋める。SwapChainクラスに関数追加
+　→void ExposeRenderBufferDescs( OreOreLib::Memory<RenderBufferDesc>& bufferDescs );
+　→void ExposeImageBuffers( OreOreLib::Memory<ImageBuffer>& imageBuffers );
+
+#######################################################################################################################
+
+[ VkPipeline ]
+ ・VkRenderPassのサブパス毎に生成するオブジェクト
+　→単一サブパスからVkPipelineは何個作ってもいい
+　→VkPipelineオブジェクトすげ替えでサブパス挙動変えられる
+　→単一VkRenderPassから作ったVkPipeline群を連続実行できる？→特定条件なら
+　　→VkRenderPassがサブパス1個だけの場合
+　　→パイプラインステージ重複(src/dst)がsubpassDependencyで正しく設定されてる
+・疑問
+　→VkRenderPassの特定のサブパスだけを動かす事ってできるの？？？
+　　→無理！
+　→vkCmdBeginRenderPass発行したら、全サブパス分vkCmdBindPipelineする
+
+
+[ バッファクラス ]
+・VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT ?
+　→単一レンダーパス内でのみ保持されるVkImage生成に使うフラグ
+　→物理メモリ節約できる
+・ImageBufferクラスあったほうがいい
+　→VkImage, VkDeviceMemory, VkImageViewまとめたクラス
+　→SwapChainのカラー/リゾルブ/デプス関連メンバをImageBufferに置き換える
+　→m_AttachmentsでAttachmentReference定義する時に情報集めやすい
+　→m_Framebufferに渡すときもImageBuffer配列で一括計算
+
+
+
+[ VkFramebufferに登録するImageVIew配列の並び順 ]、、、、、済
+・下記２種類の配列で並び順揃える必要がある
+　→レンダーパスのアタッチメント配列( VkRenderPassCreateInfo::pAttachments )
+　→フレームバッファに登録するImageViewアタッチメント配列( VkFramebufferCreateInfo::pAttachments ) 
+　→例:
+　レンダーパスのアタッチメント配列
+　　attachment[0]: マルチサンプルカラーアタッチメント 
+　　attachment[1]: リゾルブアタッチメント
+　　attachment[2]: マルチサンプルデプスアタッチメント
+　フレームバッファのアタッチメント配列
+　　attachments[0]: マルチサンプルカラー画像ビュー
+　　attachments[1]: スワップチェーン画像ビュー
+　　attachments[2]: マルチサンプルデプス画像ビュー
+
+・アタッチメントはSwapChain関連だけとは限らない。DifferedRenderingのPosition/Normal/Albedoみたいな中間バッファも含まれ
+
+・アタッチメント自動作成ルール決める必要がある
+　→レンダーパスアタッチメント：VkAttachmentDescription配列
+　　→スワップチェーン：{ Color, Depth, Resolve };
+　　→その他アタッチメント：{ Img1, Img2, ... };
+　→フレームバッファアタッチメント：VkImageView配列
+　　→スワップチェーン：{ ResolveView, DepthView, ColorView[ imageindex ] };
+　　→その他アタッチメント：{ ImgView1, ImgView2, ... };
+　→共通：
+　　→配列全部にClear必要なアタッチメントをまとめておく
+　　　→{ DontCare, DontCare, Clear } の並び：VkClearValue3つ必要
+　　　→{ Clear, DontCare, DontCare } の並び：VkClearValue1つでいい
+
+
+
+[ マルチサンプル使用時にリゾルブ画像は複数必要じゃないの？ ]、、、、済
+・https://vulkan-tutorial.com/Multisampling#page_Getting-available-sample-count
+　→We only need one render target since only one drawing operation is active at a time, just like with the depth buffer
+・1個でいい。リゾルブ画像はあくまでレンダーターゲット、スワップチェーンではない。
+・リゾルブ画像の描画結果をスワップチェーン画像に書き込む仕組みになってる
+
+
+
+[ VkAttachmentDescription ]、、、、済
+initialLayout: RenderPassの開始時にリソースがあるべきイメージレイアウトを指定します
+finalLayout: RenderPassの終了時にリソースがなるイメージレイアウトを指定します。
+
+// VkAttachmentDescription初期設定値
+loadOp	= VK_ATTACHMENT_LOAD_OP_CLEAR;
+storeOp= VK_ATTACHMENT_STORE_OP_DONT_CARE
+stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+stencilStoreOp	= VK_ATTACHMENT_STORE_OP_DONT_CARE;
+initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+finalLayout = ???
+
+AddColorAttachment( bool clear, bool store, bool present )
+AddDepthAttachment( bool clear )
+AddSubpassAttachment
+
+
+
+[ VkAttachmentReference ]、、、、済
+・layoutって何？
+　→サブパス実行時に遷移させたいレイアウトを設定する。
+　　https://stackoverflow.com/questions/49652207/what-is-the-purpose-of-vkattachmentreferencelayout
+　→VkAttachmentDescriptionのfinalLayoutは、レンダーパス終了後のレイアウト設定。別物なので注意
+
+	VkAttachmentDescription::initialLayout
+	-------------------  ↓ ------------------- renderpass start
+	    VkAttachmentReference::layout
+	                              ↓
+	    VkAttachmentReference::layout
+	-------------------- ↓ ------------------- renderpass end
+	VkAttachmentDescription::finalLayout
+
+・VkAttachmentDescription 配列には、全てのアタッチメントを登録する
+・VkAttachmentReferenceは、上記配列の要素を引っ張り出してサブパス側の遷移後レイアウトを定義する
+
+
+[ VkSubpassDependencyて何？ ]
+dependencyFlags: 同期操作をタイルレベルにするかどうか(VK_DEPENDENCY_BY_REGION_BITまたは0)を指定します
+
+
+
+[ ShaderEffectクラス実装 ]
+・レンダーパス
+・アタッチメント設定
+     AddSubpassInAttachment
+     AddSubpassOutAttachment
+
+
+
+[ drawFrameの基本的な処理フロー ]
+　1.シンクロナイザーの現行スロットが空くまで待つ
+　2.シンクロナイザー現行スロットが空いたら、描画可能なスワップチェイン画像を取得する
+　3.スワップチェイン画像のリソースが使用可能（フェンスがシグナル）になるまで待つ
+　4.スワップチェイン画像に「現行スロットのフェンス」を割り当てる
+　5.「現行スロットのフェンス」を使ってコマンドバッファをキューにサブミット
+　（「現行スロットのフェンス」がノンシグナルになる）
+
+
+
+[ セマフォ? ]
+・コマンドキューの実行タイミングを制御する同期オブジェクト
+　→GraphicsQueueとPresentQueue実行時間の重複なくしたい
+　　→presentFinishedとrenderFinishedセマフォを用意
+　　→GraphicsQueue:
+　　　→presentFinishedがシグナル状態になってから開始
+　　　→描画完了したらrenderFinishedをシグナル状態にする
+　　→PresentQueue
+　　　→renderFinishedがシグナル状態になってから開始
+　　　→プレゼント完了したらpresentFinishedをシグナル状態にする
+
+
+
+[ Windowクラス使う ]、、、、、、、、、済
+
+
+[ MSAA関連のインスタンスどのクラスに配置する？ ]、、、、済
+・スワップチェインにまとめる
+
+[ デプスバッファどのクラスに配置する？ ]、、、、、、、、、、、済
+・スワップチェインにまとめる
+
+[ セマフォとかフェンスそこら辺の同期インスタンスは？]、、、、済
+　→一旦クラス化
+　→スワップチェインにまとめる
+
+[ フレームバッファまわりのクラス整理はじめる ]、、、、、、、、、、済
+　→VkFramebufferはどこで使ってる？
+　　→vkCmdBeginRenderPass
+　→VkFramebuffer作るのに何が必要？
+　　→VkImageView(スワップチェインのカラーイメージビュー)
+
+[ VkCommandBuffer用途把握 ]
+　→複数個必要？
+　　→スワップチェインの画像毎に必要
+　→セカンダリコマンドバッファ
+　　→プライマリからvkCmdExecuteCommandsで呼び出す
+　　→すらりんvol2の10.3に書いてある
+　→09_1_Refactoring.cppで定義してるcommandBuffersは描画コマンド専用
+　　→createCommandBuffers: VkCommandBuffer作成してコマンド登録
+　　→drawFrame: VkPipelineStageFlagsに登録してキューサブミット
+　　→サブパス毎に必要？パイプライン毎に必要？
+
+
+[ VkPipeline用途把握 ]
+　→どこで使ってる？
+　　→createCommandBuffers: 登録する「処理」の一部に入ってる
+
+
+
+
+
+[ VkVertexInputBindingDescriptionのbindingって何? ]
+ https://gist.github.com/SaschaWillems/428d15ed4b5d71ead462bc63adffa93a
+→頂点アトリビュートのグループ分けに使うインデックス
+　→binding[0]: 基本情報 (頂点/法線/接線/色 )
+　→binding[1]: スキンメッシュ( ウェイト0, ウェイト1, )...
+→シェーダーで設定は必要ない
+
+
+[ VertexLayoutクラスの抽象化 ]
+StaticVertexLayout : IVertexLayout
+SkinnedMeshVertex : IVertexLayout
+
+[ GraphicsPipeline単体で決められるパラメータ ]
+外部から供給が必要なパラメータ
+→頂点データ、UniformBuffer、
+→ビューポートはどうする？
+　→固定解像度、動的解像度両方対応必要
+
+→スワップチェイン画像枚数分確保するDescriptorSetとかはどこに格納する？
+
+
+
+VkRenderPass
+　→デプスバッファのフォーマット
+　→スワップチェインのフォーマット
+
+
+[ Erosion simulation ]
+https://www.youtube.com/watch?v=eaXk97ujbPQ
+浸食シミュレーションのスパイク解消する方法がのってる
+
+
+
+[ VkSubpassDependency]
+・srcStage: 直前サブパス上で、事前完了が必須の末尾ステージ
+・dstStage: 本サブパス上で、srcStage完了後即座に実行可能な先頭ステージ
+
+・srcAccess:
+・dstAccess: 
+
+
+[ パイプラインステージよくわからん ]
+・アクセスフラグに対応したステージ選択処理
+https://github.com/FlaxEngine/FlaxEngine/blob/dfa6f5c75f700aa38da1cdda95228cc980ef9fd2/Source/Engine/GraphicsDevice/Vulkan/RenderToolsVulkan.h
+
+・VK_PIPELINE_STAGE_***フローチャート
+https://stackoverflow.com/questions/66461389/vksubpassdependency-required-for-depth-attachment-but-not-for-color-attachment
+
+
+[ パイプラインステージよくわからん ]
+VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT 
+　→フラグメントシェーディングに入る直前の深度/ステンシル処理
+　→深度/ステンシル値の「読み出し」が行われる
+
+VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT 
+　→フラグメントシェーディング完了後のデプスステンシル処理
+　→深度/ステンシル値の「書き込み」が行われる
+
+VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+　→パイプラインから色情報が出力される段階を指す。一番最後
+　→色情報の「読み出し」「書き込み」両方ここで行われる
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+・VkSemaphoreはスワップチェインイメージ数分だけ必要なの？
+　→ちがう
+　→並列に処理してるフレーム数分だけ必要（MAX_FRAMES_IN_FLIGHT）
+
+・presentって何？
+　→画面にスワップチェーンの画像を表示すること
+　
+
+
+[ Core ]
+Device
+  VkPhysicalDevice
+  VkDevice
+  VkQueue m_GraphicsQueue;
+  VkQueue m_PresentQueue;
+  VkSurface
+  
+
+
+
+Window
+
+SwapChain
+  VkSwapChain m_SwapChain;
+  Array<VkImage> m_SwapChainImages;
+  Array<VkImageView> m_ImageViews;
+  
+  Array<VkFramebuffer> m_Framebuffers;
+
+
+
+class Framebuffer
+  VkImageView m_SwapChainImageView;
+  VkImageView m_ColorImageView;
+  VkFramebuffer m_SwapChainBuffers[ numSwapChains ];
+
+
+class DepthBuffer
+  VkImageView m_DepthImageView;
+
+
+
+
+
+UniformBuffer
+PushConstant
+Texture
+
+
+
+ShaderPass
+  ShaderStage
+  ShaderStage...
+  
+  ShaderStage
+  ShaderStage...
+  
+  ShaderStage
+  ShaderStage...
+
+  ...
+
+
+
+// 単一の完結したレンダリングパスを構成する(VS/GS/PS, CS, etc...)
+class ShaderPass
+{
+	struct ShaderStage
+	{
+		VkShaderModule* module;
+		VkShaderStageFlagBits stage;
+	};
+
+	Array<ShaderStage> m_Stages;
+	
+    VkPipeline m_Pipeline;
+    VkPipelineLayout m_Layout;
+};
+
+
+
+class ShaderEffect
+{
+  Array<ShaderPass> m_ShaderPasses;
+  VkRenderPass	m_RenderPass;
+};
+
+
+
+
+VkCommandBuffer m_CommandBuffers[ numSwapChains ]; // どのクラスのメンバ変数にする？
+
+
+
+
+class SyncObjects
+  VkSemaphore m_WaitSemaphores[ MAX_FRAMES_IN_FLIGHT ];
+  VkSemaphore m_SignalSemaphores[ MAX_FRAMES_IN_FLIGHT ];
+  VkFence m_InFlightFences[ MAX_FRAMES_IN_FLIGHT ];
+
+
+
+[ Resources ]
+template < typename LAYOUT >
+class Mesh
+  Array<uint32_t> m_IndexBuffer;
+  Array<VertexBuffer<LAYOUT>> m_VertexBuffer;
+
+
+Light
+  Position
+  Color
+  Intensity
+
+Frustum
+
+Material
+
+Texture
+
+
+[ Scene ]
+・Resources
+・SceneObjects
+
+[ SceneObjects ]
+Camera
+Light
+
+
+
+
+
+
+
+
+
+i/o
+ObjLoader
+FbxLoader
