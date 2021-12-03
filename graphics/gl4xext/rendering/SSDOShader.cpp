@@ -246,7 +246,7 @@ namespace OreOreLib
 		const uint32 texids[]	= { m_refSSDOBuffer->GetTexOcclusionSH()->texID, m_refSSDOBuffer->GetTexBlur()->texID, m_refSSDOBuffer->GetResult()->texID };//{ m_TexOcclusionSH.texID, m_TexBlurBuffer.texID };//{ texocc->texID, texblur->texID };//
 
 		m_RenderTarget.Init( int( texSize.x ), int( texSize.y ), false );
-		m_RenderTarget.BindTextures( ArraySize( texids ), g_DefaultColorAttachments, texids );
+		m_RenderTarget.BindTextures( ArraySize<int>( texids ), g_DefaultColorAttachments, texids );
 
 		m_uboParams.UpdateSubresource( m_refSSDOBuffer->GetParam(), sizeof( SSDOParams ) );
 	}

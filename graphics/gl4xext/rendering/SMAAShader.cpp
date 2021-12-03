@@ -215,7 +215,7 @@ f = 0;
 		//m_Attachment.Init( ARRAYSIZE(texids), g_DefaultColorAttachments, texids );
 		//m_Fbo.BindAttachment( &m_Attachment );
 
-		m_RenderTarget.BindTextures( ArraySize( texids ), g_DefaultColorAttachments, texids );
+		m_RenderTarget.BindTextures( ArraySize<int>( texids ), g_DefaultColorAttachments, texids );
 
 	}
 

@@ -186,7 +186,7 @@ namespace OreOreLib
 		// Init FramebufferObject
 		const uint32 texids[]	={ m_IntermediateBuffer.texID };
 		m_RenderTarget.Init( m_IntermediateBuffer.Width(), m_IntermediateBuffer.Height(), /*true*/false );
-		m_RenderTarget.BindTextures( ArraySize( texids ), g_DefaultColorAttachments, texids );
+		m_RenderTarget.BindTextures( ArraySize<int>( texids ), g_DefaultColorAttachments, texids );
 	}
 
 

@@ -3,7 +3,6 @@
 
 #include	<oreore/common/TString.h>
 #include	<oreore/common/Utility.h>
-#include	<oreore/container/RingQueue.h>
 
 #include	"Buffer.h"
 #include	"IGLBufferObject.h"

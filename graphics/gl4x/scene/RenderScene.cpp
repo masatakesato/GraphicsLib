@@ -303,7 +303,7 @@ m_bUpdateIrradianceVolume	= false;
 		// Init RenferTarget
 		const uint32 texids[] ={ m_texPosition.texID, m_texNormal.texID, m_texDepth.texID, m_texDiffuse.texID, m_RawShadedResult.texID };
 		m_RTGbuffer.Init( m_ScreenSize.x, m_ScreenSize.y, true );
-		m_RTGbuffer.BindTextures( ArraySize( texids ), g_DefaultColorAttachments, texids );
+		m_RTGbuffer.BindTextures( ArraySize<int>( texids ), g_DefaultColorAttachments, texids );
 
 
 		//================== Initialize SSDO Buffer and Bind to SSDOShader ================//
@@ -342,7 +342,7 @@ m_bUpdateIrradianceVolume	= false;
 		// Init RenderTarget
 		const uint32 oitTexIds[] ={ m_OITAccumBuffer.texID, m_OITRevealageBuffer.texID };
 		m_RTOIT.Init( m_ScreenSize.x, m_ScreenSize.y, true );
-		m_RTOIT.BindTextures( ArraySize( oitTexIds ), g_DefaultColorAttachments, oitTexIds );
+		m_RTOIT.BindTextures( ArraySize<int>( oitTexIds ), g_DefaultColorAttachments, oitTexIds );
 
 	}
 	

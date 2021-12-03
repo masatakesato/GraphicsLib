@@ -101,7 +101,7 @@ void DrawObjMesh( const MeshLoader& mesh )
 			if( Face_Iter.use_normal==true )
 				glNormal3fv( normals[ VertAttr_Iter.z ].xyz);
 
-			if( VertAttr_Iter.x < 0 || VertAttr_Iter.x > vertices.Length()-1 )
+			if( VertAttr_Iter.x < 0 || VertAttr_Iter.x > vertices.Length<int32>()-1 )
 				tcout << _T("out of range: ") << VertAttr_Iter.x << tendl;
 
 			//　頂点
@@ -180,7 +180,7 @@ void Initialize()
 	GetCurrentDirectory( MAX_PATH, currdir );
 	SetCurrentDirectory( _T( "../../../assets/scene/obj" ) );
 
-	g_MeshLoader.Load( "viking_room.obj" );
+	g_MeshLoader.Load( _T("viking_room.obj") );
 
 	SetCurrentDirectory( currdir );
 

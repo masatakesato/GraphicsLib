@@ -33,7 +33,7 @@ namespace OreOreLib
 		};
 			
 		m_VAO.Init();
-		m_VAO.SetVertexAttributes( layout, ArraySize( layout ), primitive_type );
+		m_VAO.SetVertexAttributes( layout, ArraySize<int>( layout ), primitive_type );
 		m_VAO.SetVertexBuffers( pverts, GL_ARRAY_BUFFER, vertusage );
 		m_VAO.SetIndexBuffer( pindices, DATA_FORMAT::FORMAT_R32_UINT, idxusage );
 		m_VAO.Update();

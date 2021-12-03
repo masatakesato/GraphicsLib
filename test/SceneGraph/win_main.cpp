@@ -4,6 +4,10 @@
 #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #endif
 
+// https://jyn.jp/cpp-crtdbg-define-new/
+// https://ameblo.jp/zrfcsctd/entry-11194702891.html
+newのオーバーロード
+
 
 #include	<oreore/ui/win/Window.h>
 #include	<oreore/ui/win/WindowProcedure.h>
@@ -27,6 +31,8 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 	 _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+	 int aaa;
+	 auto bbb = new (&aaa) int(666);
 
 
 	//============ コンソールウィンドウ作成 =================//

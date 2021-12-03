@@ -14,12 +14,12 @@ OBJLoader::OBJLoader()
 	InitVec(m_BoundingBox[0], 0.0f, 0.0f, 0.0f);
 	InitVec(m_BoundingBox[1], 0.0f, 0.0f, 0.0f);
 
-	m_Vertices.Release();
-	m_Normals.Release();
-	m_Materials.Release();
-//	m_MatSubs.Release();
-	m_Faces.Release();
-	m_Groups.Release();
+//	m_Vertices.Release();
+//	m_Normals.Release();
+//	m_Materials.Release();
+////	m_MatSubs.Release();
+//	m_Faces.Release();
+//	m_Groups.Release();
 }
 
 

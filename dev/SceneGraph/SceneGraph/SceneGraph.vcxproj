@@ -50,7 +50,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../../../;../../../external;D:\Lib\opengl\include;D:\Lib\freeimage\Dist\x64;C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -76,6 +78,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\oreorelib\oreore\io\FileIO.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4xext\rendering\ConstantShader.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4xext\rendering\DOFShader.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4xext\rendering\FXAAShader.cpp" />
@@ -140,6 +143,7 @@
     <ClCompile Include="..\..\..\test\SceneGraph\win_main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\oreorelib\oreore\io\FileIO.h" />
     <ClInclude Include="..\..\..\graphics\gl4xext\rendering\ConstantShader.h" />
     <ClInclude Include="..\..\..\graphics\gl4xext\rendering\DOFShader.h" />
     <ClInclude Include="..\..\..\graphics\gl4xext\rendering\FXAAShader.h" />
