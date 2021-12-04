@@ -1,19 +1,8 @@
-﻿#if _DEBUG
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#endif
-
-// https://jyn.jp/cpp-crtdbg-define-new/
-// https://ameblo.jp/zrfcsctd/entry-11194702891.html
-newのオーバーロード
-
-
+﻿#include	<oreore/memory/DebugNew.h>
 #include	<oreore/ui/win/Window.h>
 #include	<oreore/ui/win/WindowProcedure.h>
 //#include	<oreore/ui/win/Controller.h>
 #include	"ControllerGL.h"
-
 
 
 int MessageLoop(void);// メッセージループ
@@ -30,10 +19,6 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 #if _DEBUG
 	 _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-
-	 int aaa;
-	 auto bbb = new (&aaa) int(666);
-
 
 	//============ コンソールウィンドウ作成 =================//
 #ifdef _DEBUG
@@ -72,6 +57,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 #ifdef _DEBUG
 	FreeConsole();
 	if(fp)	fclose(fp);
+
 #endif
 
 	return exitCode;

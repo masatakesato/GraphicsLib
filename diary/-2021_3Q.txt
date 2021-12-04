@@ -1,4 +1,16 @@
-﻿[ シャドウマップのサンプル解析 ]
+﻿[ SceneGraph: newオーバーロードとplacement newの衝突を回避する ]
+・win_main.cppの先頭定義が原因
+・治す方法あるか調査中
+　→https://jyn.jp/cpp-crtdbg-define-new/
+　→https://ameblo.jp/zrfcsctd/entry-11194702891.html
+　→https://stackoverflow.com/questions/4990880/replacing-new-with-macro-conflicts-with-placement-new
+　→https://blog.titanwolf.in/a?ID=01600-192993e7-8ed6-40cc-ba58-5070f12c9268
+・方法
+　→ヘッダーの一番最後にnewオーバーロードマクロを記述？プログラムが難しくなる　×
+　→DebugNew.hファイルに処理移行して、DEBUG_NEW
+
+
+[ シャドウマップのサンプル解析 ]
 https://github.com/SaschaWillems/Vulkan/blob/master/examples/shadowmapping/shadowmapping.cpp
 ・preparePipelines()実装
 　→レンダーパス２つある
