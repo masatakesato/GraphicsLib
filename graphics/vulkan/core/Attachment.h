@@ -46,39 +46,13 @@ namespace vk
 
 
 
-	struct LoadStoreOp
-	{
-		VkAttachmentLoadOp LoadOp;
-		VkAttachmentStoreOp StoreOp;
-	};
-
-
-	namespace AttachmentOp
-	{
-		const LoadStoreOp Load_Store{ VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_STORE };		// Load / Store
-		const LoadStoreOp Load_DontCare{ VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_DONT_CARE };	// Load / DontCare
-		const LoadStoreOp Clear_Store{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE };		// Clear / Store
-		const LoadStoreOp Clear_DontCare{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_DONT_CARE };	// Clear / DontCare
-		const LoadStoreOp DontCare_Store{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_STORE };	// DontCare / Store
-		const LoadStoreOp DontCare_DontCare{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE };// DontCare / DontCare
-	};
 
 
 
-	struct AttachmentDesc
-	{
-		LoadStoreOp		Operations;
-		VkImageLayout	FinalLayout;
-	};
+
 
 
 	
-
-	struct RenderTargetDesc
-	{
-		RenderBufferDesc	RenderBuffer;
-		AttachmentDesc		Attachment;
-	};
 
 
 

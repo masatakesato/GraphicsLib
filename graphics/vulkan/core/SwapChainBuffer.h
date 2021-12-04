@@ -9,7 +9,7 @@
 namespace vk
 {
 
-	class SwapChainBuffer : ImageBuffer
+	class SwapChainBuffer : public ImageBuffer
 	{
 	public:
 

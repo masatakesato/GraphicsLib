@@ -4,7 +4,7 @@
 #include	<oreore/container/NDArray.h>
 
 #include	"GraphicsDevice.h"
-#include	"RenderBuffer.h"//#include	"Texture.h"
+#include	"RenderBuffer.h"
 #include	"SwapChainBuffer.h"
 
 
@@ -36,9 +36,12 @@ namespace vk
 		VkFormat DepthFormat() const				{ return /*m_DepthFormat*/m_DepthBuffer.Format(); }
 		VkImageView DepthView() const				{ return /*m_DepthImageView*/m_DepthBuffer.View(); }
 
-		const RenderBuffer& ResolveBuffer() const		{ return m_ResolveBuffer; }
-		VkSampleCountFlagBits MultiSampleCount() const	{ return /*msaaSamples*/m_ResolveBuffer.MultiSampleCount(); }
-		VkImageView	MultiSampleView() const				{ return /*m_ResolveImageView*/m_ResolveBuffer.View(); }
+		const RenderBuffer& MultiSampleBuffer() const	{ return m_MultiSampleColorBuffer; }
+		VkSampleCountFlagBits MultiSampleCount() const	{ return /*msaaSamples*/m_MultiSampleColorBuffer.MultiSampleCount(); }
+		VkImageView	MultiSampleView() const				{ return /*m_ResolveImageView*/m_MultiSampleColorBuffer.View(); }
+
+		void ExposeRenderBufferDescs( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
+		void ExposeImageBuffers( OreOreLib::Memory<ImageBuffer*>& imageBuffers );
 
 		const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 
@@ -76,7 +79,7 @@ namespace vk
 //		OreOreLib::Array<VkImage>		m_ColorImages;
 //		OreOreLib::Array<VkImageView>	m_ColorImageViews;
 		
-		SwapChainBuffer					m_ColorBuffers;
+		SwapChainBuffer					m_ColorBuffers;// swapchain color buffer. msaasample is always 1.
 
 		// Depth
 //		VkFormat						m_DepthFormat;
@@ -93,7 +96,7 @@ namespace vk
 		//VkDeviceMemory					m_ResolveImageMemory;
 		//VkImageView						m_ResolveImageView;
 
-		RenderBuffer					m_ResolveBuffer;
+		RenderBuffer					m_MultiSampleColorBuffer;
 
 
 

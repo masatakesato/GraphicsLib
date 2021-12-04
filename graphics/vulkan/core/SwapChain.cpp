@@ -77,7 +77,7 @@ namespace vk
 			//SafeDeleteImage( m_refDevice->Device(), m_ResolveImage );
 			//SafeDeleteDeviceMemory( m_refDevice->Device(), m_ResolveImageMemory );
 
-			m_ResolveBuffer.Release();
+			m_MultiSampleColorBuffer.Release();
 
 
 			// Delete Depth buffer
@@ -106,6 +106,51 @@ m_ColorBuffers.Release();
 			// Reset GraphicsDevice
 			//m_refDevice.Reset();
 		}
+	}
+
+
+	
+	void SwapChain::ExposeRenderBufferDescs( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs )
+	{
+
+		if( m_MultiSampleColorBuffer.MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT )//m_bEnableMultisample )
+		{
+			renderTargetDescs =
+			{
+				// color buffer
+				{	m_WindowExtent, m_ColorBuffers.Format(), m_ColorBuffers.MultiSampleCount(), vk::RenderBufferUsage::ColorWrite_Transient,
+					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
+
+				// depth buffer
+				{	m_WindowExtent, m_DepthBuffer.Format(), m_DepthBuffer.MultiSampleCount(), vk::RenderBufferUsage::DepthWrite,
+					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL },
+
+				// resolve buffer
+				{	m_WindowExtent, m_MultiSampleColorBuffer.Format(), m_MultiSampleColorBuffer.MultiSampleCount(), vk::RenderBufferUsage::ColorWrite_Transient,
+					vk::AttachmentOp::DontCare_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
+			};
+		}
+		else
+		{
+			renderTargetDescs =
+			{
+				// color buffer
+				{	m_WindowExtent, m_ColorBuffers.Format(), m_ColorBuffers.MultiSampleCount(), vk::RenderBufferUsage::ColorWrite_Transient,
+					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
+
+				// depth buffer
+				{	m_WindowExtent, m_DepthBuffer.Format(), m_DepthBuffer.MultiSampleCount(), vk::RenderBufferUsage::DepthWrite,
+					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL },
+			};
+		}
+
+	}
+
+
+
+	void SwapChain::ExposeImageBuffers( OreOreLib::Memory<ImageBuffer*>& imageBuffers )
+	{
+		std::initializer_list<ImageBuffer*> aaa = { &m_ColorBuffers, &m_DepthBuffer, &m_MultiSampleColorBuffer };
 	}
 
 
@@ -244,7 +289,7 @@ m_ColorBuffers.Init( m_refDevice, m_SwapChain, surfaceFormat.format );
 
 
 
-		m_ResolveBuffer.Init( m_refDevice, m_WindowExtent.width, m_WindowExtent.height, /*m_ImageFormat*/format, msaaSamples, true, false );
+		m_MultiSampleColorBuffer.Init( m_refDevice, m_WindowExtent.width, m_WindowExtent.height, /*m_ImageFormat*/format, msaaSamples, true, false );
 
 	}
 
@@ -252,17 +297,26 @@ m_ColorBuffers.Init( m_refDevice, m_SwapChain, surfaceFormat.format );
 
 	void SwapChain::InitFramebufferAttachments()
 	{
-		if( m_ResolveBuffer.MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT )//m_bEnableMultisample )
+		if( m_MultiSampleColorBuffer.MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT )//m_bEnableMultisample )
 		{
 			m_FramebufferAttachments.Init( /*(int)m_NumImages*/(int)m_ColorBuffers.NumImages(), 3 );
 
 			for( uint32 i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
 			{
 
-// TODO: VkImageView配列要素の並び順はどうやって決める？ -> VkRenderPass作成時の
-				m_FramebufferAttachments(i, (uint32)0) = m_ResolveBuffer.View();//m_ResolveImageView;// MultiSampleView
-				m_FramebufferAttachments(i, (uint32)1) = m_DepthBuffer.View();//m_DepthImageView;
-				m_FramebufferAttachments(i, (uint32)2) = m_ColorBuffers.View(i);//m_ColorImageViews[i];
+TODO: VkImageView配列要素の並び順はどうやって決める？
+//		VkRenderPassに与えるVkAttachmentDescription配列の並び順でそう決めた
+//		[0]: カラー描画結果を格納するアタッチメント, [1]: デプス描画結果を格納するアタッチメント、、、、、、、、、、、、、、、、、、、、、、、、、、、これが基本
+//		[0]: カラー描画結果(MSAA)アタッチメント,     [1]: デプス描画結果(MSAA)アタッチメント     [2]: [0]を縮小した結果を格納するアタッチメント、、、、MSAAの時はこっち
+
+TODO: 上記アタッチメントに対応するイメージビューは？
+//		[0]: スワップチェーンイメージビュー,         [1]: デプスイメージビュー、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、これが基本
+//		[0]: マルチサンプルカラーイメージビュー,     [1]: デプスイメージビュー,                  [2]: スワップチェーンイメージビュー、、、、、、、、、MSAAの時はこっち
+
+
+				m_FramebufferAttachments(i, (uint32)0) = m_MultiSampleColorBuffer.View();//m_ResolveImageView;	// 0: Multi-Sampled color view
+				m_FramebufferAttachments(i, (uint32)1) = m_DepthBuffer.View();//m_DepthImageView;		// 1: Depth buffer view
+				m_FramebufferAttachments(i, (uint32)2) = m_ColorBuffers.View(i);//m_ColorImageViews[i];	// 2: NO MSAA image view
 			}
 		}
 		else

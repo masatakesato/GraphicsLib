@@ -3,42 +3,13 @@
 
 #include	"GraphicsDevice.h"
 #include	"ImageBuffer.h"
+#include	"RenderTargetDesc.h"
 
 
 
 namespace vk
 {
-
-	namespace RenderBufferUsage
-	{
-		// color or depth, support input or not, transient or not
-		const VkImageUsageFlags ColorWrite					= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-		const VkImageUsageFlags ColorWrite_Transient		= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
-
-		const VkImageUsageFlags ColorReadWrite				= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
-		const VkImageUsageFlags ColorReadWrite_Transient	= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
-
-		const VkImageUsageFlags DepthWrite					= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-		const VkImageUsageFlags DepthWrite_Transient		= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
-
-		const VkImageUsageFlags DepthReadWrite				= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
-		const VkImageUsageFlags DepthReadWrite_Transient	= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
-	};
-
-
-	struct RenderBufferDesc
-	{
-		VkExtent2D				Dim;
-		VkFormat				Format;
-		VkSampleCountFlagBits	MultiSampleFlag;
-		VkImageUsageFlags		UsageFlags;
-	};
-
-
-
-
-
-	class RenderBuffer : ImageBuffer
+	class RenderBuffer : public ImageBuffer
 	{
 	public:
 
