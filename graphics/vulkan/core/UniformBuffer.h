@@ -17,6 +17,7 @@ namespace vk
 		UniformBuffer();
 		UniformBuffer( GraphicsDevice& device, VkDeviceSize bufferSize );
 		UniformBuffer( const UniformBuffer& ) = delete;
+		UniformBuffer( UniformBuffer&& obj );
 		~UniformBuffer();
 
 		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );

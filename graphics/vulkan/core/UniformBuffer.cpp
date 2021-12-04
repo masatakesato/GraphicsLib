@@ -26,6 +26,23 @@ namespace vk
 
 
 
+	UniformBuffer::UniformBuffer( UniformBuffer&& obj )
+		: m_refDevice( obj.m_refDevice )
+		, m_Size( obj.m_Size )
+		, m_Buffer( obj.m_Buffer )
+		, m_DeviceMemory( obj.m_DeviceMemory )
+	{
+
+		obj.m_refDevice.Reset();
+		obj.m_Size			= 0;
+		obj.m_Buffer		= VK_NULL_HANDLE;
+		obj.m_DeviceMemory	= VK_NULL_HANDLE;
+
+	}
+
+
+
+
 	UniformBuffer::~UniformBuffer()
 	{
 		Release();
