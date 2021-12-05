@@ -67,19 +67,19 @@ namespace vk
 
 //void Init( int numAttachments );
 
-void Init( std::initializer_list<RenderTargetDesc> redertargetdescs );
+void Init( OreOreLib::Array<RenderTargetDesc>& rederTargetDescs );
 
-		void Init( int numColors, bool enableDepth, int numResolves=0 );
+//void Init( int numColors, bool enableDepth, int numResolves=0 );
 		void Release();
 
 		bool HasDepth() const	{ return m_DepthDescs; }
 		bool HasResolve() const	{ return m_ResolveDescs; }
 
-		void SetColorAttachmentDesc( uint32 attachment, VkFormat format, VkSampleCountFlagBits msaaSamples, LoadStoreOp ops, bool presentable );
-		void SetDepthAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, LoadStoreOp ops, VkImageLayout layout=VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+//void SetColorAttachmentDesc( uint32 attachment, VkFormat format, VkSampleCountFlagBits msaaSamples, LoadStoreOp ops, bool presentable );
+//void SetDepthAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, LoadStoreOp ops, VkImageLayout layout=VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 
-		void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments );
-		void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> activeattachments );
+		void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> targetslots );
+		void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> targetslots );
 		void CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs );
 
 		const OreOreLib::Array<VkAttachmentDescription>& AttachmentDescs()	const { return m_AttacmentDescs; }
@@ -98,13 +98,13 @@ void Init( std::initializer_list<RenderTargetDesc> redertargetdescs );
 		uint32_t	m_ActiveResolves;
 
 
-		OreOreLib::Array<uint32_t>	m_ColorToResolve;// アタッチメントに対応したリゾルブのインデックスを格納する. マルチサンプルしない場合はVK_ATTACHMENT_UNUSED入れておく
+		OreOreLib::Array<uint32_t>	m_Slots;// リゾルブ以外のバッファインデックス.	//m_ColorToResolve;// アタッチメントに対応したリゾルブのインデックスを格納する. マルチサンプルしない場合はVK_ATTACHMENT_UNUSED入れておく
 //pResolveAttachments
 // マルチサンプルしたい時に必要
 // 専用のVkAttachmentDescriptionを用意する必要がある
 // ColorAttachmentのインデックスから、ResolveAttachmentのインデックスへ変換するテーブルが必要
 
-		void InitResolveAttachmentDesc( uint32 slot, VkFormat format, VkImageLayout layout );
+//void InitResolveAttachmentDesc( uint32 slot, VkFormat format, VkImageLayout layout );
 
 
 	};

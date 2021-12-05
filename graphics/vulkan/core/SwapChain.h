@@ -40,8 +40,10 @@ namespace vk
 		VkSampleCountFlagBits MultiSampleCount() const	{ return /*msaaSamples*/m_MultiSampleColorBuffer.MultiSampleCount(); }
 		VkImageView	MultiSampleView() const				{ return /*m_ResolveImageView*/m_MultiSampleColorBuffer.View(); }
 
-		void ExposeRenderBufferDescs( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
+		void ExposeRenderTargetDescs( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
 		void ExposeImageBuffers( OreOreLib::Memory<ImageBuffer*>& imageBuffers );
+		void ExposeFramebufferAttachment( OreOreLib::Memory<VkImageView>& views,  uint32_t imageindex );
+
 
 		const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 

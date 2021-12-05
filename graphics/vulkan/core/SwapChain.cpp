@@ -110,24 +110,25 @@ m_ColorBuffers.Release();
 
 
 	
-	void SwapChain::ExposeRenderBufferDescs( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs )
+	void SwapChain::ExposeRenderTargetDescs( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs )
 	{
 
 		if( m_MultiSampleColorBuffer.MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT )//m_bEnableMultisample )
 		{
 			renderTargetDescs =
 			{
-				// color buffer
-				{	m_WindowExtent, m_ColorBuffers.Format(), m_ColorBuffers.MultiSampleCount(), vk::RenderBufferUsage::ColorWrite_Transient,
-					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
+				// msaa color buffer
+				{	m_WindowExtent, m_MultiSampleColorBuffer.Format(), m_MultiSampleColorBuffer.MultiSampleCount(), true, vk::RenderBufferUsage::ColorWrite_Transient,
+					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
 
 				// depth buffer
-				{	m_WindowExtent, m_DepthBuffer.Format(), m_DepthBuffer.MultiSampleCount(), vk::RenderBufferUsage::DepthWrite,
+				{	m_WindowExtent, m_DepthBuffer.Format(), m_DepthBuffer.MultiSampleCount(), false, vk::RenderBufferUsage::DepthWrite,
 					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL },
 
-				// resolve buffer
-				{	m_WindowExtent, m_MultiSampleColorBuffer.Format(), m_MultiSampleColorBuffer.MultiSampleCount(), vk::RenderBufferUsage::ColorWrite_Transient,
-					vk::AttachmentOp::DontCare_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
+				// resolved color buffer
+				//{	m_WindowExtent, m_ColorBuffers.Format(), m_ColorBuffers.MultiSampleCount(), vk::RenderBufferUsage::ColorWrite_Transient,
+				//	vk::AttachmentOp::DontCare_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
+
 			};
 		}
 		else
@@ -135,11 +136,11 @@ m_ColorBuffers.Release();
 			renderTargetDescs =
 			{
 				// color buffer
-				{	m_WindowExtent, m_ColorBuffers.Format(), m_ColorBuffers.MultiSampleCount(), vk::RenderBufferUsage::ColorWrite_Transient,
+				{	m_WindowExtent, m_ColorBuffers.Format(), m_ColorBuffers.MultiSampleCount(), false, vk::RenderBufferUsage::ColorWrite_Transient,
 					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
 
 				// depth buffer
-				{	m_WindowExtent, m_DepthBuffer.Format(), m_DepthBuffer.MultiSampleCount(), vk::RenderBufferUsage::DepthWrite,
+				{	m_WindowExtent, m_DepthBuffer.Format(), m_DepthBuffer.MultiSampleCount(), false, vk::RenderBufferUsage::DepthWrite,
 					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL },
 			};
 		}
@@ -151,6 +152,32 @@ m_ColorBuffers.Release();
 	void SwapChain::ExposeImageBuffers( OreOreLib::Memory<ImageBuffer*>& imageBuffers )
 	{
 		std::initializer_list<ImageBuffer*> aaa = { &m_ColorBuffers, &m_DepthBuffer, &m_MultiSampleColorBuffer };
+	}
+
+
+
+	void SwapChain::ExposeFramebufferAttachment( OreOreLib::Memory<VkImageView>& views, uint32_t imageindex )
+	{
+//TODO: VkImageView配列要素の並び順はどうやって決める？
+//		VkRenderPassに与えるVkAttachmentDescription配列の並び順でそう決めた
+//		[0]: カラー描画結果を格納するアタッチメント, [1]: デプス描画結果を格納するアタッチメント、、、、、、、、、、、、、、、、、、、、、、、、、、、これが基本
+//		[0]: カラー描画結果(MSAA)アタッチメント,     [1]: デプス描画結果(MSAA)アタッチメント     [2]: [0]を縮小した結果を格納するアタッチメント、、、、MSAAの時はこっち
+
+//TODO: 上記アタッチメントに対応するイメージビューは？
+//		[0]: スワップチェーンイメージビュー,         [1]: デプスイメージビュー、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、これが基本
+//		[0]: マルチサンプルカラーイメージビュー,     [1]: デプスイメージビュー,                  [2]: スワップチェーンイメージビュー、、、、、、、、、MSAAの時はこっち
+
+		if( m_MultiSampleColorBuffer.MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT )
+		{
+			views[0] = m_MultiSampleColorBuffer.View();		// 0: Multi-Sampled color view
+			views[1] = m_DepthBuffer.View();				// 1: Depth buffer view
+			views[2] = m_ColorBuffers.View( imageindex );	// 2: NO MSAA image view
+		}
+		else
+		{
+			views[0] = m_ColorBuffers.View( imageindex );
+			views[1] = m_DepthBuffer.View();
+		}
 	}
 
 
@@ -304,12 +331,12 @@ m_ColorBuffers.Init( m_refDevice, m_SwapChain, surfaceFormat.format );
 			for( uint32 i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
 			{
 
-TODO: VkImageView配列要素の並び順はどうやって決める？
+//TODO: VkImageView配列要素の並び順はどうやって決める？
 //		VkRenderPassに与えるVkAttachmentDescription配列の並び順でそう決めた
 //		[0]: カラー描画結果を格納するアタッチメント, [1]: デプス描画結果を格納するアタッチメント、、、、、、、、、、、、、、、、、、、、、、、、、、、これが基本
 //		[0]: カラー描画結果(MSAA)アタッチメント,     [1]: デプス描画結果(MSAA)アタッチメント     [2]: [0]を縮小した結果を格納するアタッチメント、、、、MSAAの時はこっち
 
-TODO: 上記アタッチメントに対応するイメージビューは？
+//TODO: 上記アタッチメントに対応するイメージビューは？
 //		[0]: スワップチェーンイメージビュー,         [1]: デプスイメージビュー、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、これが基本
 //		[0]: マルチサンプルカラーイメージビュー,     [1]: デプスイメージビュー,                  [2]: スワップチェーンイメージビュー、、、、、、、、、MSAAの時はこっち
 

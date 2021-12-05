@@ -31,6 +31,7 @@ namespace vk
 		VkExtent2D				Dim;
 		VkFormat				Format;
 		VkSampleCountFlagBits	MultiSampleFlag;
+		bool					Resolve;
 		VkImageUsageFlags		UsageFlags;
 	};
 
@@ -64,6 +65,13 @@ namespace vk
 	{
 		LoadStoreOp		Operations;
 		VkImageLayout	FinalLayout;
+		// if( Resolve )
+		//	if( FinalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR )
+		//		-> MSAAバッファはVK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMALに変更
+		//		-> リゾルブバッファをVK_IMAGE_LAYOUT_PRESENT_SRC_KHRに設定する
+		//	else
+		//		-> MSAAもリゾルブもFinalLayoutのまま作る
+
 	};
 
 
