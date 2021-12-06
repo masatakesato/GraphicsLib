@@ -156,7 +156,7 @@ m_ColorBuffers.Release();
 
 
 
-	void SwapChain::ExposeFramebufferAttachment( OreOreLib::Memory<VkImageView>& views, uint32_t imageindex )
+	void SwapChain::ExposeImageViews( OreOreLib::Memory<VkImageView>& views, uint32_t imageindex )
 	{
 //TODO: VkImageView配列要素の並び順はどうやって決める？
 //		VkRenderPassに与えるVkAttachmentDescription配列の並び順でそう決めた

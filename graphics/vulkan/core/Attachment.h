@@ -4,7 +4,7 @@
 #include	<oreore/container/Array.h>
 //#include	<oreore/container/ArrayView.h>
 
-#include	"RenderBuffer.h"
+#include	"RenderTargetDesc.h"
 
 
 

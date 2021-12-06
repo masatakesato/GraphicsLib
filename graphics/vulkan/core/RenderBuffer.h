@@ -18,7 +18,8 @@ namespace vk
 		RenderBuffer( const RenderBuffer& )=delete;
 		~RenderBuffer();
 		
-void Init( GraphicsDevice& device, const RenderBufferDesc& desc );
+// TODO: 廃止. リゾルブバッファ生成に対応できない
+//void Init( GraphicsDevice& device, const RenderBufferDesc& desc );
 
 		void Init( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, VkSampleCountFlagBits msaasamples,  bool transient, bool enableinput );
 		void Release();

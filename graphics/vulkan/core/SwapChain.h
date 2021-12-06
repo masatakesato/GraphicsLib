@@ -42,10 +42,10 @@ namespace vk
 
 		void ExposeRenderTargetDescs( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
 		void ExposeImageBuffers( OreOreLib::Memory<ImageBuffer*>& imageBuffers );
-		void ExposeFramebufferAttachment( OreOreLib::Memory<VkImageView>& views,  uint32_t imageindex );
+		void ExposeImageViews( OreOreLib::Memory<VkImageView>& views,  uint32_t imageindex );
 
-
-		const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
+TODO: ExposeImageViewsと機能が重複している.
+const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 
 		const VkExtent2D& Extent() const	{ return m_WindowExtent; }
 		const VkFence& RenderFinishedFence( int i ) const { return m_refRenderFinishedFences[i]; }
