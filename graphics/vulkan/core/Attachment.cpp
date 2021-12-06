@@ -87,7 +87,8 @@ namespace vk
 	//##################################################################################//
 
 	RenderPassAttachments::RenderPassAttachments()
-		: m_ActiveResolves( 0 )
+	//	: m_ActiveResolves( 0 )
+		: m_DepthSlot( VK_ATTACHMENT_UNUSED )
 	{
 		
 	}
@@ -138,6 +139,13 @@ namespace vk
 			bool isdepth = HasDepthComponent( rtdesc.RenderBuffer.Format );
 			bool ismultisample = rtdesc.RenderBuffer.MultiSampleFlag != VK_SAMPLE_COUNT_1_BIT && rtdesc.RenderBuffer.Resolve;
 
+
+			if( isdepth )
+				m_DepthSlot = static_cast<uint32_t>( /*&rtdesc*/attachmentdesc - m_AttacmentDescs.begin() );
+			else
+				*slot = { static_cast<uint32_t>( &rtdesc - rederTargetDescs.begin() ), false };
+
+
 			attachmentdesc->format			= rtdesc.RenderBuffer.Format;
 			attachmentdesc->samples			= rtdesc.RenderBuffer.MultiSampleFlag;
 			attachmentdesc->loadOp			= rtdesc.Attachment.Operations.LoadOp;
@@ -150,6 +158,8 @@ namespace vk
 			// Put resolve attachment next to multisample attachment
 			if( ismultisample )
 			{
+				slot->HasResolve = true;
+
 				// Set Multisample AttachmentDesc's finalLayout
 				if( rtdesc.Attachment.FinalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR )
 					attachmentdesc->finalLayout	= isdepth ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
@@ -172,12 +182,12 @@ namespace vk
 			}
 
 			attachmentdesc++;
-
-
-			if( !isdepth )	*slot++ = static_cast<uint32_t>( &rtdesc - rederTargetDescs.begin() );
-
+			slot++;
 		}
 
+
+		m_ClearValues.Resize( attachmentCount );
+		ResetClearValues();
 	}
 
 
@@ -206,15 +216,36 @@ namespace vk
 	
 	void RenderPassAttachments::Release()
 	{
-		m_ActiveResolves = 0;
+		m_DepthSlot	= VK_ATTACHMENT_UNUSED;
+//		m_ActiveResolves = 0;
 //		m_ColorToResolve.Release();
 
-		m_ColorDescs.Release();
-		m_DepthDescs.Release();
-		m_ResolveDescs.Release();
+		//m_ColorDescs.Release();
+		//m_DepthDescs.Release();
+		//m_ResolveDescs.Release();
 
+		m_ClearValues.Release();
 		m_AttacmentDescs.Release();
 	}
+
+
+
+
+	void RenderPassAttachments::ClearColor( int32_t slot, float r, float g, float b, float a )
+	{
+		if( slot < m_Slots.Length() )
+			m_ClearValues[ m_Slots[ slot ].ID ].color = { r, g, b, a };
+	}
+
+
+
+	void RenderPassAttachments::ClearDepth( float depth, uint32_t stencil )
+	{
+		if( m_DepthSlot != VK_ATTACHMENT_UNUSED )
+			m_ClearValues[ m_DepthSlot ].depthStencil = { depth, stencil };
+	}
+
+
 
 
 
@@ -259,37 +290,43 @@ namespace vk
 
 
 
-	void RenderPassAttachments::CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> targetslots )
+	void RenderPassAttachments::CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots )
 	{
 
 // TODO: リゾルブじゃないスロットだけフィルタリングしたい
-
-		for( const auto& slot : targetslots )
+		
+		for( const auto& slot : slots )
 		{
-			refs.AddToTail( { slot, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+			if( slot >= m_Slots.Length() )	continue;
+			refs.AddToTail( { m_Slots[ slot ].ID, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 		}
 	}
 
 
 	
-	void RenderPassAttachments::CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> targetslots )
+	void RenderPassAttachments::CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots )
 	{
-		//if( !m_ColorToResolve )	return;
+		for( const auto& slot : slots )
+		{
+			if( slot >= m_Slots.Length() )	continue;
 
-		//for( const auto& attachmentId : targetslots )
-		//{
+			if( m_Slots[ slot ].HasResolve )// found resolve attachment
+				refs.AddToTail( { m_Slots[ slot ].ID + 1, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+			else// no resolve attachment found
+				refs.AddToTail( { VK_ATTACHMENT_UNUSED, VK_IMAGE_LAYOUT_UNDEFINED } );
+
 		//	ASSERT( attachmentId < static_cast<uint32_t>(m_ColorToResolve.Length()) );
 		//	const auto& attachment = m_ColorToResolve[ attachmentId ];
 		//	refs.AddToTail( { attachment, attachment==VK_ATTACHMENT_UNUSED ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
-		//}	
+		}	
 	}
 
 
 
 	void RenderPassAttachments::CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs )
 	{
-		if( m_DepthDescs )
-			refs.AddToTail( { static_cast<uint32_t>( m_ColorDescs.Length() ), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } );
+		if( m_DepthSlot != VK_ATTACHMENT_UNUSED )
+			refs.AddToTail( { m_DepthSlot, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } );
 	}
 
 
@@ -312,6 +349,28 @@ namespace vk
 	//	desc.initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
 	//	desc.finalLayout	= layout;
 	//}
+
+
+
+	void RenderPassAttachments::ResetClearValues()
+	{
+		for( const auto& slot : m_Slots )
+			m_ClearValues[ slot.ID ].color = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+
+		if( m_DepthSlot != VK_ATTACHMENT_UNUSED )
+			m_ClearValues[ m_DepthSlot ].depthStencil = { 1.0f, 0 };
+
+
+		//auto attachment = m_AttacmentDescs.begin();
+		//for( uint32 i=0; i<m_ClearValues.Length(); ++i )
+		//{
+		//	if( HasDepthComponent( m_AttacmentDescs[i].format ) )
+		//		m_ClearValues[i].depthStencil = { 1.0f, 0 };
+		//	else
+		//		m_ClearValues[i].color = { 0.0f, 0.0f, 0.0f, 1.0f };
+		//}
+	}
 
 
 

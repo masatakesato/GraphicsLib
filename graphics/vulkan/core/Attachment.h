@@ -2,7 +2,7 @@
 #define	ATTACHMENT_H
 
 #include	<oreore/container/Array.h>
-#include	<oreore/container/ArrayView.h>
+//#include	<oreore/container/ArrayView.h>
 
 #include	"RenderBuffer.h"
 
@@ -56,7 +56,7 @@ namespace vk
 
 
 
-	// |----- ColorAttachments -----|-- DepthAttachment --|--- ResolveAttachments ---|
+	// |----- ColorAttachments(hasresolve) ---|--- ResolveAttachments ---|-- ... --|-- DepthAttachment --|
 
 	class RenderPassAttachments
 	{
@@ -72,34 +72,54 @@ void Init( OreOreLib::Array<RenderTargetDesc>& rederTargetDescs );
 //void Init( int numColors, bool enableDepth, int numResolves=0 );
 		void Release();
 
-		bool HasDepth() const	{ return m_DepthDescs; }
-		bool HasResolve() const	{ return m_ResolveDescs; }
+
+		uint32_t NumAttachments() const { return static_cast<uint32_t>( m_AttacmentDescs.Length() ); }
+		bool HasDepth() const	{ return m_DepthSlot != VK_ATTACHMENT_UNUSED; }//m_DepthDescs; }
+		//bool HasResolve() const	{ return m_ResolveDescs; }
+		
+
+		void ClearColor( int32_t slot, float r, float g, float b, float a );
+		void ClearDepth( float depth, uint32_t stencil );
+
 
 //void SetColorAttachmentDesc( uint32 attachment, VkFormat format, VkSampleCountFlagBits msaaSamples, LoadStoreOp ops, bool presentable );
 //void SetDepthAttachmentDesc( VkFormat format, VkSampleCountFlagBits msaaSamples, LoadStoreOp ops, VkImageLayout layout=VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 
-		void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> targetslots );
-		void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> targetslots );
+		void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
+		void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
 		void CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs );
 
 		const OreOreLib::Array<VkAttachmentDescription>& AttachmentDescs()	const { return m_AttacmentDescs; }
-
-
+		const OreOreLib::Array<VkClearValue>& ClearValues() const	{ return m_ClearValues; }
 
 
 	private:
 
+		struct Slot
+		{
+			uint32_t	ID;
+			bool		HasResolve;
+		};
+
 		OreOreLib::Array<VkAttachmentDescription>	m_AttacmentDescs;
-		
-		OreOreLib::ArrayView<VkAttachmentDescription>	m_ColorDescs;
-		OreOreLib::ArrayView<VkAttachmentDescription>	m_DepthDescs;
-		OreOreLib::ArrayView<VkAttachmentDescription>	m_ResolveDescs;
+		OreOreLib::Array<VkClearValue>				m_ClearValues;
 
-		uint32_t	m_ActiveResolves;
+		//OreOreLib::ArrayView<VkAttachmentDescription>	m_ColorDescs;
+		//OreOreLib::ArrayView<VkAttachmentDescription>	m_DepthDescs;
+		//OreOreLib::ArrayView<VkAttachmentDescription>	m_ResolveDescs;
+
+		//uint32_t	m_ActiveResolves;
+		uint32_t	m_DepthSlot;
+
+		OreOreLib::Array<Slot>	m_Slots;// first: color attachment slot index, second: has resolve buffer flag
+		// リゾルブ以外のバッファインデックス.	//m_ColorToResolve;// アタッチメントに対応したリゾルブのインデックスを格納する. マルチサンプルしない場合はVK_ATTACHMENT_UNUSED入れておく
 
 
-		OreOreLib::Array<uint32_t>	m_Slots;// リゾルブ以外のバッファインデックス.	//m_ColorToResolve;// アタッチメントに対応したリゾルブのインデックスを格納する. マルチサンプルしない場合はVK_ATTACHMENT_UNUSED入れておく
-//pResolveAttachments
+
+		void ResetClearValues();
+
+
+											//pResolveAttachments
 // マルチサンプルしたい時に必要
 // 専用のVkAttachmentDescriptionを用意する必要がある
 // ColorAttachmentのインデックスから、ResolveAttachmentのインデックスへ変換するテーブルが必要

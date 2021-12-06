@@ -169,9 +169,13 @@ m_ColorBuffers.Release();
 
 		if( m_MultiSampleColorBuffer.MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT )
 		{
-			views[0] = m_MultiSampleColorBuffer.View();		// 0: Multi-Sampled color view
-			views[1] = m_DepthBuffer.View();				// 1: Depth buffer view
-			views[2] = m_ColorBuffers.View( imageindex );	// 2: NO MSAA image view
+			views[0] = m_MultiSampleColorBuffer.View();
+			views[1] = m_ColorBuffers.View( imageindex );
+			views[2] = m_DepthBuffer.View();
+
+//			views[0] = m_MultiSampleColorBuffer.View();		// 0: Multi-Sampled color view
+//			views[1] = m_DepthBuffer.View();				// 1: Depth buffer view
+//			views[2] = m_ColorBuffers.View( imageindex );	// 2: NO MSAA image view
 		}
 		else
 		{
@@ -340,10 +344,13 @@ m_ColorBuffers.Init( m_refDevice, m_SwapChain, surfaceFormat.format );
 //		[0]: スワップチェーンイメージビュー,         [1]: デプスイメージビュー、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、これが基本
 //		[0]: マルチサンプルカラーイメージビュー,     [1]: デプスイメージビュー,                  [2]: スワップチェーンイメージビュー、、、、、、、、、MSAAの時はこっち
 
+m_FramebufferAttachments(i, (uint32)0) = m_MultiSampleColorBuffer.View();	// 0: Multi-Sampled color view
+m_FramebufferAttachments(i, (uint32)1) = m_ColorBuffers.View(i);	// 1: NO MSAA image view
+m_FramebufferAttachments(i, (uint32)2) = m_DepthBuffer.View();		// 2: Depth buffer view
 
-				m_FramebufferAttachments(i, (uint32)0) = m_MultiSampleColorBuffer.View();//m_ResolveImageView;	// 0: Multi-Sampled color view
-				m_FramebufferAttachments(i, (uint32)1) = m_DepthBuffer.View();//m_DepthImageView;		// 1: Depth buffer view
-				m_FramebufferAttachments(i, (uint32)2) = m_ColorBuffers.View(i);//m_ColorImageViews[i];	// 2: NO MSAA image view
+				//m_FramebufferAttachments(i, (uint32)0) = m_MultiSampleColorBuffer.View();//m_ResolveImageView;	// 0: Multi-Sampled color view
+				//m_FramebufferAttachments(i, (uint32)1) = m_DepthBuffer.View();//m_DepthImageView;		// 1: Depth buffer view
+				//m_FramebufferAttachments(i, (uint32)2) = m_ColorBuffers.View(i);//m_ColorImageViews[i];	// 2: NO MSAA image view
 			}
 		}
 		else
