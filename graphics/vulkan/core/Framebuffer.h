@@ -19,6 +19,9 @@ namespace vk
 		Framebuffer( const Framebuffer& ) = delete;
 		~Framebuffer();
 
+// TODO: スワップチェーンを使って初期化するケース -> 引数にスワップチェーン + その他アタッチメントビュー配列を指定する
+// TODO: スワップチェーンなしで初期化するケース -> アタッチメントビュー配列だけを指定する
+
 		void Init( GraphicsDevice& device, VkRenderPass renderPass, int numswaps, uint32_t width, uint32_t height, const OreOreLib::NDArray<VkImageView, 2>& attachmentViews );
 		void Release();
 

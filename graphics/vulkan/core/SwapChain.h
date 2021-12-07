@@ -41,10 +41,9 @@ namespace vk
 		VkImageView	MultiSampleView() const				{ return /*m_ResolveImageView*/m_MultiSampleColorBuffer.View(); }
 
 		void ExposeRenderTargetDescs( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
-		void ExposeImageBuffers( OreOreLib::Memory<ImageBuffer*>& imageBuffers );
 		void ExposeImageViews( OreOreLib::Memory<VkImageView>& views,  uint32_t imageindex );
 
-TODO: ExposeImageViewsと機能が重複している.
+//TODO: ExposeImageViewsと機能が重複している.
 const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 
 		const VkExtent2D& Extent() const	{ return m_WindowExtent; }

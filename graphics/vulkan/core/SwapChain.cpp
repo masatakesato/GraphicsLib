@@ -149,13 +149,6 @@ m_ColorBuffers.Release();
 
 
 
-	void SwapChain::ExposeImageBuffers( OreOreLib::Memory<ImageBuffer*>& imageBuffers )
-	{
-		std::initializer_list<ImageBuffer*> aaa = { &m_ColorBuffers, &m_DepthBuffer, &m_MultiSampleColorBuffer };
-	}
-
-
-
 	void SwapChain::ExposeImageViews( OreOreLib::Memory<VkImageView>& views, uint32_t imageindex )
 	{
 //TODO: VkImageView配列要素の並び順はどうやって決める？

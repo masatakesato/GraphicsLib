@@ -104,14 +104,6 @@ namespace vk
 
 	void RenderPassAttachments::Init( OreOreLib::Array<RenderTargetDesc>& rederTargetDescs )
 	{
-
-//TODO: Color, Depth, Resolveぜんぶ一纏めにした配列が必要 -> 済. m_AttacmentDescs使ってる
-//TODO: VkAttachmentReference配列はColor, Depth, Resolveそれぞれ個別に配列化する必要がある
-//	TODO: rederTargetDescsの情報だけで分かる？ -> RenderTargetDescにResolveフラグをくっつけた
-
-// TODO: MSAA用VkAttachmentDescriptorの直後に、対応するResolve用VkAttachmentDescriptorを配置する
-//TODO: デプスとリゾルブを除いたアタッチメントスロットを登録する
-
 		uint32 slotCount = 0;
 		uint32 attachmentCount	= 0;
 		for( const auto& rtdesc : rederTargetDescs )
