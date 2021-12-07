@@ -12,6 +12,7 @@ namespace vk
 		, m_WindowExtent{ 0, 0 }
 		, m_SwapChain( VK_NULL_HANDLE )
 		, m_SwapChainExtent{ 0, 0 }
+		, m_NumAttachments( 0 )
 //		, m_NumImages( 0 )
 //		, m_ImageFormat( VK_FORMAT_UNDEFINED )
 
@@ -52,6 +53,7 @@ namespace vk
 	{
 		m_refDevice				= device;
 		m_WindowExtent			= extent;
+		m_NumAttachments		= uint32_t( msaasamples != VK_SAMPLE_COUNT_1_BIT ) + uint32_t( depthformat != VK_FORMAT_UNDEFINED ) + 1;
 		//m_bEnableMultisample	= msaasamples != VK_SAMPLE_COUNT_1_BIT;
 		//msaaSamples				= msaasamples;
 
@@ -105,6 +107,8 @@ m_ColorBuffers.Release();
 
 			// Reset GraphicsDevice
 			//m_refDevice.Reset();
+
+			m_NumAttachments = 0;
 		}
 	}
 

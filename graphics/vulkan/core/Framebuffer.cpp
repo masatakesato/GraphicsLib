@@ -7,55 +7,45 @@
 namespace vk
 {
 
-	Framebuffer::Framebuffer()
+	Framebuffers::Framebuffers()
+		: m_refRenderPass( VK_NULL_HANDLE )
 	{
 
 	}
 	
 
 	
-	Framebuffer::Framebuffer( GraphicsDevice& device, VkRenderPass renderPass, int numswaps, uint32_t width, uint32_t height, const OreOreLib::NDArray<VkImageView, 2>& attachmentViews )
+	Framebuffers::Framebuffers( GraphicsDevice& device, VkRenderPass renderPass, uint32_t numbackbuffers )
+		: m_refDevice( device )
+		, m_refRenderPass( renderPass )
+		, m_Framebuffers( numbackbuffers )
 	{
-		Init( device, renderPass, numswaps, width, height, attachmentViews );
+		
 	}
 	
 
 	
-	Framebuffer::~Framebuffer()
+	Framebuffers::~Framebuffers()
 	{
-
-
+		Release();
 	}
 
 
 
-	void Framebuffer::Init( GraphicsDevice& device, VkRenderPass renderPass, int numswaps, uint32_t width, uint32_t height, const OreOreLib::NDArray<VkImageView, 2>& attachmentViews )
+	void Framebuffers::Init( GraphicsDevice& device, VkRenderPass renderPass, uint32_t numbackbuffers )
 	{
-		m_refDevice	= device;
-		swapChainFramebuffers.Resize( numswaps );
-
-		for( uint32 i=0; i<swapChainFramebuffers.Length(); ++i )
-		{
-			VkFramebufferCreateInfo framebufferInfo = {};
-			framebufferInfo.sType			= VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-			framebufferInfo.renderPass		= renderPass;
-			framebufferInfo.attachmentCount	= static_cast<uint32_t>( attachmentViews.Dim(1) );
-			framebufferInfo.pAttachments	= &attachmentViews( i, (uint32)0 );
-			framebufferInfo.width			= width;
-			framebufferInfo.height			= height;
-			framebufferInfo.layers			= 1;
-
-			VK_CHECK_RESULT( vkCreateFramebuffer( m_refDevice->Device(), &framebufferInfo, nullptr, &swapChainFramebuffers[i] ) );
-		}
+		m_refDevice		= device;
+		m_refRenderPass	= renderPass;
+		m_Framebuffers.Resize( numbackbuffers );
 	}
 
 
 
-	void Framebuffer::Release()
+	void Framebuffers::Release()
 	{
 		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
-			for( auto& framebuffer : swapChainFramebuffers )
+			for( auto& framebuffer : m_Framebuffers )
 			{
 				if( framebuffer != VK_NULL_HANDLE )
 				{
@@ -63,13 +53,34 @@ namespace vk
 					framebuffer = VK_NULL_HANDLE;
 				}
 			}
-			swapChainFramebuffers.Release();
+			m_Framebuffers.Release();
 
-
-			m_refDevice.Reset();
+			//m_refDevice.Reset();
 		}
 	}
 
+
+
+	void Framebuffers::InitFramebuffer( uint32_t bufferindex, uint32_t width, uint32_t height, const OreOreLib::Memory<VkImageView>& imageViews )
+	{
+		ASSERT( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE && bufferindex < m_Framebuffers.Length() );
+
+		// Delete existing framebuffer resource 
+		if( m_Framebuffers[ bufferindex ] != VK_NULL_HANDLE )
+			vkDestroyFramebuffer( m_refDevice->Device(), m_Framebuffers[ bufferindex ], nullptr );
+
+		// Allocate framebuffer
+		VkFramebufferCreateInfo framebufferInfo = {};
+		framebufferInfo.sType			= VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass		= m_refRenderPass;
+		framebufferInfo.attachmentCount	= static_cast<uint32_t>( imageViews.Length() );
+		framebufferInfo.pAttachments	= imageViews.begin();
+		framebufferInfo.width			= width;
+		framebufferInfo.height			= height;
+		framebufferInfo.layers			= 1;
+
+		VK_CHECK_RESULT( vkCreateFramebuffer( m_refDevice->Device(), &framebufferInfo, nullptr, &m_Framebuffers[ bufferindex ] ) );
+	}
 
 
 

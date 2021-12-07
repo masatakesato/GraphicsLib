@@ -27,6 +27,9 @@ namespace vk
 
 		VkSwapchainKHR Handle() const	{ return m_SwapChain; }
 
+
+		uint32_t NumAttachments() const				{ return m_NumAttachments; }
+
 		const SwapChainBuffer& ColorBuffers() const	{ return m_ColorBuffers; }
 		uint32_t NumImages() const					{ return /*m_NumImages*/m_ColorBuffers.NumImages(); }
 		VkFormat ImageFormat() const				{ return /*m_ImageFormat*/m_ColorBuffers.Format(); }
@@ -70,6 +73,7 @@ const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return
 
 		GraphicsDeviceRef				m_refDevice;
 		VkExtent2D						m_WindowExtent;
+		uint32_t						m_NumAttachments;
 
 		VkSwapchainKHR					m_SwapChain;
 		VkExtent2D						m_SwapChainExtent;

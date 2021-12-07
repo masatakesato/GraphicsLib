@@ -1,7 +1,7 @@
 ﻿#ifndef FRAMEBUFFER_H
 #define	FRAMEBUFFER_H
 
-#include	<oreore/container/NDArray.h>
+#include	<oreore/memory/Memory.h>
 
 #include	"GraphicsDevice.h"
 
@@ -10,30 +10,30 @@
 namespace vk
 {
 
-	class Framebuffer
+	class Framebuffers
 	{
 	public:
 
-		Framebuffer();
-		Framebuffer( GraphicsDevice& device, VkRenderPass renderPass, int numswaps, uint32_t width, uint32_t height, const OreOreLib::NDArray<VkImageView, 2>& attachmentViews );
-		Framebuffer( const Framebuffer& ) = delete;
-		~Framebuffer();
+		Framebuffers();
+		Framebuffers( GraphicsDevice& device, VkRenderPass renderPass, uint32_t numbackbuffers );
+		Framebuffers( const Framebuffers& ) = delete;
+		~Framebuffers();
 
-// TODO: スワップチェーンを使って初期化するケース -> 引数にスワップチェーン + その他アタッチメントビュー配列を指定する
-// TODO: スワップチェーンなしで初期化するケース -> アタッチメントビュー配列だけを指定する
-
-		void Init( GraphicsDevice& device, VkRenderPass renderPass, int numswaps, uint32_t width, uint32_t height, const OreOreLib::NDArray<VkImageView, 2>& attachmentViews );
+		void Init( GraphicsDevice& device, VkRenderPass renderPass, uint32_t numbackbuffers );
 		void Release();
 
-		uint32_t NumBuffers() const	{ return static_cast<uint32_t>( swapChainFramebuffers.Length() ); }
-		const VkFramebuffer Buffer( int i ) const	{ return swapChainFramebuffers[i]; }
+		void InitFramebuffer( uint32_t bufferindex, uint32_t width, uint32_t height, const OreOreLib::Memory<VkImageView>& imageViews );
+
+		uint32_t NumBuffers() const	{ return static_cast<uint32_t>( m_Framebuffers.Length() ); }
+		const VkFramebuffer Buffer( int i ) const	{ return m_Framebuffers[i]; }
 
 
 	private:
 
 		GraphicsDeviceRef	m_refDevice;
+		VkRenderPass		m_refRenderPass;
 
-		OreOreLib::Array<VkFramebuffer> swapChainFramebuffers;
+		OreOreLib::Array<VkFramebuffer> m_Framebuffers;
 
 	};
 
