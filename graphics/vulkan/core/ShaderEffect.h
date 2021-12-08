@@ -37,21 +37,25 @@ namespace vk
 		GraphicsDeviceRef				m_refDevice;
 		SwapChainRef					m_refSwapChain;
 
-	
-		RenderPassAttachments			m_Attachments;
-
-	
 		RenderTargets					m_RenderTargets;
 
 
 		OreOreLib::Array<ShaderPass>	m_ShaderPasses;// shader modules
-//		OreOreLib::Array<VkSubpassDependency>	m_SubpassDependencies;
+		OreOreLib::Array<VkSubpassDependency>	m_SubpassDependencies;
 
 
-		// SwapChain再生成に応じてもう一回作り直す必要があるオブジェクト群
+		//===================== SwapChain再生成に応じてもう一回作り直す必要があるオブジェクト群 =====================//
 		VkRenderPass					m_RenderPass;
+
+
 		OreOreLib::Array<GraphicsPipeline>	m_Pipelines;
 		Framebuffers					m_Framebuffers;
+
+
+		RenderPassAttachments			m_Attachments;// スワップチェーンから取得した情報を使う. MSAAオンオフ切り替えとかあると再生成必要
+
+
+
 
 
 	};

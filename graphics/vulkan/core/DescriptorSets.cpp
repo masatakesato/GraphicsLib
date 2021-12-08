@@ -10,7 +10,6 @@ namespace vk
 
 	ShaderParamDescs::ShaderParamDescs()
 		: m_refDevice( VK_NULL_HANDLE )
-		, m_NumSwaps( 0 )
 	{
 
 	}
@@ -19,7 +18,6 @@ namespace vk
 
 	ShaderParamDescs::ShaderParamDescs( VkDevice device, uint32_t numswaps )
 		: m_refDevice( device )
-		, m_NumSwaps( numswaps )
 	{
 
 	}
@@ -36,7 +34,6 @@ namespace vk
 
 	void ShaderParamDescs::Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout )
 	{
-		m_NumSwaps	= numswaps;
 		m_refDevice	= device;
 
 		InitDescriptorPool( numswaps, paramlayout );
@@ -54,16 +51,15 @@ namespace vk
 		}
 		m_DescriptorSets.Release();
 		m_refDevice	= VK_NULL_HANDLE;
-		m_NumSwaps	= 0;
 	}
 
 
 
-	void ShaderParamDescs::UpdateUniform( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers )
+	void ShaderParamDescs::BindUniformBuffer( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
-		for( uint32_t img_id=0; img_id< m_NumSwaps; ++img_id )
+		for( uint32_t img_id=0; img_id<m_DescriptorSets.Dim(0); ++img_id )
 		{
 			VkDescriptorBufferInfo bufferInfo = {};
 			bufferInfo.buffer	= uniformbuffers[ img_id ].Buffer();
@@ -88,11 +84,11 @@ namespace vk
 
 	// |------- Swapchain[0]{ DescSet[0], DescSet[1]... } -------|------- Swapchain[1]{ DescSet[0], DescSet[1]... }.... ------|---...
 
-	void ShaderParamDescs::UpdateCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler )
+	void ShaderParamDescs::BindCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
-		for( uint32_t img_id=0; img_id< m_NumSwaps; ++img_id )
+		for( uint32_t img_id=0; img_id<m_DescriptorSets.Dim(0); ++img_id )
 		{
 			VkDescriptorImageInfo imageInfo = {};
 			imageInfo.imageLayout	= VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

@@ -20,7 +20,7 @@ namespace vk
 		virtual const VkImageView& View( int i=0 ) const = 0;//	{ return VK_NULL_HANDLE; }
 		virtual VkSampleCountFlagBits MultiSampleCount() const = 0;// { return VK_SAMPLE_COUNT_1_BIT; }
 		virtual uint32_t MipLevels() const = 0;//	{ return 0; }
-		virtual uint32_t NumImages() const { return 1; }
+		virtual uint32_t NumBuffers() const { return 1; }
 
 	};
 

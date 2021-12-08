@@ -27,8 +27,8 @@ namespace vk
 		void Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout );
 		void Release();
 
-		void UpdateUniform( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers );
-		void UpdateCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler );
+		void BindUniformBuffer( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers );
+		void BindCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler );
 
 
 		const VkDescriptorPool& DecriptorPool() const	{ return m_DescPool; }
@@ -41,7 +41,6 @@ namespace vk
 	private:
 
 		VkDevice	m_refDevice;
-		uint32_t	m_NumSwaps;
 
 		VkDescriptorPool						m_DescPool;
 		OreOreLib::NDArray<VkDescriptorSet, 2>	m_DescriptorSets;// スワップチェイン数 x セット数分だけ確保が必要

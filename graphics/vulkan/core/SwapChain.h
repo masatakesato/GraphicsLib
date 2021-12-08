@@ -31,7 +31,7 @@ namespace vk
 		uint32_t NumAttachments() const				{ return m_NumAttachments; }
 
 		const SwapChainBuffer& ColorBuffers() const	{ return m_ColorBuffers; }
-		uint32_t NumImages() const					{ return /*m_NumImages*/m_ColorBuffers.NumImages(); }
+		uint32_t NumBuffers() const				{ return /*m_NumImages*/m_ColorBuffers.NumBuffers(); }
 		VkFormat ImageFormat() const				{ return /*m_ImageFormat*/m_ColorBuffers.Format(); }
 		VkImageView ImageView( int i ) const		{ return /*m_ColorImageViews[i]*/m_ColorBuffers.View(i); }
 

@@ -34,6 +34,10 @@ namespace vk
 
 
 
+	class GraphicsDevice;
+	using GraphicsDeviceRef = OreOreLib::ReferenceWrapper<GraphicsDevice>;
+
+
 
 	class GraphicsDevice
 	{
@@ -107,10 +111,15 @@ namespace vk
 		bool CheckAvailableExtensions( const OreOreLib::Array<const char*>& requiredexts );
 
 
+
+		friend inline bool IsValidDevice( const GraphicsDeviceRef& device )
+		{
+			return !device.IsNull() && device.Get().m_Device != VK_NULL_HANDLE;
+		}
+
+
 	};
 
-
-	using GraphicsDeviceRef = OreOreLib::ReferenceWrapper<GraphicsDevice>;
 
 }
 

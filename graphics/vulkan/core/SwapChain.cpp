@@ -321,7 +321,7 @@ m_ColorBuffers.Init( m_refDevice, m_SwapChain, surfaceFormat.format );
 
 	void SwapChain::InitFences()
 	{
-		m_refRenderFinishedFences.Resize( /*m_NumImages*/m_ColorBuffers.NumImages(), VK_NULL_HANDLE );
+		m_refRenderFinishedFences.Resize( /*m_NumImages*/m_ColorBuffers.NumBuffers(), VK_NULL_HANDLE );
 	}
 
 

@@ -27,7 +27,7 @@ namespace vk
 		virtual const VkImageView& View(int i=0 ) const			{ return m_ImageViews[i]; }
 		virtual VkSampleCountFlagBits MultiSampleCount() const	{ return /*m_MsaaSamples*/VK_SAMPLE_COUNT_1_BIT; }
 		virtual uint32_t MipLevels() const						{ return 1; }
-		virtual uint32_t NumImages() const						{ return static_cast<uint32_t>( m_Images.Length() ); }
+		virtual uint32_t NumBuffers() const						{ return static_cast<uint32_t>( m_Images.Length() ); }
 
 
 	private:
