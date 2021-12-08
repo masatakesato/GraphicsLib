@@ -41,12 +41,11 @@ namespace vk
 
 		GraphicsDevice();
 		GraphicsDevice( Window& window );
-		GraphicsDevice( const GraphicsDevice& )=delete;
 		~GraphicsDevice();
+		GraphicsDevice( const GraphicsDevice& ) = delete;
 
 		void Init( Window& window );
 		void Release();
-
 
 		VkSampleCountFlagBits GetMaxUsableSampleCount();
 		SwapChainSupportDetails GetSwapChainSupport()	{ return QuerySwapChainSupport( m_PhysicalDevice ); }

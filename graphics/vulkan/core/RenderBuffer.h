@@ -15,9 +15,9 @@ namespace vk
 
 		RenderBuffer();
 		RenderBuffer( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, VkSampleCountFlagBits msaasamples, bool transient, bool enableinput );
+		~RenderBuffer();
 		RenderBuffer( const RenderBuffer& )=delete;
 		RenderBuffer( RenderBuffer&& obj );
-		~RenderBuffer();
 		
 // TODO: 廃止. リゾルブバッファ生成に対応できない
 //void Init( GraphicsDevice& device, const RenderBufferDesc& desc );

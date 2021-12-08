@@ -16,8 +16,8 @@ namespace vk
 	public:
 
 		ShaderParamLayout();
-		ShaderParamLayout( const ShaderParamLayout& );// = delete;
 		~ShaderParamLayout();
+		ShaderParamLayout( const ShaderParamLayout& );// = delete;
 
 		void Init( VkDevice device, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
 		void Release();

@@ -61,7 +61,7 @@ namespace vk
 		InitImageViews();
 		InitDepthResources( depthformat, msaasamples );
 		InitMsaaResources( m_ColorBuffers.Format(), msaasamples );
-		InitFramebufferAttachments();
+//		InitFramebufferAttachments();
 		InitFences();
 	}
 
@@ -72,7 +72,7 @@ namespace vk
 
 		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
-			m_FramebufferAttachments.Release();
+//			m_FramebufferAttachments.Release();
 
 			// Delete Multisampling buffers
 			//SafeDeleteImageView( m_refDevice->Device(), m_ResolveImageView );
@@ -166,13 +166,9 @@ m_ColorBuffers.Release();
 
 		if( m_MultiSampleColorBuffer.MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT )
 		{
-			views[0] = m_MultiSampleColorBuffer.View();
-			views[1] = m_ColorBuffers.View( imageindex );
-			views[2] = m_DepthBuffer.View();
-
-//			views[0] = m_MultiSampleColorBuffer.View();		// 0: Multi-Sampled color view
-//			views[1] = m_DepthBuffer.View();				// 1: Depth buffer view
-//			views[2] = m_ColorBuffers.View( imageindex );	// 2: NO MSAA image view
+			views[0] = m_MultiSampleColorBuffer.View();		// 0: Multi-Sampled color view
+			views[1] = m_ColorBuffers.View( imageindex );	// 1: NO Multisampled image view
+			views[2] = m_DepthBuffer.View();				// 2: Depth buffer view
 		}
 		else
 		{
@@ -323,55 +319,10 @@ m_ColorBuffers.Init( m_refDevice, m_SwapChain, surfaceFormat.format );
 
 
 
-	void SwapChain::InitFramebufferAttachments()
-	{
-		if( m_MultiSampleColorBuffer.MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT )//m_bEnableMultisample )
-		{
-			m_FramebufferAttachments.Init( /*(int)m_NumImages*/(int)m_ColorBuffers.NumImages(), 3 );
-
-			for( uint32 i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
-			{
-
-//TODO: VkImageView配列要素の並び順はどうやって決める？
-//		VkRenderPassに与えるVkAttachmentDescription配列の並び順でそう決めた
-//		[0]: カラー描画結果を格納するアタッチメント, [1]: デプス描画結果を格納するアタッチメント、、、、、、、、、、、、、、、、、、、、、、、、、、、これが基本
-//		[0]: カラー描画結果(MSAA)アタッチメント,     [1]: デプス描画結果(MSAA)アタッチメント     [2]: [0]を縮小した結果を格納するアタッチメント、、、、MSAAの時はこっち
-
-//TODO: 上記アタッチメントに対応するイメージビューは？
-//		[0]: スワップチェーンイメージビュー,         [1]: デプスイメージビュー、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、これが基本
-//		[0]: マルチサンプルカラーイメージビュー,     [1]: デプスイメージビュー,                  [2]: スワップチェーンイメージビュー、、、、、、、、、MSAAの時はこっち
-
-m_FramebufferAttachments(i, (uint32)0) = m_MultiSampleColorBuffer.View();	// 0: Multi-Sampled color view
-m_FramebufferAttachments(i, (uint32)1) = m_ColorBuffers.View(i);	// 1: NO MSAA image view
-m_FramebufferAttachments(i, (uint32)2) = m_DepthBuffer.View();		// 2: Depth buffer view
-
-				//m_FramebufferAttachments(i, (uint32)0) = m_MultiSampleColorBuffer.View();//m_ResolveImageView;	// 0: Multi-Sampled color view
-				//m_FramebufferAttachments(i, (uint32)1) = m_DepthBuffer.View();//m_DepthImageView;		// 1: Depth buffer view
-				//m_FramebufferAttachments(i, (uint32)2) = m_ColorBuffers.View(i);//m_ColorImageViews[i];	// 2: NO MSAA image view
-			}
-		}
-		else
-		{
-			m_FramebufferAttachments.Init( /*(int)m_NumImages*/(int)m_ColorBuffers.NumImages(), 2 );
-
-			for( uint32 i=0; i<m_FramebufferAttachments.Dim(0); ++i )// スワップチェーン画像毎にVkImageView配列を作る
-			{
-// TODO: VkImageView配列要素の並び順はどうやって決める？
-				m_FramebufferAttachments(i, (uint32)0) = m_ColorBuffers.View(i);//m_ColorImageViews[i];
-				m_FramebufferAttachments(i, (uint32)1) = m_DepthBuffer.View();//m_DepthImageView;
-			}
-		}
-
-
-	}
-
-
-
 	void SwapChain::InitFences()
 	{
 		m_refRenderFinishedFences.Resize( /*m_NumImages*/m_ColorBuffers.NumImages(), VK_NULL_HANDLE );
 	}
-
 
 
 

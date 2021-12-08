@@ -174,7 +174,7 @@ namespace vk
 		allocInfo.descriptorSetCount	= descSetCount;
 		allocInfo.pSetLayouts			= layouts.begin();
 
-		m_DescriptorSets.Init( numswaps, static_cast<uint32>( paramlayout.NumSets() ) );//descSetCount );
+		m_DescriptorSets.Init( {numswaps, static_cast<uint32_t>( paramlayout.NumSets() )} );//descSetCount );
 		VK_CHECK_RESULT( vkAllocateDescriptorSets( m_refDevice, &allocInfo, m_DescriptorSets.begin() ) );
 	}
 

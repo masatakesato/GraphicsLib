@@ -9,10 +9,93 @@
 namespace vk
 {
 
+
+	//##################################################################################//
+	//																					//
+	//								AttachmentRefs									//
+	//																					//
+	//##################################################################################//
+
+
+	//AttachmentRefs::AttachmentRefs()
+	//{
+
+	//}
+
+	//
+
+	//AttachmentRefs::~AttachmentRefs()
+	//{
+	//	Release();
+	//}
+
+
+
+	//void AttachmentRefs::Init( int numInputs, int numColorAttachments, bool depthStencil )
+	//{
+	//	m_InputAttachments.Resize( numInputs );
+
+	//	m_ColorAttachments.Resize( numInputs );
+	//	m_ResolveAttachments.Resize( numInputs, { VK_ATTACHMENT_UNUSED } );
+
+	//	m_DepthStencilAttachment = {};
+	//}
+
+
+
+	//void AttachmentRefs::Release()
+	//{
+	//	m_InputAttachments.Release();
+	//	m_ColorAttachments.Release();
+	//	m_ResolveAttachments.Release();
+
+	//}
+
+
+
+	//void AttachmentRefs::SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	m_InputAttachments.Init( ilist );
+	//}
+
+
+
+	//void AttachmentRefs::SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	m_ColorAttachments.Init( ilist );
+	//}
+
+
+
+	//void AttachmentRefs::SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	ASSERT( m_ColorAttachments.Length() == (int)ilist.size() );
+	//	m_ResolveAttachments.Init( ilist );
+	//}
+
+
+
+	//void AttachmentRefs::SetDepthAttachment( VkAttachmentReference attachref )
+	//{
+	//	m_DepthStencilAttachment = attachref;
+	//}
+
+
+
+
+
+
+
+
+
+
+
+
 	ShaderPass::ShaderPass()
 	{
 
 	}
+
 
 
 	ShaderPass::ShaderPass( GraphicsDevice& device )
@@ -22,9 +105,21 @@ namespace vk
 	}
 
 
+
 	ShaderPass::~ShaderPass()
 	{
 		Release();
+
+	}
+
+
+
+	ShaderPass::ShaderPass( ShaderPass&& obj )
+		: m_refDevice( obj.m_refDevice )
+		, m_ShaderStages( (OreOreLib::Array<ShaderPass>&&) obj.m_ShaderStages )
+		, m_CreateInfos( (OreOreLib::Array<VkPipelineShaderStageCreateInfo>&&) obj.m_CreateInfos )
+		, m_ShaderParamLayout( obj.m_ShaderParamLayout )
+	{
 
 	}
 

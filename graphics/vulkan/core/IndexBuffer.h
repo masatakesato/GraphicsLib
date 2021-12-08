@@ -16,8 +16,8 @@ namespace vk
 
 		IndexBuffer();
 		IndexBuffer( GraphicsDevice& device, VkDeviceSize bufferSize );
-		IndexBuffer( const IndexBuffer& ) = delete;
 		~IndexBuffer();
+		IndexBuffer( const IndexBuffer& ) = delete;
 
 		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
 		void Release();

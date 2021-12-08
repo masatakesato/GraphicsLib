@@ -15,8 +15,8 @@ namespace vk
 
 		SwapChainBuffer();
 		SwapChainBuffer( GraphicsDevice& device, VkSwapchainKHR swapchain, VkFormat format );
-		SwapChainBuffer( const SwapChainBuffer& )=delete;
 		~SwapChainBuffer();
+		SwapChainBuffer( const SwapChainBuffer& ) = delete;
 		
 		void Init( GraphicsDevice& device, VkSwapchainKHR swapchain, VkFormat format );
 		void Release();

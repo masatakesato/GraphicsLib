@@ -16,8 +16,8 @@ namespace vk
 
 		FrameSynchronizer();
 		FrameSynchronizer( GraphicsDevice& device, uint32_t maxConcurrentFrames );
-		FrameSynchronizer( const FrameSynchronizer& ) = delete;
 		~FrameSynchronizer();
+		FrameSynchronizer( const FrameSynchronizer& ) = delete;
 
 		void Init( GraphicsDevice& device, uint32_t maxConcurrentFrames );
 		void Release();

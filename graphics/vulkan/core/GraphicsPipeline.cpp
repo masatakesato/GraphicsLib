@@ -6,7 +6,7 @@
 
 namespace vk
 {
-
+	
 	GraphicsPipeline::GraphicsPipeline()
 		: m_Pipeline( VK_NULL_HANDLE )
 		, m_PipelineLayout( VK_NULL_HANDLE )
@@ -22,6 +22,18 @@ namespace vk
 		, m_PipelineLayout( VK_NULL_HANDLE )
 	{
 
+	}
+
+
+
+	GraphicsPipeline::GraphicsPipeline( GraphicsPipeline&& obj )
+		: m_refDevice( obj.m_refDevice )
+		, m_Pipeline( obj.m_Pipeline )
+		, m_PipelineLayout( obj.m_PipelineLayout )
+	{
+		obj.m_refDevice.Reset();
+		obj.m_Pipeline			= VK_NULL_HANDLE;
+		obj.m_PipelineLayout	= VK_NULL_HANDLE;
 	}
 
 

@@ -1,6 +1,6 @@
 ﻿#include	"ShaderEffect.h"
 
-
+#include<vector>
 
 namespace vk
 {
@@ -13,18 +13,54 @@ namespace vk
 
 
 
-	ShaderEffect::ShaderEffect( GraphicsDevice& device )
+	ShaderEffect::ShaderEffect( GraphicsDevice& device, uint32_t numpasses )
 		: m_refDevice( device )
+		, m_ShaderPasses( numpasses )
 	{
-
+		for( auto& pass : m_ShaderPasses )
+			pass.BindDevice( device );
 	}
 
 
 
 	ShaderEffect::~ShaderEffect()
 	{
+		Release();
+//		m_ShaderPasses.Release();
+	}
+
+
+
+	void ShaderEffect::Release()
+	{
+		m_ShaderPasses.Release();
+
 
 	}
+
+
+
+	void ShaderEffect::BindSwapChain( SwapChain& swapchain )
+	{
+		m_refSwapChain = swapchain;
+	}
+
+
+
+	void ShaderEffect::UnbindSwapChain()
+	{
+
+	}
+
+
+
+	void ShaderEffect::InitRenderTargets( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs )
+	{
+
+	}
+
+
+
 
 
 

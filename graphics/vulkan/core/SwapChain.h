@@ -1,7 +1,7 @@
 ﻿#ifndef SWAP_CHAIN_H
 #define	SWAP_CHAIN_H
 
-#include	<oreore/container/NDArray.h>
+#include	<oreore/memory/ReferenceWrapper.h>
 
 #include	"GraphicsDevice.h"
 #include	"RenderBuffer.h"
@@ -19,8 +19,8 @@ namespace vk
 
 		SwapChain();
 		SwapChain( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples=VK_SAMPLE_COUNT_1_BIT, bool srgb=true, VkFormat depthformat=VK_FORMAT_D32_SFLOAT );
-		SwapChain( const SwapChain& obj )=delete;
 		~SwapChain();
+		SwapChain( const SwapChain& obj ) = delete;
 
 		void Init( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples=VK_SAMPLE_COUNT_1_BIT, bool srgb=true, VkFormat depthformat=VK_FORMAT_D32_SFLOAT );
 		void Release();
@@ -45,9 +45,6 @@ namespace vk
 
 		void ExposeRenderTargetDescs( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
 		void ExposeImageViews( OreOreLib::Memory<VkImageView>& views,  uint32_t imageindex );
-
-//TODO: ExposeImageViewsと機能が重複している.
-const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return m_FramebufferAttachments; }
 
 		const VkExtent2D& Extent() const	{ return m_WindowExtent; }
 		const VkFence& RenderFinishedFence( int i ) const { return m_refRenderFinishedFences[i]; }
@@ -104,14 +101,6 @@ const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return
 		RenderBuffer					m_MultiSampleColorBuffer;
 
 
-
-
-//TODO: VkFramebufferに登録するアタッチメントはスワップチェーンのビューだけとは限らない. 例えば、遅延レンダリングで位置/法線/アルベドを書き込むVkImageViewも含まれる
-//https://github.com/SaschaWillems/Vulkan/blob/master/examples/subpasses/subpasses.cpp　Line 251
-
-		// Attachment views for Framebuffer
-		OreOreLib::NDArray<VkImageView, 2>	m_FramebufferAttachments;
-
 		// レンダリング同期オブジェクト(参照)
 		OreOreLib::Array<VkFence>		m_refRenderFinishedFences;
 
@@ -120,7 +109,6 @@ const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return
 		void InitImageViews();
 		void InitDepthResources( VkFormat format, VkSampleCountFlagBits msaaSamples );
 		void InitMsaaResources( VkFormat format, VkSampleCountFlagBits msaaSamples );
-		void InitFramebufferAttachments();
 		void InitFences();
 
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat( VkFormat format, VkColorSpaceKHR colorSpace, const OreOreLib::Array<VkSurfaceFormatKHR>& availableFormats );
@@ -128,6 +116,10 @@ const OreOreLib::NDArray<VkImageView, 2> FramebufferAttachments() const	{ return
 		VkExtent2D ChooseSwapExtent( const VkSurfaceCapabilitiesKHR& capabilities );
 
 	};
+
+
+	using SwapChainRef = OreOreLib::ReferenceWrapper<SwapChain>;
+
 
 }// end of namespace vk
 

@@ -16,12 +16,11 @@ namespace vk
 	public:
 
 		PipelineState();
-		PipelineState( const PipelineState& ) = delete;
 		~PipelineState();
+		PipelineState( const PipelineState& ) = delete;
 
 		void Init();
 		void Release();
-
 
 		// Viewport
 		void SetDynamicViewport( bool flag );

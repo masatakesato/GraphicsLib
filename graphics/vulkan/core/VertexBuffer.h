@@ -16,8 +16,8 @@ namespace vk
 
 		VertexBuffer();
 		VertexBuffer( GraphicsDevice& device, VkDeviceSize bufferSize );
-		VertexBuffer( const VertexBuffer& ) = delete;
 		~VertexBuffer();
+		VertexBuffer( const VertexBuffer& ) = delete;
 
 		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
 		void Release();

@@ -16,8 +16,9 @@ namespace vk
 
 		Framebuffers();
 		Framebuffers( GraphicsDevice& device, VkRenderPass renderPass, uint32_t numbackbuffers );
-		Framebuffers( const Framebuffers& ) = delete;
 		~Framebuffers();
+		Framebuffers( const Framebuffers& ) = delete;
+
 
 		void Init( GraphicsDevice& device, VkRenderPass renderPass, uint32_t numbackbuffers );
 		void Release();

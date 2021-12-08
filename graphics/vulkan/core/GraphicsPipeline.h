@@ -19,8 +19,9 @@ namespace vk
 
 		GraphicsPipeline();
 		GraphicsPipeline( GraphicsDevice& device );
-		GraphicsPipeline( const GraphicsPipeline& ) = delete;
 		~GraphicsPipeline();
+		GraphicsPipeline( const GraphicsPipeline& ) = delete;
+		GraphicsPipeline( GraphicsPipeline&& obj );
 
 		void Init( const ShaderPass& shaderpass, const PipelineState& pipelinestate, VkRenderPass renderPass, uint32_t subpass );
 		void Release();
@@ -35,23 +36,6 @@ namespace vk
 
 		VkPipeline			m_Pipeline;
 		VkPipelineLayout	m_PipelineLayout;
-
-	};
-
-
-
-
-
-	class EffectPipeline
-	{
-
-	private:
-
-		GraphicsDeviceRef	m_refDevice;
-
-		OreOreLib::Array<VkPipeline>	m_Pipelines;
-
-
 
 	};
 

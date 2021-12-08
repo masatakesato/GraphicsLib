@@ -20,8 +20,9 @@ namespace vk
 
 		ShaderParamDescs();
 		ShaderParamDescs( VkDevice device, uint32_t numswaps );
-		ShaderParamDescs( const ShaderParamDescs& ) = delete;
 		~ShaderParamDescs();
+		ShaderParamDescs( const ShaderParamDescs& ) = delete;
+
 
 		void Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout );
 		void Release();

@@ -16,8 +16,8 @@ namespace vk
 
 		StagingBuffer();
 		StagingBuffer( GraphicsDevice& device, VkDeviceSize bufferSize );
-		StagingBuffer( const StagingBuffer& ) = delete;
 		~StagingBuffer();
+		StagingBuffer( const StagingBuffer& ) = delete;
 
 		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
 		void Release();

@@ -16,15 +16,14 @@ namespace vk
 	public:
 
 		RenderTargets();
+		~RenderTargets();
 		RenderTargets( const RenderTargets& ) = delete;
 		RenderTargets( RenderTargets&& obj );
-		~RenderTargets();
 
 		void Init( GraphicsDevice& device, const OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
 		void Release();
 
 		void ExposeImageViews( OreOreLib::Memory<VkImageView>& imageViews );
-
 
 
 	private:

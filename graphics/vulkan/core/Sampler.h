@@ -14,8 +14,8 @@ namespace vk
 
 		Sampler();
 		Sampler( GraphicsDevice& device, float maxAnisotropy, float maxlod );
-		Sampler( const Sampler& )=delete;
 		~Sampler();
+		Sampler( const Sampler& )=delete;
 
 		void Init( GraphicsDevice& device, float maxAnisotropy, float maxlod );
 		void Release();

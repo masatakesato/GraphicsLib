@@ -15,8 +15,8 @@ namespace vk
 
 		Texture();
 		Texture( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, bool mipmap );
-		Texture( const Texture& )=delete;
 		~Texture();
+		Texture( const Texture& ) = delete;
 
 		void Init( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, bool mipmap );
 		void Release();
