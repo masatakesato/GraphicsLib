@@ -29,6 +29,10 @@ namespace vk
 
 		void InitRenderTargets( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
 
+//		void AddShaderPass( const ShaderPass& pass );
+		void AddShaderPassConnection( uint32_t srd, uint32_t dst );
+
+
 		ShaderPass& Pass( uint32_t i=0 ) 	{ return m_ShaderPasses[i]; }
 
 

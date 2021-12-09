@@ -13,6 +13,115 @@
 namespace vk
 {
 
+	union PipelineBarrier
+	{
+		struct
+		{
+			VkPipelineStageFlagBits StageFlag;
+			VkAccessFlagBits AccessFlag;
+		};
+
+		uint64	Flag;
+
+
+		PipelineBarrier( VkPipelineStageFlagBits stageflag, VkAccessFlagBits accessflag )
+			: StageFlag( stageflag )
+			, AccessFlag( accessflag )
+		{
+		
+		}
+
+
+		PipelineBarrier( const uint64& flag )
+			: Flag(flag)
+		{
+		
+		}
+
+	};
+
+
+
+	inline PipelineBarrier operator | ( const PipelineBarrier& t1, const PipelineBarrier& t2 )
+	{
+		return PipelineBarrier( t1.Flag | t2.Flag );
+	}
+
+
+
+
+	namespace PipelineStageBarrier
+	{
+		const PipelineBarrier TopOfPipe							{ VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT/*, 0*/ };
+
+		// Draw indirect
+		const PipelineBarrier DrawIndirect						{ VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, VK_ACCESS_INDIRECT_COMMAND_READ_BIT };
+
+		// Vertex input
+		const PipelineBarrier VertxInputIndexRead				{ VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_ACCESS_INDEX_READ_BIT };
+		const PipelineBarrier VertxInputAttribRead				{ VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT };
+		
+		// Vertex shader
+		const PipelineBarrier VertexShaderUniformRead			{ VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, VK_ACCESS_UNIFORM_READ_BIT };
+		const PipelineBarrier VertexShaderRead					{ VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT };
+		const PipelineBarrier VertexShaderWrite					{ VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, VK_ACCESS_SHADER_WRITE_BIT };
+
+		// Tessellation control shader
+		const PipelineBarrier TessControllShaderUniformRead		{ VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT, VK_ACCESS_UNIFORM_READ_BIT };
+		const PipelineBarrier TessControllShaderRead			{ VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT };
+		const PipelineBarrier TessControllShaderWrite			{ VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT, VK_ACCESS_SHADER_WRITE_BIT };
+
+		// Tessellation evaluation shader
+		const PipelineBarrier TessEvaluationShaderUniformRead	{ VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT, VK_ACCESS_UNIFORM_READ_BIT };
+		const PipelineBarrier TessEvaluationShaderRead			{ VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT };
+		const PipelineBarrier TessEvaluationShaderWrite			{ VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT, VK_ACCESS_SHADER_WRITE_BIT };
+
+		// Geometry shader
+		const PipelineBarrier GeometryShaderUniformRead			{ VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT, VK_ACCESS_UNIFORM_READ_BIT };
+		const PipelineBarrier GeometryShaderRead				{ VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT };
+		const PipelineBarrier GeometryShaderWrite				{ VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT, VK_ACCESS_SHADER_WRITE_BIT };
+
+		// Early fragment test
+		const PipelineBarrier EarlyFragmentRead					{ VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT };// depth load
+		const PipelineBarrier EarlyFragmentWrite				{ VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT };// depth store( clear operation? )
+
+		// Fragment shader
+		const PipelineBarrier FragmentShaderUniformRead			{ VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_UNIFORM_READ_BIT };
+		const PipelineBarrier FragmentShaderInputAttachmentRead	{ VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_INPUT_ATTACHMENT_READ_BIT };
+		const PipelineBarrier FragmentShaderRead				{ VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT };
+		const PipelineBarrier FragmentShaderWrite				{ VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_WRITE_BIT };
+
+		// Late fragment test
+		const PipelineBarrier LateFragmentRead					{ VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT };
+		const PipelineBarrier LateFragmentWrite					{ VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT };// depth store
+
+		// Color attachment
+		const PipelineBarrier ColorAttachmentLoad				{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT };// color read
+		const PipelineBarrier ColorAttachmentStore				{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT };// color write
+
+		// Bottom ob pipe
+		const PipelineBarrier BottomOfPipe						{ VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT/*, 0*/ };
+
+		// Compute shader
+		const PipelineBarrier ComputeShaderUniformRead			{ VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_ACCESS_UNIFORM_READ_BIT };
+		const PipelineBarrier ComputeShaderRead					{ VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT };
+		const PipelineBarrier ComputeShaderWrite				{ VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_ACCESS_SHADER_WRITE_BIT };
+
+		// Transfer
+		const PipelineBarrier TransferRead						{ VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT };
+		const PipelineBarrier TransferWrite						{ VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT };
+
+		// Host
+		const PipelineBarrier HostRead							{ VK_PIPELINE_STAGE_HOST_BIT, VK_ACCESS_HOST_READ_BIT };
+		const PipelineBarrier HostWrite							{ VK_PIPELINE_STAGE_HOST_BIT, VK_ACCESS_HOST_WRITE_BIT };
+
+	};
+
+
+
+
+
+
 	class GraphicsPipeline
 	{
 	public:
