@@ -1,12 +1,14 @@
 ﻿#include	"ShaderEffect.h"
 
-#include<vector>
+#include	"../utils/HelperFunctions.h"
+
+
 
 namespace vk
 {
 
 	ShaderEffect::ShaderEffect()
-		: m_refDevice()
+		: m_RenderPass( VK_NULL_HANDLE )
 	{
 		
 	}
@@ -54,15 +56,87 @@ namespace vk
 
 
 
-	void ShaderEffect::InitRenderTargets( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs )
+	void ShaderEffect::InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs )
 	{
-
+		m_RenderTargets.Init( m_refDevice, renderTargetDescs );
 	}
 
 
 
+	void ShaderEffect::InitDependencies( std::initializer_list<ShaderPassDependency> dependencies )
+	{
+		m_SubpassDependencies.Init( static_cast<OreOreLib::MemSizeType>( dependencies.size() ) );
+
+		auto dependency = m_SubpassDependencies.begin();
+		for( const auto& dep : dependencies )
+		{
+			dependency->srcSubpass		= dep.SrcIndex;
+			dependency->dstSubpass		= dep.DstIndex;
+			dependency->srcStageMask	= dep.Src.StageFlag;// VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+			dependency->srcAccessMask	= dep.Src.AccessFlag;
+			dependency->dstStageMask	= dep.Dst.StageFlag;//VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+			dependency->dstAccessMask	= dep.Dst.AccessFlag;//VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+			dependency++;
+		}
+	}
 
 
+
+	void ShaderEffect::BuildRenderPass()
+	{
+		bool multiSampleEnabled = m_refSwapChain->MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT;
+
+		OreOreLib::Array<vk::RenderTargetDesc> swapChainRenderTargetDescs;
+		m_refSwapChain->ExposeRenderTargetDescs( swapChainRenderTargetDescs );
+
+
+		m_Attachments.Init( swapChainRenderTargetDescs );
+
+
+		OreOreLib::Array<VkAttachmentReference> colorAttachmentRefs;
+		m_Attachments.CreateColorAttachmentReferece( colorAttachmentRefs, { 0 } );
+
+		OreOreLib::Array<VkAttachmentReference> depthAttachmentRefs;
+		m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
+
+		OreOreLib::Array<VkAttachmentReference> resolveAttachmentRefs;
+		m_Attachments.CreateResolveAttachmentReference( resolveAttachmentRefs, { 0 } );
+
+
+		// サブパスで使う入出力アタッチメントを記述する
+		VkSubpassDescription subpassDesc = {};
+		subpassDesc.pipelineBindPoint		= VK_PIPELINE_BIND_POINT_GRAPHICS;
+
+		subpassDesc.inputAttachmentCount	= 0;
+		subpassDesc.pInputAttachments		= nullptr;// シェーダーで入力データとして使いたいアタッチメント群(G-Bufferみたいなやつ)
+		subpassDesc.colorAttachmentCount	= static_cast<uint32_t>( colorAttachmentRefs.Length() );//1;
+		subpassDesc.pColorAttachments		= colorAttachmentRefs.begin();//&colorAttachmentRef;
+		subpassDesc.pResolveAttachments		= resolveAttachmentRefs.begin();//&colorAttachmentResolveRef;
+		subpassDesc.pDepthStencilAttachment	= depthAttachmentRefs.begin();//&depthAttachmentRef;
+
+
+		VkSubpassDependency dependency = {};
+		dependency.srcSubpass		= VK_SUBPASS_EXTERNAL;
+		dependency.dstSubpass		= 0;
+		dependency.srcStageMask		= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependency.srcAccessMask	= 0;
+		dependency.dstStageMask		= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependency.dstAccessMask	= VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+
+		VkRenderPassCreateInfo renderPassInfo = {};
+		renderPassInfo.sType			= VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassInfo.attachmentCount	= static_cast<uint32_t>( m_Attachments.AttachmentDescs().Length() );//static_cast<uint32_t>( attachmentDescriptions.Length() ) ;
+		renderPassInfo.pAttachments		= m_Attachments.AttachmentDescs().begin();//attachmentDescriptions.begin();
+		renderPassInfo.subpassCount		= 1;
+		renderPassInfo.pSubpasses		= &subpassDesc;
+		renderPassInfo.dependencyCount	= 1;
+		renderPassInfo.pDependencies	= &dependency;
+
+		VK_CHECK_RESULT( vkCreateRenderPass( m_refDevice->Device(), &renderPassInfo, nullptr, &m_RenderPass ) );
+
+	}
 
 /*
 	void createRenderPass()
@@ -70,7 +144,7 @@ namespace vk
 
 		// カラーバッファアタッチメントの設定
 		VkAttachmentDescription colorAttachment = {};
-		colorAttachment.format			= m_SwapChain.ImageFormat();
+		colorAttachment.format			= m_refSwapChain->ImageFormat();
 		colorAttachment.samples			= msaaSamples;
 		colorAttachment.loadOp			= VK_ATTACHMENT_LOAD_OP_CLEAR;
 		colorAttachment.storeOp			= VK_ATTACHMENT_STORE_OP_STORE;
@@ -102,7 +176,7 @@ namespace vk
 
 		// 
 		VkAttachmentDescription colorAttachmentResolve = {};
-		colorAttachmentResolve.format			= m_SwapChain.ImageFormat();
+		colorAttachmentResolve.format			= m_refSwapChain->ImageFormat();
 		colorAttachmentResolve.samples			= VK_SAMPLE_COUNT_1_BIT;
 		colorAttachmentResolve.loadOp			= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		colorAttachmentResolve.storeOp			= VK_ATTACHMENT_STORE_OP_STORE;

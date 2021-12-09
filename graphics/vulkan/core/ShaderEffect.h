@@ -12,6 +12,16 @@
 
 namespace vk
 {
+	struct ShaderPassDependency
+	{
+		uint32			SrcIndex;
+		uint32			DstIndex;
+		PipelineBarrier	Src;
+		PipelineBarrier	Dst;
+	};
+
+
+
 
 	class ShaderEffect
 	{
@@ -27,10 +37,18 @@ namespace vk
 		void BindSwapChain( SwapChain& swapchain );
 		void UnbindSwapChain();
 
-		void InitRenderTargets( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
+		void InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs );
+		void InitDependencies( std::initializer_list<ShaderPassDependency> dependencies );
+
+void SetInputAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
+void SetColorAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
+void SetResolveAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
+
 
 //		void AddShaderPass( const ShaderPass& pass );
-		void AddShaderPassConnection( uint32_t srd, uint32_t dst );
+
+		void BuildRenderPass();
+
 
 
 		ShaderPass& Pass( uint32_t i=0 ) 	{ return m_ShaderPasses[i]; }
@@ -47,6 +65,8 @@ namespace vk
 		OreOreLib::Array<ShaderPass>	m_ShaderPasses;// shader modules
 		OreOreLib::Array<VkSubpassDependency>	m_SubpassDependencies;
 
+
+AttachmentRefs 
 
 		//===================== SwapChain再生成に応じてもう一回作り直す必要があるオブジェクト群 =====================//
 		VkRenderPass					m_RenderPass;

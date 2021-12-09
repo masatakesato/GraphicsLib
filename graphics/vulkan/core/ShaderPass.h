@@ -15,37 +15,37 @@ namespace vk
 {
 
 
-	//class AttachmentRefs
-	//{
-	//public:
+	class AttachmentRefs
+	{
+	public:
 
-	//	AttachmentRefs();
-	//	AttachmentRefs( const AttachmentRefs& )=delete;
-	//	~AttachmentRefs();
+		AttachmentRefs();
+		AttachmentRefs( const AttachmentRefs& ) = delete;
+		~AttachmentRefs();
 
-	//	void Init( int numInputs, int numColorAttachments, bool depthStencil );
-	//	void Release();
+		void Init( int numInputs, int numColorAttachments, bool depthStencil );
+		void Release();
 
-	//	void SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist );
-	//	void SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist );
-	//	void SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist );
-	//	void SetDepthAttachment( VkAttachmentReference attachref );
+		void SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist );
+		void SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist );
+		void SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist );
+		void SetDepthAttachment( VkAttachmentReference attachref );
 
 
-	//private:
+	private:
 
-	//	OreOreLib::Array<VkAttachmentReference>	m_InputAttachments;
+		OreOreLib::Array<VkAttachmentReference>	m_InputAttachments;
 
-	//	OreOreLib::Array<VkAttachmentReference>	m_ColorAttachments;
-	//	OreOreLib::Array<VkAttachmentReference>	m_ResolveAttachments;
-	//	// https://qiita.com/Pctg-x8/items/2b3d5c8a861f42aa533f
-	//	// for Multisampling.
-	//	// m_ResolveAttachments.Length() must be equal to m_ColorAttachments.Length()
-	//	// set VkAttachmentReference::attachment to VK_ATTACHMENT_UNUSED if you want to invalidate multisampling
+		OreOreLib::Array<VkAttachmentReference>	m_ColorAttachments;
+		OreOreLib::Array<VkAttachmentReference>	m_ResolveAttachments;
+		// https://qiita.com/Pctg-x8/items/2b3d5c8a861f42aa533f
+		// for Multisampling.
+		// m_ResolveAttachments.Length() must be equal to m_ColorAttachments.Length()
+		// set VkAttachmentReference::attachment to VK_ATTACHMENT_UNUSED if you want to invalidate multisampling
 
-	//	VkAttachmentReference	m_DepthStencilAttachment{};
+		VkAttachmentReference	m_DepthStencilAttachment{};
 
-	//};
+	};
 
 
 

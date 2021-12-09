@@ -20,7 +20,8 @@ namespace vk
 		RenderTargets( const RenderTargets& ) = delete;
 		RenderTargets( RenderTargets&& obj );
 
-		void Init( GraphicsDevice& device, const OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
+		void Init( GraphicsDevice& device, std::initializer_list<RenderTargetDesc> renderTargetDescs );
+		//void Init( GraphicsDevice& device, const OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
 		void Release();
 
 		void ExposeImageViews( OreOreLib::Memory<VkImageView>& imageViews );
