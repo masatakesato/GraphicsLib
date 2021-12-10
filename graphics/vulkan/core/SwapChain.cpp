@@ -121,18 +121,13 @@ m_ColorBuffers.Release();
 		{
 			renderTargetDescs =
 			{
-				// msaa color buffer
+				// msaa color buffer( with resolving enabled )
 				{	m_WindowExtent, m_MultiSampleColorBuffer.Format(), m_MultiSampleColorBuffer.MultiSampleCount(), true, vk::RenderBufferUsage::ColorWrite_Transient,
 					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
 
 				// depth buffer
 				{	m_WindowExtent, m_DepthBuffer.Format(), m_DepthBuffer.MultiSampleCount(), false, vk::RenderBufferUsage::DepthWrite,
 					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL },
-
-				// resolved color buffer
-				//{	m_WindowExtent, m_ColorBuffers.Format(), m_ColorBuffers.MultiSampleCount(), vk::RenderBufferUsage::ColorWrite_Transient,
-				//	vk::AttachmentOp::DontCare_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
-
 			};
 		}
 		else

@@ -15,9 +15,22 @@ namespace vk
 
 
 
-	ShaderEffect::ShaderEffect( GraphicsDevice& device, uint32_t numpasses )
+	ShaderEffect::ShaderEffect( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets )
 		: m_refDevice( device )
-		, m_ShaderPasses( numpasses )
+		, m_ShaderPasses( numPasses )
+		, m_RenderTargetDescs( numRenderTargets )
+	{
+		for( auto& pass : m_ShaderPasses )
+			pass.BindDevice( device );
+	}
+
+
+
+	ShaderEffect::ShaderEffect( GraphicsDevice& device, SwapChain& swapchain, uint32_t numPasses, uint32_t numRenderTargets )
+		: m_refDevice( device )
+		, m_refSwapChain( swapchain )
+		, m_ShaderPasses( numPasses )
+		, m_RenderTargetDescs( 2/*swapchain color, swapchain depth*/ + numRenderTargets )
 	{
 		for( auto& pass : m_ShaderPasses )
 			pass.BindDevice( device );
@@ -36,21 +49,10 @@ namespace vk
 	void ShaderEffect::Release()
 	{
 		m_ShaderPasses.Release();
+		m_RenderTargetDescs.Release();
+		m_RenderTargets.Release();
 
-
-	}
-
-
-
-	void ShaderEffect::BindSwapChain( SwapChain& swapchain )
-	{
-		m_refSwapChain = swapchain;
-	}
-
-
-
-	void ShaderEffect::UnbindSwapChain()
-	{
+		m_refSwapChain.Reset();
 
 	}
 
@@ -58,6 +60,7 @@ namespace vk
 
 	void ShaderEffect::InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs )
 	{
+		m_RenderTargetDescs.Init( renderTargetDescs.begin(), renderTargetDescs.end() );
 		m_RenderTargets.Init( m_refDevice, renderTargetDescs );
 	}
 
@@ -83,27 +86,45 @@ namespace vk
 
 
 
+	//void ShaderEffect::SetInputAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	m_AttachmentRefs.SetInputAttachments( ilist );
+	//}
+
+
+
+	//void ShaderEffect::SetColorAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	m_AttachmentRefs.SetColorAttachments( ilist );
+	//}
+
+
+
+	//void ShaderEffect::SetResolveAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	m_AttachmentRefs.SetResolveAttachments( ilist );
+	//}
+
+
+
 	void ShaderEffect::BuildRenderPass()
 	{
 		bool multiSampleEnabled = m_refSwapChain->MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT;
 
-		OreOreLib::Array<vk::RenderTargetDesc> swapChainRenderTargetDescs;
-		m_refSwapChain->ExposeRenderTargetDescs( swapChainRenderTargetDescs );
+OreOreLib::ArrayView<vk::RenderTargetDesc> swapChainRenderTargetDescs( m_RenderTargetDescs.begin(), 2 );
+m_refSwapChain->ExposeRenderTargetDescs( swapChainRenderTargetDescs );
+
+m_Attachments.Init( swapChainRenderTargetDescs );
 
 
-		m_Attachments.Init( swapChainRenderTargetDescs );
+ サブパス毎に有効化するスロット情報の設定が必要.( デプスアタッチメント使うかどうかも含めて )
+OreOreLib::Array<VkAttachmentReference> colorAttachmentRefs, resolveAttachmentRefs, depthAttachmentRefs;
+m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, { 0 } );
 
+OreOreLib::Array<VkAttachmentReference> ;
+m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
 
-		OreOreLib::Array<VkAttachmentReference> colorAttachmentRefs;
-		m_Attachments.CreateColorAttachmentReferece( colorAttachmentRefs, { 0 } );
-
-		OreOreLib::Array<VkAttachmentReference> depthAttachmentRefs;
-		m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
-
-		OreOreLib::Array<VkAttachmentReference> resolveAttachmentRefs;
-		m_Attachments.CreateResolveAttachmentReference( resolveAttachmentRefs, { 0 } );
-
-
+/*
 		// サブパスで使う入出力アタッチメントを記述する
 		VkSubpassDescription subpassDesc = {};
 		subpassDesc.pipelineBindPoint		= VK_PIPELINE_BIND_POINT_GRAPHICS;
@@ -135,7 +156,7 @@ namespace vk
 		renderPassInfo.pDependencies	= &dependency;
 
 		VK_CHECK_RESULT( vkCreateRenderPass( m_refDevice->Device(), &renderPassInfo, nullptr, &m_RenderPass ) );
-
+*/
 	}
 
 /*

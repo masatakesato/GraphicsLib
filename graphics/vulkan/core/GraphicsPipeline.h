@@ -119,7 +119,7 @@ namespace vk
 		const PipelineBarrier ComputeShaderWrite				{ VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_ACCESS_SHADER_WRITE_BIT };
 
 		// Transfer
-		const PipelineBarrier TransferRead						{ VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_NONE_KHR };
+		const PipelineBarrier Transfer							{ VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_NONE_KHR };
 		const PipelineBarrier TransferRead						{ VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT };
 		const PipelineBarrier TransferWrite						{ VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT };
 

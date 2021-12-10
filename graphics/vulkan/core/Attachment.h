@@ -19,17 +19,18 @@ namespace vk
 		RenderPassAttachments();
 		~RenderPassAttachments();
 
-		void Init( OreOreLib::Array<RenderTargetDesc>& rederTargetDescs );
+		void Init( const OreOreLib::Memory<RenderTargetDesc>& rederTargetDescs );
 		void Release();
 
 		uint32_t NumAttachments() const { return static_cast<uint32_t>( m_AttacmentDescs.Length() ); }
 		bool HasDepth() const	{ return m_DepthSlot != VK_ATTACHMENT_UNUSED; }
 
-		void ClearColor( int32_t slot, float r, float g, float b, float a );
+		void ClearColor( uint32_t slot, float r, float g, float b, float a );
 		void ClearDepth( float depth, uint32_t stencil );
 
 		void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
-		void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
+		void CreateColorResolveAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& colorRefs, OreOreLib::Array<VkAttachmentReference>& resolveRefs, std::initializer_list<uint32_t> slots );
+		//void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
 		void CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs );
 
 		const OreOreLib::Array<VkAttachmentDescription>& AttachmentDescs()	const { return m_AttacmentDescs; }

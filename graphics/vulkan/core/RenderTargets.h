@@ -29,7 +29,6 @@ namespace vk
 
 	private:
 
-
 		OreOreLib::Array<RenderBuffer>	m_RenderBuffers;
 
 	};

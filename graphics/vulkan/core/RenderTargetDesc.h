@@ -26,21 +26,6 @@ namespace vk
 	};
 
 
-	struct RenderBufferDesc
-	{
-		VkExtent2D				Dim;
-		VkFormat				Format;
-		VkSampleCountFlagBits	MultiSampleFlag;
-		bool					Resolve;
-		VkImageUsageFlags		UsageFlags;
-	};
-
-
-
-
-
-
-
 
 
 	struct LoadStoreOp
@@ -49,38 +34,31 @@ namespace vk
 		VkAttachmentStoreOp StoreOp;
 	};
 
+
 	namespace AttachmentOp
 	{
-		const LoadStoreOp Load_Store{ VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_STORE };		// Load / Store
-		const LoadStoreOp Load_DontCare{ VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_DONT_CARE };	// Load / DontCare
-		const LoadStoreOp Clear_Store{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE };		// Clear / Store
-		const LoadStoreOp Clear_DontCare{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_DONT_CARE };	// Clear / DontCare
-		const LoadStoreOp DontCare_Store{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_STORE };	// DontCare / Store
-		const LoadStoreOp DontCare_DontCare{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE };// DontCare / DontCare
+		const LoadStoreOp Load_Store		{ VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_STORE };			// Load / Store
+		const LoadStoreOp Load_DontCare		{ VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_DONT_CARE };		// Load / DontCare
+		const LoadStoreOp Clear_Store		{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE };			// Clear / Store
+		const LoadStoreOp Clear_DontCare	{ VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_DONT_CARE };		// Clear / DontCare
+		const LoadStoreOp DontCare_Store	{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_STORE };		// DontCare / Store
+		const LoadStoreOp DontCare_DontCare	{ VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE };	// DontCare / DontCare
 	};
-
-
-
-	struct AttachmentDesc
-	{
-		LoadStoreOp		Operations;
-		VkImageLayout	FinalLayout;
-		// if( Resolve )
-		//	if( FinalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR )
-		//		-> MSAAバッファはVK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMALに変更
-		//		-> リゾルブバッファをVK_IMAGE_LAYOUT_PRESENT_SRC_KHRに設定する
-		//	else
-		//		-> MSAAもリゾルブもFinalLayoutのまま作る
-
-	};
-
 
 
 
 	struct RenderTargetDesc
 	{
-		RenderBufferDesc	RenderBuffer;
-		AttachmentDesc		Attachment;
+		// Image settings
+		VkExtent2D				Dim;
+		VkFormat				Format;
+		VkSampleCountFlagBits	MultiSampleFlag;
+		bool					Resolve;
+		VkImageUsageFlags		UsageFlags;
+
+		// Attachment settings
+		LoadStoreOp				Operations;
+		VkImageLayout			FinalLayout;
 	};
 
 

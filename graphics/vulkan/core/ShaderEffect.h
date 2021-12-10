@@ -28,21 +28,19 @@ namespace vk
 	public:
 
 		ShaderEffect();
-		ShaderEffect( GraphicsDevice& device, uint32_t numpasses );
+		ShaderEffect( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets );
+		ShaderEffect( GraphicsDevice& device, SwapChain& swapchain, uint32_t numPasses, uint32_t numRenderTargets );
 		~ShaderEffect();
 		ShaderEffect( const ShaderEffect& )=delete;
 
 		void Release();
 
-		void BindSwapChain( SwapChain& swapchain );
-		void UnbindSwapChain();
-
 		void InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs );
 		void InitDependencies( std::initializer_list<ShaderPassDependency> dependencies );
 
-void SetInputAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
-void SetColorAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
-void SetResolveAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
+//void SetInputAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
+//void SetColorAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
+//void SetResolveAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
 
 
 //		void AddShaderPass( const ShaderPass& pass );
@@ -66,9 +64,13 @@ void SetResolveAttachments( uint32_t pass, std::initializer_list<VkAttachmentRef
 		OreOreLib::Array<VkSubpassDependency>	m_SubpassDependencies;
 
 
-AttachmentRefs 
+AttachmentRefs m_AttachmentRefs;
+
 
 		//===================== SwapChain再生成に応じてもう一回作り直す必要があるオブジェクト群 =====================//
+
+		OreOreLib::Array<RenderTargetDesc>	m_RenderTargetDescs;// スワップチェーン + シェーダー構成に応じて手動設定するレンダーターゲットの情報配列
+
 		VkRenderPass					m_RenderPass;
 
 

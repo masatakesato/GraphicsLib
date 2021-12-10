@@ -37,7 +37,7 @@ namespace vk
 		for( const auto& rtdesc : renderTargetDescs )
 		{
 			// count up attachments
-			if( rtdesc.RenderBuffer.MultiSampleFlag != VK_SAMPLE_COUNT_1_BIT && rtdesc.RenderBuffer.Resolve )
+			if( rtdesc.MultiSampleFlag != VK_SAMPLE_COUNT_1_BIT && rtdesc.Resolve )
 				bufferCount+=2;
 			else
 				bufferCount++;
@@ -52,12 +52,12 @@ namespace vk
 
 		for( const auto& rtdesc : renderTargetDescs )
 		{
-			bool ismultisample = rtdesc.RenderBuffer.MultiSampleFlag != VK_SAMPLE_COUNT_1_BIT && rtdesc.RenderBuffer.Resolve;
+			bool ismultisample = rtdesc.MultiSampleFlag != VK_SAMPLE_COUNT_1_BIT && rtdesc.Resolve;
 
 			buffer->Init(	device,
-							rtdesc.RenderBuffer.Dim.width, rtdesc.RenderBuffer.Dim.height,
-							rtdesc.RenderBuffer.Format,
-							rtdesc.RenderBuffer.MultiSampleFlag, rtdesc.RenderBuffer.UsageFlags );
+							rtdesc.Dim.width, rtdesc.Dim.height,
+							rtdesc.Format,
+							rtdesc.MultiSampleFlag, rtdesc.UsageFlags );
 
 			// Put resolve buffer next to multisample buffer
 			if( ismultisample )
@@ -65,9 +65,9 @@ namespace vk
 				buffer++;
 
 				buffer->Init(	device,
-								rtdesc.RenderBuffer.Dim.width, rtdesc.RenderBuffer.Dim.height,
-								rtdesc.RenderBuffer.Format,
-								VK_SAMPLE_COUNT_1_BIT, rtdesc.RenderBuffer.UsageFlags );
+								rtdesc.Dim.width, rtdesc.Dim.height,
+								rtdesc.Format,
+								VK_SAMPLE_COUNT_1_BIT, rtdesc.UsageFlags );
 			}
 
 			buffer++;
@@ -85,7 +85,7 @@ namespace vk
 	//	for( const auto& rtdesc : renderTargetDescs )
 	//	{
 	//		// count up attachments
-	//		if( rtdesc.RenderBuffer.MultiSampleFlag != VK_SAMPLE_COUNT_1_BIT && rtdesc.RenderBuffer.Resolve )
+	//		if( rtdesc.MultiSampleFlag != VK_SAMPLE_COUNT_1_BIT && rtdesc.Resolve )
 	//			bufferCount+=2;
 	//		else
 	//			bufferCount++;
@@ -100,12 +100,12 @@ namespace vk
 
 	//	for( const auto& rtdesc : renderTargetDescs )
 	//	{
-	//		bool ismultisample = rtdesc.RenderBuffer.MultiSampleFlag != VK_SAMPLE_COUNT_1_BIT && rtdesc.RenderBuffer.Resolve;
+	//		bool ismultisample = rtdesc.MultiSampleFlag != VK_SAMPLE_COUNT_1_BIT && rtdesc.Resolve;
 
 	//		buffer->Init(	device,
-	//						rtdesc.RenderBuffer.Dim.width, rtdesc.RenderBuffer.Dim.height,
-	//						rtdesc.RenderBuffer.Format,
-	//						rtdesc.RenderBuffer.MultiSampleFlag, rtdesc.RenderBuffer.UsageFlags );
+	//						rtdesc.Dim.width, rtdesc.Dim.height,
+	//						rtdesc.Format,
+	//						rtdesc.MultiSampleFlag, rtdesc.UsageFlags );
 
 	//		// Put resolve buffer next to multisample buffer
 	//		if( ismultisample )
@@ -113,9 +113,9 @@ namespace vk
 	//			buffer++;
 
 	//			buffer->Init(	device,
-	//							rtdesc.RenderBuffer.Dim.width, rtdesc.RenderBuffer.Dim.height,
-	//							rtdesc.RenderBuffer.Format,
-	//							VK_SAMPLE_COUNT_1_BIT, rtdesc.RenderBuffer.UsageFlags );
+	//							rtdesc.Dim.width, rtdesc.Dim.height,
+	//							rtdesc.Format,
+	//							VK_SAMPLE_COUNT_1_BIT, rtdesc.UsageFlags );
 	//		}
 
 	//		buffer++;
