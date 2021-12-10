@@ -119,29 +119,27 @@ m_ColorBuffers.Release();
 
 		if( m_MultiSampleColorBuffer.MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT )//m_bEnableMultisample )
 		{
-			renderTargetDescs =
-			{
+			renderTargetDescs[0] =
 				// msaa color buffer( with resolving enabled )
 				{	m_WindowExtent, m_MultiSampleColorBuffer.Format(), m_MultiSampleColorBuffer.MultiSampleCount(), true, vk::RenderBufferUsage::ColorWrite_Transient,
-					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
+					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR };
 
+			renderTargetDescs[1] =
 				// depth buffer
 				{	m_WindowExtent, m_DepthBuffer.Format(), m_DepthBuffer.MultiSampleCount(), false, vk::RenderBufferUsage::DepthWrite,
-					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL },
-			};
+					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 		}
 		else
 		{
-			renderTargetDescs =
-			{
+			renderTargetDescs[0] =
 				// color buffer
 				{	m_WindowExtent, m_ColorBuffers.Format(), m_ColorBuffers.MultiSampleCount(), false, vk::RenderBufferUsage::ColorWrite_Transient,
-					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
+					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR };
 
+			renderTargetDescs[1] =
 				// depth buffer
 				{	m_WindowExtent, m_DepthBuffer.Format(), m_DepthBuffer.MultiSampleCount(), false, vk::RenderBufferUsage::DepthWrite,
-					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL },
-			};
+					vk::AttachmentOp::Clear_DontCare, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 		}
 
 	}

@@ -1,5 +1,7 @@
 ﻿#include	"ShaderEffect.h"
 
+#include	<oreore/container/ArrayView.h>
+
 #include	"../utils/HelperFunctions.h"
 
 
@@ -34,6 +36,8 @@ namespace vk
 	{
 		for( auto& pass : m_ShaderPasses )
 			pass.BindDevice( device );
+
+		m_SwapChainRenderTargetDescs.Init( m_RenderTargetDescs.end()-2, 2 );
 	}
 
 
@@ -60,7 +64,9 @@ namespace vk
 
 	void ShaderEffect::InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs )
 	{
-		m_RenderTargetDescs.Init( renderTargetDescs.begin(), renderTargetDescs.end() );
+		// 先頭から順番にRenderTargetDescsを詰めていく
+		OreOreLib::MemCopy( m_RenderTargetDescs.begin(), renderTargetDescs.begin(), renderTargetDescs.size() );
+		//m_RenderTargetDescs.Init( renderTargetDescs.begin(), renderTargetDescs.end() );
 		m_RenderTargets.Init( m_refDevice, renderTargetDescs );
 	}
 
@@ -111,17 +117,15 @@ namespace vk
 	{
 		bool multiSampleEnabled = m_refSwapChain->MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT;
 
-OreOreLib::ArrayView<vk::RenderTargetDesc> swapChainRenderTargetDescs( m_RenderTargetDescs.begin(), 2 );
-m_refSwapChain->ExposeRenderTargetDescs( swapChainRenderTargetDescs );
 
-m_Attachments.Init( swapChainRenderTargetDescs );
+m_refSwapChain->ExposeRenderTargetDescs( m_SwapChainRenderTargetDescs );
+
+m_Attachments.Init( /*m_SwapChainRenderTargetDescs*/m_RenderTargetDescs );
 
 
- サブパス毎に有効化するスロット情報の設定が必要.( デプスアタッチメント使うかどうかも含めて )
+TODO: サブパス毎に有効化するスロット情報の設定が必要.( デプスアタッチメント使うかどうかも含めて )
 OreOreLib::Array<VkAttachmentReference> colorAttachmentRefs, resolveAttachmentRefs, depthAttachmentRefs;
-m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, { 0 } );
-
-OreOreLib::Array<VkAttachmentReference> ;
+m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, { 0/*, SwapChainSlot*/, 1 } );
 m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
 
 /*

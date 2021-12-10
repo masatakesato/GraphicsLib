@@ -136,14 +136,14 @@ namespace vk
 
 
 
-	void RenderPassAttachments::CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots )
-	{
-		for( const auto& slot : slots )
-		{
-			if( slot >= m_Slots.Length() )	continue;
-			refs.AddToTail( { m_Slots[ slot ].ID, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
-		}
-	}
+	//void RenderPassAttachments::CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots )
+	//{
+	//	for( const auto& slot : slots )
+	//	{
+	//		if( slot >= m_Slots.Length() )	continue;
+	//		refs.AddToTail( { m_Slots[ slot ].ID, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+	//	}
+	//}
 
 
 	
@@ -168,7 +168,7 @@ namespace vk
 
 	void RenderPassAttachments::CreateColorResolveAttachmentReferece(	OreOreLib::Array<VkAttachmentReference>& colorRefs,
 																		OreOreLib::Array<VkAttachmentReference>& resolveRefs,
-																		std::initializer_list<uint32_t> slots )
+																		std::initializer_list<int32_t> slots )
 	{
 		for( const auto& slot : slots )
 		{

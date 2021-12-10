@@ -27,6 +27,9 @@ namespace vk
 	{
 	public:
 
+		const int8 SwapChainSlot = -2;
+		const int8 DepthSlot = -1;
+
 		ShaderEffect();
 		ShaderEffect( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets );
 		ShaderEffect( GraphicsDevice& device, SwapChain& swapchain, uint32_t numPasses, uint32_t numRenderTargets );
@@ -41,7 +44,24 @@ namespace vk
 //void SetInputAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
 //void SetColorAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
 //void SetResolveAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
+/*
+AttachmentReferenceで指定するattachment番号って何だっけ？　VkAttachmentDescription配列の要素番号. RenderPassAttachmentsインスタンスが持ってる
+RenderPassAttachmentsは、レンダーターゲットとスワップチェーン両方のVkAttachmentDescriptionを保持する
+・VkAttachmentReferenceを登録する際にスロット番号を指定するとどうなる？
+　→レンダーターゲットだけが登録されている場合
+　　→{ RT0, RT1, RT2... }
+ 　
+　→スワップチェーン/レンダーターゲット双方が登録されている場合
+	→{ Color Depth, RT0, RT1, RT2... } みたいな並び順になってる
+	→スロット番号そのままだとスワップチェーンを指定してしまう。マズい！
 
+・対策：
+　→{ RT0, RT1, RT2... , Color Depth }の順番にRenderPassAttachmentsに登録する.
+　→レンダーターゲットを先頭に配置すれば、スロット番号はそのまま使える
+　→スワップチェーンから取得したアタッチメントにアクセスする際は、SwapChainSlot, DepthSlotの特殊スロット指定を使う
+
+
+ */
 
 //		void AddShaderPass( const ShaderPass& pass );
 
@@ -70,6 +90,7 @@ AttachmentRefs m_AttachmentRefs;
 		//===================== SwapChain再生成に応じてもう一回作り直す必要があるオブジェクト群 =====================//
 
 		OreOreLib::Array<RenderTargetDesc>	m_RenderTargetDescs;// スワップチェーン + シェーダー構成に応じて手動設定するレンダーターゲットの情報配列
+		OreOreLib::ArrayView<vk::RenderTargetDesc> m_SwapChainRenderTargetDescs;
 
 		VkRenderPass					m_RenderPass;
 

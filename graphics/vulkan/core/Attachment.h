@@ -28,8 +28,8 @@ namespace vk
 		void ClearColor( uint32_t slot, float r, float g, float b, float a );
 		void ClearDepth( float depth, uint32_t stencil );
 
-		void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
-		void CreateColorResolveAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& colorRefs, OreOreLib::Array<VkAttachmentReference>& resolveRefs, std::initializer_list<uint32_t> slots );
+		//void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
+		void CreateColorResolveAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& colorRefs, OreOreLib::Array<VkAttachmentReference>& resolveRefs, std::initializer_list<int32_t> slots );
 		//void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
 		void CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs );
 
