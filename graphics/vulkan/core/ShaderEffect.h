@@ -99,6 +99,8 @@ RenderPassAttachmentsは、レンダーターゲットとスワップチェー�
 		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_refTargetDescs;
 		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_refSwapChainTargetDescs;
 
+
+
 		VkRenderPass					m_RenderPass;
 
 
@@ -107,9 +109,6 @@ RenderPassAttachmentsは、レンダーターゲットとスワップチェー�
 
 
 		RenderPassAttachments			m_Attachments;// スワップチェーンから取得した情報を使う. MSAAオンオフ切り替えとかあると再生成必要
-
-
-
 
 
 	};

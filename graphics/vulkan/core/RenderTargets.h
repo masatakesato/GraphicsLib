@@ -24,6 +24,7 @@ namespace vk
 		//void Init( GraphicsDevice& device, const OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
 		void Release();
 
+		uint32_t NumBuffers() const	{ return static_cast<uint32_t>( m_RenderBuffers.Length() ); }
 		void ExposeImageViews( OreOreLib::Memory<VkImageView>& imageViews );
 
 

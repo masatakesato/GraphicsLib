@@ -196,6 +196,28 @@ m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
 
 		VK_CHECK_RESULT( vkCreateRenderPass( m_refDevice->Device(), &renderPassInfo, nullptr, &m_RenderPass ) );
 */
+
+
+		m_Framebuffers.Init( m_refDevice, m_RenderPass, m_refSwapChain.IsNull() ? 1 : m_refSwapChain->NumBuffers() );
+
+
+		OreOreLib::Array<VkImageView> views( m_Attachments.NumAttachments() );
+
+		OreOreLib::ArrayView<VkImageView> rendretargetviews( &views[0], m_RenderTargets.NumBuffers() );
+		OreOreLib::ArrayView<VkImageView> swapchainviews( &views[ m_RenderTargets.NumBuffers() ], m_refSwapChain->NumAttachments() );
+
+
+		for( int i=0; i<m_Framebuffers.NumBuffers(); ++i )
+		{
+			if( !m_refSwapChain.IsNull() )
+				m_refSwapChain->ExposeImageViews( swapchainviews, i );
+
+			m_RenderTargets.ExposeImageViews( rendretargetviews );
+
+TODO: widthとheightが分からない -> ExposeImageViewではなくてExposeImageBuffersにしないとダメ？
+			m_Framebuffers.InitFramebuffer( i, m_SwapChain.Extent().width, m_SwapChain.Extent().height, views );
+		}
+
 	}
 
 /*
