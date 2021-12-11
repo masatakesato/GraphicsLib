@@ -47,10 +47,10 @@ namespace vk
 		}
 
 
-		m_Slots.Resize( slotCount );
+		m_ColorSlots.Resize( slotCount );
 		m_AttacmentDescs.Resize( attachmentCount );
 
-		auto slot = m_Slots.begin();
+		auto slot = m_ColorSlots.begin();
 		auto attachmentdesc = m_AttacmentDescs.begin();
 
 		for( const auto& rtdesc : rederTargetDescs )
@@ -122,8 +122,8 @@ namespace vk
 
 	void RenderPassAttachments::ClearColor( uint32_t slot, float r, float g, float b, float a )
 	{
-		if( slot < m_Slots.Length() )
-			m_ClearValues[ m_Slots[ slot ].ID ].color = { r, g, b, a };
+		if( slot < m_ColorSlots.Length() )
+			m_ClearValues[ m_ColorSlots[ slot ].AttachmentID ].color = { r, g, b, a };
 	}
 
 
@@ -168,18 +168,18 @@ namespace vk
 
 	void RenderPassAttachments::CreateColorResolveAttachmentReferece(	OreOreLib::Array<VkAttachmentReference>& colorRefs,
 																		OreOreLib::Array<VkAttachmentReference>& resolveRefs,
-																		std::initializer_list<int32_t> slots )
+																		const OreOreLib::Memory<uint32_t>& slots )
 	{
-		for( const auto& slot : slots )
+		for( auto slot : slots )
 		{
-			if( slot >= m_Slots.Length() )	continue;
+			if( slot >= m_ColorSlots.Length() || slot==~0u )	continue;
 
 			// Add color attachment reference
-			colorRefs.AddToTail( { m_Slots[ slot ].ID, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+			colorRefs.AddToTail( { m_ColorSlots[ slot ].AttachmentID, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 
 			// Add resolve attachment reference
-			if( m_Slots[ slot ].HasResolve )// found resolve attachment
-				resolveRefs.AddToTail( { m_Slots[ slot ].ID + 1, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+			if( m_ColorSlots[ slot ].HasResolve )// found resolve attachment
+				resolveRefs.AddToTail( { m_ColorSlots[ slot ].AttachmentID + 1, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 			else// no resolve attachment found
 				resolveRefs.AddToTail( { VK_ATTACHMENT_UNUSED, VK_IMAGE_LAYOUT_UNDEFINED } );
 		}	
@@ -199,8 +199,8 @@ namespace vk
 	void RenderPassAttachments::ResetClearValues()
 	{
 		// Clear color values
-		for( const auto& slot : m_Slots )
-			m_ClearValues[ slot.ID ].color = { 0.0f, 0.0f, 0.0f, 1.0f };
+		for( const auto& slot : m_ColorSlots )
+			m_ClearValues[ slot.AttachmentID ].color = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 		// Clear depth value
 		if( m_DepthSlot != VK_ATTACHMENT_UNUSED )

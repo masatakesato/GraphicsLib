@@ -29,7 +29,7 @@ namespace vk
 		void ClearDepth( float depth, uint32_t stencil );
 
 		//void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
-		void CreateColorResolveAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& colorRefs, OreOreLib::Array<VkAttachmentReference>& resolveRefs, std::initializer_list<int32_t> slots );
+		void CreateColorResolveAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& colorRefs, OreOreLib::Array<VkAttachmentReference>& resolveRefs, const OreOreLib::Memory<uint32_t>& slots );
 		//void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
 		void CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs );
 
@@ -41,16 +41,16 @@ namespace vk
 
 		struct Slot
 		{
-			uint32_t	ID;			// Color attachment slot index
+			uint32_t	AttachmentID;	// attachment index
 			bool		HasResolve;	// Resolve buffer existence
 		};
 
 		OreOreLib::Array<VkAttachmentDescription>	m_AttacmentDescs;
 		OreOreLib::Array<VkClearValue>				m_ClearValues;
-		uint32_t									m_DepthSlot;
 
 		// ColorBuffer slot table( resolve and depth buffers are excluded )
-		OreOreLib::Array<Slot>						m_Slots;
+		OreOreLib::Array<Slot>						m_ColorSlots;
+		uint32_t									m_DepthSlot;
 
 
 		void ResetClearValues();

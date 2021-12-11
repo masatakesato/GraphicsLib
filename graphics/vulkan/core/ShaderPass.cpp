@@ -142,6 +142,9 @@ namespace vk
 
 		m_ShaderParamLayout.Release();
 
+		m_InputRenderTargetIDs.Release();
+		m_OutputRenderTargetIDs.Release();
+
 	}
 
 
@@ -179,7 +182,19 @@ namespace vk
 	}
 
 
-	
+
+	void ShaderPass::SetInputRenderTargetIDs( std::initializer_list<uint32_t> ilist )
+	{
+		m_InputRenderTargetIDs.Init( ilist.begin(), ilist.end() );
+	}
+
+
+
+	void ShaderPass::SetOutputRenderTargetIDs( std::initializer_list<uint32_t> ilist )
+	{
+		m_OutputRenderTargetIDs.Init( ilist.begin(), ilist.end() );
+	}
+
 	
 
 	void ShaderPass::InitShaderStage( ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage )

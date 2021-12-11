@@ -33,6 +33,8 @@ namespace vk
 		, m_refSwapChain( swapchain )
 		, m_ShaderPasses( numPasses )
 		, m_RenderTargetDescs( 2/*swapchain color, swapchain depth*/ + numRenderTargets )
+		, SwapChainColorTarget( numRenderTargets )
+		, SwapChainDepthTarget( numRenderTargets + 1 )
 	{
 		for( auto& pass : m_ShaderPasses )
 			pass.BindDevice( device );
@@ -45,7 +47,36 @@ namespace vk
 	ShaderEffect::~ShaderEffect()
 	{
 		Release();
-//		m_ShaderPasses.Release();
+	}
+
+
+
+	void ShaderEffect::Init( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets )
+	{
+		m_refDevice	= device;
+		m_ShaderPasses.Init( numPasses );
+		m_RenderTargetDescs.Init( numRenderTargets );
+
+		for( auto& pass : m_ShaderPasses )
+			pass.BindDevice( device );
+	}
+
+
+
+	void ShaderEffect::Init( GraphicsDevice& device, SwapChain& swapchain, uint32_t numPasses, uint32_t numRenderTargets )
+	{
+		m_refDevice	= device;
+		m_refSwapChain	= swapchain;
+		m_ShaderPasses.Init( numPasses );
+		m_RenderTargetDescs.Init( 2/*swapchain color, swapchain depth*/ + numRenderTargets );
+
+		*const_cast<uint32_t*>(&SwapChainColorTarget)	= numRenderTargets;
+		*const_cast<uint32_t*>(&SwapChainDepthTarget)	= numRenderTargets + 1;// TODO: Need to check if swapchain has depth component.
+
+		for( auto& pass : m_ShaderPasses )
+			pass.BindDevice( device );
+
+		m_SwapChainRenderTargetDescs.Init( m_RenderTargetDescs.end()-2, 2 );
 	}
 
 
@@ -92,24 +123,18 @@ namespace vk
 
 
 
-	//void ShaderEffect::SetInputAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist )
-	//{
-	//	m_AttachmentRefs.SetInputAttachments( ilist );
-	//}
+	void ShaderEffect::SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist )
+	{
+		// スワップチェーンがないのにSwapChainColorTarget指定されてるケースを除外する
+//		m_ShaderPasses[ pass ].SetInputRenderTargetIDs( ilist );
+	}
 
 
 
-	//void ShaderEffect::SetColorAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist )
-	//{
-	//	m_AttachmentRefs.SetColorAttachments( ilist );
-	//}
-
-
-
-	//void ShaderEffect::SetResolveAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist )
-	//{
-	//	m_AttachmentRefs.SetResolveAttachments( ilist );
-	//}
+	void ShaderEffect::SetSubpassOutputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist )
+	{
+//		m_ShaderPasses[ pass ].SetOutputRenderTargetIDs( ilist );
+	}
 
 
 
@@ -117,15 +142,20 @@ namespace vk
 	{
 		bool multiSampleEnabled = m_refSwapChain->MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT;
 
+		if( !m_refSwapChain.IsNull() )
+		{
+			m_refSwapChain->ExposeRenderTargetDescs( m_SwapChainRenderTargetDescs );
+		}
+		
+		m_Attachments.Init( m_RenderTargetDescs );
 
-m_refSwapChain->ExposeRenderTargetDescs( m_SwapChainRenderTargetDescs );
 
-m_Attachments.Init( /*m_SwapChainRenderTargetDescs*/m_RenderTargetDescs );
-
-
-TODO: サブパス毎に有効化するスロット情報の設定が必要.( デプスアタッチメント使うかどうかも含めて )
+//TODO: サブパス毎に有効化するスロット情報の設定が必要.( デプスアタッチメント使うかどうかも含めて )
 OreOreLib::Array<VkAttachmentReference> colorAttachmentRefs, resolveAttachmentRefs, depthAttachmentRefs;
-m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, { 0/*, SwapChainSlot*/, 1 } );
+//これだとスワップチェーン無しでレンダーターゲット設定してる場合でもアタッチメントリファレンス登録されてしまう
+
+		m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, { /*0,*/ SwapChainColorTarget }/*m_ShaderPasses[0].OutputRenderTargetIDs()*/ );//{ /*0,*/ SwapChainColorTarget } );
+
 m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
 
 /*

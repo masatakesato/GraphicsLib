@@ -75,6 +75,8 @@ namespace vk
 		void AddShaderStage( VkShaderStageFlagBits stage, const tstring& filepath );
 		void BuildCreateInfo();
 
+		void SetInputRenderTargetIDs( std::initializer_list<uint32_t> ilist );
+		void SetOutputRenderTargetIDs( std::initializer_list<uint32_t> ilist );
 
 
 		const OreOreLib::Array<VkPipelineShaderStageCreateInfo>& CreateInfos() const	{ return m_CreateInfos; }
@@ -89,6 +91,9 @@ namespace vk
 		const ShaderParamLayout& ParamLayout() const	{ return m_ShaderParamLayout; }
 
 
+		const OreOreLib::Array<uint32_t>& InputRenderTargetIDs() const	{ return m_InputRenderTargetIDs; }
+		const OreOreLib::Array<uint32_t>& OutputRenderTargetIDs() const	{ return m_OutputRenderTargetIDs; }
+
 
 
 	private:
@@ -101,6 +106,9 @@ namespace vk
 
 		ShaderParamLayout	m_ShaderParamLayout;
 	
+		OreOreLib::Array<uint32_t>	m_InputRenderTargetIDs;
+		OreOreLib::Array<uint32_t>	m_OutputRenderTargetIDs;
+
 
 		void InitShaderStage( ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage );
 

@@ -27,8 +27,8 @@ namespace vk
 	{
 	public:
 
-		const int8 SwapChainSlot = -2;
-		const int8 DepthSlot = -1;
+		const uint32_t SwapChainColorTarget = ~0u;
+		const uint32_t SwapChainDepthTarget = ~0u;
 
 		ShaderEffect();
 		ShaderEffect( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets );
@@ -36,14 +36,16 @@ namespace vk
 		~ShaderEffect();
 		ShaderEffect( const ShaderEffect& )=delete;
 
+		void Init( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets );
+		void Init( GraphicsDevice& device, SwapChain& swapchain, uint32_t numPasses, uint32_t numRenderTargets );
 		void Release();
 
 		void InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs );
 		void InitDependencies( std::initializer_list<ShaderPassDependency> dependencies );
 
-//void SetInputAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
-//void SetColorAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
-//void SetResolveAttachments( uint32_t pass, std::initializer_list<VkAttachmentReference> ilist );
+		void SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
+		void SetSubpassOutputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
+
 /*
 AttachmentReferenceで指定するattachment番号って何だっけ？　VkAttachmentDescription配列の要素番号. RenderPassAttachmentsインスタンスが持ってる
 RenderPassAttachmentsは、レンダーターゲットとスワップチェーン両方のVkAttachmentDescriptionを保持する
@@ -84,7 +86,7 @@ RenderPassAttachmentsは、レンダーターゲットとスワップチェー�
 		OreOreLib::Array<VkSubpassDependency>	m_SubpassDependencies;
 
 
-AttachmentRefs m_AttachmentRefs;
+//AttachmentRefs m_AttachmentRefs;
 
 
 		//===================== SwapChain再生成に応じてもう一回作り直す必要があるオブジェクト群 =====================//
