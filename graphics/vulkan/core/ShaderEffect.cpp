@@ -24,6 +24,8 @@ namespace vk
 	{
 		for( auto& pass : m_ShaderPasses )
 			pass.BindDevice( device );
+
+		m_refTargetDescs.Init( m_RenderTargetDescs.begin(), numRenderTargets );
 	}
 
 
@@ -39,7 +41,8 @@ namespace vk
 		for( auto& pass : m_ShaderPasses )
 			pass.BindDevice( device );
 
-		m_SwapChainRenderTargetDescs.Init( m_RenderTargetDescs.end()-2, 2 );
+		m_refTargetDescs.Init( m_RenderTargetDescs.begin(), numRenderTargets );
+		m_refSwapChainTargetDescs.Init( m_RenderTargetDescs.end()-2, 2 );
 	}
 
 
@@ -59,6 +62,8 @@ namespace vk
 
 		for( auto& pass : m_ShaderPasses )
 			pass.BindDevice( device );
+
+		m_refTargetDescs.Init( m_RenderTargetDescs.begin(), numRenderTargets );
 	}
 
 
@@ -76,7 +81,8 @@ namespace vk
 		for( auto& pass : m_ShaderPasses )
 			pass.BindDevice( device );
 
-		m_SwapChainRenderTargetDescs.Init( m_RenderTargetDescs.end()-2, 2 );
+		m_refTargetDescs.Init( m_RenderTargetDescs.begin(), numRenderTargets );
+		m_refSwapChainTargetDescs.Init( m_RenderTargetDescs.end()-2, 2 );
 	}
 
 
@@ -84,6 +90,8 @@ namespace vk
 	void ShaderEffect::Release()
 	{
 		m_ShaderPasses.Release();
+		m_refTargetDescs.Release();
+		m_refSwapChainTargetDescs.Release();
 		m_RenderTargetDescs.Release();
 		m_RenderTargets.Release();
 
@@ -96,7 +104,7 @@ namespace vk
 	void ShaderEffect::InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs )
 	{
 		// 先頭から順番にRenderTargetDescsを詰めていく
-		OreOreLib::MemCopy( m_RenderTargetDescs.begin(), renderTargetDescs.begin(), renderTargetDescs.size() );
+		OreOreLib::MemCopy( m_refTargetDescs.begin(), renderTargetDescs.begin(), renderTargetDescs.size() );
 		//m_RenderTargetDescs.Init( renderTargetDescs.begin(), renderTargetDescs.end() );
 		m_RenderTargets.Init( m_refDevice, renderTargetDescs );
 	}
@@ -144,7 +152,7 @@ namespace vk
 
 		if( !m_refSwapChain.IsNull() )
 		{
-			m_refSwapChain->ExposeRenderTargetDescs( m_SwapChainRenderTargetDescs );
+			m_refSwapChain->ExposeRenderTargetDescs( m_refSwapChainTargetDescs );
 		}
 		
 		m_Attachments.Init( m_RenderTargetDescs );
@@ -152,10 +160,7 @@ namespace vk
 
 //TODO: サブパス毎に有効化するスロット情報の設定が必要.( デプスアタッチメント使うかどうかも含めて )
 OreOreLib::Array<VkAttachmentReference> colorAttachmentRefs, resolveAttachmentRefs, depthAttachmentRefs;
-//これだとスワップチェーン無しでレンダーターゲット設定してる場合でもアタッチメントリファレンス登録されてしまう
-
-		m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, { /*0,*/ SwapChainColorTarget }/*m_ShaderPasses[0].OutputRenderTargetIDs()*/ );//{ /*0,*/ SwapChainColorTarget } );
-
+m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, { /*0,*/ SwapChainColorTarget }/*m_ShaderPasses[0].OutputRenderTargetIDs()*/ );//{ /*0,*/ SwapChainColorTarget } );
 m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
 
 /*

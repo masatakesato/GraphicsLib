@@ -168,7 +168,7 @@ namespace vk
 
 	void RenderPassAttachments::CreateColorResolveAttachmentReferece(	OreOreLib::Array<VkAttachmentReference>& colorRefs,
 																		OreOreLib::Array<VkAttachmentReference>& resolveRefs,
-																		const OreOreLib::Memory<uint32_t>& slots )
+																		const OreOreLib::Memory<uint32_t>& slots ) const
 	{
 		for( auto slot : slots )
 		{
@@ -188,7 +188,7 @@ namespace vk
 
 
 
-	void RenderPassAttachments::CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs )
+	void RenderPassAttachments::CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs ) const
 	{
 		if( m_DepthSlot != VK_ATTACHMENT_UNUSED )
 			refs.AddToTail( { m_DepthSlot, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } );

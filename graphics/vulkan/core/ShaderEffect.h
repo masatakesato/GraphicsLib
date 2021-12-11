@@ -74,6 +74,9 @@ RenderPassAttachmentsは、レンダーターゲットとスワップチェー�
 		ShaderPass& Pass( uint32_t i=0 ) 	{ return m_ShaderPasses[i]; }
 
 
+		const RenderPassAttachments& Attachments() const	{ return m_Attachments; }
+
+
 	private:
 
 		GraphicsDeviceRef				m_refDevice;
@@ -92,7 +95,9 @@ RenderPassAttachmentsは、レンダーターゲットとスワップチェー�
 		//===================== SwapChain再生成に応じてもう一回作り直す必要があるオブジェクト群 =====================//
 
 		OreOreLib::Array<RenderTargetDesc>	m_RenderTargetDescs;// スワップチェーン + シェーダー構成に応じて手動設定するレンダーターゲットの情報配列
-		OreOreLib::ArrayView<vk::RenderTargetDesc> m_SwapChainRenderTargetDescs;
+		
+		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_refTargetDescs;
+		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_refSwapChainTargetDescs;
 
 		VkRenderPass					m_RenderPass;
 
