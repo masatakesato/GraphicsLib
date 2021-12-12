@@ -43,6 +43,7 @@ namespace vk
 		void InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs );
 		void InitDependencies( std::initializer_list<ShaderPassDependency> dependencies );
 
+
 		void SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
 		void SetSubpassOutputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
 
@@ -86,10 +87,9 @@ RenderPassAttachmentsは、レンダーターゲットとスワップチェー�
 
 
 		OreOreLib::Array<ShaderPass>	m_ShaderPasses;// shader modules
+		OreOreLib::Array<VkSubpassDescription>	m_SubpassDescriptions;
 		OreOreLib::Array<VkSubpassDependency>	m_SubpassDependencies;
-
-
-//AttachmentRefs m_AttachmentRefs;
+OreOreLib::Array<AttachmentRefs> m_AttachmentRefs;
 
 
 		//===================== SwapChain再生成に応じてもう一回作り直す必要があるオブジェクト群 =====================//
@@ -105,7 +105,7 @@ RenderPassAttachmentsは、レンダーターゲットとスワップチェー�
 
 
 		OreOreLib::Array<GraphicsPipeline>	m_Pipelines;
-		Framebuffers					m_Framebuffers;
+		Framebuffers						m_Framebuffers;// スワップチェーンのVkImageViewを参照している.
 
 
 		RenderPassAttachments			m_Attachments;// スワップチェーンから取得した情報を使う. MSAAオンオフ切り替えとかあると再生成必要

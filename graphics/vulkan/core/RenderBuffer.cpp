@@ -9,8 +9,8 @@ namespace vk
 {
 
 	RenderBuffer::RenderBuffer()
-		//: m_Dim{ 0, 0 }
-		: m_Format( VK_FORMAT_UNDEFINED )
+		: m_Dim{ 0, 0 }
+		, m_Format( VK_FORMAT_UNDEFINED )
 		, m_MsaaSamples( VK_SAMPLE_COUNT_1_BIT )
 		, m_Image( VK_NULL_HANDLE )
 		, m_DeviceMemory( VK_NULL_HANDLE )
@@ -30,7 +30,7 @@ namespace vk
 
 	RenderBuffer::RenderBuffer( RenderBuffer&& obj )
 		: m_refDevice( obj.m_refDevice )
-		//, m_Dim( obj.m_Dim )
+		, m_Dim( obj.m_Dim )
 		, m_Format( obj.m_Format )
 		, m_MsaaSamples( obj.m_MsaaSamples )
 		, m_Image( obj.m_Image )
@@ -58,7 +58,7 @@ namespace vk
 	void RenderBuffer::Init( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, VkSampleCountFlagBits msaasamples, VkImageUsageFlags usages )
 	{
 			m_refDevice		= device;
-			//m_Dim			= { width, height };
+			m_Dim			= { width, height };
 			m_Format		= format;
 			m_MsaaSamples	= msaasamples;
 		
@@ -83,7 +83,7 @@ namespace vk
 	void RenderBuffer::Init( GraphicsDevice& device, uint32_t width, uint32_t height, VkFormat format, VkSampleCountFlagBits msaasamples, bool transient, bool enableinput )
 	{
 		m_refDevice		= device;
-		//m_Dim			= { width, height };
+		m_Dim			= { width, height };
 		m_Format		= format;
 		m_MsaaSamples	= msaasamples;
 		
@@ -120,8 +120,9 @@ namespace vk
 			SafeDeleteImage( m_refDevice->Device(), m_Image );
 			SafeDeleteDeviceMemory( m_refDevice->Device(), m_DeviceMemory );
 
-			m_Format = VK_FORMAT_UNDEFINED;
-			m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
+			m_Format		= VK_FORMAT_UNDEFINED;
+			m_Dim			= { 0, 0 };
+			m_MsaaSamples	= VK_SAMPLE_COUNT_1_BIT;
 
 			//m_refDevice.Reset();
 		}

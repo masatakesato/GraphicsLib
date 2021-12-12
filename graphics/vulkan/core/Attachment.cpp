@@ -7,6 +7,80 @@
 namespace vk
 {
 
+	//##################################################################################//
+	//																					//
+	//								AttachmentRefs										//
+	//																					//
+	//##################################################################################//
+
+	AttachmentRefs::AttachmentRefs()
+	{
+
+	}
+
+	
+
+	AttachmentRefs::~AttachmentRefs()
+	{
+		Release();
+	}
+
+
+
+	void AttachmentRefs::Init( int numInputs, int numColorAttachments, bool depthStencil )
+	{
+		m_InputAttachments.Resize( numInputs );
+
+		m_ColorAttachments.Resize( numInputs );
+		m_ResolveAttachments.Resize( numInputs, { VK_ATTACHMENT_UNUSED } );
+
+		if( depthStencil )
+			m_DepthStencilAttachments.Resize(1);
+	}
+
+
+
+	void AttachmentRefs::Release()
+	{
+		m_InputAttachments.Release();
+		m_ColorAttachments.Release();
+		m_ResolveAttachments.Release();
+
+		m_DepthStencilAttachments.Release();
+
+	}
+
+
+
+	void AttachmentRefs::SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	{
+		m_InputAttachments.Init( ilist );
+	}
+
+
+
+	void AttachmentRefs::SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	{
+		m_ColorAttachments.Init( ilist );
+	}
+
+
+
+	void AttachmentRefs::SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	{
+		ASSERT( m_ColorAttachments.Length() == (int)ilist.size() );
+		m_ResolveAttachments.Init( ilist );
+	}
+
+
+
+	void AttachmentRefs::SetDepthAttachment( VkAttachmentReference attachref )
+	{
+		m_DepthStencilAttachments.Init( 1, attachref );
+	}
+
+
+
 
 	//##################################################################################//
 	//																					//
@@ -166,6 +240,19 @@ namespace vk
 
 
 
+	void RenderPassAttachments::CreateInputAttachmentReferece(	OreOreLib::Array<VkAttachmentReference>& inputRefs,
+																const OreOreLib::Memory<uint32_t>& slots ) const
+	{
+		for( auto slot : slots )
+		{
+			if( slot >= m_ColorSlots.Length() || slot==~0u )	continue;
+
+			inputRefs.AddToTail( { m_ColorSlots[ slot ].AttachmentID, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+		}
+	}
+
+
+
 	void RenderPassAttachments::CreateColorResolveAttachmentReferece(	OreOreLib::Array<VkAttachmentReference>& colorRefs,
 																		OreOreLib::Array<VkAttachmentReference>& resolveRefs,
 																		const OreOreLib::Memory<uint32_t>& slots ) const
@@ -193,6 +280,19 @@ namespace vk
 		if( m_DepthSlot != VK_ATTACHMENT_UNUSED )
 			refs.AddToTail( { m_DepthSlot, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } );
 	}
+
+
+
+	void RenderPassAttachments::InitAttachmentRef(	AttachmentRefs& attachmentRef,
+													const OreOreLib::Memory<uint32_t>& inputs,
+													const OreOreLib::Memory<uint32_t>& outputs ) const
+	{
+		CreateInputAttachmentReferece( attachmentRef.m_InputAttachments, inputs );
+		CreateColorResolveAttachmentReferece( attachmentRef.m_ColorAttachments, attachmentRef.m_ResolveAttachments, outputs );
+		CreateDepthAttachmentReference( attachmentRef.m_DepthStencilAttachment );
+	}
+
+
 
 
 

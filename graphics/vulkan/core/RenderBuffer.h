@@ -25,21 +25,17 @@ namespace vk
 
 		// Virtual function override
 		virtual VkFormat Format() const							{ return m_Format; }
-		virtual const VkExtent2D& Extent() const				{ return /*m_Dim*/{0, 0}; }
-		virtual const VkImageView& View(int i=0 ) const					{ return m_ImageView; }
+		virtual const VkExtent2D& Extent() const				{ return m_Dim; }
+		virtual const VkImageView& View(int i=0 ) const			{ return m_ImageView; }
 		virtual VkSampleCountFlagBits MultiSampleCount() const	{ return m_MsaaSamples; }
 		virtual uint32_t MipLevels() const						{ return 1; }
-
-
-
-
 
 
 	private:
 			
 		GraphicsDeviceRef		m_refDevice;
 
-		//VkExtent2D			m_Dim;
+		VkExtent2D				m_Dim;
 		VkFormat				m_Format;
 		VkSampleCountFlagBits	m_MsaaSamples;
 

@@ -20,6 +20,11 @@ namespace vk
 	ShaderEffect::ShaderEffect( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets )
 		: m_refDevice( device )
 		, m_ShaderPasses( numPasses )
+		, m_SubpassDescriptions( numPasses )
+		, m_SubpassDependencies( numPasses )
+
+		, m_AttachmentRefs( numPasses )
+
 		, m_RenderTargetDescs( numRenderTargets )
 	{
 		for( auto& pass : m_ShaderPasses )
@@ -34,6 +39,11 @@ namespace vk
 		: m_refDevice( device )
 		, m_refSwapChain( swapchain )
 		, m_ShaderPasses( numPasses )
+		, m_SubpassDescriptions( numPasses )
+		, m_SubpassDependencies( numPasses )
+
+		, m_AttachmentRefs( numPasses )
+
 		, m_RenderTargetDescs( 2/*swapchain color, swapchain depth*/ + numRenderTargets )
 		, SwapChainColorTarget( numRenderTargets )
 		, SwapChainDepthTarget( numRenderTargets + 1 )
@@ -95,6 +105,13 @@ namespace vk
 		m_RenderTargetDescs.Release();
 		m_RenderTargets.Release();
 
+		m_Framebuffers.Release();
+
+		m_SubpassDependencies.Release();
+		m_SubpassDescriptions.Release();
+
+		m_AttachmentRefs.Release();
+
 		m_refSwapChain.Reset();
 
 	}
@@ -134,14 +151,14 @@ namespace vk
 	void ShaderEffect::SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist )
 	{
 		// スワップチェーンがないのにSwapChainColorTarget指定されてるケースを除外する
-//		m_ShaderPasses[ pass ].SetInputRenderTargetIDs( ilist );
+		m_ShaderPasses[ pass ].SetInputRenderTargetIDs( ilist );
 	}
 
 
 
 	void ShaderEffect::SetSubpassOutputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist )
 	{
-//		m_ShaderPasses[ pass ].SetOutputRenderTargetIDs( ilist );
+		m_ShaderPasses[ pass ].SetOutputRenderTargetIDs( ilist );
 	}
 
 
@@ -158,45 +175,43 @@ namespace vk
 		m_Attachments.Init( m_RenderTargetDescs );
 
 
-//TODO: サブパス毎に有効化するスロット情報の設定が必要.( デプスアタッチメント使うかどうかも含めて )
-OreOreLib::Array<VkAttachmentReference> colorAttachmentRefs, resolveAttachmentRefs, depthAttachmentRefs;
-m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, { /*0,*/ SwapChainColorTarget }/*m_ShaderPasses[0].OutputRenderTargetIDs()*/ );//{ /*0,*/ SwapChainColorTarget } );
-m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
 
-/*
-		// サブパスで使う入出力アタッチメントを記述する
-		VkSubpassDescription subpassDesc = {};
-		subpassDesc.pipelineBindPoint		= VK_PIPELINE_BIND_POINT_GRAPHICS;
-
-		subpassDesc.inputAttachmentCount	= 0;
-		subpassDesc.pInputAttachments		= nullptr;// シェーダーで入力データとして使いたいアタッチメント群(G-Bufferみたいなやつ)
-		subpassDesc.colorAttachmentCount	= static_cast<uint32_t>( colorAttachmentRefs.Length() );//1;
-		subpassDesc.pColorAttachments		= colorAttachmentRefs.begin();//&colorAttachmentRef;
-		subpassDesc.pResolveAttachments		= resolveAttachmentRefs.begin();//&colorAttachmentResolveRef;
-		subpassDesc.pDepthStencilAttachment	= depthAttachmentRefs.begin();//&depthAttachmentRef;
+auto shaderpass = m_ShaderPasses.begin();
+for( auto& subpassDesc : m_SubpassDescriptions )
+{
+//TODO: VkAttachmentReferenceはサブパス毎に独立してメモリ確保必要
+//	OreOreLib::Array<VkAttachmentReference> inputAttachmentRefs, colorAttachmentRefs, resolveAttachmentRefs, depthAttachmentRefs;
+	m_Attachments.CreateInputAttachmentReferece( inputAttachmentRefs, shaderpass->InputRenderTargetIDs() );
+	m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, shaderpass->OutputRenderTargetIDs() );//{ /*0,*/ SwapChainColorTarget } );
+	m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
 
 
-		VkSubpassDependency dependency = {};
-		dependency.srcSubpass		= VK_SUBPASS_EXTERNAL;
-		dependency.dstSubpass		= 0;
-		dependency.srcStageMask		= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependency.srcAccessMask	= 0;
-		dependency.dstStageMask		= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependency.dstAccessMask	= VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
+	
+	subpassDesc.pipelineBindPoint		= VK_PIPELINE_BIND_POINT_GRAPHICS;
+
+	subpassDesc.inputAttachmentCount	= static_cast<uint32_t>( inputAttachmentRefs.Length() );
+	subpassDesc.pInputAttachments		= inputAttachmentRefs.begin();
+	subpassDesc.colorAttachmentCount	= static_cast<uint32_t>( colorAttachmentRefs.Length() );
+	subpassDesc.pColorAttachments		= colorAttachmentRefs.begin();
+	subpassDesc.pResolveAttachments		= resolveAttachmentRefs.begin();
+	subpassDesc.pDepthStencilAttachment	= depthAttachmentRefs.begin();
+
+	shaderpass++;
+}
 
 		VkRenderPassCreateInfo renderPassInfo = {};
 		renderPassInfo.sType			= VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 		renderPassInfo.attachmentCount	= static_cast<uint32_t>( m_Attachments.AttachmentDescs().Length() );//static_cast<uint32_t>( attachmentDescriptions.Length() ) ;
 		renderPassInfo.pAttachments		= m_Attachments.AttachmentDescs().begin();//attachmentDescriptions.begin();
-		renderPassInfo.subpassCount		= 1;
-		renderPassInfo.pSubpasses		= &subpassDesc;
-		renderPassInfo.dependencyCount	= 1;
-		renderPassInfo.pDependencies	= &dependency;
+		renderPassInfo.subpassCount		= static_cast<uint32_t>( m_SubpassDescriptions.Length() );
+		renderPassInfo.pSubpasses		= m_SubpassDescriptions.begin();
+		renderPassInfo.dependencyCount	= static_cast<uint32_t>( m_SubpassDependencies.Length() );
+		renderPassInfo.pDependencies	= m_SubpassDependencies.begin();
 
 		VK_CHECK_RESULT( vkCreateRenderPass( m_refDevice->Device(), &renderPassInfo, nullptr, &m_RenderPass ) );
-*/
 
+	
 
 		m_Framebuffers.Init( m_refDevice, m_RenderPass, m_refSwapChain.IsNull() ? 1 : m_refSwapChain->NumBuffers() );
 
@@ -214,8 +229,7 @@ m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
 
 			m_RenderTargets.ExposeImageViews( rendretargetviews );
 
-TODO: widthとheightが分からない -> ExposeImageViewではなくてExposeImageBuffersにしないとダメ？
-			m_Framebuffers.InitFramebuffer( i, m_SwapChain.Extent().width, m_SwapChain.Extent().height, views );
+			m_Framebuffers.InitFramebuffer( i, m_RenderTargets.MaxDim().width, m_RenderTargets.MaxDim().height, views );
 		}
 
 	}

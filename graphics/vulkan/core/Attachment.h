@@ -10,6 +10,49 @@
 namespace vk
 {
 
+	class AttachmentRefs
+	{
+	public:
+
+		AttachmentRefs();
+		AttachmentRefs( const AttachmentRefs& ) = delete;
+		~AttachmentRefs();
+
+		void Init( int numInputs, int numColorAttachments, bool depthStencil );
+		void Release();
+
+		void SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist );
+		void SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist );
+		void SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist );
+		void SetDepthAttachment( VkAttachmentReference attachref );
+
+
+	private:
+
+		OreOreLib::Array<VkAttachmentReference>	m_InputAttachments;
+
+		OreOreLib::Array<VkAttachmentReference>	m_ColorAttachments;
+		OreOreLib::Array<VkAttachmentReference>	m_ResolveAttachments;
+		// https://qiita.com/Pctg-x8/items/2b3d5c8a861f42aa533f
+		// for Multisampling.
+		// m_ResolveAttachments.Length() must be equal to m_ColorAttachments.Length()
+		// set VkAttachmentReference::attachment to VK_ATTACHMENT_UNUSED if you want to invalidate multisampling
+
+		OreOreLib::Array<VkAttachmentReference>	m_DepthStencilAttachments;
+
+		friend class RenderPassAttachments;
+	};
+
+
+
+
+
+
+
+
+
+
+
 	// |----- ColorAttachments(hasresolve) ---|--- ResolveAttachments ---|-- ... --|-- DepthAttachment --|
 
 	class RenderPassAttachments
@@ -28,10 +71,15 @@ namespace vk
 		void ClearColor( uint32_t slot, float r, float g, float b, float a );
 		void ClearDepth( float depth, uint32_t stencil );
 
+		void CreateInputAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& inputRefs, const OreOreLib::Memory<uint32_t>& slots ) const;
 		//void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
 		void CreateColorResolveAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& colorRefs, OreOreLib::Array<VkAttachmentReference>& resolveRefs, const OreOreLib::Memory<uint32_t>& slots ) const;
 		//void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
 		void CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs ) const;
+
+
+		void InitAttachmentRef(	AttachmentRefs& attachmentRef, const OreOreLib::Memory<uint32_t>& inputs, const OreOreLib::Memory<uint32_t>& outputs ) const;
+
 
 		const OreOreLib::Array<VkAttachmentDescription>& AttachmentDescs()	const { return m_AttacmentDescs; }
 		const OreOreLib::Array<VkClearValue>& ClearValues() const	{ return m_ClearValues; }
