@@ -215,6 +215,8 @@ for( auto& subpassDesc : m_SubpassDescriptions )
 
 	
 
+		//========================= Create Framebuffers ==========================//
+
 		m_Framebuffers.Init( m_refDevice, m_RenderPass, m_refSwapChain.IsNull() ? 1 : m_refSwapChain->NumBuffers() );
 
 
@@ -235,6 +237,47 @@ for( auto& subpassDesc : m_SubpassDescriptions )
 		}
 
 	}
+
+
+
+	void ShaderEffect::ReleaseOnSwapchainUpdate()
+	{
+
+		m_RenderTargetDescs.Clear();
+		m_RenderTargets.Release();
+
+		m_Attachments.Release();
+		for( auto& ref : m_AttachmentRefs )
+			ref.Release();
+
+		m_Framebuffers.Release();
+
+		m_Pipelines.Release();
+
+		if( m_RenderPass != VK_NULL_HANDLE )
+		{
+			vkDestroyRenderPass( m_refDevice->Device(), m_RenderPass, nullptr );
+			m_RenderPass = VK_NULL_HANDLE;
+		}
+
+	
+		//m_UniformBuffers.Release();
+
+		// m_ShaderParamDescs.Release();
+
+	}
+
+
+	void ShaderEffect::RecreateOnSwapchainUpdate()
+	{
+
+	}
+
+
+
+
+
+
 
 /*
 	void createRenderPass()

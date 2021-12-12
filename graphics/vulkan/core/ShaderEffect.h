@@ -71,11 +71,16 @@ RenderPassAttachmentsは、レンダーターゲットとスワップチェー�
 		void BuildRenderPass();
 
 
+		void ReleaseOnSwapchainUpdate();
+		void RecreateOnSwapchainUpdate();
 
+		
 		ShaderPass& Pass( uint32_t i=0 ) 	{ return m_ShaderPasses[i]; }
-
-
 		const RenderPassAttachments& Attachments() const	{ return m_Attachments; }
+
+		const VkFramebuffer Framebuffer( uint32_t i ) const	{ return m_Framebuffers.Buffer(i); }
+		const VkRenderPass RenderPass() const	{ return m_RenderPass; }
+
 
 
 	private:
