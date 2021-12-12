@@ -52,32 +52,32 @@ namespace vk
 
 
 
-	void AttachmentRefs::SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist )
-	{
-		m_InputAttachments.Init( ilist );
-	}
+	//void AttachmentRefs::SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	m_InputAttachments.Init( ilist );
+	//}
 
 
 
-	void AttachmentRefs::SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist )
-	{
-		m_ColorAttachments.Init( ilist );
-	}
+	//void AttachmentRefs::SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	m_ColorAttachments.Init( ilist );
+	//}
 
 
 
-	void AttachmentRefs::SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist )
-	{
-		ASSERT( m_ColorAttachments.Length() == (int)ilist.size() );
-		m_ResolveAttachments.Init( ilist );
-	}
+	//void AttachmentRefs::SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist )
+	//{
+	//	ASSERT( m_ColorAttachments.Length() == (int)ilist.size() );
+	//	m_ResolveAttachments.Init( ilist );
+	//}
 
 
 
-	void AttachmentRefs::SetDepthAttachment( VkAttachmentReference attachref )
-	{
-		m_DepthStencilAttachments.Init( 1, attachref );
-	}
+	//void AttachmentRefs::SetDepthAttachment( VkAttachmentReference attachref )
+	//{
+	//	m_DepthStencilAttachments.Init( 1, attachref );
+	//}
 
 
 
@@ -289,7 +289,7 @@ namespace vk
 	{
 		CreateInputAttachmentReferece( attachmentRef.m_InputAttachments, inputs );
 		CreateColorResolveAttachmentReferece( attachmentRef.m_ColorAttachments, attachmentRef.m_ResolveAttachments, outputs );
-		CreateDepthAttachmentReference( attachmentRef.m_DepthStencilAttachment );
+		CreateDepthAttachmentReference( attachmentRef.m_DepthStencilAttachments );
 	}
 
 

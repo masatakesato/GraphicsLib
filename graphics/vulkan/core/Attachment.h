@@ -21,10 +21,15 @@ namespace vk
 		void Init( int numInputs, int numColorAttachments, bool depthStencil );
 		void Release();
 
-		void SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist );
-		void SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist );
-		void SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist );
-		void SetDepthAttachment( VkAttachmentReference attachref );
+		//void SetInputAttachments( std::initializer_list<VkAttachmentReference> ilist );
+		//void SetColorAttachments( std::initializer_list<VkAttachmentReference> ilist );
+		//void SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist );
+		//void SetDepthAttachment( VkAttachmentReference attachref );
+
+		const OreOreLib::Array<VkAttachmentReference>& Inputs() const	{ return m_InputAttachments; }
+		const OreOreLib::Array<VkAttachmentReference>& Colors() const	{ return m_ColorAttachments; }
+		const OreOreLib::Array<VkAttachmentReference>& Resolves() const	{ return m_ResolveAttachments; }
+		const OreOreLib::Array<VkAttachmentReference>& Depth() const	{ return m_DepthStencilAttachments; }
 
 
 	private:

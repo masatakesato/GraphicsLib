@@ -137,10 +137,10 @@ namespace vk
 		{
 			dependency->srcSubpass		= dep.SrcIndex;
 			dependency->dstSubpass		= dep.DstIndex;
-			dependency->srcStageMask	= dep.Src.StageFlag;// VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-			dependency->srcAccessMask	= dep.Src.AccessFlag;
-			dependency->dstStageMask	= dep.Dst.StageFlag;//VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-			dependency->dstAccessMask	= dep.Dst.AccessFlag;//VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			dependency->srcStageMask	= dep.SrcBarrier.StageFlag;// VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+			dependency->srcAccessMask	= dep.SrcBarrier.AccessFlag;
+			dependency->dstStageMask	= dep.DstBarrier.StageFlag;//VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+			dependency->dstAccessMask	= dep.DstBarrier.AccessFlag;//VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
 			dependency++;
 		}
@@ -175,35 +175,37 @@ namespace vk
 		m_Attachments.Init( m_RenderTargetDescs );
 
 
-
+auto attachmentrefs = m_AttachmentRefs.begin();
 auto shaderpass = m_ShaderPasses.begin();
 for( auto& subpassDesc : m_SubpassDescriptions )
 {
 //TODO: VkAttachmentReferenceはサブパス毎に独立してメモリ確保必要
 //	OreOreLib::Array<VkAttachmentReference> inputAttachmentRefs, colorAttachmentRefs, resolveAttachmentRefs, depthAttachmentRefs;
-	m_Attachments.CreateInputAttachmentReferece( inputAttachmentRefs, shaderpass->InputRenderTargetIDs() );
-	m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, shaderpass->OutputRenderTargetIDs() );//{ /*0,*/ SwapChainColorTarget } );
-	m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
+//	m_Attachments.CreateInputAttachmentReferece( inputAttachmentRefs, shaderpass->InputRenderTargetIDs() );
+//	m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, shaderpass->OutputRenderTargetIDs() );//{ /*0,*/ SwapChainColorTarget } );
+//	m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
 
+	m_Attachments.InitAttachmentRef( *attachmentrefs, shaderpass->InputRenderTargetIDs(), shaderpass->OutputRenderTargetIDs() );
 
 
 	
 	subpassDesc.pipelineBindPoint		= VK_PIPELINE_BIND_POINT_GRAPHICS;
 
-	subpassDesc.inputAttachmentCount	= static_cast<uint32_t>( inputAttachmentRefs.Length() );
-	subpassDesc.pInputAttachments		= inputAttachmentRefs.begin();
-	subpassDesc.colorAttachmentCount	= static_cast<uint32_t>( colorAttachmentRefs.Length() );
-	subpassDesc.pColorAttachments		= colorAttachmentRefs.begin();
-	subpassDesc.pResolveAttachments		= resolveAttachmentRefs.begin();
-	subpassDesc.pDepthStencilAttachment	= depthAttachmentRefs.begin();
+	subpassDesc.inputAttachmentCount	= static_cast<uint32_t>( attachmentrefs->Inputs().Length() );//inputAttachmentRefs.Length() );
+	subpassDesc.pInputAttachments		= attachmentrefs->Inputs().begin();//inputAttachmentRefs.begin();
+	subpassDesc.colorAttachmentCount	= static_cast<uint32_t>( attachmentrefs->Colors().Length() );
+	subpassDesc.pColorAttachments		= attachmentrefs->Colors().begin();
+	subpassDesc.pResolveAttachments		= attachmentrefs->Resolves().begin();
+	subpassDesc.pDepthStencilAttachment	= attachmentrefs->Depth().begin();
 
 	shaderpass++;
+	attachmentrefs++;
 }
 
 		VkRenderPassCreateInfo renderPassInfo = {};
 		renderPassInfo.sType			= VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassInfo.attachmentCount	= static_cast<uint32_t>( m_Attachments.AttachmentDescs().Length() );//static_cast<uint32_t>( attachmentDescriptions.Length() ) ;
-		renderPassInfo.pAttachments		= m_Attachments.AttachmentDescs().begin();//attachmentDescriptions.begin();
+		renderPassInfo.attachmentCount	= static_cast<uint32_t>( m_Attachments.AttachmentDescs().Length() );
+		renderPassInfo.pAttachments		= m_Attachments.AttachmentDescs().begin();
 		renderPassInfo.subpassCount		= static_cast<uint32_t>( m_SubpassDescriptions.Length() );
 		renderPassInfo.pSubpasses		= m_SubpassDescriptions.begin();
 		renderPassInfo.dependencyCount	= static_cast<uint32_t>( m_SubpassDependencies.Length() );

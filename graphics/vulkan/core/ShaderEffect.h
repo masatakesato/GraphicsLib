@@ -16,8 +16,8 @@ namespace vk
 	{
 		uint32			SrcIndex;
 		uint32			DstIndex;
-		PipelineBarrier	Src;
-		PipelineBarrier	Dst;
+		PipelineBarrier	SrcBarrier;
+		PipelineBarrier	DstBarrier;
 	};
 
 

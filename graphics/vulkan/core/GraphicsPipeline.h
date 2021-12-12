@@ -24,6 +24,14 @@ namespace vk
 		uint64	Flag;
 
 
+		PipelineBarrier()
+			: StageFlag( VK_PIPELINE_STAGE_NONE_KHR )
+			, AccessFlag( VK_ACCESS_NONE_KHR )
+		{
+
+		}
+
+
 		PipelineBarrier( VkPipelineStageFlagBits stageflag, VkAccessFlagBits accessflag )
 			: StageFlag( stageflag )
 			, AccessFlag( accessflag )
@@ -106,8 +114,9 @@ namespace vk
 
 		// Color attachment
 		const PipelineBarrier ColorAttachment					{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_NONE_KHR };
-		const PipelineBarrier ColorAttachmentLoad				{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT };// color read
-		const PipelineBarrier ColorAttachmentStore				{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT };// color write
+		const PipelineBarrier ColorAttachmentRead				{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT };// color read
+		const PipelineBarrier ColorAttachmentWrite				{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT };// color write
+		const PipelineBarrier ColorAttachmentReadWrite			{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VkAccessFlagBits(VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT) };
 
 		// Bottom of pipe
 		const PipelineBarrier BottomOfPipe						{ VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_ACCESS_NONE_KHR };
