@@ -148,6 +148,14 @@ namespace vk
 
 
 
+	void ShaderEffect::InitGraphicsPipeline( uint32_t pass, const PipelineState& pipelineState )
+	{
+		ASSERT( pass < static_cast<uint32_t>( m_Pipelines.Length() ) );
+		m_Pipelines[ pass ].Init( m_ShaderPasses[ pass ], pipelineState, m_RenderPass, pass );
+	}
+
+
+
 	void ShaderEffect::SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist )
 	{
 		// スワップチェーンがないのにSwapChainColorTarget指定されてるケースを除外する

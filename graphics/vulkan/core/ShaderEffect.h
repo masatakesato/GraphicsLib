@@ -42,6 +42,7 @@ namespace vk
 
 		void InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs );
 		void InitDependencies( std::initializer_list<ShaderPassDependency> dependencies );
+		void InitGraphicsPipeline( uint32_t pass, const PipelineState& pipelineState );
 
 
 		void SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
@@ -75,12 +76,13 @@ RenderPassAttachmentsは、レンダーターゲットとスワップチェー�
 		void RecreateOnSwapchainUpdate();
 
 		
-		ShaderPass& Pass( uint32_t i=0 ) 	{ return m_ShaderPasses[i]; }
+		ShaderPass& Pass( uint32_t pass=0 ) 	{ return m_ShaderPasses[pass]; }
 		const RenderPassAttachments& Attachments() const	{ return m_Attachments; }
 
 		const VkFramebuffer Framebuffer( uint32_t i ) const	{ return m_Framebuffers.Buffer(i); }
-		const VkRenderPass RenderPass() const	{ return m_RenderPass; }
-
+		const VkRenderPass RenderPass() const				{ return m_RenderPass; }
+		const VkPipeline Pipeline( uint32_t pass ) const	{ return m_Pipelines[ pass ].Pipeline(); }
+		const VkPipelineLayout PipelineLayout( uint32_t pass ) const	{ return m_Pipelines[ pass ].Layout(); }
 
 
 	private:
@@ -108,9 +110,8 @@ OreOreLib::Array<AttachmentRefs> m_AttachmentRefs;
 
 		VkRenderPass					m_RenderPass;
 
-
-		OreOreLib::Array<GraphicsPipeline>	m_Pipelines;
 		Framebuffers						m_Framebuffers;// スワップチェーンのVkImageViewを参照している.
+		OreOreLib::Array<GraphicsPipeline>	m_Pipelines;
 
 
 		RenderPassAttachments			m_Attachments;// スワップチェーンから取得した情報を使う. MSAAオンオフ切り替えとかあると再生成必要
