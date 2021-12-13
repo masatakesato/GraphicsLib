@@ -74,11 +74,8 @@ namespace vk
 		//samplerInfo.addressModeV	= VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		//samplerInfo.addressModeW	= VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
-		VkPhysicalDeviceProperties properties = {};
-		vkGetPhysicalDeviceProperties( m_refDevice->PhysicalDevice(), &properties );
-
 		m_SamplerInfo.anisotropyEnable	= maxAnisotropy==1.0f ? VK_FALSE : VK_TRUE;
-		m_SamplerInfo.maxAnisotropy		= Min( maxAnisotropy, properties.limits.maxSamplerAnisotropy );// set 1.0 if anisotropyEnable is VK_FALSE
+		m_SamplerInfo.maxAnisotropy		= Min( maxAnisotropy, m_refDevice->PhysicalDeviceProperties().limits.maxSamplerAnisotropy );// set 1.0 if anisotropyEnable is VK_FALSE
 
 		//samplerInfo.borderColor	= VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 

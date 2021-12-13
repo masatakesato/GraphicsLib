@@ -65,6 +65,7 @@ namespace vk
 		const VkQueue& GraphicsQueue() const	{ return m_GraphicsQueue; }
 		const VkQueue& PresentQueue() const		{ return m_PresentQueue; }
 
+		const VkPhysicalDeviceProperties& PhysicalDeviceProperties() const	{ return m_PhysicalDeviceProperties; }
 
 
 	private:
@@ -78,6 +79,8 @@ namespace vk
 		VkCommandPool				m_CommandPool;// 現状は1個だけ. マルチスレッドレンダリングの場合はスレッド毎に必要. 2021.11.08
 		VkQueue						m_GraphicsQueue;
 		VkQueue						m_PresentQueue;
+
+		VkPhysicalDeviceProperties	m_PhysicalDeviceProperties;
 
 		OreOreLib::ReferenceWrapper<Window>	m_refWindow;
 

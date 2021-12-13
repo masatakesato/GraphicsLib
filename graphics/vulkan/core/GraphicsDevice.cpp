@@ -132,11 +132,8 @@ namespace vk
 
 	VkSampleCountFlagBits GraphicsDevice::GetMaxUsableSampleCount()
 	{
-		VkPhysicalDeviceProperties physicalDeviceProperties;
-		vkGetPhysicalDeviceProperties( m_PhysicalDevice, &physicalDeviceProperties );
-
-		VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts &
-									physicalDeviceProperties.limits.framebufferDepthSampleCounts;
+		VkSampleCountFlags counts = m_PhysicalDeviceProperties.limits.framebufferColorSampleCounts &
+									m_PhysicalDeviceProperties.limits.framebufferDepthSampleCounts;
 
 		if( counts & VK_SAMPLE_COUNT_64_BIT )	return VK_SAMPLE_COUNT_64_BIT;
 		if( counts & VK_SAMPLE_COUNT_32_BIT )	return VK_SAMPLE_COUNT_32_BIT;
@@ -244,6 +241,8 @@ namespace vk
 
 		if( m_PhysicalDevice == VK_NULL_HANDLE )
 			throw std::runtime_error( "failed to find a suitable GPU!" );
+
+		vkGetPhysicalDeviceProperties( m_PhysicalDevice, &m_PhysicalDeviceProperties );
 	}
 
 
