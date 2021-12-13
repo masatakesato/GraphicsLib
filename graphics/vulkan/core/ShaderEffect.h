@@ -6,6 +6,8 @@
 #include	"Framebuffer.h"
 #include	"RenderTargets.h"
 #include	"ShaderPass.h"
+#include	"DescriptorSets.h"
+#include	"UniformBuffer.h"
 #include	"GraphicsPipeline.h"
 
 
@@ -47,10 +49,14 @@ namespace vk
 		void SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
 		void SetSubpassOutputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
 
+		void InitDescriptorSetLayouts( uint32_t pass, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
 
-//		void AddShaderPass( const ShaderPass& pass );
+		void BindUniformBuffer( uint32_t pass, uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformBuffers );
+		void BindCombinedImageSampler( uint32_t pass, uint32_t set, uint32_t binding, VkImageView imageView, VkSampler sampler );
+
 
 		void BuildRenderPass();
+		void BuildDescriptorSets();
 
 
 		void ReleaseOnSwapchainUpdate();
@@ -64,6 +70,7 @@ namespace vk
 		const VkRenderPass RenderPass() const				{ return m_RenderPass; }
 		const VkPipeline Pipeline( uint32_t pass ) const	{ return m_Pipelines[ pass ].Pipeline(); }
 		const VkPipelineLayout PipelineLayout( uint32_t pass ) const	{ return m_Pipelines[ pass ].Layout(); }
+		const VkDescriptorSet& DescriptorSet( uint32_t pass, uint32_t swap_id, uint32_t set_id ) const	{ return m_DescriptorSets[pass].DescriptorSet(swap_id, set_id); }
 
 
 	private:
@@ -88,14 +95,14 @@ namespace vk
 		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_SwapChainRTDescView;// スワップチェーンのレンダーターゲット情報
 
 
-		VkRenderPass					m_RenderPass;
+		VkRenderPass						m_RenderPass;
 
 		Framebuffers						m_Framebuffers;// スワップチェーンのVkImageViewを参照している.
 		OreOreLib::Array<GraphicsPipeline>	m_Pipelines;
 
+		RenderPassAttachments				m_Attachments;// スワップチェーンから取得した情報を使う. MSAAオンオフ切り替えとかあると再生成必要
 
-		RenderPassAttachments			m_Attachments;// スワップチェーンから取得した情報を使う. MSAAオンオフ切り替えとかあると再生成必要
-
+OreOreLib::Array<DescriptorSets>	m_DescriptorSets;
 
 	};
 

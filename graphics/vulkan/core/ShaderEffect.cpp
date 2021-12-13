@@ -27,7 +27,8 @@ namespace vk
 		, m_Pipelines( numPasses )
 
 		, m_RenderTargetDescs( numRenderTargets )
-		
+
+, m_DescriptorSets( numPasses )
 	{
 		for( uint32_t i=0; i<numPasses; ++i )
 		{
@@ -36,6 +37,8 @@ namespace vk
 		}
 
 		m_CustomRTDescView.Init( m_RenderTargetDescs.begin(), numRenderTargets );
+
+		
 	}
 
 
@@ -53,6 +56,8 @@ namespace vk
 		, m_RenderTargetDescs( 2/*swapchain color, swapchain depth*/ + numRenderTargets )
 		, SwapChainColorTarget( numRenderTargets )
 		, SwapChainDepthTarget( numRenderTargets + 1 )
+
+, m_DescriptorSets( numPasses )
 	{
 		for( uint32_t i=0; i<numPasses; ++i )
 		{
@@ -85,6 +90,8 @@ namespace vk
 
 		m_RenderTargetDescs.Init( numRenderTargets );
 
+m_DescriptorSets.Init( numPasses );
+
 		for( uint32_t i=0; i<numPasses; ++i )
 		{
 			m_ShaderPasses[i].BindDevice( device );
@@ -110,6 +117,8 @@ namespace vk
 		m_RenderTargetDescs.Init( 2/*swapchain color, swapchain depth*/ + numRenderTargets );
 		*const_cast<uint32_t*>(&SwapChainColorTarget)	= numRenderTargets;
 		*const_cast<uint32_t*>(&SwapChainDepthTarget)	= numRenderTargets + 1;// TODO: Need to check if swapchain has depth component.
+
+m_DescriptorSets.Init( numPasses );
 
 		for( uint32_t i=0; i<numPasses; ++i )
 		{
@@ -137,6 +146,8 @@ namespace vk
 		m_SubpassDescriptions.Release();
 
 		m_AttachmentRefs.Release();
+
+m_DescriptorSets.Release();
 
 		m_refSwapChain.Reset();
 
@@ -200,6 +211,27 @@ namespace vk
 	void ShaderEffect::SetSubpassOutputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist )
 	{
 		m_ShaderPasses[ pass ].SetOutputRenderTargetIDs( ilist );
+	}
+
+
+
+	void ShaderEffect::InitDescriptorSetLayouts( uint32_t pass, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
+	{
+		m_ShaderPasses[ pass ].InitDescriptorSetLayouts( bindings );
+	}
+
+
+
+	void ShaderEffect::BindUniformBuffer( uint32_t pass, uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformBuffers )
+	{
+		m_DescriptorSets[ pass ].BindUniformBuffer( set, binding, uniformBuffers );
+	}
+
+
+
+	void ShaderEffect::BindCombinedImageSampler( uint32_t pass, uint32_t set, uint32_t binding, VkImageView imageView, VkSampler sampler )
+	{
+		m_DescriptorSets[ pass ].BindCombinedImageSampler( set, binding, imageView, sampler );
 	}
 
 
@@ -273,6 +305,19 @@ namespace vk
 
 
 
+	void ShaderEffect::BuildDescriptorSets()
+	{
+		auto shaderPass = m_ShaderPasses.begin();
+		for( auto& descSets : m_DescriptorSets )
+		{
+			descSets.Init( m_refDevice->Device(), m_refSwapChain.IsNull() ? 1 : m_refSwapChain->NumBuffers(), shaderPass->ParamLayout() );
+			shaderPass++;
+		}
+
+	}
+
+
+
 	void ShaderEffect::ReleaseOnSwapchainUpdate()
 	{
 
@@ -297,6 +342,9 @@ namespace vk
 
 	
 		//m_UniformBuffers.Release();
+
+		for( auto& descSets : m_DescriptorSets )
+			descSets.Release();
 
 		// m_ShaderParamDescs.Release();
 

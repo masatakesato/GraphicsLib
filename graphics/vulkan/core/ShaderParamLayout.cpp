@@ -33,6 +33,9 @@ namespace vk
 
 
 
+	// https://www.khronos.org/registry/vulkan/specs/1.0/html/vkspec.html#VkDescriptorSetLayout
+	// set毎にvkCreateDescriptorSetLayoutが1つ必要になる
+	// set毎のbinding情報は、VkDescriptorSetLayoutBinding配列で与える
 	void ShaderParamLayout::Init( VkDevice device, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
 	{
 		m_refDevice	= device;

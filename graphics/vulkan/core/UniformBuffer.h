@@ -34,8 +34,8 @@ namespace vk
 		GraphicsDeviceRef	m_refDevice;
 
 		VkDeviceSize	m_Size; 
-		VkBuffer		m_Buffer;//m_UniformBuffer;
-		VkDeviceMemory	m_DeviceMemory;//m_UniformBufferMemory;
+		VkBuffer		m_Buffer;
+		VkDeviceMemory	m_DeviceMemory;
 
 	};
 
