@@ -45,16 +45,16 @@ namespace vk
 
 
 
-	void GraphicsPipeline::Init( const ShaderPass& shaderpass, const PipelineState& pipelinestate, VkRenderPass renderPass, uint32_t subpass )
+	void GraphicsPipeline::Init( const ShaderPass& shaderPass, const PipelineState& pipelineState, VkRenderPass renderPass, uint32_t subpass )
 	{
 
 		//============= Shader input parameter layout ============//
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType					= VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount			= static_cast<uint32_t>( shaderpass.ParamLayout().NumSets() );
-		pipelineLayoutInfo.pSetLayouts				= shaderpass.ParamLayout().DescriptorSetLayouts().begin();
-		pipelineLayoutInfo.pushConstantRangeCount	= 0; // Optional
-		pipelineLayoutInfo.pPushConstantRanges		= nullptr; // Optional
+		pipelineLayoutInfo.setLayoutCount			= static_cast<uint32_t>( shaderPass.ParamLayout().NumSets() );
+		pipelineLayoutInfo.pSetLayouts				= shaderPass.ParamLayout().DescriptorSetLayouts().begin();
+		pipelineLayoutInfo.pushConstantRangeCount	= static_cast<uint32_t>( shaderPass.PushConstantRanges().Length() );
+		pipelineLayoutInfo.pPushConstantRanges		= shaderPass.PushConstantRanges().begin();
 
 		VK_CHECK_RESULT( vkCreatePipelineLayout( m_refDevice->Device(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout ) );
 
@@ -63,16 +63,16 @@ namespace vk
 
 		VkGraphicsPipelineCreateInfo pipelineInfo = {};
 		pipelineInfo.sType					= VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-		pipelineInfo.stageCount				= shaderpass.CreateInfos().Length();
-		pipelineInfo.pStages				= shaderpass.CreateInfos().begin();
-		pipelineInfo.pVertexInputState		= &pipelinestate.m_VertexInputState;
-		pipelineInfo.pInputAssemblyState	= &pipelinestate.m_InputAssemblyState;
-		pipelineInfo.pViewportState			= &pipelinestate.m_ViewportState;
-		pipelineInfo.pRasterizationState	= &pipelinestate.m_RasterizationState;
-		pipelineInfo.pMultisampleState		= &pipelinestate.m_MultisampleState;
-		pipelineInfo.pDepthStencilState		= &pipelinestate.m_DepthStencilState;
-		pipelineInfo.pColorBlendState		= &pipelinestate.m_ColorBlendState;
-		pipelineInfo.pDynamicState			= &pipelinestate.m_DynamicState;
+		pipelineInfo.stageCount				= shaderPass.CreateInfos().Length();
+		pipelineInfo.pStages				= shaderPass.CreateInfos().begin();
+		pipelineInfo.pVertexInputState		= &pipelineState.m_VertexInputState;
+		pipelineInfo.pInputAssemblyState	= &pipelineState.m_InputAssemblyState;
+		pipelineInfo.pViewportState			= &pipelineState.m_ViewportState;
+		pipelineInfo.pRasterizationState	= &pipelineState.m_RasterizationState;
+		pipelineInfo.pMultisampleState		= &pipelineState.m_MultisampleState;
+		pipelineInfo.pDepthStencilState		= &pipelineState.m_DepthStencilState;
+		pipelineInfo.pColorBlendState		= &pipelineState.m_ColorBlendState;
+		pipelineInfo.pDynamicState			= &pipelineState.m_DynamicState;
 		pipelineInfo.layout					= m_PipelineLayout;
 		pipelineInfo.renderPass				= renderPass;
 		pipelineInfo.subpass				= subpass;

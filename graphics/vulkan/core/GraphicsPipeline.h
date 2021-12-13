@@ -154,7 +154,7 @@ namespace vk
 		GraphicsPipeline( const GraphicsPipeline& ) = delete;
 		GraphicsPipeline( GraphicsPipeline&& obj );
 
-		void Init( const ShaderPass& shaderpass, const PipelineState& pipelinestate, VkRenderPass renderPass, uint32_t subpass );
+		void Init( const ShaderPass& shaderPass, const PipelineState& pipelineState, VkRenderPass renderPass, uint32_t subpass );
 		void Release();
 
 		void BindDevice( GraphicsDevice& device )	{ m_refDevice = device; }

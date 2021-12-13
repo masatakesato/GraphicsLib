@@ -47,6 +47,8 @@ namespace vk
 	{
 		if( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE )
 		{
+			m_PushConstantRanges.Release();
+
 			for( auto& shaderstage : m_ShaderStages )
 				vkDestroyShaderModule( m_refDevice->Device(), shaderstage.module, nullptr );
 			m_ShaderStages.Release();
@@ -114,6 +116,20 @@ namespace vk
 	}
 
 	
+
+	void ShaderPass::InitPushConstantRanges( std::initializer_list<VkPushConstantRange> constRanges )
+	{
+		m_PushConstantRanges.Init( constRanges.begin(), constRanges.end() );
+	}
+
+
+
+	void ShaderPass::InitDescriptorSetLayouts( std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
+	{
+		m_ShaderParamLayout.Init( m_refDevice->Device(), bindings );
+	}
+
+
 
 	void ShaderPass::InitShaderStage( ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage )
 	{

@@ -1,11 +1,6 @@
 ﻿#ifndef SHADER_PASS_H
 #define	SHADER_PASS_H
 
-//#include	<oreore/common/TString.h>
-//#include	<oreore/container/Array.h>
-
-//#include	"GraphicsDevice.h"
-
 #include	"ShaderParamLayout.h"
 #include	"DescriptorSets.h"
 
@@ -41,22 +36,16 @@ namespace vk
 		void SetInputRenderTargetIDs( std::initializer_list<uint32_t> ilist );
 		void SetOutputRenderTargetIDs( std::initializer_list<uint32_t> ilist );
 
+		void InitPushConstantRanges( std::initializer_list<VkPushConstantRange> constRanges );
+		void InitDescriptorSetLayouts( std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
+
 
 		const OreOreLib::Array<VkPipelineShaderStageCreateInfo>& CreateInfos() const	{ return m_CreateInfos; }
+		const OreOreLib::Array<VkPushConstantRange>& PushConstantRanges() const			{ return m_PushConstantRanges; }
+		const ShaderParamLayout& ParamLayout() const									{ return m_ShaderParamLayout; }
 
-
-		void InitDescriptorSetLayouts( std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
-		{
-			m_ShaderParamLayout.Init( m_refDevice->Device(), bindings );
-		}
-
-
-		const ShaderParamLayout& ParamLayout() const	{ return m_ShaderParamLayout; }
-
-
-		const OreOreLib::Array<uint32_t>& InputRenderTargetIDs() const	{ return m_InputRenderTargetIDs; }
-		const OreOreLib::Array<uint32_t>& OutputRenderTargetIDs() const	{ return m_OutputRenderTargetIDs; }
-
+		const OreOreLib::Array<uint32_t>& InputRenderTargetIDs() const					{ return m_InputRenderTargetIDs; }
+		const OreOreLib::Array<uint32_t>& OutputRenderTargetIDs() const					{ return m_OutputRenderTargetIDs; }
 
 
 	private:
@@ -66,11 +55,15 @@ namespace vk
 		OreOreLib::Array<ShaderStage>	m_ShaderStages;
 		OreOreLib::Array<VkPipelineShaderStageCreateInfo>	m_CreateInfos;
 
+		// PushConstants
+		OreOreLib::Array<VkPushConstantRange>	m_PushConstantRanges;
 
-		ShaderParamLayout	m_ShaderParamLayout;
+		// DescriptorSetLayouts
+		ShaderParamLayout						m_ShaderParamLayout;
 	
-		OreOreLib::Array<uint32_t>	m_InputRenderTargetIDs;
-		OreOreLib::Array<uint32_t>	m_OutputRenderTargetIDs;
+		// Render target In/Outs
+		OreOreLib::Array<uint32_t>				m_InputRenderTargetIDs;
+		OreOreLib::Array<uint32_t>				m_OutputRenderTargetIDs;
 
 
 		void InitShaderStage( ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage );
