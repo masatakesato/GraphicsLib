@@ -8,7 +8,7 @@ namespace vk
 {
 
 
-	ShaderParamDescs::ShaderParamDescs()
+	DescriptorSets::DescriptorSets()
 		: m_refDevice( VK_NULL_HANDLE )
 	{
 
@@ -16,7 +16,7 @@ namespace vk
 
 
 
-	ShaderParamDescs::ShaderParamDescs( VkDevice device, uint32_t numswaps )
+	DescriptorSets::DescriptorSets( VkDevice device, uint32_t numswaps )
 		: m_refDevice( device )
 	{
 
@@ -24,7 +24,7 @@ namespace vk
 
 
 
-	ShaderParamDescs::~ShaderParamDescs()
+	DescriptorSets::~DescriptorSets()
 	{
 		Release();
 	}
@@ -32,7 +32,7 @@ namespace vk
 
 
 
-	void ShaderParamDescs::Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout )
+	void DescriptorSets::Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout )
 	{
 		m_refDevice	= device;
 
@@ -42,7 +42,7 @@ namespace vk
 
 
 
-	void ShaderParamDescs::Release()
+	void DescriptorSets::Release()
 	{
 		if( m_refDevice != VK_NULL_HANDLE )
 		{
@@ -55,7 +55,7 @@ namespace vk
 
 
 
-	void ShaderParamDescs::BindUniformBuffer( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers )
+	void DescriptorSets::BindUniformBuffer( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
@@ -84,7 +84,7 @@ namespace vk
 
 	// |------- Swapchain[0]{ DescSet[0], DescSet[1]... } -------|------- Swapchain[1]{ DescSet[0], DescSet[1]... }.... ------|---...
 
-	void ShaderParamDescs::BindCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler )
+	void DescriptorSets::BindCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
@@ -114,7 +114,7 @@ namespace vk
 
 
 
-	void ShaderParamDescs::InitDescriptorPool( uint32_t numswaps,  const ShaderParamLayout& paramlayout )
+	void DescriptorSets::InitDescriptorPool( uint32_t numswaps,  const ShaderParamLayout& paramlayout )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
@@ -145,7 +145,7 @@ namespace vk
 
 
 
-	void ShaderParamDescs::InitDescriptorSets( uint32_t numswaps, const ShaderParamLayout& paramlayout )
+	void DescriptorSets::InitDescriptorSets( uint32_t numswaps, const ShaderParamLayout& paramlayout )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 

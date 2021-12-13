@@ -24,13 +24,18 @@ namespace vk
 		, m_SubpassDependencies( numPasses )
 
 		, m_AttachmentRefs( numPasses )
+		, m_Pipelines( numPasses )
 
 		, m_RenderTargetDescs( numRenderTargets )
+		
 	{
-		for( auto& pass : m_ShaderPasses )
-			pass.BindDevice( device );
+		for( uint32_t i=0; i<numPasses; ++i )
+		{
+			m_ShaderPasses[i].BindDevice( device );
+			m_Pipelines[i].BindDevice( device );
+		}
 
-		m_refTargetDescs.Init( m_RenderTargetDescs.begin(), numRenderTargets );
+		m_CustomRTDescView.Init( m_RenderTargetDescs.begin(), numRenderTargets );
 	}
 
 
@@ -43,16 +48,20 @@ namespace vk
 		, m_SubpassDependencies( numPasses )
 
 		, m_AttachmentRefs( numPasses )
+		, m_Pipelines( numPasses )
 
 		, m_RenderTargetDescs( 2/*swapchain color, swapchain depth*/ + numRenderTargets )
 		, SwapChainColorTarget( numRenderTargets )
 		, SwapChainDepthTarget( numRenderTargets + 1 )
 	{
-		for( auto& pass : m_ShaderPasses )
-			pass.BindDevice( device );
+		for( uint32_t i=0; i<numPasses; ++i )
+		{
+			m_ShaderPasses[i].BindDevice( device );
+			m_Pipelines[i].BindDevice( device );
+		}
 
-		m_refTargetDescs.Init( m_RenderTargetDescs.begin(), numRenderTargets );
-		m_refSwapChainTargetDescs.Init( m_RenderTargetDescs.end()-2, 2 );
+		m_CustomRTDescView.Init( m_RenderTargetDescs.begin(), numRenderTargets );
+		m_SwapChainRTDescView.Init( m_RenderTargetDescs.end()-2, 2 );
 	}
 
 
@@ -68,12 +77,21 @@ namespace vk
 	{
 		m_refDevice	= device;
 		m_ShaderPasses.Init( numPasses );
+		m_SubpassDescriptions.Init( numPasses );
+		m_SubpassDependencies.Init( numPasses );
+
+		m_AttachmentRefs.Init( numPasses );
+		m_Pipelines.Init( numPasses );
+
 		m_RenderTargetDescs.Init( numRenderTargets );
 
-		for( auto& pass : m_ShaderPasses )
-			pass.BindDevice( device );
+		for( uint32_t i=0; i<numPasses; ++i )
+		{
+			m_ShaderPasses[i].BindDevice( device );
+			m_Pipelines[i].BindDevice( device );
+		}
 
-		m_refTargetDescs.Init( m_RenderTargetDescs.begin(), numRenderTargets );
+		m_CustomRTDescView.Init( m_RenderTargetDescs.begin(), numRenderTargets );
 	}
 
 
@@ -83,16 +101,24 @@ namespace vk
 		m_refDevice	= device;
 		m_refSwapChain	= swapchain;
 		m_ShaderPasses.Init( numPasses );
-		m_RenderTargetDescs.Init( 2/*swapchain color, swapchain depth*/ + numRenderTargets );
+		m_SubpassDescriptions.Init( numPasses );
+		m_SubpassDependencies.Init( numPasses );
 
+		m_AttachmentRefs.Init( numPasses );
+		m_Pipelines.Init( numPasses );
+
+		m_RenderTargetDescs.Init( 2/*swapchain color, swapchain depth*/ + numRenderTargets );
 		*const_cast<uint32_t*>(&SwapChainColorTarget)	= numRenderTargets;
 		*const_cast<uint32_t*>(&SwapChainDepthTarget)	= numRenderTargets + 1;// TODO: Need to check if swapchain has depth component.
 
-		for( auto& pass : m_ShaderPasses )
-			pass.BindDevice( device );
+		for( uint32_t i=0; i<numPasses; ++i )
+		{
+			m_ShaderPasses[i].BindDevice( device );
+			m_Pipelines[i].BindDevice( device );
+		}
 
-		m_refTargetDescs.Init( m_RenderTargetDescs.begin(), numRenderTargets );
-		m_refSwapChainTargetDescs.Init( m_RenderTargetDescs.end()-2, 2 );
+		m_CustomRTDescView.Init( m_RenderTargetDescs.begin(), numRenderTargets );
+		m_SwapChainRTDescView.Init( m_RenderTargetDescs.end()-2, 2 );
 	}
 
 
@@ -100,8 +126,8 @@ namespace vk
 	void ShaderEffect::Release()
 	{
 		m_ShaderPasses.Release();
-		m_refTargetDescs.Release();
-		m_refSwapChainTargetDescs.Release();
+		m_CustomRTDescView.Release();
+		m_SwapChainRTDescView.Release();
 		m_RenderTargetDescs.Release();
 		m_RenderTargets.Release();
 
@@ -121,7 +147,7 @@ namespace vk
 	void ShaderEffect::InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs )
 	{
 		// 先頭から順番にRenderTargetDescsを詰めていく
-		OreOreLib::MemCopy( m_refTargetDescs.begin(), renderTargetDescs.begin(), renderTargetDescs.size() );
+		OreOreLib::MemCopy( m_CustomRTDescView.begin(), renderTargetDescs.begin(), renderTargetDescs.size() );
 		//m_RenderTargetDescs.Init( renderTargetDescs.begin(), renderTargetDescs.end() );
 		m_RenderTargets.Init( m_refDevice, renderTargetDescs );
 	}
@@ -156,6 +182,13 @@ namespace vk
 
 
 
+	//void ShaderEffect::InitFramebuffers()
+	//{
+
+	//}
+
+
+
 	void ShaderEffect::SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist )
 	{
 		// スワップチェーンがないのにSwapChainColorTarget指定されてるケースを除外する
@@ -173,42 +206,33 @@ namespace vk
 
 	void ShaderEffect::BuildRenderPass()
 	{
-		bool multiSampleEnabled = m_refSwapChain->MultiSampleCount() != VK_SAMPLE_COUNT_1_BIT;
 
 		if( !m_refSwapChain.IsNull() )
-		{
-			m_refSwapChain->ExposeRenderTargetDescs( m_refSwapChainTargetDescs );
-		}
+			m_refSwapChain->ExposeRenderTargetDescs( m_SwapChainRTDescView );
 		
 		m_Attachments.Init( m_RenderTargetDescs );
 
 
-auto attachmentrefs = m_AttachmentRefs.begin();
-auto shaderpass = m_ShaderPasses.begin();
-for( auto& subpassDesc : m_SubpassDescriptions )
-{
-//TODO: VkAttachmentReferenceはサブパス毎に独立してメモリ確保必要
-//	OreOreLib::Array<VkAttachmentReference> inputAttachmentRefs, colorAttachmentRefs, resolveAttachmentRefs, depthAttachmentRefs;
-//	m_Attachments.CreateInputAttachmentReferece( inputAttachmentRefs, shaderpass->InputRenderTargetIDs() );
-//	m_Attachments.CreateColorResolveAttachmentReferece( colorAttachmentRefs, resolveAttachmentRefs, shaderpass->OutputRenderTargetIDs() );//{ /*0,*/ SwapChainColorTarget } );
-//	m_Attachments.CreateDepthAttachmentReference( depthAttachmentRefs );
+		//========================= Create RenderPass ==========================//
 
-	m_Attachments.InitAttachmentRef( *attachmentrefs, shaderpass->InputRenderTargetIDs(), shaderpass->OutputRenderTargetIDs() );
-
-
+		auto attachmentrefs = m_AttachmentRefs.begin();
+		auto shaderpass = m_ShaderPasses.begin();
+		for( auto& subpassDesc : m_SubpassDescriptions )
+		{
+			m_Attachments.InitAttachmentRef( *attachmentrefs, shaderpass->InputRenderTargetIDs(), shaderpass->OutputRenderTargetIDs() );
 	
-	subpassDesc.pipelineBindPoint		= VK_PIPELINE_BIND_POINT_GRAPHICS;
+			subpassDesc.pipelineBindPoint		= VK_PIPELINE_BIND_POINT_GRAPHICS;
 
-	subpassDesc.inputAttachmentCount	= static_cast<uint32_t>( attachmentrefs->Inputs().Length() );//inputAttachmentRefs.Length() );
-	subpassDesc.pInputAttachments		= attachmentrefs->Inputs().begin();//inputAttachmentRefs.begin();
-	subpassDesc.colorAttachmentCount	= static_cast<uint32_t>( attachmentrefs->Colors().Length() );
-	subpassDesc.pColorAttachments		= attachmentrefs->Colors().begin();
-	subpassDesc.pResolveAttachments		= attachmentrefs->Resolves().begin();
-	subpassDesc.pDepthStencilAttachment	= attachmentrefs->Depth().begin();
+			subpassDesc.inputAttachmentCount	= static_cast<uint32_t>( attachmentrefs->Inputs().Length() );//inputAttachmentRefs.Length() );
+			subpassDesc.pInputAttachments		= attachmentrefs->Inputs().begin();//inputAttachmentRefs.begin();
+			subpassDesc.colorAttachmentCount	= static_cast<uint32_t>( attachmentrefs->Colors().Length() );
+			subpassDesc.pColorAttachments		= attachmentrefs->Colors().begin();
+			subpassDesc.pResolveAttachments		= attachmentrefs->Resolves().begin();
+			subpassDesc.pDepthStencilAttachment	= attachmentrefs->Depth().begin();
 
-	shaderpass++;
-	attachmentrefs++;
-}
+			shaderpass++;
+			attachmentrefs++;
+		}
 
 		VkRenderPassCreateInfo renderPassInfo = {};
 		renderPassInfo.sType			= VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -221,7 +245,6 @@ for( auto& subpassDesc : m_SubpassDescriptions )
 
 		VK_CHECK_RESULT( vkCreateRenderPass( m_refDevice->Device(), &renderPassInfo, nullptr, &m_RenderPass ) );
 
-	
 
 		//========================= Create Framebuffers ==========================//
 
@@ -234,6 +257,8 @@ for( auto& subpassDesc : m_SubpassDescriptions )
 		OreOreLib::ArrayView<VkImageView> swapchainviews( &views[ m_RenderTargets.NumBuffers() ], m_refSwapChain->NumAttachments() );
 
 
+		const auto& extent = !m_refSwapChain.IsNull() ? m_refSwapChain->Extent() : m_RenderTargets.MaxDim();
+
 		for( int i=0; i<m_Framebuffers.NumBuffers(); ++i )
 		{
 			if( !m_refSwapChain.IsNull() )
@@ -241,7 +266,7 @@ for( auto& subpassDesc : m_SubpassDescriptions )
 
 			m_RenderTargets.ExposeImageViews( rendretargetviews );
 
-			m_Framebuffers.InitFramebuffer( i, m_RenderTargets.MaxDim().width, m_RenderTargets.MaxDim().height, views );
+			m_Framebuffers.InitFramebuffer( i, extent.width, extent.height, views );
 		}
 
 	}
@@ -251,8 +276,9 @@ for( auto& subpassDesc : m_SubpassDescriptions )
 	void ShaderEffect::ReleaseOnSwapchainUpdate()
 	{
 
-		m_RenderTargetDescs.Clear();
-		m_RenderTargets.Release();
+		m_SwapChainRTDescView.Clear();
+//		m_RenderTargetDescs.Clear();// 
+//		m_RenderTargets.Release();//TODO: want to reuse.
 
 		m_Attachments.Release();
 		for( auto& ref : m_AttachmentRefs )
@@ -260,7 +286,8 @@ for( auto& subpassDesc : m_SubpassDescriptions )
 
 		m_Framebuffers.Release();
 
-		m_Pipelines.Release();
+		for( auto& pipeline : m_Pipelines )
+			pipeline.Release();
 
 		if( m_RenderPass != VK_NULL_HANDLE )
 		{
@@ -278,6 +305,23 @@ for( auto& subpassDesc : m_SubpassDescriptions )
 
 	void ShaderEffect::RecreateOnSwapchainUpdate()
 	{
+		ReleaseOnSwapchainUpdate();
+
+		BuildRenderPass();//createRenderPass();
+		
+		//BuildGraphicsPipeline();//createGraphicsPipeline();
+		
+		m_Framebuffers.Init( m_refDevice, m_RenderPass, m_refSwapChain->NumBuffers() );//InitFramebuffers();//createFramebuffers();
+		
+		//BuildUniformBuffers();//createUnformBuffers();
+
+		//createDescriptorPoolAndDescriptorSets();
+//		for( auto&)
+//		m_ShaderParamDescs.Init( m_Device.Device(), m_refSwapChain->NumBuffers(), m_ShaderPasses[i].ParamLayout() );
+
+//		bindUniformToDescriptorSets();
+
+//		createCommandBuffers();
 
 	}
 

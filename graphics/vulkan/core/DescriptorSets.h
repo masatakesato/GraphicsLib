@@ -14,14 +14,14 @@ namespace vk
 {
 	// サブパス1個分のディスクリプタセット群を保持するクラス.
 
-	class ShaderParamDescs
+	class DescriptorSets
 	{
 	public:
 
-		ShaderParamDescs();
-		ShaderParamDescs( VkDevice device, uint32_t numswaps );
-		~ShaderParamDescs();
-		ShaderParamDescs( const ShaderParamDescs& ) = delete;
+		DescriptorSets();
+		DescriptorSets( VkDevice device, uint32_t numswaps );
+		~DescriptorSets();
+		DescriptorSets( const DescriptorSets& ) = delete;
 
 
 		void Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout );
@@ -30,10 +30,7 @@ namespace vk
 		void BindUniformBuffer( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers );
 		void BindCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler );
 
-
 		const VkDescriptorPool& DecriptorPool() const	{ return m_DescPool; }
-		const OreOreLib::NDArray<VkDescriptorSet, 2>& DescriptorSets() const	{ return m_DescriptorSets; }
-
 		const VkDescriptorSet& DescriptorSet( int swap_id, int set_id ) const	{ return m_DescriptorSets( swap_id, set_id ); }
 
 

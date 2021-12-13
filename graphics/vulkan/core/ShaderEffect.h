@@ -44,28 +44,9 @@ namespace vk
 		void InitDependencies( std::initializer_list<ShaderPassDependency> dependencies );
 		void InitGraphicsPipeline( uint32_t pass, const PipelineState& pipelineState );
 
-
 		void SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
 		void SetSubpassOutputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
 
-/*
-AttachmentReferenceで指定するattachment番号って何だっけ？　VkAttachmentDescription配列の要素番号. RenderPassAttachmentsインスタンスが持ってる
-RenderPassAttachmentsは、レンダーターゲットとスワップチェーン両方のVkAttachmentDescriptionを保持する
-・VkAttachmentReferenceを登録する際にスロット番号を指定するとどうなる？
-　→レンダーターゲットだけが登録されている場合
-　　→{ RT0, RT1, RT2... }
- 　
-　→スワップチェーン/レンダーターゲット双方が登録されている場合
-	→{ Color Depth, RT0, RT1, RT2... } みたいな並び順になってる
-	→スロット番号そのままだとスワップチェーンを指定してしまう。マズい！
-
-・対策：
-　→{ RT0, RT1, RT2... , Color Depth }の順番にRenderPassAttachmentsに登録する.
-　→レンダーターゲットを先頭に配置すれば、スロット番号はそのまま使える
-　→スワップチェーンから取得したアタッチメントにアクセスする際は、SwapChainSlot, DepthSlotの特殊スロット指定を使う
-
-
- */
 
 //		void AddShaderPass( const ShaderPass& pass );
 
@@ -94,18 +75,17 @@ RenderPassAttachmentsは、レンダーターゲットとスワップチェー�
 
 
 		OreOreLib::Array<ShaderPass>	m_ShaderPasses;// shader modules
-		OreOreLib::Array<VkSubpassDescription>	m_SubpassDescriptions;
+
 		OreOreLib::Array<VkSubpassDependency>	m_SubpassDependencies;
-OreOreLib::Array<AttachmentRefs> m_AttachmentRefs;
+		OreOreLib::Array<AttachmentRefs>		m_AttachmentRefs;// temporary buffer required for VkRenderPass creation
+		OreOreLib::Array<VkSubpassDescription>	m_SubpassDescriptions;// temporary buffer required for VkRenderPass creation
 
 
 		//===================== SwapChain再生成に応じてもう一回作り直す必要があるオブジェクト群 =====================//
 
-		OreOreLib::Array<RenderTargetDesc>	m_RenderTargetDescs;// スワップチェーン + シェーダー構成に応じて手動設定するレンダーターゲットの情報配列
-		
-		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_refTargetDescs;
-		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_refSwapChainTargetDescs;
-
+		OreOreLib::Array<RenderTargetDesc>			m_RenderTargetDescs;// スワップチェーン + 手動設定する全レンダーターゲットの情報配列
+		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_CustomRTDescView;// 手動設定レンダーターゲット情報
+		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_SwapChainRTDescView;// スワップチェーンのレンダーターゲット情報
 
 
 		VkRenderPass					m_RenderPass;
