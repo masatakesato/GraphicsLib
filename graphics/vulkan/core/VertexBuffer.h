@@ -3,14 +3,14 @@
 
 #include	<oreore/container/Array.h>
 
-#include	"GraphicsDevice.h"
+#include	"MemoryBuffer.h"
 
 
 
 namespace vk
 {
 
-	class VertexBuffer
+	class VertexBuffer : public MemoryBuffer
 	{
 	public:
 
@@ -20,21 +20,21 @@ namespace vk
 		VertexBuffer( const VertexBuffer& ) = delete;
 
 		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
-		void Release();
+		//void Release();
 		void Update( void* vertices, VkDeviceSize size );
 
-		VkBuffer Buffer() const				{ return m_Buffer; }
-		VkDeviceMemory DeviceMemory() const	{ return m_DeviceMemory; }
-		VkDeviceSize Size() const			{ return m_Size; }
+	//	VkBuffer Buffer() const				{ return m_Buffer; }
+	//	VkDeviceMemory DeviceMemory() const	{ return m_DeviceMemory; }
+	//	VkDeviceSize Size() const			{ return m_Size; }
 
 
-	private:
+	//private:
 
-		GraphicsDeviceRef	m_refDevice;
+	//	GraphicsDeviceRef	m_refDevice;
 
-		VkDeviceSize	m_Size; 
-		VkBuffer		m_Buffer;//m_UniformBuffer;
-		VkDeviceMemory	m_DeviceMemory;//m_UniformBufferMemory;
+	//	VkDeviceSize	m_Size; 
+	//	VkBuffer		m_Buffer;
+	//	VkDeviceMemory	m_DeviceMemory;
 
 	};
 

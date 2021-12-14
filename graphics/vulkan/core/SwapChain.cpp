@@ -105,6 +105,8 @@ m_ColorBuffers.Release();
 
 //			m_NumImages = 0;
 
+			m_Synchronizer.Reset();
+
 			// Reset GraphicsDevice
 			//m_refDevice.Reset();
 
@@ -170,6 +172,24 @@ m_ColorBuffers.Release();
 		}
 	}
 
+
+
+	VkResult SwapChain::AquireNextImage( uint32_t& imageIndex )
+	{
+		// Wait for 
+		m_Synchronizer->WaitForCurrentFrame();
+
+		auto result = vkAcquireNextImageKHR( m_refDevice->Device(), m_SwapChain, std::numeric_limits<uint64_t>::max(), m_Synchronizer->CurrentPresentFinishedSemaphore(), VK_NULL_HANDLE, &imageIndex );		
+
+		// Wait for previous frame's RenderFinished fence
+		if( m_refRenderFinishedFences[ imageIndex ] != VK_NULL_HANDLE )
+			VK_CHECK_RESULT( vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() ) );
+
+		// Assign new RenderFinished fence for current frame
+		m_refRenderFinishedFences[ imageIndex ] = m_Synchronizer->CurrentInFlightFence();
+
+		return result;
+	}
 
 
 

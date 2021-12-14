@@ -3,39 +3,38 @@
 
 #include	<oreore/container/Array.h>
 
-#include	"GraphicsDevice.h"
+#include	"MemoryBuffer.h"
 
 
 
 namespace vk
 {
 
-	class UniformBuffer
+	class UniformBuffer : public MemoryBuffer
 	{
 	public:
 
 		UniformBuffer();
-		UniformBuffer( GraphicsDevice& device, VkDeviceSize bufferSize );
+		UniformBuffer( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps );
 		~UniformBuffer();
 		UniformBuffer( const UniformBuffer& ) = delete;
 		UniformBuffer( UniformBuffer&& obj );
 
-		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
-		void Release();
+		void Init( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps );
 		void Update( void* pData, VkDeviceSize size );
 
-		VkBuffer Buffer() const				{ return m_Buffer; }
-		VkDeviceMemory DeviceMemory() const	{ return m_DeviceMemory; }
-		VkDeviceSize Size() const			{ return m_Size; }
+		//VkBuffer Buffer() const				{ return m_Buffer; }
+		//VkDeviceMemory DeviceMemory() const	{ return m_DeviceMemory; }
+		//VkDeviceSize Size() const			{ return m_Size; }
 
 
-	private:
+//	private:
 
-		GraphicsDeviceRef	m_refDevice;
+//		GraphicsDeviceRef	m_refDevice;
 
-		VkDeviceSize	m_Size; 
-		VkBuffer		m_Buffer;
-		VkDeviceMemory	m_DeviceMemory;
+//		VkDeviceSize	m_Size;
+//		VkBuffer		m_Buffer;
+//		VkDeviceMemory	m_DeviceMemory;
 
 	};
 

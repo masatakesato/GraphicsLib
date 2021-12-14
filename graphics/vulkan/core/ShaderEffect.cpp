@@ -142,6 +142,9 @@ m_DescriptorSets.Init( numPasses );
 
 		m_Framebuffers.Release();
 
+		for( auto& pipeline : m_Pipelines )	pipeline.Release();
+		m_Pipelines.Release();
+
 		m_SubpassDependencies.Release();
 		m_SubpassDescriptions.Release();
 
@@ -331,8 +334,8 @@ m_DescriptorSets.Release();
 
 		m_Framebuffers.Release();
 
-		for( auto& pipeline : m_Pipelines )
-			pipeline.Release();
+//		for( auto& pipeline : m_Pipelines )
+//			pipeline.Release();
 
 		if( m_RenderPass != VK_NULL_HANDLE )
 		{

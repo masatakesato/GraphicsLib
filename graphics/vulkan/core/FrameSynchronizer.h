@@ -52,6 +52,10 @@ namespace vk
 	};
 
 
+
+	using FrameSynchronizerRef = OreOreLib::ReferenceWrapper<FrameSynchronizer>;
+
+
 }// end of namespace vk
 
 

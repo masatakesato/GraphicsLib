@@ -23,7 +23,6 @@ namespace vk
 		~DescriptorSets();
 		DescriptorSets( const DescriptorSets& ) = delete;
 
-
 		void Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout );
 		void Release();
 
@@ -34,13 +33,12 @@ namespace vk
 		const VkDescriptorSet& DescriptorSet( int swap_id, int set_id ) const	{ return m_DescriptorSets( swap_id, set_id ); }
 
 
-
 	private:
 
 		VkDevice	m_refDevice;
 
 		VkDescriptorPool						m_DescPool;
-		OreOreLib::NDArray<VkDescriptorSet, 2>	m_DescriptorSets;// スワップチェイン数 x セット数分だけ確保が必要
+		OreOreLib::NDArray<VkDescriptorSet, 2>	m_DescriptorSets;// スワップチェイン数 x セット数分だけ確保が必要. 1次元目: スワップチェイン数, 2次元目: セット数
 
 		
 		void InitDescriptorPool( uint32_t numswaps, const ShaderParamLayout& paramlayout );

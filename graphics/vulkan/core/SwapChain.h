@@ -6,6 +6,7 @@
 #include	"GraphicsDevice.h"
 #include	"RenderBuffer.h"
 #include	"SwapChainBuffer.h"
+#include	"FrameSynchronizer.h"
 
 
 
@@ -24,6 +25,11 @@ namespace vk
 
 		void Init( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples=VK_SAMPLE_COUNT_1_BIT, bool srgb=true, VkFormat depthformat=VK_FORMAT_D32_SFLOAT );
 		void Release();
+
+		void BindSynchronizer( FrameSynchronizer& synchronizer )	{ m_Synchronizer = synchronizer; }
+		void UnbindSynchronizer()	{ m_Synchronizer.Reset(); }
+
+
 
 		VkSwapchainKHR Handle() const	{ return m_SwapChain; }
 
@@ -52,11 +58,7 @@ namespace vk
 		void BindInFlightFence( int i, VkFence fence ){ m_refRenderFinishedFences[i] = fence; }
 
 
-//		VkResult AquireNextImage( VkSemaphore semaphore, VkFence fence )
-//		{
-//			return vkAcquireNextImageKHR( m_refDevice->Device(), m_SwapChain, std::numeric_limits<uint64_t>::max(), semaphore, fence, &imageIndex );		
-//		}
-
+		VkResult AquireNextImage( uint32_t& imageIndex );
 		
 		void WaitForAvailable( int imageIndex )
 		{
@@ -100,8 +102,8 @@ namespace vk
 
 		RenderBuffer					m_MultiSampleColorBuffer;
 
-
 		// レンダリング同期オブジェクト(参照)
+		FrameSynchronizerRef			m_Synchronizer;
 		OreOreLib::Array<VkFence>		m_refRenderFinishedFences;
 
 

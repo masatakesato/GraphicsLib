@@ -83,7 +83,7 @@ namespace vk
 		StagingBuffer stagingBuffer( m_refDevice, imageSize );
 
 		// Transfer iamge data to staging buffer
-		stagingBuffer.Update( pData, static_cast<VkDeviceSize>(imageSize) );
+		stagingBuffer.Update( pData );
 
 		// Set VkImage layout from "undefined" to "data transfer from host memory"
 		TransitionImageLayout( m_refDevice->Device(), m_refDevice->CommandPool(), m_refDevice->GraphicsQueue(), m_Image, m_Format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_MipLevels );

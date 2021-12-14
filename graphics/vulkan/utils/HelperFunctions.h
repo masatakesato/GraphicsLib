@@ -459,6 +459,28 @@ namespace vk
 	//######################################################################################//
 
 
+	inline static void SafeDeleteBuffer( VkDevice device, VkBuffer& buffer )
+	{
+		if( buffer != VK_NULL_HANDLE )
+		{
+			vkDestroyBuffer( device, buffer, nullptr );
+			buffer = VK_NULL_HANDLE;
+		}
+	}
+
+
+
+	inline static void SafeDeleteDeviceMemory( VkDevice device, VkDeviceMemory& mem )
+	{
+		if( mem != VK_NULL_HANDLE )
+		{
+			vkFreeMemory( device, mem, nullptr );
+			mem = VK_NULL_HANDLE;
+		}
+	}
+
+
+
 	inline static void SafeDeleteImage( VkDevice device, VkImage& image )
 	{
 		if( image != VK_NULL_HANDLE )
@@ -476,17 +498,6 @@ namespace vk
 		{
 			vkDestroyImageView( device, view, nullptr );
 			view = VK_NULL_HANDLE;
-		}
-	}
-
-
-
-	inline static void SafeDeleteDeviceMemory( VkDevice device, VkDeviceMemory& mem )
-	{
-		if( mem != VK_NULL_HANDLE )
-		{
-			vkFreeMemory( device, mem, nullptr );
-			mem = VK_NULL_HANDLE;
 		}
 	}
 
