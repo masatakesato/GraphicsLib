@@ -1,5 +1,5 @@
-﻿#ifndef DESCRIPTOR_SETS_H
-#define	DESCRIPTOR_SETS_H
+﻿#ifndef DESCRIPTOR_BUFFER_H
+#define	DESCRIPTOR_BUFFER_H
 
 #include	<vulkan/vulkan.h>
 
@@ -61,4 +61,4 @@ namespace vk
 
 
 
-#endif // !DESCRIPTOR_SETS_H
+#endif // !DESCRIPTOR_BUFFER_H
