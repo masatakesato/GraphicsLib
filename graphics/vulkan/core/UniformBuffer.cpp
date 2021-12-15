@@ -8,6 +8,12 @@
 namespace vk
 {
 
+	//##############################################################################################################//
+	//																												//
+	//									UniformBuffer class implementation											//
+	//																												//
+	//##############################################################################################################//
+
 	UniformBuffer::UniformBuffer()
 		: MemoryBuffer()
 	{
@@ -16,10 +22,10 @@ namespace vk
 
 
 
-	UniformBuffer::UniformBuffer( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps )
+	UniformBuffer::UniformBuffer( GraphicsDevice& device, VkDeviceSize bufferSize )
 		: MemoryBuffer()
 	{
-		Init( device, bufferSize, numSwaps );
+		Init( device, bufferSize );
 	}
 
 
@@ -31,14 +37,14 @@ namespace vk
 
 
 
-	UniformBuffer::UniformBuffer( UniformBuffer&& obj ) : MemoryBuffer( std::move(obj) )
+	UniformBuffer::UniformBuffer( UniformBuffer&& obj ) : MemoryBuffer( (MemoryBuffer&&)obj )
 	{
 
 	}
 
 
 
-	void UniformBuffer::Init( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps )
+	void UniformBuffer::Init( GraphicsDevice& device, VkDeviceSize bufferSize )
 	{
 		CreateBuffer(	device,
 						bufferSize,
@@ -49,10 +55,23 @@ namespace vk
 
 
 	// Transfer data to VkDeviceMemory
+	void UniformBuffer::Update( void* pData )
+	{
+		ASSERT( (m_refDevice->Device() != VK_NULL_HANDLE) && pData );
+
+		void* data;
+		vkMapMemory( m_refDevice->Device(), m_DeviceMemory, 0, m_Size, 0, &data );
+			memcpy( data, pData, m_Size );
+		vkUnmapMemory( m_refDevice->Device(), m_DeviceMemory );
+	}
+
+
+
 	void UniformBuffer::Update( void* pData, VkDeviceSize size )
 	{
 		ASSERT( (m_refDevice->Device() != VK_NULL_HANDLE) && pData );
 
+		size = Min( size, m_Size );
 		void* data;
 		vkMapMemory( m_refDevice->Device(), m_DeviceMemory, 0, size, 0, &data );
 			memcpy( data, pData, size );
@@ -60,4 +79,74 @@ namespace vk
 	}
 
 
-}
+
+
+	//##############################################################################################################//
+	//																												//
+	//									UniformBuffers class implementation											//
+	//																												//
+	//##############################################################################################################//
+
+	UniformBuffers::UniformBuffers()
+	{
+
+	}
+
+
+
+	UniformBuffers::UniformBuffers( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps )
+	{
+		Init( device, bufferSize, numSwaps );
+	}
+
+
+
+	UniformBuffers::~UniformBuffers()
+	{
+		Release();
+	}
+
+
+
+	UniformBuffers::UniformBuffers( UniformBuffers&& obj )
+		: m_UniformBuffers( (OreOreLib::Memory<UniformBuffers>&&)obj.m_UniformBuffers )
+	{
+
+	}
+
+
+
+	void UniformBuffers::Init( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps )
+	{
+		m_UniformBuffers.Init( numSwaps );
+
+		for( auto& buffer : m_UniformBuffers )
+			buffer.Init( device, bufferSize );
+	}
+
+
+
+	void UniformBuffers::Release()
+	{
+		m_UniformBuffers.Release();
+	}
+
+
+
+	// Transfer data to VkDeviceMemory
+	void UniformBuffers::Update( void* pData, uint32_t swapIndex )
+	{
+		ASSERT( swapIndex < m_UniformBuffers.Length() );
+		m_UniformBuffers[ swapIndex ].Update( pData );
+	}
+
+
+
+	void UniformBuffers::Update( void* pData, VkDeviceSize size, uint32_t swapIndex )
+	{
+		ASSERT( swapIndex < m_UniformBuffers.Length() );
+		m_UniformBuffers[ swapIndex ].Update( pData, size );
+	}
+
+
+}// end of namespace vk

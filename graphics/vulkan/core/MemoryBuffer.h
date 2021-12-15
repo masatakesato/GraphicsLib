@@ -20,6 +20,7 @@ namespace vk
 
 		void Release();
 
+		VkDeviceSize Size() const			{ return m_Size; }
 		VkBuffer Buffer() const				{ return m_Buffer; }
 		VkDeviceMemory DeviceMemory() const	{ return m_DeviceMemory; }
 

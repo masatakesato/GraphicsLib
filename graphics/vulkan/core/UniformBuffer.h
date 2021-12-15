@@ -10,17 +10,24 @@
 namespace vk
 {
 
+	//##############################################################################################################//
+	//																												//
+	//										UniformBuffer class ( single buffer )									//
+	//																												//
+	//##############################################################################################################//
+
 	class UniformBuffer : public MemoryBuffer
 	{
 	public:
 
 		UniformBuffer();
-		UniformBuffer( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps );
+		UniformBuffer( GraphicsDevice& device, VkDeviceSize bufferSize );
 		~UniformBuffer();
 		UniformBuffer( const UniformBuffer& ) = delete;
 		UniformBuffer( UniformBuffer&& obj );
 
-		void Init( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps );
+		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
+		void Update( void* pData );
 		void Update( void* pData, VkDeviceSize size );
 
 		//VkBuffer Buffer() const				{ return m_Buffer; }
@@ -38,6 +45,41 @@ namespace vk
 
 	};
 
+
+
+
+	//##############################################################################################################//
+	//																												//
+	//								UniformBuffers class ( multiple backbuffers )									//
+	//																												//
+	//##############################################################################################################//
+
+	class UniformBuffers
+	{
+	public:
+
+		UniformBuffers();
+		UniformBuffers( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps );
+		~UniformBuffers();
+		UniformBuffers( const UniformBuffers& ) = delete;
+		UniformBuffers( UniformBuffers&& obj );
+
+		void Init( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps );
+		void Release();
+
+		void Update( void* pData, uint32_t swapIndex );
+		void Update( void* pData, VkDeviceSize size, uint32_t swapIndex );
+
+		VkDeviceSize Size( uint32_t i=0 ) const				{ return m_UniformBuffers[i].Size(); }
+		VkBuffer Buffer( uint32_t i=0 ) const				{ return m_UniformBuffers[i].Buffer(); }
+		VkDeviceMemory DeviceMemory( uint32_t i=0 ) const	{ return m_UniformBuffers[i].DeviceMemory(); }
+
+
+	private:
+
+		OreOreLib::Memory<UniformBuffer>	m_UniformBuffers;
+
+	};
 
 
 }// end of namespace
