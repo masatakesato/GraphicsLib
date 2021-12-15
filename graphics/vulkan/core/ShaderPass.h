@@ -2,7 +2,7 @@
 #define	SHADER_PASS_H
 
 #include	"ShaderParamLayout.h"
-#include	"DescriptorSets.h"
+#include	"DescriptorBuffer.h"
 
 
 

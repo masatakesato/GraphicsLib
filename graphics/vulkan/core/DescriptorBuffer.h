@@ -12,16 +12,20 @@
 
 namespace vk
 {
+/*
+	swap[0]: VkDescriptorSet[0], VkDescriptorSet[1], VkDescriptorSet[2]...
+	swap[1]: VkDescriptorSet[0], VkDescriptorSet[1], VkDescriptorSet[2]...
+	swap[2]: VkDescriptorSet[0], VkDescriptorSet[1], VkDescriptorSet[2]...
+*/
 	// サブパス1個分のディスクリプタセット群を保持するクラス.
-
-	class DescriptorSets
+	class DescriptorBuffer
 	{
 	public:
 
-		DescriptorSets();
-		DescriptorSets( VkDevice device, uint32_t numswaps );
-		~DescriptorSets();
-		DescriptorSets( const DescriptorSets& ) = delete;
+		DescriptorBuffer();
+		DescriptorBuffer( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout );
+		~DescriptorBuffer();
+		DescriptorBuffer( const DescriptorBuffer& ) = delete;
 
 		void Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout );
 		void Release();
@@ -29,8 +33,13 @@ namespace vk
 		void BindUniformBuffer( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers );
 		void BindCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler );
 
-		const VkDescriptorPool& DecriptorPool() const	{ return m_DescPool; }
+		uint32_t NumSwaps() const	{ return static_cast<uint32_t>( m_DescriptorSets.Dim(0) ); }
+		uint32_t NumSets() const	{ return static_cast<uint32_t>( m_DescriptorSets.Dim(1) ); }
+
+		const VkDescriptorPool& DecriptorPool() const							{ return m_DescPool; }
+		const VkDescriptorSet& DescriptorSets( int swap_id ) const				{ return m_DescriptorSets( swap_id, 0 ); }
 		const VkDescriptorSet& DescriptorSet( int swap_id, int set_id ) const	{ return m_DescriptorSets( swap_id, set_id ); }
+
 
 
 	private:

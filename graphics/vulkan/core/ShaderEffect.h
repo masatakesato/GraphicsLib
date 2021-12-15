@@ -6,7 +6,7 @@
 #include	"Framebuffer.h"
 #include	"RenderTargets.h"
 #include	"ShaderPass.h"
-#include	"DescriptorSets.h"
+#include	"DescriptorBuffer.h"
 #include	"UniformBuffer.h"
 #include	"GraphicsPipeline.h"
 
@@ -70,7 +70,10 @@ namespace vk
 		const VkRenderPass RenderPass() const				{ return m_RenderPass; }
 		const VkPipeline Pipeline( uint32_t pass ) const	{ return m_Pipelines[ pass ].Pipeline(); }
 		const VkPipelineLayout PipelineLayout( uint32_t pass ) const	{ return m_Pipelines[ pass ].Layout(); }
-		const VkDescriptorSet& DescriptorSet( uint32_t pass, uint32_t swap_id, uint32_t set_id ) const	{ return m_DescriptorSets[pass].DescriptorSet(swap_id, set_id); }
+
+		uint32_t NumSets( uint32_t pass ) const	{ return m_DescriptorBuffers[ pass ].NumSets(); }
+		const VkDescriptorSet& DescriptorSets( uint32_t pass, uint32_t swap_id ) const					{ return m_DescriptorBuffers[ pass ].DescriptorSets( swap_id ); }
+		const VkDescriptorSet& DescriptorSet( uint32_t pass, uint32_t swap_id, uint32_t set_id ) const	{ return m_DescriptorBuffers[pass].DescriptorSet( swap_id, set_id ); }
 
 
 	private:
@@ -102,7 +105,7 @@ namespace vk
 
 		RenderPassAttachments				m_Attachments;// スワップチェーンから取得した情報を使う. MSAAオンオフ切り替えとかあると再生成必要
 
-OreOreLib::Array<DescriptorSets>	m_DescriptorSets;
+OreOreLib::Array<DescriptorBuffer>	m_DescriptorBuffers;
 
 	};
 

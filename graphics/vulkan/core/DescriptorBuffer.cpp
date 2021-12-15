@@ -1,4 +1,4 @@
-﻿#include	"DescriptorSets.h"
+﻿#include	"DescriptorBuffer.h"
 
 #include	"../utils/HelperFunctions.h"
 
@@ -8,7 +8,7 @@ namespace vk
 {
 
 
-	DescriptorSets::DescriptorSets()
+	DescriptorBuffer::DescriptorBuffer()
 		: m_refDevice( VK_NULL_HANDLE )
 	{
 
@@ -16,23 +16,21 @@ namespace vk
 
 
 
-	DescriptorSets::DescriptorSets( VkDevice device, uint32_t numswaps )
-		: m_refDevice( device )
+	DescriptorBuffer::DescriptorBuffer( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout )
 	{
-
+		Init(  device, numswaps, paramlayout );
 	}
 
 
 
-	DescriptorSets::~DescriptorSets()
+	DescriptorBuffer::~DescriptorBuffer()
 	{
 		Release();
 	}
 
 
 
-
-	void DescriptorSets::Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout )
+	void DescriptorBuffer::Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout )
 	{
 		m_refDevice	= device;
 
@@ -42,7 +40,7 @@ namespace vk
 
 
 
-	void DescriptorSets::Release()
+	void DescriptorBuffer::Release()
 	{
 		if( m_refDevice != VK_NULL_HANDLE )
 		{
@@ -55,7 +53,7 @@ namespace vk
 
 
 
-	void DescriptorSets::BindUniformBuffer( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers )
+	void DescriptorBuffer::BindUniformBuffer( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
@@ -84,7 +82,7 @@ namespace vk
 
 	// |------- Swapchain[0]{ DescSet[0], DescSet[1]... } -------|------- Swapchain[1]{ DescSet[0], DescSet[1]... }.... ------|---...
 
-	void DescriptorSets::BindCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler )
+	void DescriptorBuffer::BindCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
@@ -114,7 +112,7 @@ namespace vk
 
 
 
-	void DescriptorSets::InitDescriptorPool( uint32_t numswaps,  const ShaderParamLayout& paramlayout )
+	void DescriptorBuffer::InitDescriptorPool( uint32_t numswaps,  const ShaderParamLayout& paramlayout )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
@@ -145,7 +143,7 @@ namespace vk
 
 
 
-	void DescriptorSets::InitDescriptorSets( uint32_t numswaps, const ShaderParamLayout& paramlayout )
+	void DescriptorBuffer::InitDescriptorSets( uint32_t numswaps, const ShaderParamLayout& paramlayout )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
