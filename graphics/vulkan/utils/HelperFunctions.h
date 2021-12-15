@@ -224,7 +224,7 @@ namespace vk
 
 		VK_CHECK_RESULT( vkAllocateMemory( device, &allocInfo, nullptr, &bufferMemory ) );
 
-		// Bind allocated device memory(VkDeviceMemory) to vertexBuffer(VkBuffer)
+		// Bind allocated device memory(VkDeviceMemory) to buffer(VkBuffer)
 		VK_CHECK_RESULT( vkBindBufferMemory( device, buffer, bufferMemory, 0 ) );
 	}
 

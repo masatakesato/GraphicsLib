@@ -20,6 +20,7 @@ namespace vk
 		StagingBuffer( const StagingBuffer& ) = delete;
 
 		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
+		using MemoryBuffer::Release;
 		//void Release();
 		void Update( const void* pData );
 		void Update( const void* pData, VkDeviceSize size );

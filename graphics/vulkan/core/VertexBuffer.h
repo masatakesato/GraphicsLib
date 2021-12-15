@@ -20,7 +20,7 @@ namespace vk
 		VertexBuffer( const VertexBuffer& ) = delete;
 
 		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
-		//void Release();
+		using MemoryBuffer::Release;
 		void Update( void* vertices, VkDeviceSize size );
 
 	//	VkBuffer Buffer() const				{ return m_Buffer; }

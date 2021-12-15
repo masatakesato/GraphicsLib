@@ -18,8 +18,6 @@ namespace vk
 		MemoryBuffer( const MemoryBuffer& ) = delete;
 		MemoryBuffer( MemoryBuffer&& obj );
 
-		void Release();
-
 		VkDeviceSize Size() const			{ return m_Size; }
 		VkBuffer Buffer() const				{ return m_Buffer; }
 		VkDeviceMemory DeviceMemory() const	{ return m_DeviceMemory; }
@@ -34,7 +32,8 @@ namespace vk
 		VkDeviceMemory	m_DeviceMemory;
 
 
-		void CreateBuffer( GraphicsDevice& device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties );
+		void Init( GraphicsDevice& device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties );
+		void Release();
 		
 	};
 

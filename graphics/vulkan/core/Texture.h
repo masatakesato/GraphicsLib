@@ -9,7 +9,7 @@
 namespace vk
 {
 
-	class Texture : ImageBuffer
+	class Texture : public ImageBuffer
 	{
 	public:
 
@@ -30,6 +30,7 @@ namespace vk
 		virtual const VkImageView& View( int i=0 ) const		{ return m_ImageView; }
 		virtual VkSampleCountFlagBits MultiSampleCount() const	{ return VK_SAMPLE_COUNT_1_BIT; }
 		virtual uint32_t MipLevels() const						{ return m_MipLevels; }
+		virtual uint32_t NumBuffers() const						{ return 1; }
 
 
 	private:

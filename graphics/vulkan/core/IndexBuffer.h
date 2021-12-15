@@ -20,7 +20,7 @@ namespace vk
 		IndexBuffer( const IndexBuffer& ) = delete;
 
 		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
-		//void Release();
+		using MemoryBuffer::Release;
 		void Update( void* pData, VkDeviceSize size );
 
 		//VkBuffer Buffer() const				{ return m_Buffer; }

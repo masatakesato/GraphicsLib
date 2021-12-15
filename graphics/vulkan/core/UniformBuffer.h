@@ -79,6 +79,18 @@ namespace vk
 
 		OreOreLib::Memory<UniformBuffer>	m_UniformBuffers;
 
+
+
+
+		struct MemBuffer
+		{
+			VkBuffer		m_Buffer;
+			VkDeviceMemory	m_DeviceMemory;
+		};
+ 
+		OreOreLib::Array<MemBuffer> m_MemBuffers;
+
+
 	};
 
 
