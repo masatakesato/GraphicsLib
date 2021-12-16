@@ -45,7 +45,12 @@ namespace vk
 		if( m_refDevice != VK_NULL_HANDLE )
 		{
 			VK_CHECK_RESULT( vkFreeDescriptorSets( m_refDevice, m_DescPool, static_cast<uint32_t>(m_DescriptorSets.Length()), m_DescriptorSets.begin() ) );
-			vkDestroyDescriptorPool( m_refDevice, m_DescPool, nullptr );
+		
+			if( m_DescPool != VK_NULL_HANDLE )
+			{
+				vkDestroyDescriptorPool( m_refDevice, m_DescPool, nullptr );
+				m_DescPool = VK_NULL_HANDLE;
+			}
 		}
 		m_DescriptorSets.Release();
 		m_refDevice	= VK_NULL_HANDLE;
@@ -168,7 +173,7 @@ namespace vk
 		allocInfo.descriptorSetCount	= descSetCount;
 		allocInfo.pSetLayouts			= layouts.begin();
 
-		m_DescriptorSets.Init( {numswaps, static_cast<uint32_t>( paramlayout.NumSets() )} );//descSetCount );
+		m_DescriptorSets.Init( {numswaps, static_cast<uint32_t>( paramlayout.NumSets() )} );
 		VK_CHECK_RESULT( vkAllocateDescriptorSets( m_refDevice, &allocInfo, m_DescriptorSets.begin() ) );
 	}
 

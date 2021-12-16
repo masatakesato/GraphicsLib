@@ -55,6 +55,8 @@ namespace vk
 
 			m_CreateInfos.Release();
 
+//			m_State.Release();
+
 			//m_refDevice.Reset();
 		}
 

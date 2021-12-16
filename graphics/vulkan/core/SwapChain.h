@@ -26,8 +26,8 @@ namespace vk
 		void Init( GraphicsDevice& device, VkExtent2D extent, VkSampleCountFlagBits msaasamples=VK_SAMPLE_COUNT_1_BIT, bool srgb=true, VkFormat depthformat=VK_FORMAT_D32_SFLOAT );
 		void Release();
 
-		void BindSynchronizer( FrameSynchronizer& synchronizer )	{ m_Synchronizer = synchronizer; }
-		void UnbindSynchronizer()	{ m_Synchronizer.Reset(); }
+		void BindSynchronizer( FrameSynchronizer& synchronizer )	{ m_refSynchronizer = synchronizer; }
+		void UnbindSynchronizer()	{ m_refSynchronizer.Reset(); }
 
 
 
@@ -37,17 +37,17 @@ namespace vk
 		uint32_t NumAttachments() const				{ return m_NumAttachments; }
 
 		const SwapChainBuffer& ColorBuffers() const	{ return m_ColorBuffers; }
-		uint32_t NumBuffers() const				{ return /*m_NumImages*/m_ColorBuffers.NumBuffers(); }
-		VkFormat ImageFormat() const				{ return /*m_ImageFormat*/m_ColorBuffers.Format(); }
-		VkImageView ImageView( int i ) const		{ return /*m_ColorImageViews[i]*/m_ColorBuffers.View(i); }
+		uint32_t NumBuffers() const				{ return m_ColorBuffers.NumBuffers(); }
+		VkFormat ImageFormat() const				{ return m_ColorBuffers.Format(); }
+		VkImageView ImageView( int i ) const		{ return m_ColorBuffers.View(i); }
 
 		const RenderBuffer& DepthBuffer() const		{ return m_DepthBuffer; }
-		VkFormat DepthFormat() const				{ return /*m_DepthFormat*/m_DepthBuffer.Format(); }
-		VkImageView DepthView() const				{ return /*m_DepthImageView*/m_DepthBuffer.View(); }
+		VkFormat DepthFormat() const				{ return m_DepthBuffer.Format(); }
+		VkImageView DepthView() const				{ return m_DepthBuffer.View(); }
 
 		const RenderBuffer& MultiSampleBuffer() const	{ return m_MultiSampleColorBuffer; }
-		VkSampleCountFlagBits MultiSampleCount() const	{ return /*msaaSamples*/m_MultiSampleColorBuffer.MultiSampleCount(); }
-		VkImageView	MultiSampleView() const				{ return /*m_ResolveImageView*/m_MultiSampleColorBuffer.View(); }
+		VkSampleCountFlagBits MultiSampleCount() const	{ return m_MultiSampleColorBuffer.MultiSampleCount(); }
+		VkImageView	MultiSampleView() const				{ return m_MultiSampleColorBuffer.View(); }
 
 		void ExposeRenderTargetDescs( OreOreLib::Memory<RenderTargetDesc>& renderTargetDescs );
 		void ExposeImageViews( OreOreLib::Memory<VkImageView>& views,  uint32_t imageindex );
@@ -77,38 +77,21 @@ namespace vk
 		VkSwapchainKHR					m_SwapChain;
 		VkExtent2D						m_SwapChainExtent;
 
-		// Color
-//		uint32_t						m_NumImages;
-//		VkFormat						m_ImageFormat;
-//		OreOreLib::Array<VkImage>		m_ColorImages;
-//		OreOreLib::Array<VkImageView>	m_ColorImageViews;
-		
+		// Color		
 		SwapChainBuffer					m_ColorBuffers;// swapchain color buffer. msaasample is always 1.
 
 		// Depth
-//		VkFormat						m_DepthFormat;
-//		VkImage							m_DepthImage;
-//		VkDeviceMemory					m_DepthImageMemory;
-//		VkImageView						m_DepthImageView;
-
 		RenderBuffer					m_DepthBuffer;
 
-		// Multisample
-		//bool							m_bEnableMultisample;
-		//VkSampleCountFlagBits	msaaSamples;
-		//VkImage							m_ResolveImage;
-		//VkDeviceMemory					m_ResolveImageMemory;
-		//VkImageView						m_ResolveImageView;
-
+		// Multisample color
 		RenderBuffer					m_MultiSampleColorBuffer;
 
-		// レンダリング同期オブジェクト(参照)
-		FrameSynchronizerRef			m_Synchronizer;
+		// Frame synchronizatin object
+		FrameSynchronizerRef			m_refSynchronizer;
 		OreOreLib::Array<VkFence>		m_refRenderFinishedFences;
 
 
 		void InitSwapChain( bool srgb );
-		void InitImageViews();
 		void InitDepthResources( VkFormat format, VkSampleCountFlagBits msaaSamples );
 		void InitMsaaResources( VkFormat format, VkSampleCountFlagBits msaaSamples );
 		void InitFences();

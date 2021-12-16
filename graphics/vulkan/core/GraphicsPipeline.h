@@ -149,15 +149,15 @@ namespace vk
 	public:
 
 		GraphicsPipeline();
-		GraphicsPipeline( GraphicsDevice& device );
 		~GraphicsPipeline();
 		GraphicsPipeline( const GraphicsPipeline& ) = delete;
 		GraphicsPipeline( GraphicsPipeline&& obj );
 
-		void Init( const ShaderPass& shaderPass, const PipelineState& pipelineState, VkRenderPass renderPass, uint32_t subpass );
+		void Init( GraphicsDevice& device, const ShaderPass& shaderPass, VkRenderPass renderPass, uint32_t subpass );
+		void Init( GraphicsDevice& device, const ShaderPass& shaderPass, const PipelineState& pipelineState, VkRenderPass renderPass, uint32_t subpass );
 		void Release();
 
-		void BindDevice( GraphicsDevice& device )	{ m_refDevice = device; }
+		//void BindDevice( GraphicsDevice& device )	{ m_refDevice = device; }
 
 		const VkPipeline Pipeline() const		{ return m_Pipeline; }
 		const VkPipelineLayout Layout() const	{ return m_PipelineLayout; }
@@ -169,7 +169,6 @@ namespace vk
 
 		VkPipeline			m_Pipeline;
 		VkPipelineLayout	m_PipelineLayout;
-
 	};
 
 

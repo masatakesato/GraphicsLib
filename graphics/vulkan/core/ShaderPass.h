@@ -3,6 +3,7 @@
 
 #include	"ShaderParamLayout.h"
 #include	"DescriptorBuffer.h"
+#include	"PipelineState.h"
 
 
 
@@ -47,6 +48,10 @@ namespace vk
 		const OreOreLib::Array<uint32_t>& InputRenderTargetIDs() const					{ return m_InputRenderTargetIDs; }
 		const OreOreLib::Array<uint32_t>& OutputRenderTargetIDs() const					{ return m_OutputRenderTargetIDs; }
 
+//		void SetPipelineState( const PipelineState& pipelineState )	{ m_State = pipelineState; }
+//		const PipelineState& State() const					{ return m_State; }
+//		PipelineState& State()					{ return m_State; }
+
 
 	private:
 
@@ -64,6 +69,9 @@ namespace vk
 		// Render target In/Outs
 		OreOreLib::Array<uint32_t>				m_InputRenderTargetIDs;
 		OreOreLib::Array<uint32_t>				m_OutputRenderTargetIDs;
+
+		// RenderStata
+//		PipelineState							m_State;
 
 
 		void InitShaderStage( ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage );
