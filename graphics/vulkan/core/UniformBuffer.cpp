@@ -32,7 +32,7 @@ namespace vk
 
 	UniformBuffer::~UniformBuffer()
 	{
-
+		// ~MemoryBuffer() will be called automatically 
 	}
 
 

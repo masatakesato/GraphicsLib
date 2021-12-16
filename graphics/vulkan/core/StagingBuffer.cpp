@@ -31,7 +31,7 @@ namespace vk
 
 	StagingBuffer::~StagingBuffer()
 	{
-		//Release();
+		// ~MemoryBuffer() will be called automatically 
 	}
 
 

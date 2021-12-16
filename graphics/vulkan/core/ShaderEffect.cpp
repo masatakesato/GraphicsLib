@@ -90,7 +90,6 @@ namespace vk
 
 		m_Framebuffers.Release();
 
-		for( auto& pipeline : m_Pipelines )	pipeline.Release();
 		m_Pipelines.Release();
 
 		m_SubpassDependencies.Release();
@@ -264,8 +263,6 @@ namespace vk
 
 	void ShaderEffect::BuildPipelines()
 	{
-		if(!m_Pipelines) m_Pipelines.Init( m_ShaderPasses.Length() );
-
 		for( uint32_t pass=0; pass<m_ShaderPasses.Length(); ++pass )
 			m_Pipelines[ pass ].Init( m_refDevice, m_ShaderPasses[ pass ], m_RenderPass, pass );
 	}
@@ -281,10 +278,7 @@ namespace vk
 
 		m_Framebuffers.Release();
 		
-		//for( auto& pipeline : m_Pipelines )
-		//	pipeline.Release();
-		m_Pipelines.Release();
-
+		m_Pipelines.Clear();// Clear contents only. Allocated memory will be reused
 
 		if( m_RenderPass != VK_NULL_HANDLE )
 		{
@@ -292,9 +286,7 @@ namespace vk
 			m_RenderPass = VK_NULL_HANDLE;
 		}
 
-		for( auto& descSets : m_DescriptorBuffers )
-			descSets.Release();
-		m_DescriptorBuffers.Clear();
+		m_DescriptorBuffers.Clear();// Clear contents only. Allocated memory will be reused
 	}
 
 

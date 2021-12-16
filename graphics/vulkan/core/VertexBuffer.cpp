@@ -25,7 +25,7 @@ namespace vk
 
 	VertexBuffer::~VertexBuffer()
 	{
-		//Release();
+		// ~MemoryBuffer() will be called automatically ();
 	}
 
 

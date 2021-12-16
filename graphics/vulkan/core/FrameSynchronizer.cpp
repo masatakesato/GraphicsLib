@@ -25,8 +25,7 @@ namespace vk
 	
 	FrameSynchronizer::~FrameSynchronizer()
 	{
-
-
+		Release();
 	}
 
 

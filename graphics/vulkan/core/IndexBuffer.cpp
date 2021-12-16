@@ -25,7 +25,7 @@ namespace vk
 
 	IndexBuffer::~IndexBuffer()
 	{
-		//Release();
+		// ~MemoryBuffer() will be called automatically 
 	}
 
 

@@ -88,8 +88,6 @@ namespace vk
 
 	void RenderTargets::Release()
 	{
-		for( auto& buffer : m_RenderBuffers )
-			buffer.Release();
 		m_RenderBuffers.Release();
 
 		m_MaxDim = { 0, 0 };
