@@ -81,7 +81,7 @@ namespace vk
 		m_ColorBlendState.sType				= VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		m_ColorBlendState.logicOpEnable		= VK_FALSE;
 		m_ColorBlendState.logicOp			= VK_LOGIC_OP_COPY; // Optional
-		m_ColorBlendState.attachmentCount	= static_cast<uint32_t>( m_ColorBlendAttachmentStates.Length() );
+		m_ColorBlendState.attachmentCount	= m_ColorBlendAttachmentStates.Length<uint32_t>();
 		m_ColorBlendState.pAttachments		= m_ColorBlendAttachmentStates.begin();
 		m_ColorBlendState.blendConstants[0] = 0.0f; // Optional
 		m_ColorBlendState.blendConstants[1] = 0.0f; // Optional
@@ -132,7 +132,7 @@ namespace vk
 		m_States = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 		m_DynamicState = {};
 		m_DynamicState.sType				= VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-		m_DynamicState.dynamicStateCount	= static_cast<uint32_t>( m_States.Length() );
+		m_DynamicState.dynamicStateCount	= m_States.Length<uint32_t>();
 		m_DynamicState.pDynamicStates		= m_States.begin();
 		m_DynamicState.flags				= 0;
 
@@ -178,9 +178,9 @@ namespace vk
 		m_Viewports.AddToTail( viewport );
 		m_Scissors.AddToTail( scissor );
 
-		m_ViewportState.viewportCount	= static_cast<uint32_t>( m_Viewports.Length() );
+		m_ViewportState.viewportCount	= m_Viewports.Length<uint32_t>();
 		m_ViewportState.pViewports		= m_Viewports.begin();
-		m_ViewportState.scissorCount	= static_cast<uint32_t>( m_Scissors.Length() );
+		m_ViewportState.scissorCount	= m_Scissors.Length<uint32_t>();
 		m_ViewportState.pScissors		= m_Scissors.begin();
 	}
 
@@ -248,7 +248,7 @@ namespace vk
 			attachment.alphaBlendOp			= VK_BLEND_OP_ADD; //Optional
 		}
 
-		m_ColorBlendState.attachmentCount	= static_cast<uint32_t>( m_ColorBlendAttachmentStates.Length() );
+		m_ColorBlendState.attachmentCount	= m_ColorBlendAttachmentStates.Length<uint32_t>();
 		m_ColorBlendState.pAttachments		= m_ColorBlendAttachmentStates.begin();
 	}
 
@@ -380,9 +380,9 @@ namespace vk
 	void PipelineState::SetVertexInputState(	const OreOreLib::Memory<VkVertexInputBindingDescription>& bindingDescs,
 												const OreOreLib::Memory<VkVertexInputAttributeDescription>& attribDescs )
 	{
-		m_VertexInputState.vertexBindingDescriptionCount	= static_cast<uint32_t>( bindingDescs.Length() );
+		m_VertexInputState.vertexBindingDescriptionCount	= bindingDescs.Length<uint32_t>();
 		m_VertexInputState.pVertexBindingDescriptions		= bindingDescs.begin();
-		m_VertexInputState.vertexAttributeDescriptionCount	= static_cast<uint32_t>( attribDescs.Length() );
+		m_VertexInputState.vertexAttributeDescriptionCount	= attribDescs.Length<uint32_t>();
 		m_VertexInputState.pVertexAttributeDescriptions		= attribDescs.begin();
 	}
 
@@ -394,7 +394,7 @@ namespace vk
 	{
 		m_States.Init( ilist );
 
-		m_DynamicState.dynamicStateCount	= m_States.Length();
+		m_DynamicState.dynamicStateCount	= m_States.Length<uint32_t>();
 		m_DynamicState.pDynamicStates		= m_States.begin();
 		//m_DynamicState.flags = 0;
 	}

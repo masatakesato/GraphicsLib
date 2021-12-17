@@ -174,16 +174,16 @@ namespace vk
 		auto extensions = GetRequiredExtensions();
 		ASSERT( CheckAvailableExtensions( extensions ) );
 
-		createInfo.enabledExtensionCount = static_cast<uint32_t>( extensions.Length() );
-		createInfo.ppEnabledExtensionNames = extensions.begin();
+		createInfo.enabledExtensionCount	= extensions.Length<uint32_t>();
+		createInfo.ppEnabledExtensionNames	= extensions.begin();
 
 
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 
 		if( m_bEnableValidationLayers )
 		{
-			createInfo.enabledLayerCount = static_cast<uint32_t>( m_ValidationLayers.Length() );
-			createInfo.ppEnabledLayerNames = m_ValidationLayers.begin();
+			createInfo.enabledLayerCount	= m_ValidationLayers.Length<uint32_t>();
+			createInfo.ppEnabledLayerNames	= m_ValidationLayers.begin();
 
 			PopulateDebugMessengerCreateInfo( debugCreateInfo );
 			createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
@@ -274,17 +274,17 @@ namespace vk
 		VkDeviceCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-		createInfo.queueCreateInfoCount		= static_cast<uint32_t>( queueCreateInfos.Length() );
+		createInfo.queueCreateInfoCount		= queueCreateInfos.Length<uint32_t>();
 		createInfo.pQueueCreateInfos		= queueCreateInfos.begin();
 
 		createInfo.pEnabledFeatures			= &deviceFeatures;
-		createInfo.enabledExtensionCount	= static_cast<uint32_t>( m_DeviceExtensions.Length() );
+		createInfo.enabledExtensionCount	= m_DeviceExtensions.Length<uint32_t>();
 		createInfo.ppEnabledExtensionNames	= m_DeviceExtensions.begin();
 
 		if( m_bEnableValidationLayers )
 		{
-			createInfo.enabledLayerCount = static_cast<uint32_t>( m_ValidationLayers.Length() );
-			createInfo.ppEnabledLayerNames = m_ValidationLayers.begin();
+			createInfo.enabledLayerCount	= m_ValidationLayers.Length<uint32_t>();
+			createInfo.ppEnabledLayerNames	= m_ValidationLayers.begin();
 		}
 		else
 		{

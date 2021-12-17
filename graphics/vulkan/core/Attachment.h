@@ -70,20 +70,20 @@ namespace vk
 		void Init( const OreOreLib::Memory<RenderTargetDesc>& rederTargetDescs );
 		void Release();
 
-		uint32_t NumAttachments() const { return static_cast<uint32_t>( m_AttacmentDescs.Length() ); }
-		bool HasDepth() const	{ return m_DepthSlot != VK_ATTACHMENT_UNUSED; }
+		template< typename Type=uint32 > Type NumAttachments() const { return m_AttacmentDescs.Length<Type>(); }
+		bool HasDepth() const			{ return m_DepthSlot != VK_ATTACHMENT_UNUSED; }
 
-		void ClearColor( uint32_t slot, float r, float g, float b, float a );
+		void ClearColor( uint32 slot, float r, float g, float b, float a );
 		void ClearDepth( float depth, uint32_t stencil );
 
-		void CreateInputAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& inputRefs, const OreOreLib::Memory<uint32_t>& slots ) const;
-		//void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
-		void CreateColorResolveAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& colorRefs, OreOreLib::Array<VkAttachmentReference>& resolveRefs, const OreOreLib::Memory<uint32_t>& slots ) const;
-		//void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots );
+		void CreateInputAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& inputRefs, const OreOreLib::Memory<uint32>& slots ) const;
+		//void CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32> slots );
+		void CreateColorResolveAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& colorRefs, OreOreLib::Array<VkAttachmentReference>& resolveRefs, const OreOreLib::Memory<uint32>& slots ) const;
+		//void CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32> slots );
 		void CreateDepthAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs ) const;
 
 
-		void InitAttachmentRef(	AttachmentRefs& attachmentRef, const OreOreLib::Memory<uint32_t>& inputs, const OreOreLib::Memory<uint32_t>& outputs ) const;
+		void InitAttachmentRef(	AttachmentRefs& attachmentRef, const OreOreLib::Memory<uint32>& inputs, const OreOreLib::Memory<uint32>& outputs ) const;
 
 
 		const OreOreLib::Array<VkAttachmentDescription>& AttachmentDescs()	const { return m_AttacmentDescs; }
@@ -94,8 +94,8 @@ namespace vk
 
 		struct Slot
 		{
-			uint32_t	AttachmentID;	// attachment index
-			bool		HasResolve;	// Resolve buffer existence
+			uint32	AttachmentID;	// attachment index
+			bool	HasResolve;	// Resolve buffer existence
 		};
 
 		OreOreLib::Array<VkAttachmentDescription>	m_AttacmentDescs;
@@ -103,7 +103,7 @@ namespace vk
 
 		// ColorBuffer slot table( resolve and depth buffers are excluded )
 		OreOreLib::Array<Slot>						m_ColorSlots;
-		uint32_t									m_DepthSlot;
+		uint32										m_DepthSlot;
 
 
 		void ResetClearValues();

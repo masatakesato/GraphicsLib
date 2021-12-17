@@ -29,30 +29,29 @@ namespace vk
 	{
 	public:
 
-		const uint32_t SwapChainColorTarget = ~0u;
-		const uint32_t SwapChainDepthTarget = ~0u;
+		const uint32 SwapChainColorTarget = ~0u;
+		const uint32 SwapChainDepthTarget = ~0u;
 
 		ShaderEffect();
-		ShaderEffect( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets );
-		ShaderEffect( GraphicsDevice& device, SwapChain& swapChain, uint32_t numPasses, uint32_t numRenderTargets );
+		ShaderEffect( GraphicsDevice& device, uint32 numPasses, uint32 numRenderTargets );
+		ShaderEffect( GraphicsDevice& device, SwapChain& swapChain, uint32 numPasses, uint32 numRenderTargets );
 		~ShaderEffect();
 		ShaderEffect( const ShaderEffect& )=delete;
 
-		void Init( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets );
-		void Init( GraphicsDevice& device, SwapChain& swapchain, uint32_t numPasses, uint32_t numRenderTargets );
+		void Init( GraphicsDevice& device, uint32 numPasses, uint32 numRenderTargets );
+		void Init( GraphicsDevice& device, SwapChain& swapchain, uint32 numPasses, uint32 numRenderTargets );
 		void Release();
 
 		void InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs );
 		void InitDependencies( std::initializer_list<ShaderPassDependency> dependencies );
-		void InitGraphicsPipeline( uint32_t pass, const PipelineState& pipelineState );
 
-		void SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
-		void SetSubpassOutputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist );
+		void SetSubpassInputRenderTargets( uint32 pass, std::initializer_list<uint32> ilist );
+		void SetSubpassOutputRenderTargets( uint32 pass, std::initializer_list<uint32> ilist );
 
-		void InitDescriptorSetLayouts( uint32_t pass, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
+		void InitDescriptorSetLayouts( uint32 pass, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
 
-		void BindUniformBuffer( uint32_t pass, uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformBuffers );
-		void BindCombinedImageSampler( uint32_t pass, uint32_t set, uint32_t binding, VkImageView imageView, VkSampler sampler );
+		void BindUniformBuffer( uint32 pass, uint32 set, uint32 binding, const OreOreLib::Array<UniformBuffer>& uniformBuffers );
+		void BindCombinedImageSampler( uint32 pass, uint32 set, uint32 binding, VkImageView imageView, VkSampler sampler );
 
 		void BuildDescriptorSets();
 		void BuildRenderPass();
@@ -64,19 +63,19 @@ namespace vk
 		void RecreateOnSwapchainUpdate();
 
 		
-		ShaderPass& Pass( uint32_t pass=0 ) 	{ return m_ShaderPasses[pass]; }
-		const RenderPassAttachments& Attachments() const	{ return m_Attachments; }
+		ShaderPass& Pass( uint32 pass=0 ) 							{ return m_ShaderPasses[ pass ]; }
+		const RenderPassAttachments& Attachments() const			{ return m_Attachments; }
 
-		const VkFramebuffer Framebuffer( uint32_t i ) const	{ return m_Framebuffers.Buffer(i); }
-		const VkRenderPass RenderPass() const				{ return m_RenderPass; }
-		const VkPipeline Pipeline( uint32_t pass ) const	{ return m_Pipelines[ pass ].Pipeline(); }
-		const VkPipelineLayout PipelineLayout( uint32_t pass ) const	{ return m_Pipelines[ pass ].Layout(); }
-//		PipelineState& RenderState( uint32_t pass )			{ return m_ShaderPasses[ pass ].State(); }
+		const VkFramebuffer Framebuffer( uint32 i ) const			{ return m_Framebuffers.Buffer(i); }
+		const VkRenderPass RenderPass() const						{ return m_RenderPass; }
+		const VkPipeline Pipeline( uint32 pass ) const				{ return m_Pipelines[ pass ].Pipeline(); }
+		const VkPipelineLayout PipelineLayout( uint32 pass ) const	{ return m_Pipelines[ pass ].Layout(); }
+		PipelineState& RenderState( uint32 pass )					{ return m_ShaderPasses[ pass ].State(); }
 
 
-		uint32_t NumSets( uint32_t pass ) const	{ return m_DescriptorBuffers[ pass ].NumSets(); }
-		const VkDescriptorSet& DescriptorSets( uint32_t pass, uint32_t swap_id ) const					{ return m_DescriptorBuffers[ pass ].DescriptorSets( swap_id ); }
-		const VkDescriptorSet& DescriptorSet( uint32_t pass, uint32_t swap_id, uint32_t set_id ) const	{ return m_DescriptorBuffers[pass].DescriptorSet( swap_id, set_id ); }
+		uint32_t NumSets( uint32 pass ) const	{ return m_DescriptorBuffers[ pass ].NumSets(); }
+		const VkDescriptorSet& DescriptorSets( uint32 pass, uint32 swap_id ) const					{ return m_DescriptorBuffers[ pass ].DescriptorSets( swap_id ); }
+		const VkDescriptorSet& DescriptorSet( uint32 pass, uint32 swap_id, uint32 set_id ) const	{ return m_DescriptorBuffers[ pass ].DescriptorSet( swap_id, set_id ); }
 
 
 	private:

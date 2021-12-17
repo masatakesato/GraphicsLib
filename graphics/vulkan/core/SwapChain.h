@@ -34,10 +34,10 @@ namespace vk
 		VkSwapchainKHR Handle() const	{ return m_SwapChain; }
 
 
-		uint32_t NumAttachments() const				{ return m_NumAttachments; }
+		uint32 NumAttachments() const				{ return m_NumAttachments; }
 
 		const SwapChainBuffer& ColorBuffers() const	{ return m_ColorBuffers; }
-		uint32_t NumBuffers() const				{ return m_ColorBuffers.NumBuffers(); }
+		uint32_t NumBuffers() const					{ return m_ColorBuffers.NumBuffers(); }
 		VkFormat ImageFormat() const				{ return m_ColorBuffers.Format(); }
 		VkImageView ImageView( int i ) const		{ return m_ColorBuffers.View(i); }
 
@@ -58,13 +58,19 @@ namespace vk
 		void BindInFlightFence( int i, VkFence fence ){ m_refRenderFinishedFences[i] = fence; }
 
 
-		VkResult AquireNextImage( uint32_t& imageIndex );
+		inline VkResult AquireNextImage( uint32_t& imageIndex );
 		
-		void WaitForAvailable( int imageIndex )
-		{
-			if( m_refRenderFinishedFences[ imageIndex ] != VK_NULL_HANDLE )
-				vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
-		}
+		inline VkResult SubmitCommandbuffer( const uint32_t& imageIndex, const OreOreLib::Memory<VkCommandBuffer>& commansBuffers );
+
+		//void WaitForAvailable( int imageIndex )
+		//{
+		//	if( m_refRenderFinishedFences[ imageIndex ] != VK_NULL_HANDLE )
+		//		vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
+		//}
+
+
+		inline VkResult QueuePresent( const uint32_t& imageIndex );
+
 
 
 
@@ -72,7 +78,7 @@ namespace vk
 
 		GraphicsDeviceRef				m_refDevice;
 		VkExtent2D						m_WindowExtent;
-		uint32_t						m_NumAttachments;
+		uint32							m_NumAttachments;
 
 		VkSwapchainKHR					m_SwapChain;
 		VkExtent2D						m_SwapChainExtent;
@@ -104,6 +110,72 @@ namespace vk
 
 
 	using SwapChainRef = OreOreLib::ReferenceWrapper<SwapChain>;
+
+
+
+
+
+
+	VkResult SwapChain::AquireNextImage( uint32_t& imageIndex )
+	{
+		// Wait for 
+		m_refSynchronizer->WaitForCurrentFrame();
+
+		return vkAcquireNextImageKHR( m_refDevice->Device(), m_SwapChain, std::numeric_limits<uint64_t>::max(), m_refSynchronizer->CurrentPresentFinishedSemaphore(), VK_NULL_HANDLE, &imageIndex );		
+	}
+
+
+
+	VkResult SwapChain::SubmitCommandbuffer( const uint32_t& imageIndex, const OreOreLib::Memory<VkCommandBuffer>& commansBuffers )
+	{
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType	= VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+		
+		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+		submitInfo.waitSemaphoreCount	= 1;
+		submitInfo.pWaitSemaphores		= &m_refSynchronizer->CurrentPresentFinishedSemaphore();// Present完了を待ってから描画開始するためのセマフォを指定する
+		submitInfo.pWaitDstStageMask	= waitStages;
+		submitInfo.commandBufferCount	= commansBuffers.Length<uint32_t>();
+		submitInfo.pCommandBuffers		= commansBuffers.begin();//&commandBuffers[ imageIndex ];//#########################################
+
+		submitInfo.signalSemaphoreCount	= 1;
+		submitInfo.pSignalSemaphores	= &m_refSynchronizer->CurrentRenderFinishedSemaphore();// 描画完了を知らせるセマフォ
+
+		// シグナル状態になっているinFlightFencesをノンシグナル状態にリセットする
+		m_refSynchronizer->ResetFence();
+
+		// コマンドバッファをサブミットしてGPU処理キックする. 処理が終わるとinFlightFencesがシグナル状態になってる
+		return vkQueueSubmit( m_refDevice->GraphicsQueue(), 1, &submitInfo, m_refSynchronizer->CurrentInFlightFence() );
+	}
+
+
+
+	VkResult SwapChain::QueuePresent( const uint32_t& imageIndex )
+	{
+		// imageIndex番目のスワップチェーン画像がまだ処理中だったら終わるまで待つ
+		if( m_refRenderFinishedFences[ imageIndex ] != VK_NULL_HANDLE )
+				vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
+
+		// コンカレントフレーム用のフェンスをimageIndexに割り当てる
+		m_refRenderFinishedFences[ imageIndex ] = m_refSynchronizer->CurrentInFlightFence();
+
+
+		//================= Present処理 ===================//
+		VkPresentInfoKHR presentInfo = {};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = &m_refSynchronizer->CurrentRenderFinishedSemaphore();// 描画完了を待ってからPresent開始するためのセマフォを指定する
+
+		presentInfo.swapchainCount	= 1;
+		presentInfo.pSwapchains		= &m_SwapChain;
+		presentInfo.pImageIndices	= &imageIndex;
+		presentInfo.pResults		= nullptr; // Optional
+		
+		return vkQueuePresentKHR( m_refDevice->PresentQueue(), &presentInfo );
+	}
+
 
 
 }// end of namespace vk

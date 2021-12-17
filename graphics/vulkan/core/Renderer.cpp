@@ -33,7 +33,7 @@ namespace vk
 		allocInfo.sType					= VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.commandPool			= m_refDevice->CommandPool();
 		allocInfo.level					= VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandBufferCount	= static_cast<uint32_t>( m_CommandBuffers.Length() );
+		allocInfo.commandBufferCount	= m_CommandBuffers.Length<uint32_t>();
 
 		VK_CHECK_RESULT( vkAllocateCommandBuffers( m_refDevice->Device(), &allocInfo, m_CommandBuffers.begin() ) );
 	}

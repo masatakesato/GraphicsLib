@@ -257,7 +257,7 @@ namespace vk
 	{
 		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 		layoutInfo.sType		= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount	= static_cast<uint32_t>( bindings.Length() );
+		layoutInfo.bindingCount	= bindings.Length<uint32_t>();
 		layoutInfo.pBindings	= bindings.begin();
 
 		VK_CHECK_RESULT( vkCreateDescriptorSetLayout( device, &layoutInfo, nullptr, &descSetLayout ) );
@@ -284,7 +284,7 @@ namespace vk
 		VkImageCreateInfo imageInfo = {};
 		imageInfo.sType			= VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		imageInfo.imageType		= VK_IMAGE_TYPE_2D;
-		imageInfo.extent		= { static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1 };
+		imageInfo.extent		= { width, height, 1 };
 		imageInfo.mipLevels		= mipLevels;
 		imageInfo.arrayLayers	= 1;
 		imageInfo.format		= format;

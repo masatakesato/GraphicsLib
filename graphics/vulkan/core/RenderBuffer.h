@@ -26,7 +26,7 @@ namespace vk
 		// Virtual function override
 		virtual VkFormat Format() const							{ return m_Format; }
 		virtual const VkExtent2D& Extent() const				{ return m_Dim; }
-		virtual const VkImageView& View(int i=0 ) const			{ return m_ImageView; }
+		virtual const VkImageView& View( uint32 i=0 ) const		{ return m_ImageView; }
 		virtual VkSampleCountFlagBits MultiSampleCount() const	{ return m_MsaaSamples; }
 		virtual uint32_t MipLevels() const						{ return 1; }
 		virtual uint32_t NumBuffers() const						{ return 1; }

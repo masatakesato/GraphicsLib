@@ -15,7 +15,7 @@ namespace vk
 	
 
 	
-	FrameSynchronizer::FrameSynchronizer( GraphicsDevice& device, uint32_t maxConcurrentFrames )
+	FrameSynchronizer::FrameSynchronizer( GraphicsDevice& device, uint32 maxConcurrentFrames )
 		: currentFrame( 0 )
 	{
 		Init( device, maxConcurrentFrames );
@@ -30,13 +30,13 @@ namespace vk
 
 
 
-	void FrameSynchronizer::Init( GraphicsDevice& device, uint32_t maxConcurrentFrames )
+	void FrameSynchronizer::Init( GraphicsDevice& device, uint32 maxConcurrentFrames )
 	{
 		m_refDevice				= device;
 		m_MaxConcurrentFrames	= maxConcurrentFrames;
 
-		m_PresentFinishedSemaphores.Resize( (int)maxConcurrentFrames );
-		m_RenderFinishedSemaphores.Resize( (int)maxConcurrentFrames );
+		m_PresentFinishedSemaphores.Resize( maxConcurrentFrames );
+		m_RenderFinishedSemaphores.Resize( maxConcurrentFrames );
 		inFlightFences.Resize( maxConcurrentFrames );
 
 		VkSemaphoreCreateInfo semaphoreInfo = {};

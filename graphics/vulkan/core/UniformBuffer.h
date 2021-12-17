@@ -59,20 +59,20 @@ namespace vk
 	public:
 
 		UniformBuffers();
-		UniformBuffers( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps );
+		UniformBuffers( GraphicsDevice& device, VkDeviceSize bufferSize, uint32 numSwaps );
 		~UniformBuffers();
 		UniformBuffers( const UniformBuffers& ) = delete;
 		UniformBuffers( UniformBuffers&& obj );
 
-		void Init( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps );
+		void Init( GraphicsDevice& device, VkDeviceSize bufferSize, uint32 numSwaps );
 		void Release();
 
-		void Update( void* pData, uint32_t swapIndex );
-		void Update( void* pData, VkDeviceSize size, uint32_t swapIndex );
+		void Update( void* pData, uint32 swapIndex );
+		void Update( void* pData, VkDeviceSize size, uint32 swapIndex );
 
-		VkDeviceSize Size( uint32_t i=0 ) const				{ return m_UniformBuffers[i].Size(); }
-		VkBuffer Buffer( uint32_t i=0 ) const				{ return m_UniformBuffers[i].Buffer(); }
-		VkDeviceMemory DeviceMemory( uint32_t i=0 ) const	{ return m_UniformBuffers[i].DeviceMemory(); }
+		VkDeviceSize Size( uint32 i=0 ) const			{ return m_UniformBuffers[i].Size(); }
+		VkBuffer Buffer( uint32 i=0 ) const				{ return m_UniformBuffers[i].Buffer(); }
+		VkDeviceMemory DeviceMemory( uint32 i=0 ) const	{ return m_UniformBuffers[i].DeviceMemory(); }
 
 
 	private:

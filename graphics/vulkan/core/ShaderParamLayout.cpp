@@ -81,13 +81,13 @@ namespace vk
 
 		m_DescSetLayouts.Init( m_Bindings.Length() );
 
-		for( uint32 set_id=0; set_id<m_DescSetLayouts.Length(); ++set_id )
+		for( uint32 set_id=0; set_id<m_DescSetLayouts.Length<uint32>(); ++set_id )
 		{
 			VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 			layoutInfo.sType		= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 			layoutInfo.pNext		= nullptr;
 			layoutInfo.flags		= 0;
-			layoutInfo.bindingCount	= static_cast<uint32_t>( m_Bindings[ set_id ].Length() );
+			layoutInfo.bindingCount	= m_Bindings[ set_id ].Length<uint32_t>();
 			layoutInfo.pBindings	= m_Bindings[ set_id ].begin();
 
 			VK_CHECK_RESULT( vkCreateDescriptorSetLayout( m_refDevice, &layoutInfo, nullptr, &m_DescSetLayouts[ set_id ] ) );

@@ -34,8 +34,8 @@ namespace vk
 		void AddShaderStage( VkShaderStageFlagBits stage, const tstring& filepath );
 		void BuildCreateInfo();
 
-		void SetInputRenderTargetIDs( std::initializer_list<uint32_t> ilist );
-		void SetOutputRenderTargetIDs( std::initializer_list<uint32_t> ilist );
+		void SetInputRenderTargetIDs( std::initializer_list<uint32> ilist );
+		void SetOutputRenderTargetIDs( std::initializer_list<uint32> ilist );
 
 		void InitPushConstantRanges( std::initializer_list<VkPushConstantRange> constRanges );
 		void InitDescriptorSetLayouts( std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
@@ -45,12 +45,12 @@ namespace vk
 		const OreOreLib::Array<VkPushConstantRange>& PushConstantRanges() const			{ return m_PushConstantRanges; }
 		const ShaderParamLayout& ParamLayout() const									{ return m_ShaderParamLayout; }
 
-		const OreOreLib::Array<uint32_t>& InputRenderTargetIDs() const					{ return m_InputRenderTargetIDs; }
-		const OreOreLib::Array<uint32_t>& OutputRenderTargetIDs() const					{ return m_OutputRenderTargetIDs; }
+		const OreOreLib::Array<uint32>& InputRenderTargetIDs() const					{ return m_InputRenderTargetIDs; }
+		const OreOreLib::Array<uint32>& OutputRenderTargetIDs() const					{ return m_OutputRenderTargetIDs; }
 
-//		void SetPipelineState( const PipelineState& pipelineState )	{ m_State = pipelineState; }
-//		const PipelineState& State() const					{ return m_State; }
-//		PipelineState& State()					{ return m_State; }
+		void SetPipelineState( const PipelineState& pipelineState )	{ m_State = pipelineState; }
+		const PipelineState& State() const							{ return m_State; }
+		PipelineState& State()										{ return m_State; }
 
 
 	private:
@@ -67,11 +67,11 @@ namespace vk
 		ShaderParamLayout						m_ShaderParamLayout;
 	
 		// Render target In/Outs
-		OreOreLib::Array<uint32_t>				m_InputRenderTargetIDs;
-		OreOreLib::Array<uint32_t>				m_OutputRenderTargetIDs;
+		OreOreLib::Array<uint32>				m_InputRenderTargetIDs;
+		OreOreLib::Array<uint32>				m_OutputRenderTargetIDs;
 
 		// RenderStata
-//		PipelineState							m_State;
+		PipelineState							m_State;
 
 
 		void InitShaderStage( ShaderStage& shaderstage, const OreOreLib::Array<char>& shadercode, VkShaderStageFlagBits stage );

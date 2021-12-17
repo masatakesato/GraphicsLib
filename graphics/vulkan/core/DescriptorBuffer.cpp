@@ -16,7 +16,7 @@ namespace vk
 
 
 
-	DescriptorBuffer::DescriptorBuffer( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout )
+	DescriptorBuffer::DescriptorBuffer( VkDevice device, uint32 numswaps, const ShaderParamLayout& paramlayout )
 	{
 		Init(  device, numswaps, paramlayout );
 	}
@@ -30,7 +30,7 @@ namespace vk
 
 
 
-	void DescriptorBuffer::Init( VkDevice device, uint32_t numswaps, const ShaderParamLayout& paramlayout )
+	void DescriptorBuffer::Init( VkDevice device, uint32 numswaps, const ShaderParamLayout& paramlayout )
 	{
 		m_refDevice	= device;
 
@@ -44,7 +44,7 @@ namespace vk
 	{
 		if( m_refDevice != VK_NULL_HANDLE )
 		{
-			VK_CHECK_RESULT( vkFreeDescriptorSets( m_refDevice, m_DescPool, static_cast<uint32_t>(m_DescriptorSets.Length()), m_DescriptorSets.begin() ) );
+			VK_CHECK_RESULT( vkFreeDescriptorSets( m_refDevice, m_DescPool, m_DescriptorSets.Length<uint32_t>(), m_DescriptorSets.begin() ) );
 		
 			if( m_DescPool != VK_NULL_HANDLE )
 			{
@@ -58,11 +58,11 @@ namespace vk
 
 
 
-	void DescriptorBuffer::BindUniformBuffer( uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers )
+	void DescriptorBuffer::BindUniformBuffer( uint32 set, uint32 binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
-		for( uint32_t img_id=0; img_id<m_DescriptorSets.Dim(0); ++img_id )
+		for( uint32 img_id=0; img_id<m_DescriptorSets.Dim<uint32>(0); ++img_id )
 		{
 			VkDescriptorBufferInfo bufferInfo = {};
 			bufferInfo.buffer	= uniformbuffers[ img_id ].Buffer();
@@ -87,11 +87,11 @@ namespace vk
 
 	// |------- Swapchain[0]{ DescSet[0], DescSet[1]... } -------|------- Swapchain[1]{ DescSet[0], DescSet[1]... }.... ------|---...
 
-	void DescriptorBuffer::BindCombinedImageSampler( uint32_t set, uint32_t binding, VkImageView imageview, VkSampler sampler )
+	void DescriptorBuffer::BindCombinedImageSampler( uint32 set, uint32 binding, VkImageView imageview, VkSampler sampler )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
-		for( uint32_t img_id=0; img_id<m_DescriptorSets.Dim(0); ++img_id )
+		for( uint32 img_id=0; img_id<m_DescriptorSets.Dim<uint32>(0); ++img_id )
 		{
 			VkDescriptorImageInfo imageInfo = {};
 			imageInfo.imageLayout	= VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -117,16 +117,16 @@ namespace vk
 
 
 
-	void DescriptorBuffer::InitDescriptorPool( uint32_t numswaps,  const ShaderParamLayout& paramlayout )
+	void DescriptorBuffer::InitDescriptorPool( uint32 numswaps,  const ShaderParamLayout& paramlayout )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
 		OreOreLib::Array<VkDescriptorPoolSize> poolSizes( paramlayout.NumTotalBindings() );
 
 		auto poolSize = poolSizes.begin();
-		for( int set_id=0; set_id<paramlayout.NumSets(); ++set_id )
+		for( uint32 set_id=0; set_id<paramlayout.NumSets(); ++set_id )
 		{
-			for( int binding_id=0; binding_id<paramlayout.NumBindins( set_id ); ++binding_id )
+			for( uint32 binding_id=0; binding_id<paramlayout.NumBindins( set_id ); ++binding_id )
 			{
 				poolSize->type	= paramlayout.Binding( set_id, binding_id ).descriptorType;
 				poolSize->descriptorCount	= numswaps;
@@ -138,8 +138,8 @@ namespace vk
 		poolInfo.sType			= VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.pNext			= nullptr;
 		poolInfo.flags			= VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-		poolInfo.maxSets		= numswaps * static_cast<uint32_t>( paramlayout.NumSets() );
-		poolInfo.poolSizeCount	= static_cast<uint32_t>( poolSizes.Length() );
+		poolInfo.maxSets		= numswaps * paramlayout.NumSets<uint32_t>();
+		poolInfo.poolSizeCount	= poolSizes.Length<uint32_t>();
 		poolInfo.pPoolSizes		= poolSizes.begin();
 
 
@@ -148,19 +148,18 @@ namespace vk
 
 
 
-	void DescriptorBuffer::InitDescriptorSets( uint32_t numswaps, const ShaderParamLayout& paramlayout )
+	void DescriptorBuffer::InitDescriptorSets( uint32 numswaps, const ShaderParamLayout& paramlayout )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
-		uint32_t descSetCount = numswaps * static_cast<uint32_t>( paramlayout.NumSets() );
+		uint32_t descSetCount = numswaps * paramlayout.NumSets<uint32_t>();
 
 		OreOreLib::Array<VkDescriptorSetLayout> layouts( descSetCount );
-		//for( auto& layout : layouts )	layout = paramlayout.Layout(0);
 
 		auto layout	= layouts.begin();
-		for( uint32_t img_id=0; img_id<numswaps; ++img_id )
+		for( uint32 img_id=0; img_id<numswaps; ++img_id )
 		{
-			for( int set_id=0; set_id<paramlayout.NumSets(); ++set_id )
+			for( uint32 set_id=0; set_id<paramlayout.NumSets(); ++set_id )
 			{
 				*layout++ = paramlayout.DescriptorSetLayout( set_id );
 			}
@@ -173,7 +172,7 @@ namespace vk
 		allocInfo.descriptorSetCount	= descSetCount;
 		allocInfo.pSetLayouts			= layouts.begin();
 
-		m_DescriptorSets.Init( {numswaps, static_cast<uint32_t>( paramlayout.NumSets() )} );
+		m_DescriptorSets.Init( { numswaps, paramlayout.NumSets() } );
 		VK_CHECK_RESULT( vkAllocateDescriptorSets( m_refDevice, &allocInfo, m_DescriptorSets.begin() ) );
 	}
 

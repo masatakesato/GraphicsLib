@@ -27,23 +27,22 @@ namespace vk
 
 		void BindDevice( VkDevice device ) { m_refDevice = device; }
 
-		int NumSets() const	{ return m_Bindings.Length(); }
-		int NumBindins( int set ) const	{ return m_Bindings[set].Length(); }
-		int NumTotalBindings() const	{ return m_NumBindings; }
+		template < typename Type=uint32 >Type NumSets() const					{ return m_Bindings.Length<Type>(); }
+		template < typename Type=uint32 >Type NumBindins( uint32 set ) const	{ return m_Bindings[ set ].Length<Type>(); }
+		uint32 NumTotalBindings() const		{ return m_NumBindings; }
 
-		const VkDescriptorSetLayoutBinding* Bindings( int set ) const	{ return m_Bindings[ set ].begin(); }
-		const VkDescriptorSetLayoutBinding& Binding( int set, int location ) const	{ return m_Bindings[set][location]; }
+		const VkDescriptorSetLayoutBinding* Bindings( uint32 set ) const						{ return m_Bindings[ set ].begin(); }
+		const VkDescriptorSetLayoutBinding& Binding( uint32 set, uint32 location ) const	{ return m_Bindings[set][location]; }
 
 		const OreOreLib::Array<VkDescriptorSetLayout>& DescriptorSetLayouts() const	{ return m_DescSetLayouts; }
-		const VkDescriptorSetLayout& DescriptorSetLayout( int set ) const	{ return m_DescSetLayouts[ set ]; }
-
+		const VkDescriptorSetLayout& DescriptorSetLayout( uint32 set ) const		{ return m_DescSetLayouts[ set ]; }
 
 
 	private:
 
 		VkDevice	m_refDevice;
 
-		uint32_t	m_NumBindings;
+		uint32		m_NumBindings;
 		OreOreLib::Array< OreOreLib::Array<VkDescriptorSetLayoutBinding> >	m_Bindings;
 		OreOreLib::Array< VkDescriptorSetLayout >							m_DescSetLayouts;// Set毎に1個ずつ必要
 

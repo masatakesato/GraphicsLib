@@ -94,7 +94,7 @@ namespace vk
 
 
 
-	UniformBuffers::UniformBuffers( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps )
+	UniformBuffers::UniformBuffers( GraphicsDevice& device, VkDeviceSize bufferSize, uint32 numSwaps )
 	{
 		Init( device, bufferSize, numSwaps );
 	}
@@ -116,7 +116,7 @@ namespace vk
 
 
 
-	void UniformBuffers::Init( GraphicsDevice& device, VkDeviceSize bufferSize, uint32_t numSwaps )
+	void UniformBuffers::Init( GraphicsDevice& device, VkDeviceSize bufferSize, uint32 numSwaps )
 	{
 		m_UniformBuffers.Init( numSwaps );
 
@@ -134,17 +134,17 @@ namespace vk
 
 
 	// Transfer data to VkDeviceMemory
-	void UniformBuffers::Update( void* pData, uint32_t swapIndex )
+	void UniformBuffers::Update( void* pData, uint32 swapIndex )
 	{
-		ASSERT( swapIndex < m_UniformBuffers.Length() );
+		ASSERT( swapIndex < m_UniformBuffers.Length<uint32>() );
 		m_UniformBuffers[ swapIndex ].Update( pData );
 	}
 
 
 
-	void UniformBuffers::Update( void* pData, VkDeviceSize size, uint32_t swapIndex )
+	void UniformBuffers::Update( void* pData, VkDeviceSize size, uint32 swapIndex )
 	{
-		ASSERT( swapIndex < m_UniformBuffers.Length() );
+		ASSERT( swapIndex < m_UniformBuffers.Length<uint32>() );
 		m_UniformBuffers[ swapIndex ].Update( pData, size );
 	}
 

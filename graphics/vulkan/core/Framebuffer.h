@@ -15,17 +15,17 @@ namespace vk
 	public:
 
 		Framebuffers();
-		Framebuffers( GraphicsDevice& device, VkRenderPass renderPass, uint32_t numbackbuffers );
+		Framebuffers( GraphicsDevice& device, VkRenderPass renderPass, uint32 numbackbuffers );
 		~Framebuffers();
 		Framebuffers( const Framebuffers& ) = delete;
 
 
-		void Init( GraphicsDevice& device, VkRenderPass renderPass, uint32_t numbackbuffers );
+		void Init( GraphicsDevice& device, VkRenderPass renderPass, uint32 numbackbuffers );
 		void Release();
 
-		void InitFramebuffer( uint32_t bufferindex, uint32_t width, uint32_t height, const OreOreLib::Memory<VkImageView>& imageViews );
+		void InitFramebuffer( uint32 bufferindex, uint32_t width, uint32_t height, const OreOreLib::Memory<VkImageView>& imageViews );
 
-		uint32_t NumBuffers() const	{ return static_cast<uint32_t>( m_Framebuffers.Length() ); }
+		template< typename Type=uint32 >Type NumBuffers() const	{ return m_Framebuffers.Length<Type>(); }
 		const VkFramebuffer Buffer( int i ) const	{ return m_Framebuffers[i]; }
 
 

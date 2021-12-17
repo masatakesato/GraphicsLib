@@ -15,11 +15,11 @@ namespace vk
 	public:
 
 		FrameSynchronizer();
-		FrameSynchronizer( GraphicsDevice& device, uint32_t maxConcurrentFrames );
+		FrameSynchronizer( GraphicsDevice& device, uint32 maxConcurrentFrames );
 		~FrameSynchronizer();
 		FrameSynchronizer( const FrameSynchronizer& ) = delete;
 
-		void Init( GraphicsDevice& device, uint32_t maxConcurrentFrames );
+		void Init( GraphicsDevice& device, uint32 maxConcurrentFrames );
 		void Release();
 
 		uint32_t MaxConcurrentFrames() const	{ return m_MaxConcurrentFrames; }
@@ -28,7 +28,7 @@ namespace vk
 //		const VkFence& InFlightFence( int i ) const { return inFlightFences[i]; }
 
 
-		const VkFence& CurrentInFlightFence() const { return inFlightFences[ currentFrame ]; }
+		const VkFence& CurrentInFlightFence() const					{ return inFlightFences[ currentFrame ]; }
 		const VkSemaphore& CurrentPresentFinishedSemaphore() const	{ return m_PresentFinishedSemaphores[ currentFrame ]; }
 		const VkSemaphore& CurrentRenderFinishedSemaphore() const	{ return m_RenderFinishedSemaphores[ currentFrame ]; }
 
@@ -42,13 +42,13 @@ namespace vk
 	private:
 
 		GraphicsDeviceRef	m_refDevice;
-		uint32_t					m_MaxConcurrentFrames;
+		uint32					m_MaxConcurrentFrames;
 
 		OreOreLib::Array<VkSemaphore>	m_PresentFinishedSemaphores;// 描画処理完了(PresentQueueにサブミットしたジョブの完了)時にシグナル状態になるセマフォ
 		OreOreLib::Array<VkSemaphore>	m_RenderFinishedSemaphores;// プレゼント処理完了(RenderQueueにサブミットしたジョブの完了)時にシグナル状態になるセマフォ
 		OreOreLib::Array<VkFence>		inFlightFences;// スワップチェーンのフェンス.
 
-		uint32_t						currentFrame;
+		uint32						currentFrame;
 	};
 
 

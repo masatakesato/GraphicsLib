@@ -68,7 +68,7 @@ namespace vk
 
 	//void AttachmentRefs::SetResolveAttachments( std::initializer_list<VkAttachmentReference> ilist )
 	//{
-	//	ASSERT( m_ColorAttachments.Length() == (int)ilist.size() );
+	//	ASSERT( m_ColorAttachments.Length<size_t>() == ilist.size() );
 	//	m_ResolveAttachments.Init( ilist );
 	//}
 
@@ -194,9 +194,9 @@ namespace vk
 
 
 
-	void RenderPassAttachments::ClearColor( uint32_t slot, float r, float g, float b, float a )
+	void RenderPassAttachments::ClearColor( uint32 slot, float r, float g, float b, float a )
 	{
-		if( slot < m_ColorSlots.Length() )
+		if( slot < m_ColorSlots.Length<uint32>() )
 			m_ClearValues[ m_ColorSlots[ slot ].AttachmentID ].color = { r, g, b, a };
 	}
 
@@ -210,29 +210,29 @@ namespace vk
 
 
 
-	//void RenderPassAttachments::CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots )
+	//void RenderPassAttachments::CreateColorAttachmentReferece( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32> slots )
 	//{
 	//	for( const auto& slot : slots )
 	//	{
-	//		if( slot >= m_Slots.Length() )	continue;
+	//		if( slot >= m_Slots.Length<uint32_t>() )	continue;
 	//		refs.AddToTail( { m_Slots[ slot ].ID, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 	//	}
 	//}
 
 
 	
-	//void RenderPassAttachments::CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32_t> slots )
+	//void RenderPassAttachments::CreateResolveAttachmentReference( OreOreLib::Array<VkAttachmentReference>& refs, std::initializer_list<uint32> slots )
 	//{
 	//	for( const auto& slot : slots )
 	//	{
-	//		if( slot >= m_Slots.Length() )	continue;
+	//		if( slot >= m_Slots.Length<uint32_t>() )	continue;
 
 	//		if( m_Slots[ slot ].HasResolve )// found resolve attachment
 	//			refs.AddToTail( { m_Slots[ slot ].ID + 1, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 	//		else// no resolve attachment found
 	//			refs.AddToTail( { VK_ATTACHMENT_UNUSED, VK_IMAGE_LAYOUT_UNDEFINED } );
 
-	//	//	ASSERT( attachmentId < static_cast<uint32_t>(m_ColorToResolve.Length()) );
+	//	//	ASSERT( attachmentId < m_ColorToResolve.Length<uint32_t>() );
 	//	//	const auto& attachment = m_ColorToResolve[ attachmentId ];
 	//	//	refs.AddToTail( { attachment, attachment==VK_ATTACHMENT_UNUSED ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 	//	}	
@@ -241,11 +241,11 @@ namespace vk
 
 
 	void RenderPassAttachments::CreateInputAttachmentReferece(	OreOreLib::Array<VkAttachmentReference>& inputRefs,
-																const OreOreLib::Memory<uint32_t>& slots ) const
+																const OreOreLib::Memory<uint32>& slots ) const
 	{
 		for( auto slot : slots )
 		{
-			if( slot >= m_ColorSlots.Length() || slot==~0u )	continue;
+			if( slot >= m_ColorSlots.Length<uint32>() || slot==~0u )	continue;
 
 			inputRefs.AddToTail( { m_ColorSlots[ slot ].AttachmentID, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 		}
@@ -255,11 +255,11 @@ namespace vk
 
 	void RenderPassAttachments::CreateColorResolveAttachmentReferece(	OreOreLib::Array<VkAttachmentReference>& colorRefs,
 																		OreOreLib::Array<VkAttachmentReference>& resolveRefs,
-																		const OreOreLib::Memory<uint32_t>& slots ) const
+																		const OreOreLib::Memory<uint32>& slots ) const
 	{
 		for( auto slot : slots )
 		{
-			if( slot >= m_ColorSlots.Length() || slot==~0u )	continue;
+			if( slot >= m_ColorSlots.Length<uint32>() || slot==~0u )	continue;
 
 			// Add color attachment reference
 			colorRefs.AddToTail( { m_ColorSlots[ slot ].AttachmentID, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
@@ -284,8 +284,8 @@ namespace vk
 
 
 	void RenderPassAttachments::InitAttachmentRef(	AttachmentRefs& attachmentRef,
-													const OreOreLib::Memory<uint32_t>& inputs,
-													const OreOreLib::Memory<uint32_t>& outputs ) const
+													const OreOreLib::Memory<uint32>& inputs,
+													const OreOreLib::Memory<uint32>& outputs ) const
 	{
 		CreateInputAttachmentReferece( attachmentRef.m_InputAttachments, inputs );
 		CreateColorResolveAttachmentReferece( attachmentRef.m_ColorAttachments, attachmentRef.m_ResolveAttachments, outputs );

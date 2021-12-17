@@ -55,7 +55,7 @@ namespace vk
 
 			m_CreateInfos.Release();
 
-//			m_State.Release();
+			m_State.Release();
 
 			//m_refDevice.Reset();
 		}
@@ -105,14 +105,14 @@ namespace vk
 
 
 
-	void ShaderPass::SetInputRenderTargetIDs( std::initializer_list<uint32_t> ilist )
+	void ShaderPass::SetInputRenderTargetIDs( std::initializer_list<uint32> ilist )
 	{
 		m_InputRenderTargetIDs.Init( ilist.begin(), ilist.end() );
 	}
 
 
 
-	void ShaderPass::SetOutputRenderTargetIDs( std::initializer_list<uint32_t> ilist )
+	void ShaderPass::SetOutputRenderTargetIDs( std::initializer_list<uint32> ilist )
 	{
 		m_OutputRenderTargetIDs.Init( ilist.begin(), ilist.end() );
 	}
@@ -137,7 +137,7 @@ namespace vk
 	{
 		VkShaderModuleCreateInfo createInfo = {};
 		createInfo.sType	= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		createInfo.codeSize	= shadercode.Length();
+		createInfo.codeSize	= shadercode.Length<size_t>();
 		createInfo.pCode	= reinterpret_cast<const uint32_t*>( shadercode.begin() );
 
 		VK_CHECK_RESULT( vkCreateShaderModule( m_refDevice->Device(), &createInfo, nullptr, &shaderstage.module ) );

@@ -24,10 +24,10 @@ namespace vk
 		// Virtual function override
 		virtual VkFormat Format() const							{ return m_Format; }
 		virtual const VkExtent2D& Extent() const				{ return /*m_Dim*/{0, 0}; }
-		virtual const VkImageView& View(int i=0 ) const			{ return m_ImageViews[i]; }
+		virtual const VkImageView& View( uint32 i=0 ) const		{ return m_ImageViews[i]; }
 		virtual VkSampleCountFlagBits MultiSampleCount() const	{ return /*m_MsaaSamples*/VK_SAMPLE_COUNT_1_BIT; }
 		virtual uint32_t MipLevels() const						{ return 1; }
-		virtual uint32_t NumBuffers() const						{ return static_cast<uint32_t>( m_Images.Length() ); }
+		virtual uint32_t NumBuffers() const						{ return m_Images.Length<uint32_t>(); }
 
 
 	private:

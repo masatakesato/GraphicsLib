@@ -54,7 +54,7 @@ namespace vk
 		void SetStencilTest( VkBool32 flag );
 		void SetStencilOperators( VkStencilOpState front, VkStencilOpState back );
 
-		// Multisampe
+		// Multisample
 		void SetSampleShading( VkBool32 flag );
 		void SetRasterizationSamples( VkSampleCountFlagBits flag );
 		void SetMinSampleShading( float val );

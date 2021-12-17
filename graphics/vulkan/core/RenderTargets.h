@@ -25,10 +25,10 @@ namespace vk
 		void Release();
 
 		
-		uint32_t NumBuffers() const	{ return static_cast<uint32_t>( m_RenderBuffers.Length() ); }
+		uint32 NumBuffers() const				{ return m_RenderBuffers.Length<uint32>(); }
 		const VkExtent2D& MaxDim() const		{ return m_MaxDim; }
 		const VkExtent2D& MinDim() const		{ return m_MinDim; }
-		const VkExtent2D& Dim( uint32 i ) const		{ return m_RenderBuffers[i].Extent(); }
+		const VkExtent2D& Dim( uint32 i ) const	{ return m_RenderBuffers[i].Extent(); }
 
 		void ExposeImageViews( OreOreLib::Memory<VkImageView>& imageViews );
 

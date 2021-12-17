@@ -48,9 +48,9 @@ namespace vk
 //	const Vec3f	dumy3 = {-1, -1, -1};
 //	const Vec2f	dumy2 = {-1, -1};
 //
-//	for( int i=0; i<VertAttribs.Length(); ++i )
+//	for( int i=0; i<VertAttribs.Length<int>(); ++i )
 //	{
-//		for( int j=0; j<VertAttribs[i].Length(); ++j )
+//		for( int j=0; j<VertAttribs[i].Length<int>(); ++j )
 //		{
 //			int vertIdx		= i;					// 頂点配列m_Vertices上の頂点インデックス
 //			int texIdx		= VertAttribs[i][j].x;	// テクスチャ座標属性へのインデックス
@@ -67,10 +67,10 @@ namespace vk
 //	*Indices = new int[numIndices];
 //	curr = 0;
 //
-//	for( int i=0; i<FaceAttribs.Length(); ++i )
+//	for( int i=0; i<FaceAttribs.Length<int>(); ++i )
 //	{
 //		// 頂点ごとの属性をVertAttribsに追加登録する
-//		for( int j=1; j<FaceAttribs[i].Length()-1; ++j )
+//		for( int j=1; j<FaceAttribs[i].Length<int>()-1; ++j )
 //		{
 //			Vec2i ID_VertAttrib;
 //
@@ -100,9 +100,9 @@ namespace vk
 //	const Vec3f	dumy3 = {-1, -1, -1};
 //	const Vec2f	dumy2 = {-1, -1};
 //
-//	for( int i=0; i<VertAttribs.Length(); ++i )
+//	for( int i=0; i<VertAttribs.Length<int>(); ++i )
 //	{
-//		for( int j=0; j<VertAttribs[i].Length(); ++j )
+//		for( int j=0; j<VertAttribs[i].Length<int>(); ++j )
 //		{
 //			int vertIdx		= i;					// 頂点配列m_Vertices上の頂点インデックス
 //			int texIdx		= VertAttribs[i][j].x;	// テクスチャ座標属性へのインデックス
@@ -119,10 +119,10 @@ namespace vk
 //	Indices.Init( numIndices );//*Indices = new int[numIndices];
 //	curr = 0;
 //
-//	for( int i=0; i<FaceAttribs.Length(); ++i )
+//	for( int i=0; i<FaceAttribs.Length<int>(); ++i )
 //	{
 //		// 頂点ごとの属性をVertAttribsに追加登録する
-//		for( int j=1; j<FaceAttribs[i].Length()-1; ++j )
+//		for( int j=1; j<FaceAttribs[i].Length<int>()-1; ++j )
 //		{
 //			Vec2i ID_VertAttrib;
 //

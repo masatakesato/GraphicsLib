@@ -17,14 +17,14 @@ namespace vk
 
 
 
-	ShaderEffect::ShaderEffect( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets )
+	ShaderEffect::ShaderEffect( GraphicsDevice& device, uint32 numPasses, uint32 numRenderTargets )
 	{
 		Init( device, numPasses, numRenderTargets );
 	}
 
 
 
-	ShaderEffect::ShaderEffect( GraphicsDevice& device, SwapChain& swapChain, uint32_t numPasses, uint32_t numRenderTargets )
+	ShaderEffect::ShaderEffect( GraphicsDevice& device, SwapChain& swapChain, uint32 numPasses, uint32 numRenderTargets )
 	{
 		Init( device, swapChain, numPasses, numRenderTargets );
 	}
@@ -38,7 +38,7 @@ namespace vk
 
 
 
-	void ShaderEffect::Init( GraphicsDevice& device, uint32_t numPasses, uint32_t numRenderTargets )
+	void ShaderEffect::Init( GraphicsDevice& device, uint32 numPasses, uint32 numRenderTargets )
 	{
 		m_refDevice	= device;
 		m_ShaderPasses.Init( numPasses );
@@ -57,7 +57,7 @@ namespace vk
 
 
 
-	void ShaderEffect::Init( GraphicsDevice& device, SwapChain& swapchain, uint32_t numPasses, uint32_t numRenderTargets )
+	void ShaderEffect::Init( GraphicsDevice& device, SwapChain& swapchain, uint32 numPasses, uint32 numRenderTargets )
 	{
 		m_refDevice	= device;
 		m_refSwapChain	= swapchain;
@@ -66,8 +66,8 @@ namespace vk
 		m_Pipelines.Init( numPasses );
 
 		m_RenderTargetDescs.Init( 2/*swapchain color, swapchain depth*/ + numRenderTargets );
-		*const_cast<uint32_t*>(&SwapChainColorTarget)	= numRenderTargets;
-		*const_cast<uint32_t*>(&SwapChainDepthTarget)	= numRenderTargets + 1;// TODO: Need to check if swapchain has depth component.
+		*const_cast<uint32*>(&SwapChainColorTarget)	= numRenderTargets;
+		*const_cast<uint32*>(&SwapChainDepthTarget)	= numRenderTargets + 1;// TODO: Need to check if swapchain has depth component.
 
 		m_DescriptorBuffers.Init( numPasses );
 
@@ -130,16 +130,7 @@ namespace vk
 
 
 
-	void ShaderEffect::InitGraphicsPipeline( uint32_t pass, const PipelineState& pipelineState )
-	{
-		m_Pipelines.Init( m_ShaderPasses.Length() );
-		ASSERT( pass < static_cast<uint32_t>( m_Pipelines.Length() ) );
-		m_Pipelines[ pass ].Init( m_refDevice, m_ShaderPasses[ pass ], pipelineState, m_RenderPass, pass );
-	}
-
-
-
-	void ShaderEffect::SetSubpassInputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist )
+	void ShaderEffect::SetSubpassInputRenderTargets( uint32 pass, std::initializer_list<uint32> ilist )
 	{
 		// スワップチェーンがないのにSwapChainColorTarget指定されてるケースを除外する
 		m_ShaderPasses[ pass ].SetInputRenderTargetIDs( ilist );
@@ -147,28 +138,28 @@ namespace vk
 
 
 
-	void ShaderEffect::SetSubpassOutputRenderTargets( uint32_t pass, std::initializer_list<uint32_t> ilist )
+	void ShaderEffect::SetSubpassOutputRenderTargets( uint32 pass, std::initializer_list<uint32> ilist )
 	{
 		m_ShaderPasses[ pass ].SetOutputRenderTargetIDs( ilist );
 	}
 
 
 
-	void ShaderEffect::InitDescriptorSetLayouts( uint32_t pass, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
+	void ShaderEffect::InitDescriptorSetLayouts( uint32 pass, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
 	{
 		m_ShaderPasses[ pass ].InitDescriptorSetLayouts( bindings );
 	}
 
 
 
-	void ShaderEffect::BindUniformBuffer( uint32_t pass, uint32_t set, uint32_t binding, const OreOreLib::Array<UniformBuffer>& uniformBuffers )
+	void ShaderEffect::BindUniformBuffer( uint32 pass, uint32 set, uint32 binding, const OreOreLib::Array<UniformBuffer>& uniformBuffers )
 	{
 		m_DescriptorBuffers[ pass ].BindUniformBuffer( set, binding, uniformBuffers );
 	}
 
 
 
-	void ShaderEffect::BindCombinedImageSampler( uint32_t pass, uint32_t set, uint32_t binding, VkImageView imageView, VkSampler sampler )
+	void ShaderEffect::BindCombinedImageSampler( uint32 pass, uint32 set, uint32 binding, VkImageView imageView, VkSampler sampler )
 	{
 		m_DescriptorBuffers[ pass ].BindCombinedImageSampler( set, binding, imageView, sampler );
 	}
@@ -208,9 +199,9 @@ namespace vk
 	
 			subpassDesc.pipelineBindPoint		= VK_PIPELINE_BIND_POINT_GRAPHICS;
 
-			subpassDesc.inputAttachmentCount	= static_cast<uint32_t>( attachmentRef->Inputs().Length() );//inputAttachmentRefs.Length() );
-			subpassDesc.pInputAttachments		= attachmentRef->Inputs().begin();//inputAttachmentRefs.begin();
-			subpassDesc.colorAttachmentCount	= static_cast<uint32_t>( attachmentRef->Colors().Length() );
+			subpassDesc.inputAttachmentCount	= attachmentRef->Inputs().Length<uint32_t>();
+			subpassDesc.pInputAttachments		= attachmentRef->Inputs().begin();
+			subpassDesc.colorAttachmentCount	= attachmentRef->Colors().Length<uint32_t>();
 			subpassDesc.pColorAttachments		= attachmentRef->Colors().begin();
 			subpassDesc.pResolveAttachments		= attachmentRef->Resolves().begin();
 			subpassDesc.pDepthStencilAttachment	= attachmentRef->Depth().begin();
@@ -221,11 +212,11 @@ namespace vk
 
 		VkRenderPassCreateInfo renderPassInfo = {};
 		renderPassInfo.sType			= VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassInfo.attachmentCount	= static_cast<uint32_t>( m_Attachments.AttachmentDescs().Length() );
+		renderPassInfo.attachmentCount	= m_Attachments.AttachmentDescs().Length<uint32_t>();
 		renderPassInfo.pAttachments		= m_Attachments.AttachmentDescs().begin();
-		renderPassInfo.subpassCount		= static_cast<uint32_t>( subpassDescriptions.Length() );
+		renderPassInfo.subpassCount		= subpassDescriptions.Length<uint32_t>();
 		renderPassInfo.pSubpasses		= subpassDescriptions.begin();
-		renderPassInfo.dependencyCount	= static_cast<uint32_t>( m_SubpassDependencies.Length() );
+		renderPassInfo.dependencyCount	= m_SubpassDependencies.Length<uint32_t>();
 		renderPassInfo.pDependencies	= m_SubpassDependencies.begin();
 
 		VK_CHECK_RESULT( vkCreateRenderPass( m_refDevice->Device(), &renderPassInfo, nullptr, &m_RenderPass ) );
@@ -248,7 +239,7 @@ namespace vk
 
 		const auto& extent = !m_refSwapChain.IsNull() ? m_refSwapChain->Extent() : m_RenderTargets.MaxDim();
 
-		for( int i=0; i<m_Framebuffers.NumBuffers(); ++i )
+		for( uint32 i=0; i<m_Framebuffers.NumBuffers(); ++i )
 		{
 			if( !m_refSwapChain.IsNull() )
 				m_refSwapChain->ExposeImageViews( swapchainviews, i );
@@ -263,7 +254,7 @@ namespace vk
 
 	void ShaderEffect::BuildPipelines()
 	{
-		for( uint32_t pass=0; pass<m_ShaderPasses.Length(); ++pass )
+		for( uint32 pass=0; pass<m_ShaderPasses.Length<uint32>(); ++pass )
 			m_Pipelines[ pass ].Init( m_refDevice, m_ShaderPasses[ pass ], m_RenderPass, pass );
 	}
 
@@ -288,6 +279,7 @@ namespace vk
 
 		m_DescriptorBuffers.Clear();// Clear contents only. Allocated memory will be reused
 	}
+
 
 
 	void ShaderEffect::RecreateOnSwapchainUpdate()

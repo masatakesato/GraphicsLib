@@ -38,7 +38,7 @@ namespace vk
 	{
 		m_refDevice				= device;
 		m_WindowExtent			= extent;
-		m_NumAttachments		= uint32_t( msaasamples != VK_SAMPLE_COUNT_1_BIT ) + uint32_t( depthformat != VK_FORMAT_UNDEFINED ) + 1;
+		m_NumAttachments		= uint32( msaasamples != VK_SAMPLE_COUNT_1_BIT ) + uint32( depthformat != VK_FORMAT_UNDEFINED ) + 1;
 		//m_bEnableMultisample	= msaasamples != VK_SAMPLE_COUNT_1_BIT;
 		//msaaSamples				= msaasamples;
 
@@ -137,22 +137,51 @@ namespace vk
 
 
 
-	VkResult SwapChain::AquireNextImage( uint32_t& imageIndex )
-	{
-		// Wait for 
-		m_refSynchronizer->WaitForCurrentFrame();
+	//VkResult SwapChain::AquireNextImage( uint32_t& imageIndex )
+	//{
+	//	// Wait for 
+	//	m_refSynchronizer->WaitForCurrentFrame();
 
-		auto result = vkAcquireNextImageKHR( m_refDevice->Device(), m_SwapChain, std::numeric_limits<uint64_t>::max(), m_refSynchronizer->CurrentPresentFinishedSemaphore(), VK_NULL_HANDLE, &imageIndex );		
+	//	return vkAcquireNextImageKHR( m_refDevice->Device(), m_SwapChain, std::numeric_limits<uint64_t>::max(), m_refSynchronizer->CurrentPresentFinishedSemaphore(), VK_NULL_HANDLE, &imageIndex );		
 
-		// Wait for previous frame's RenderFinished fence
-		if( m_refRenderFinishedFences[ imageIndex ] != VK_NULL_HANDLE )
-			VK_CHECK_RESULT( vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() ) );
+	//	// Moved to QueuePresent()
+	//	//// Wait for previous frame's RenderFinished fence
+	//	//if( m_refRenderFinishedFences[ imageIndex ] != VK_NULL_HANDLE )
+	//	//	VK_CHECK_RESULT( vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() ) );
 
-		// Assign new RenderFinished fence for current frame
-		m_refRenderFinishedFences[ imageIndex ] = m_refSynchronizer->CurrentInFlightFence();
+	//	//// Assign new RenderFinished fence for current frame
+	//	//m_refRenderFinishedFences[ imageIndex ] = m_refSynchronizer->CurrentInFlightFence();
 
-		return result;
-	}
+	//	//return result;
+	//}
+
+
+
+	//VkResult SwapChain::QueuePresent( const uint32_t& imageIndex )
+	//{
+	//	// imageIndex番目のスワップチェーン画像がまだ処理中だったら終わるまで待つ
+	//	if( m_refRenderFinishedFences[ imageIndex ] != VK_NULL_HANDLE )
+	//			vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
+
+	//	// コンカレントフレーム用のフェンスをimageIndexに割り当てる
+	//	m_refRenderFinishedFences[ imageIndex ] = m_refSynchronizer->CurrentInFlightFence();
+
+
+	//	//================= Present処理 ===================//
+	//	VkPresentInfoKHR presentInfo = {};
+	//	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+	//	presentInfo.waitSemaphoreCount = 1;
+	//	presentInfo.pWaitSemaphores = &m_refSynchronizer->CurrentRenderFinishedSemaphore();// 描画完了を待ってからPresent開始するためのセマフォを指定する
+
+	//	presentInfo.swapchainCount	= 1;
+	//	presentInfo.pSwapchains		= &m_SwapChain;
+	//	presentInfo.pImageIndices	= &imageIndex;
+	//	presentInfo.pResults		= nullptr; // Optional
+	//	
+	//	return vkQueuePresentKHR( m_refDevice->PresentQueue(), &presentInfo );
+	//}
+
 
 
 

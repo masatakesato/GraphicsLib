@@ -15,7 +15,7 @@ namespace vk
 	
 
 	
-	Framebuffers::Framebuffers( GraphicsDevice& device, VkRenderPass renderPass, uint32_t numbackbuffers )
+	Framebuffers::Framebuffers( GraphicsDevice& device, VkRenderPass renderPass, uint32 numbackbuffers )
 		: m_refDevice( device )
 		, m_refRenderPass( renderPass )
 		, m_Framebuffers( numbackbuffers )
@@ -32,7 +32,7 @@ namespace vk
 
 
 
-	void Framebuffers::Init( GraphicsDevice& device, VkRenderPass renderPass, uint32_t numbackbuffers )
+	void Framebuffers::Init( GraphicsDevice& device, VkRenderPass renderPass, uint32 numbackbuffers )
 	{
 		m_refDevice		= device;
 		m_refRenderPass	= renderPass;
@@ -61,9 +61,9 @@ namespace vk
 
 
 
-	void Framebuffers::InitFramebuffer( uint32_t bufferindex, uint32_t width, uint32_t height, const OreOreLib::Memory<VkImageView>& imageViews )
+	void Framebuffers::InitFramebuffer( uint32 bufferindex, uint32_t width, uint32_t height, const OreOreLib::Memory<VkImageView>& imageViews )
 	{
-		ASSERT( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE && bufferindex < m_Framebuffers.Length() );
+		ASSERT( !m_refDevice.IsNull() && m_refDevice->Device() != VK_NULL_HANDLE && bufferindex < m_Framebuffers.Length<uint32>() );
 
 		// Delete existing framebuffer resource 
 		if( m_Framebuffers[ bufferindex ] != VK_NULL_HANDLE )
@@ -73,7 +73,7 @@ namespace vk
 		VkFramebufferCreateInfo framebufferInfo = {};
 		framebufferInfo.sType			= VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass		= m_refRenderPass;
-		framebufferInfo.attachmentCount	= static_cast<uint32_t>( imageViews.Length() );
+		framebufferInfo.attachmentCount	= imageViews.Length<uint32_t>();
 		framebufferInfo.pAttachments	= imageViews.begin();
 		framebufferInfo.width			= width;
 		framebufferInfo.height			= height;
