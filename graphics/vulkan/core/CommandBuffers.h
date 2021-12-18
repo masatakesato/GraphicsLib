@@ -21,11 +21,9 @@ namespace vk
 		void Init( GraphicsDevice& device, uint32 numBuffers );
 		void Release();
 
-		uint32_t NumBuffers() const	{ return m_CommandBuffers.Length<uint32_t>(); }
-		const VkCommandBuffer Buffer( OreOreLib::MemSizeType i ) const	{ return m_CommandBuffers[i]; }
+		template < typename T=uint32 > T NumBuffers() const				{ return m_CommandBuffers.Length<T>(); }
+		const VkCommandBuffer& Buffer( OreOreLib::MemSizeType i ) const	{ return m_CommandBuffers[i]; }
 		const OreOreLib::Array<VkCommandBuffer>& Buffers() const		{ return m_CommandBuffers; }
-
-
 
 
 	private:

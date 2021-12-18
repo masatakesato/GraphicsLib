@@ -70,7 +70,7 @@ namespace vk
 		void Init( const OreOreLib::Memory<RenderTargetDesc>& rederTargetDescs );
 		void Release();
 
-		template< typename Type=uint32 > Type NumAttachments() const { return m_AttacmentDescs.Length<Type>(); }
+		template < typename T=uint32 > T NumAttachments() const { return m_AttacmentDescs.Length<T>(); }
 		bool HasDepth() const			{ return m_DepthSlot != VK_ATTACHMENT_UNUSED; }
 
 		void ClearColor( uint32 slot, float r, float g, float b, float a );

@@ -73,7 +73,7 @@ namespace vk
 		PipelineState& RenderState( uint32 pass )					{ return m_ShaderPasses[ pass ].State(); }
 
 
-		uint32_t NumSets( uint32 pass ) const	{ return m_DescriptorBuffers[ pass ].NumSets(); }
+		uint32_t NumSets( uint32 pass ) const	{ return m_DescriptorBuffers[ pass ].NumSets<uint32_t>(); }
 		const VkDescriptorSet& DescriptorSets( uint32 pass, uint32 swap_id ) const					{ return m_DescriptorBuffers[ pass ].DescriptorSets( swap_id ); }
 		const VkDescriptorSet& DescriptorSet( uint32 pass, uint32 swap_id, uint32 set_id ) const	{ return m_DescriptorBuffers[ pass ].DescriptorSet( swap_id, set_id ); }
 
@@ -93,20 +93,17 @@ namespace vk
 
 		//===================== SwapChain再生成に応じてもう一回作り直す必要があるオブジェクト群 =====================//
 
+		VkRenderPass								m_RenderPass;
+
+		RenderPassAttachments						m_Attachments;// スワップチェーンから取得した情報を使う. MSAAオンオフ切り替えとかあると再生成必要
 		OreOreLib::Array<RenderTargetDesc>			m_RenderTargetDescs;// スワップチェーン + 手動設定する全レンダーターゲットの情報配列
 		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_CustomRTDescView;// 手動設定レンダーターゲット情報
 		OreOreLib::ArrayView<vk::RenderTargetDesc>	m_SwapChainRTDescView;// スワップチェーンのレンダーターゲット情報
 
+		Framebuffers								m_Framebuffers;// スワップチェーンのVkImageViewを参照している.
+		OreOreLib::Array<GraphicsPipeline>			m_Pipelines;// オブジェクト生成にVkRenderPass(スワップチェーン更新で再生成)が必要
 
-		VkRenderPass						m_RenderPass;
-
-		Framebuffers						m_Framebuffers;// スワップチェーンのVkImageViewを参照している.
-		OreOreLib::Array<GraphicsPipeline>	m_Pipelines;// オブジェクト生成にVkRenderPass(スワップチェーン更新で再生成)が必要
-
-		RenderPassAttachments				m_Attachments;// スワップチェーンから取得した情報を使う. MSAAオンオフ切り替えとかあると再生成必要
-
-OreOreLib::Array<DescriptorBuffer>	m_DescriptorBuffers;// スワップチェーン画像数だけバックバッファ確保が必要
-
+		OreOreLib::Array<DescriptorBuffer>			m_DescriptorBuffers;// 各サブパスのDescritorSet.
 	};
 
 

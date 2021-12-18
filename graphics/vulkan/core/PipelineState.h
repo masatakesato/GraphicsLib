@@ -36,13 +36,13 @@ namespace vk
 		void SetDepthBias( VkBool32 flag, float constantfactor, float biasclamp, float slopefactor );
 
 		// Blend
-		void SetBlend( VkBool32 flag, int attachment=0 );
-		void SetColorBlendFactor( VkBlendFactor src, VkBlendFactor dst, int attachment=0 );
-		void SetColorBlendOperation( VkBlendOp op, int attachment=0 );
-		void SetAlphaBlendFactor( VkBlendFactor src, VkBlendFactor dst, int attachment=0 );
-		void SetAlphaBlendOperation( VkBlendOp op, int attachment=0 );
-		void SetWriteMask( VkColorComponentFlagBits mask, int attachment=0 );
-		void SetAttachmentCount( uint32_t count );
+		void SetBlend( VkBool32 flag, uint32 attachment=0 );
+		void SetColorBlendFactor( VkBlendFactor src, VkBlendFactor dst, uint32 attachment=0 );
+		void SetColorBlendOperation( VkBlendOp op, uint32 attachment=0 );
+		void SetAlphaBlendFactor( VkBlendFactor src, VkBlendFactor dst, uint32 attachment=0 );
+		void SetAlphaBlendOperation( VkBlendOp op, uint32 attachment=0 );
+		void SetWriteMask( VkColorComponentFlagBits mask, uint32 attachment=0 );
+		void SetAttachmentCount( uint32 count );
 		void SetBlendConstants( const Vec4f& color );
 
 		// Depth stencil

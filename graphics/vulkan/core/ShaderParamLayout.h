@@ -27,8 +27,8 @@ namespace vk
 
 		void BindDevice( VkDevice device ) { m_refDevice = device; }
 
-		template < typename Type=uint32 >Type NumSets() const					{ return m_Bindings.Length<Type>(); }
-		template < typename Type=uint32 >Type NumBindins( uint32 set ) const	{ return m_Bindings[ set ].Length<Type>(); }
+		template < typename T=uint32 > T NumSets() const				{ return m_Bindings.Length<T>(); }
+		template < typename T=uint32 > T NumBindins( uint32 set ) const	{ return m_Bindings[ set ].Length<T>(); }
 		uint32 NumTotalBindings() const		{ return m_NumBindings; }
 
 		const VkDescriptorSetLayoutBinding* Bindings( uint32 set ) const						{ return m_Bindings[ set ].begin(); }

@@ -33,7 +33,7 @@ namespace vk
 		void BindUniformBuffer( uint32 set, uint32 binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers );
 		void BindCombinedImageSampler( uint32 set, uint32 binding, VkImageView imageview, VkSampler sampler );
 
-		uint32_t NumSets() const	{ return m_DescriptorSets.Dim<uint32_t>(1); }
+		template < typename T=uint32 > T NumSets() const	{ return m_DescriptorSets.Dim<T>(1); }
 
 		const VkDescriptorPool& DecriptorPool() const								{ return m_DescPool; }
 		const VkDescriptorSet& DescriptorSets( uint32 swap_id ) const				{ return m_DescriptorSets( swap_id, 0 ); }

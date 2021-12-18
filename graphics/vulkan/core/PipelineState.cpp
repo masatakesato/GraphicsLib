@@ -230,10 +230,10 @@ namespace vk
 
 	//==================== Color blending ======================//
 
-	void PipelineState::SetAttachmentCount( uint32_t count )
+	void PipelineState::SetAttachmentCount( uint32 count )
 	{
 		//m_ColorBlendState.attachmentCount	= count;
-		m_ColorBlendAttachmentStates.Resize( (int)count );
+		m_ColorBlendAttachmentStates.Resize( count );
 
 		for( auto& attachment : m_ColorBlendAttachmentStates )
 		{
@@ -260,34 +260,34 @@ namespace vk
 		m_ColorBlendState.blendConstants[3] = color.a;
 	}
 
-	void PipelineState::SetBlend( VkBool32 flag, int attachment )
+	void PipelineState::SetBlend( VkBool32 flag, uint32 attachment )
 	{
 		m_ColorBlendAttachmentStates[ attachment ].blendEnable = flag;
 	}
 
-	void PipelineState::SetColorBlendFactor( VkBlendFactor src, VkBlendFactor dst, int attachment )
+	void PipelineState::SetColorBlendFactor( VkBlendFactor src, VkBlendFactor dst, uint32 attachment )
 	{
 		m_ColorBlendAttachmentStates[ attachment ].srcColorBlendFactor = src;
 		m_ColorBlendAttachmentStates[ attachment ].dstColorBlendFactor = dst;
 	}
 
-	void PipelineState::SetColorBlendOperation( VkBlendOp op, int attachment )
+	void PipelineState::SetColorBlendOperation( VkBlendOp op, uint32 attachment )
 	{
 		m_ColorBlendAttachmentStates[ attachment ].colorBlendOp = op;
 	}
 
-	void PipelineState::SetAlphaBlendFactor( VkBlendFactor src, VkBlendFactor dst, int attachment )
+	void PipelineState::SetAlphaBlendFactor( VkBlendFactor src, VkBlendFactor dst, uint32 attachment )
 	{
 		m_ColorBlendAttachmentStates[ attachment ].srcAlphaBlendFactor = src;
 		m_ColorBlendAttachmentStates[ attachment ].dstAlphaBlendFactor = dst;
 	}
 
-	void PipelineState::SetAlphaBlendOperation( VkBlendOp op, int attachment )
+	void PipelineState::SetAlphaBlendOperation( VkBlendOp op, uint32 attachment )
 	{
 		m_ColorBlendAttachmentStates[ attachment ].alphaBlendOp = op;
 	}
 
-	void PipelineState::SetWriteMask( VkColorComponentFlagBits mask, int attachment )
+	void PipelineState::SetWriteMask( VkColorComponentFlagBits mask, uint32 attachment )
 	{
 		m_ColorBlendAttachmentStates[ attachment ].colorWriteMask = mask;
 	}

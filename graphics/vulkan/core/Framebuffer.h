@@ -25,7 +25,7 @@ namespace vk
 
 		void InitFramebuffer( uint32 bufferindex, uint32_t width, uint32_t height, const OreOreLib::Memory<VkImageView>& imageViews );
 
-		template< typename Type=uint32 >Type NumBuffers() const	{ return m_Framebuffers.Length<Type>(); }
+		template < typename T=uint32 > T NumBuffers() const	{ return m_Framebuffers.Length<T>(); }
 		const VkFramebuffer Buffer( int i ) const	{ return m_Framebuffers[i]; }
 
 

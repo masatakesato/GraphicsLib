@@ -4,6 +4,7 @@
 #include	<oreore/memory/ReferenceWrapper.h>
 
 #include	"GraphicsDevice.h"
+#include	"CommandBuffers.h"
 #include	"RenderBuffer.h"
 #include	"SwapChainBuffer.h"
 #include	"FrameSynchronizer.h"
@@ -60,17 +61,10 @@ namespace vk
 
 		inline VkResult AquireNextImage( uint32_t& imageIndex );
 		
-		inline VkResult SubmitCommandbuffer( const uint32_t& imageIndex, const OreOreLib::Memory<VkCommandBuffer>& commansBuffers );
-
-		//void WaitForAvailable( int imageIndex )
-		//{
-		//	if( m_refRenderFinishedFences[ imageIndex ] != VK_NULL_HANDLE )
-		//		vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
-		//}
-
+		inline VkResult SubmitCommandbuffer( const VkCommandBuffer& commandBuffer );
+		inline VkResult SubmitCommandbuffer( const OreOreLib::Memory<VkCommandBuffer>& commandBuffers );
 
 		inline VkResult QueuePresent( const uint32_t& imageIndex );
-
 
 
 
@@ -126,7 +120,7 @@ namespace vk
 
 
 
-	VkResult SwapChain::SubmitCommandbuffer( const uint32_t& imageIndex, const OreOreLib::Memory<VkCommandBuffer>& commansBuffers )
+	VkResult SwapChain::SubmitCommandbuffer( const OreOreLib::Memory<VkCommandBuffer>& commandBuffer )
 	{
 		VkSubmitInfo submitInfo = {};
 		submitInfo.sType	= VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -136,8 +130,32 @@ namespace vk
 		submitInfo.waitSemaphoreCount	= 1;
 		submitInfo.pWaitSemaphores		= &m_refSynchronizer->CurrentPresentFinishedSemaphore();// Present完了を待ってから描画開始するためのセマフォを指定する
 		submitInfo.pWaitDstStageMask	= waitStages;
-		submitInfo.commandBufferCount	= commansBuffers.Length<uint32_t>();
-		submitInfo.pCommandBuffers		= commansBuffers.begin();//&commandBuffers[ imageIndex ];//#########################################
+		submitInfo.commandBufferCount	= commandBuffer.Length<uint32_t>();
+		submitInfo.pCommandBuffers		= commandBuffer.begin();
+
+		submitInfo.signalSemaphoreCount	= 1;
+		submitInfo.pSignalSemaphores	= &m_refSynchronizer->CurrentRenderFinishedSemaphore();// 描画完了を知らせるセマフォ
+
+		// シグナル状態になっているinFlightFencesをノンシグナル状態にリセットする
+		m_refSynchronizer->ResetFence();
+
+		// コマンドバッファをサブミットしてGPU処理キックする. 処理が終わるとinFlightFencesがシグナル状態になってる
+		return vkQueueSubmit( m_refDevice->GraphicsQueue(), 1, &submitInfo, m_refSynchronizer->CurrentInFlightFence() );
+	}
+
+
+
+	VkResult SwapChain::SubmitCommandbuffer( const VkCommandBuffer& commandBuffer )
+	{
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType	= VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		
+		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+		submitInfo.waitSemaphoreCount	= 1;
+		submitInfo.pWaitSemaphores		= &m_refSynchronizer->CurrentPresentFinishedSemaphore();// Present完了を待ってから描画開始するためのセマフォを指定する
+		submitInfo.pWaitDstStageMask	= waitStages;
+		submitInfo.commandBufferCount	= 1;
+		submitInfo.pCommandBuffers		= &commandBuffer;
 
 		submitInfo.signalSemaphoreCount	= 1;
 		submitInfo.pSignalSemaphores	= &m_refSynchronizer->CurrentRenderFinishedSemaphore();// 描画完了を知らせるセマフォ
@@ -155,7 +173,7 @@ namespace vk
 	{
 		// imageIndex番目のスワップチェーン画像がまだ処理中だったら終わるまで待つ
 		if( m_refRenderFinishedFences[ imageIndex ] != VK_NULL_HANDLE )
-				vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
+			vkWaitForFences( m_refDevice->Device(), 1, &m_refRenderFinishedFences[ imageIndex ], VK_TRUE, std::numeric_limits<uint64_t>::max() );
 
 		// コンカレントフレーム用のフェンスをimageIndexに割り当てる
 		m_refRenderFinishedFences[ imageIndex ] = m_refSynchronizer->CurrentInFlightFence();
