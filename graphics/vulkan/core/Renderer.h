@@ -1,7 +1,9 @@
 ﻿#ifndef RENDERER_H
 #define	RENDERER_H
 
-#include	"GraphicsDevice.h"
+//#include	"GraphicsDevice.h"
+#include	"SwapChain.h"
+#include	"CommandBuffers.h"
 
 
 
@@ -18,17 +20,21 @@ namespace vk
 
 		void DrawFrame();
 
+		void PrepareFrame();
+		void SubmitFrame();
 
 
 	private:
 
 		GraphicsDeviceRef	m_refDevice;
+		WindowRef			m_refWindow;
 
+		SwapChain		m_SwapChain;
+		CommandBuffers	m_CommandBuffers;
 
-		OreOreLib::Array<VkCommandBuffer>	m_CommandBuffers;
+		uint32_t imageIndex;
 
-
-		void InitCommandBuffers( uint32 numbuffers );
+		void RecreateSwapChain();
 
 
 	};

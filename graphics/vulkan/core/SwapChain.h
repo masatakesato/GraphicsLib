@@ -191,7 +191,11 @@ namespace vk
 		presentInfo.pImageIndices	= &imageIndex;
 		presentInfo.pResults		= nullptr; // Optional
 		
-		return vkQueuePresentKHR( m_refDevice->PresentQueue(), &presentInfo );
+		auto result = vkQueuePresentKHR( m_refDevice->PresentQueue(), &presentInfo );
+
+		m_refSynchronizer->SwitchCurrent();
+
+		return result;
 	}
 
 

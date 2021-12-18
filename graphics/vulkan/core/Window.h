@@ -6,11 +6,16 @@
 #include	<GLFW/glfw3.h>
 
 #include	<oreore/common/TString.h>
+#include	<oreore/memory/ReferenceWrapper.h>
 
 
 
 namespace vk
 {
+
+	class Window;
+	using WindowRef = OreOreLib::ReferenceWrapper<Window>;
+
 
 	class Window
 	{
