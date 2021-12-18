@@ -171,7 +171,7 @@ namespace vk
 		auto shaderPass = m_ShaderPasses.begin();
 		for( auto& descSets : m_DescriptorBuffers )
 		{
-			descSets.Init( m_refDevice->Device(), m_refSwapChain.IsNull() ? 1 : m_refSwapChain->NumBuffers(), shaderPass->ParamLayout() );
+			descSets.Init( m_refDevice->Device(), m_refSwapChain.IsNull() ? 1 : m_refSwapChain->NumBuffers(), shaderPass->DescLayout() );
 			shaderPass++;
 		}
 	}

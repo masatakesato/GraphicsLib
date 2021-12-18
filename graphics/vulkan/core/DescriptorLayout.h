@@ -1,5 +1,5 @@
-﻿#ifndef SHADER_PARAM_LAYOUT_H
-#define	SHADER_PARAM_LAYOUT_H
+﻿#ifndef DESCRIPTOR_LAYOUT_H
+#define	DESCRIPTOR_LAYOUT_H
 
 #include	<vulkan/vulkan.h>
 
@@ -11,21 +11,16 @@ namespace vk
 {
 	// サブパス1個分のディスクリプタセットレイアウト群を保持するクラス.
 
-	class ShaderParamLayout
+	class DescriptorLayout
 	{
 	public:
 
-		ShaderParamLayout();
-		~ShaderParamLayout();
-		ShaderParamLayout( const ShaderParamLayout& );// = delete;
+		DescriptorLayout();
+		~DescriptorLayout();
+		DescriptorLayout( const DescriptorLayout& );// = delete;
 
 		void Init( VkDevice device, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
 		void Release();
-
-//		void AddLayout( int set, VkDescriptorSetLayoutBinding binding );
-//		void RemoveLayout( int set, int location );
-
-		void BindDevice( VkDevice device ) { m_refDevice = device; }
 
 		template < typename T=uint32 > T NumSets() const				{ return m_Bindings.Length<T>(); }
 		template < typename T=uint32 > T NumBindins( uint32 set ) const	{ return m_Bindings[ set ].Length<T>(); }
@@ -55,4 +50,4 @@ namespace vk
 }// end of namespace vk
 
 
-#endif // !SHADER_PARAM_LAYOUT_H
+#endif // !DESCRIPTOR_LAYOUT_H

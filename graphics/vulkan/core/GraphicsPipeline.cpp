@@ -42,8 +42,8 @@ namespace vk
 		//============= Shader input parameter layout ============//
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType					= VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount			= shaderPass.ParamLayout().NumSets<uint32_t>();
-		pipelineLayoutInfo.pSetLayouts				= shaderPass.ParamLayout().DescriptorSetLayouts().begin();
+		pipelineLayoutInfo.setLayoutCount			= shaderPass.DescLayout().NumSets<uint32_t>();
+		pipelineLayoutInfo.pSetLayouts				= shaderPass.DescLayout().DescriptorSetLayouts().begin();
 		pipelineLayoutInfo.pushConstantRangeCount	= shaderPass.PushConstantRanges().Length<uint32_t>();
 		pipelineLayoutInfo.pPushConstantRanges		= shaderPass.PushConstantRanges().begin();
 

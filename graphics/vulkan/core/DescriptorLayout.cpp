@@ -1,4 +1,4 @@
-﻿#include	"ShaderParamLayout.h"
+﻿#include	"DescriptorLayout.h"
 
 #include	"../utils/HelperFunctions.h"
 
@@ -8,7 +8,7 @@ namespace vk
 {
 
 
-	ShaderParamLayout::ShaderParamLayout()
+	DescriptorLayout::DescriptorLayout()
 		: m_refDevice( VK_NULL_HANDLE )
 		, m_NumBindings( 0 )
 	{
@@ -17,7 +17,7 @@ namespace vk
 
 
 
-	ShaderParamLayout::ShaderParamLayout( const ShaderParamLayout& obj )
+	DescriptorLayout::DescriptorLayout( const DescriptorLayout& obj )
 		: m_Bindings( obj.m_Bindings )
 		, m_NumBindings( obj.m_NumBindings )
 	{
@@ -26,7 +26,7 @@ namespace vk
 
 
 
-	ShaderParamLayout::~ShaderParamLayout()
+	DescriptorLayout::~DescriptorLayout()
 	{
 		Release();
 	}
@@ -36,7 +36,7 @@ namespace vk
 	// https://www.khronos.org/registry/vulkan/specs/1.0/html/vkspec.html#VkDescriptorSetLayout
 	// set毎にvkCreateDescriptorSetLayoutが1つ必要になる
 	// set毎のbinding情報は、VkDescriptorSetLayoutBinding配列で与える
-	void ShaderParamLayout::Init( VkDevice device, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
+	void DescriptorLayout::Init( VkDevice device, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
 	{
 		m_refDevice	= device;
 		m_NumBindings = 0;
@@ -57,7 +57,7 @@ namespace vk
 
 
 
-	void ShaderParamLayout::Release()
+	void DescriptorLayout::Release()
 	{
 		if( m_refDevice != VK_NULL_HANDLE )
 		{
@@ -72,7 +72,7 @@ namespace vk
 
 
 
-	void ShaderParamLayout::InitDescriptorSetLayout()
+	void DescriptorLayout::InitDescriptorSetLayout()
 	{
 		ASSERT( m_refDevice	!= VK_NULL_HANDLE );
 

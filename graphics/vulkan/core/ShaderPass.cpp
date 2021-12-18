@@ -36,7 +36,7 @@ namespace vk
 		: m_refDevice( obj.m_refDevice )
 		, m_ShaderStages( (OreOreLib::Array<ShaderPass>&&) obj.m_ShaderStages )
 		, m_CreateInfos( (OreOreLib::Array<VkPipelineShaderStageCreateInfo>&&) obj.m_CreateInfos )
-		, m_ShaderParamLayout( obj.m_ShaderParamLayout )
+		, m_DescriptorLayout( obj.m_DescriptorLayout )
 	{
 
 	}
@@ -62,7 +62,7 @@ namespace vk
 
 
 
-		m_ShaderParamLayout.Release();
+		m_DescriptorLayout.Release();
 
 		m_InputRenderTargetIDs.Release();
 		m_OutputRenderTargetIDs.Release();
@@ -128,7 +128,7 @@ namespace vk
 
 	void ShaderPass::InitDescriptorSetLayouts( std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings )
 	{
-		m_ShaderParamLayout.Init( m_refDevice->Device(), bindings );
+		m_DescriptorLayout.Init( m_refDevice->Device(), bindings );
 	}
 
 

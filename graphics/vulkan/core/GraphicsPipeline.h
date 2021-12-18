@@ -4,7 +4,7 @@
 #include	<oreore/mathlib/GraphicsMath.h>
 
 #include	"ShaderPass.h"
-#include	"ShaderParamLayout.h"
+#include	"DescriptorLayout.h"
 #include	"VertexLayouts.h"
 #include	"PipelineState.h"
 

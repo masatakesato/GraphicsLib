@@ -1,7 +1,7 @@
 ﻿#ifndef SHADER_PASS_H
 #define	SHADER_PASS_H
 
-#include	"ShaderParamLayout.h"
+#include	"DescriptorLayout.h"
 #include	"DescriptorBuffer.h"
 #include	"PipelineState.h"
 
@@ -43,7 +43,7 @@ namespace vk
 
 		const OreOreLib::Array<VkPipelineShaderStageCreateInfo>& CreateInfos() const	{ return m_CreateInfos; }
 		const OreOreLib::Array<VkPushConstantRange>& PushConstantRanges() const			{ return m_PushConstantRanges; }
-		const ShaderParamLayout& ParamLayout() const									{ return m_ShaderParamLayout; }
+		const DescriptorLayout& DescLayout() const										{ return m_DescriptorLayout; }
 
 		const OreOreLib::Array<uint32>& InputRenderTargetIDs() const					{ return m_InputRenderTargetIDs; }
 		const OreOreLib::Array<uint32>& OutputRenderTargetIDs() const					{ return m_OutputRenderTargetIDs; }
@@ -64,7 +64,7 @@ namespace vk
 		OreOreLib::Array<VkPushConstantRange>	m_PushConstantRanges;
 
 		// DescriptorSetLayouts
-		ShaderParamLayout						m_ShaderParamLayout;
+		DescriptorLayout						m_DescriptorLayout;
 	
 		// Render target In/Outs
 		OreOreLib::Array<uint32>				m_InputRenderTargetIDs;

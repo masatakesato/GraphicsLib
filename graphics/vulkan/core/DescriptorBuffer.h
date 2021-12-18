@@ -6,7 +6,7 @@
 #include	<oreore/container/NDArray.h>
 
 #include	"UniformBuffer.h"
-#include	"ShaderParamLayout.h"
+#include	"DescriptorLayout.h"
 
 
 
@@ -23,11 +23,11 @@ namespace vk
 	public:
 
 		DescriptorBuffer();
-		DescriptorBuffer( VkDevice device, uint32 numswaps, const ShaderParamLayout& paramlayout );
+		DescriptorBuffer( VkDevice device, uint32 numSwaps, const DescriptorLayout& descLayout );
 		~DescriptorBuffer();
 		DescriptorBuffer( const DescriptorBuffer& ) = delete;
 
-		void Init( VkDevice device, uint32 numswaps, const ShaderParamLayout& paramlayout );
+		void Init( VkDevice device, uint32 numSwaps, const DescriptorLayout& descLayout );
 		void Release();
 
 		void BindUniformBuffer( uint32 set, uint32 binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers );
@@ -49,8 +49,8 @@ namespace vk
 		OreOreLib::NDArray<VkDescriptorSet, 2>	m_DescriptorSets;// スワップチェイン数 x セット数分だけ確保が必要. 1次元目: スワップチェイン数, 2次元目: セット数
 
 		
-		void InitDescriptorPool( uint32 numswaps, const ShaderParamLayout& paramlayout );
-		void InitDescriptorSets( uint32 numswaps, const ShaderParamLayout& paramlayout );
+		void InitDescriptorPool( uint32 numSwaps, const DescriptorLayout& descLayout );
+		void InitDescriptorSets( uint32 numSwaps, const DescriptorLayout& descLayout );
 
 	};
 
