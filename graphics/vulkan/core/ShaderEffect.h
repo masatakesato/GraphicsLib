@@ -50,7 +50,7 @@ namespace vk
 
 		void InitDescriptorSetLayouts( uint32 pass, std::initializer_list< std::initializer_list<VkDescriptorSetLayoutBinding> > bindings );
 
-		void BindUniformBuffer( uint32 pass, uint32 set, uint32 binding, const OreOreLib::Array<UniformBuffer>& uniformBuffers );
+		void BindUniformBuffer( uint32 pass, uint32 set, uint32 binding, const UniformBuffers& uniformBuffers );
 		void BindCombinedImageSampler( uint32 pass, uint32 set, uint32 binding, VkImageView imageView, VkSampler sampler );
 
 		void BuildDescriptorSets();

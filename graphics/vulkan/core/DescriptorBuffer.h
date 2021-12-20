@@ -30,7 +30,7 @@ namespace vk
 		void Init( VkDevice device, uint32 numSwaps, const DescriptorLayout& descLayout );
 		void Release();
 
-		void BindUniformBuffer( uint32 set, uint32 binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers );
+		void BindUniformBuffer( uint32 set, uint32 binding, const UniformBuffers& uniformbuffers );
 		void BindCombinedImageSampler( uint32 set, uint32 binding, VkImageView imageview, VkSampler sampler );
 
 		template < typename T=uint32 > T NumSets() const	{ return m_DescriptorSets.Dim<T>(1); }

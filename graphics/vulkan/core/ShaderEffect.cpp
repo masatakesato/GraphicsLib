@@ -152,7 +152,7 @@ namespace vk
 
 
 
-	void ShaderEffect::BindUniformBuffer( uint32 pass, uint32 set, uint32 binding, const OreOreLib::Array<UniformBuffer>& uniformBuffers )
+	void ShaderEffect::BindUniformBuffer( uint32 pass, uint32 set, uint32 binding, const UniformBuffers& uniformBuffers )
 	{
 		m_DescriptorBuffers[ pass ].BindUniformBuffer( set, binding, uniformBuffers );
 	}

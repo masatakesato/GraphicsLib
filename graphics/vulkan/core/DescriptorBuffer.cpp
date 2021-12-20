@@ -58,16 +58,16 @@ namespace vk
 
 
 
-	void DescriptorBuffer::BindUniformBuffer( uint32 set, uint32 binding, const OreOreLib::Array<UniformBuffer>& uniformbuffers )
+	void DescriptorBuffer::BindUniformBuffer( uint32 set, uint32 binding, const UniformBuffers& uniformbuffers )
 	{
 		ASSERT( m_refDevice != VK_NULL_HANDLE );
 
 		for( uint32 img_id=0; img_id<m_DescriptorSets.Dim<uint32>(0); ++img_id )
 		{
 			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer	= uniformbuffers[ img_id ].Buffer();
+			bufferInfo.buffer	= uniformbuffers.Buffer(img_id);
 			bufferInfo.offset	= 0;
-			bufferInfo.range	= uniformbuffers[ img_id ].Size();
+			bufferInfo.range	= uniformbuffers.Size(img_id);
 
 			VkWriteDescriptorSet writeDescSet = {};
 
