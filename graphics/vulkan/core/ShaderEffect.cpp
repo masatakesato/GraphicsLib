@@ -260,7 +260,20 @@ namespace vk
 
 
 
-	void ShaderEffect::ReleaseOnSwapchainUpdate()
+	void ShaderEffect::InitSwapchainDependentVariables()
+	{
+		BuildRenderPass();
+		
+		BuildFramebuffers();
+
+		BuildPipelines();
+
+		BuildDescriptorSets();
+	}
+
+
+
+	void ShaderEffect::ReleaseSwapchainDependentVariables()
 	{
 		m_SwapChainRTDescView.Clear();
 //		m_RenderTargetDescs.Clear();// スワップチェーン画像枚数が変わってたら再初期化必要.
@@ -282,16 +295,6 @@ namespace vk
 
 
 
-	void ShaderEffect::RecreateOnSwapchainUpdate()
-	{
-		//ReleaseOnSwapchainUpdate();
-
-		BuildRenderPass();//createRenderPass();
-		
-		BuildPipelines();
-
-		BuildDescriptorSets();
-	}
 
 
 }// end of namespace vk 

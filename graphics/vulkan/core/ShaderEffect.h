@@ -58,9 +58,9 @@ namespace vk
 		void BuildFramebuffers();
 		void BuildPipelines();
 
+		void InitSwapchainDependentVariables();
+		void ReleaseSwapchainDependentVariables();
 
-		void ReleaseOnSwapchainUpdate();
-		void RecreateOnSwapchainUpdate();
 
 		
 		ShaderPass& Pass( uint32 pass=0 ) 							{ return m_ShaderPasses[ pass ]; }
