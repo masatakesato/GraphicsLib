@@ -2,7 +2,9 @@
 #define	TEXTURE_LOADER_H
 
 #include	<oreore/images/FreeImageLoader.h>
-#include	<graphics/vulkan/core/Texture.h>
+
+#include	"../core/Texture.h"
+#include	"../core/VkDataFormat.h"
 
 
 
@@ -16,7 +18,7 @@ namespace vk
 		TextureLoader();
 		~TextureLoader();
 
-		bool Load( GraphicsDevice& device, Texture& tex, const tstring& filepath, bool bFloat, bool bFlip );
+		bool Load( GraphicsDevice& device, Texture& tex, const tstring& filepath, bool bFloat, bool bFlip, bool bSrgb );
 		bool Save( const Texture& tex, const tstring& filepath, bool bFlip );
 
 	};

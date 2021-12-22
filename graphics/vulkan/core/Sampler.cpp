@@ -118,6 +118,15 @@ namespace vk
 
 
 
+	//void Sampler::SetFilter( FilterMode mode )
+	//{
+	//	m_SamplerInfo.magFilter		= mode.MagFilter;
+	//	m_SamplerInfo.minFilter		= mode.MinFilter;
+	//	m_SamplerInfo.mipmapMode	= mode.MipmapMode;
+	//}
+
+
+
 	void Sampler::SetAddressMode( VkSamplerAddressMode u, VkSamplerAddressMode v, VkSamplerAddressMode w )
 	{
 		m_SamplerInfo.addressModeU	= u;
