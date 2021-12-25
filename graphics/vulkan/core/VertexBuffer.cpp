@@ -41,7 +41,7 @@ namespace vk
 
 
 	// Transfer data to VkDeviceMemory
-	void VertexBuffer::Update( void* vertices, VkDeviceSize size )
+	void VertexBuffer::Update( const void* vertices, VkDeviceSize size )
 	{
 		ASSERT( (m_refDevice->Device() != VK_NULL_HANDLE) && vertices );
 

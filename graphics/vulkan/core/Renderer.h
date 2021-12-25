@@ -23,14 +23,19 @@ namespace vk
 		void PrepareFrame();
 		void SubmitFrame();
 
+		SwapChain& SwapChain();
+
+
 
 	private:
 
 		GraphicsDeviceRef	m_refDevice;
 		WindowRef			m_refWindow;
 
-		SwapChain		m_SwapChain;
-		CommandBuffers	m_CommandBuffers;
+		vk::SwapChain		m_SwapChain;
+		CommandBuffers		m_CommandBuffers;
+
+		FrameSynchronizer	m_Synchronizer;
 
 		uint32_t imageIndex;
 

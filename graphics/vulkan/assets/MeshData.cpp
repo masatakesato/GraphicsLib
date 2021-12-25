@@ -20,7 +20,7 @@ namespace vk
 
 	MeshData::~MeshData()
 	{
-
+		Release();
 	}
 
 
@@ -32,15 +32,10 @@ namespace vk
 
 
 
-	void MeshData::Init( GraphicsDevice& device )
-	{
-
-	}
-
-
-
 	void MeshData::Release()
 	{
+		m_IndexBuffer.Release();
+		m_VertexBuffer.Release();
 
 	}
 

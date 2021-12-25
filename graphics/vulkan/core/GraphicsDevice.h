@@ -54,6 +54,8 @@ namespace vk
 		VkSampleCountFlagBits GetMaxUsableSampleCount();
 		SwapChainSupportDetails GetSwapChainSupport()	{ return QuerySwapChainSupport( m_PhysicalDevice ); }
 		QueueFamilyIndices GetQueueFamilies()			{ return FindQueueFamilies( m_PhysicalDevice ); }
+		VkResult DeviceWaitIdle()						{ return vkDeviceWaitIdle( m_Device ); }
+
 
 
 		const VkSurfaceKHR& Surface() const				{ return m_Surface; }

@@ -21,7 +21,7 @@ namespace vk
 
 		void Init( GraphicsDevice& device, VkDeviceSize bufferSize );
 		using MemoryBuffer::Release;
-		void Update( void* pData, VkDeviceSize size );
+		void Update( const void* pData, VkDeviceSize size );
 
 		//VkBuffer Buffer() const				{ return m_Buffer; }
 		//VkDeviceMemory DeviceMemory() const	{ return m_DeviceMemory; }

@@ -54,7 +54,7 @@ namespace vk
 
 
 	// Transfer data to VkDeviceMemory
-	void IndexBuffer::Update( void* indices, VkDeviceSize size )
+	void IndexBuffer::Update( const void* indices, VkDeviceSize size )
 	{
 		ASSERT( (m_refDevice->Device() != VK_NULL_HANDLE) && indices );
 
