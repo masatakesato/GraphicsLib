@@ -49,10 +49,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;D:\Lib\opengl\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>D:\Lib\opengl\lib\x64</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -63,21 +64,30 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;D:\Lib\opengl\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\Lib\opengl\lib\x64</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\graphics\common\Material.cpp" />
+    <ClCompile Include="..\..\..\graphics\common\OBJLoader.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\Camera.cpp" />
+    <ClCompile Include="..\..\..\graphics\gl4x\scene\MeshLoader.cpp" />
     <ClCompile Include="..\..\..\test\ShapeController\ShapeController_main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\graphics\authoring\controller\ControllerBase.h" />
     <ClInclude Include="..\..\..\graphics\authoring\controller\ControlLine.h" />
     <ClInclude Include="..\..\..\graphics\authoring\controller\ControlPoint.h" />
+    <ClInclude Include="..\..\..\graphics\common\Material.h" />
+    <ClInclude Include="..\..\..\graphics\common\OBJLoader.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\Camera.h" />
+    <ClInclude Include="..\..\..\graphics\gl4x\scene\MeshLoader.h" />
     <ClInclude Include="..\..\..\test\ShapeController\ControlPointExt.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
