@@ -78,6 +78,7 @@
     <ClInclude Include="..\..\..\graphics\authoring\controller\ControllerBase.h" />
     <ClInclude Include="..\..\..\graphics\authoring\controller\ControlLine.h" />
     <ClInclude Include="..\..\..\graphics\authoring\controller\ControlPoint.h" />
+    <ClInclude Include="..\..\..\test\ShapeController\ControlPointExt.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -29,5 +29,8 @@
     <ClInclude Include="..\..\..\graphics\authoring\controller\ControlPoint.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\test\ShapeController\ControlPointExt.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

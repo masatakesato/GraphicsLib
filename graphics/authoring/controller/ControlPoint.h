@@ -31,7 +31,7 @@ namespace GraphicsLib
 		}
 
 
-		~ControlPoint2D()
+		virtual ~ControlPoint2D()
 		{
 		
 		}
