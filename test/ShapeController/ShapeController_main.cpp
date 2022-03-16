@@ -34,6 +34,12 @@ Array<uint32>	g_Indices;
 Array<RadialControlPoint2D<float>>	g_ControlPoints;
 
 
+Vec4f	g_TestPoint;
+Mat4f	g_MatView, g_MatProj, g_MatViewProj, g_MatInvViewProj;
+
+
+
+
 // Mouse
 #define MAX_KEYS 256
 bool	gKeys[ MAX_KEYS ];// pushed key flags
@@ -169,26 +175,37 @@ void DrawRadialControlPoint2D( const RadialControlPoint2D<T>& cp )
 
 void ProcessCameraKeys()
 {
-	int	i;
 
-	for(i=0; i<MAX_KEYS; i++)
-	{
-		if(gKeys[i]==false)	continue;
-		
-		switch(i)
-		{
-			case 'w' :{	g_Camera.Transrate(+g_CamSpeed, 0, 0);	break; }
-			case 's' :{	g_Camera.Transrate(-g_CamSpeed, 0, 0);	break; }
-			case 'a' :{	g_Camera.Transrate(0, +g_CamSpeed, 0);	break; }
-			case 'd' :{	g_Camera.Transrate(0, -g_CamSpeed, 0);	break; }
-			case 'r' :{	g_Camera.Transrate(0, 0, +g_CamSpeed);	break; }
-			case 'f' :{	g_Camera.Transrate(0, 0, -g_CamSpeed);	break; }
-			case 'q' :{	g_Camera.Roll(-g_CamSpeed);				break; }
-			case 'e' :{	g_Camera.Roll(+g_CamSpeed);				break; }
-			default : {	break; }
-		}// end of switch
-		
-	}// end of i loop
+	if( gKeys[ int('w') ] ){	g_Camera.Transrate(+g_CamSpeed, 0, 0);	}
+	if( gKeys[ int('s') ] ){	g_Camera.Transrate(-g_CamSpeed, 0, 0);	}
+	if( gKeys[ int('a') ] ){	g_Camera.Transrate(0, +g_CamSpeed, 0);	}
+	if( gKeys[ int('d') ] ){	g_Camera.Transrate(0, -g_CamSpeed, 0);	}
+	if( gKeys[ int('r') ] ){	g_Camera.Transrate(0, 0, +g_CamSpeed);	}
+	if( gKeys[ int('f') ] ){	g_Camera.Transrate(0, 0, -g_CamSpeed);	}
+	if( gKeys[ int('q') ] ){	g_Camera.Roll(-g_CamSpeed);				}
+	if( gKeys[ int('e') ] ){	g_Camera.Roll(+g_CamSpeed);				}
+
+
+	//int	i;
+
+	//for(i=0; i<MAX_KEYS; i++)
+	//{
+	//	if(gKeys[i]==false)	continue;
+	//	
+	//	switch(i)
+	//	{
+	//		case 'w' :{	g_Camera.Transrate(+g_CamSpeed, 0, 0);	break; }
+	//		case 's' :{	g_Camera.Transrate(-g_CamSpeed, 0, 0);	break; }
+	//		case 'a' :{	g_Camera.Transrate(0, +g_CamSpeed, 0);	break; }
+	//		case 'd' :{	g_Camera.Transrate(0, -g_CamSpeed, 0);	break; }
+	//		case 'r' :{	g_Camera.Transrate(0, 0, +g_CamSpeed);	break; }
+	//		case 'f' :{	g_Camera.Transrate(0, 0, -g_CamSpeed);	break; }
+	//		case 'q' :{	g_Camera.Roll(-g_CamSpeed);				break; }
+	//		case 'e' :{	g_Camera.Roll(+g_CamSpeed);				break; }
+	//		default : {	break; }
+	//	}// end of switch
+	//	
+	//}// end of i loop
 
 }
 
@@ -196,13 +213,19 @@ void ProcessCameraKeys()
 
 void Initialize()
 {
-	glClearColor( 0.3, 0.3, 0.3, 1 );
+	glClearColor( 0.3f, 0.3f, 0.3f, 1.0f );
 	glPointSize(10.0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
 	
 	g_Camera.SetViewParameter( {5, 5, 5}, {-1, -1, -1}, {0, 0, 1} );// set position, direction, vertical vector
 	//cam = new Camera(5,5,5, -1,-1,-1, 0,0,1);
+
+	MatIdentity( g_MatView );
+	MatIdentity( g_MatProj );
+	MatIdentity( g_MatViewProj );
+	MatIdentity( g_MatInvViewProj );
+
 
 
 
@@ -238,8 +261,12 @@ void display()
 	const Vec3f &dir = *g_Camera.GetForward();
 	const Vec3f &up	= *g_Camera.GetVertical();
 
-	gluLookAt( pos.x, pos.y, pos.z, pos.x + dir.x, pos.y + dir.y, pos.z + dir.z, up.x, up.y, up.z );
+	gluLookAt(	pos.x, pos.y, pos.z,
+				pos.x + dir.x, pos.y + dir.y, pos.z + dir.z,
+				up.x, up.y, up.z );
 	
+glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並び順になってる. 
+//tcout << g_MatView << tendl;
 
 	//============================== Draw world space axis ================================//
 	DRAW_XYZ();
@@ -275,6 +302,16 @@ void display()
 	//	DrawObjMesh( /*g_OBJLoader*/g_MeshLoader );
 	//}
 
+
+	// TestPoint
+	glBegin( GL_POINTS );
+
+	glPointSize( 2.5f );
+	glColor3f( 1.0f, 0.2f, 0.2f );
+
+	glVertex3fv( g_TestPoint.xyzw );
+
+	glEnd();
 
 
 
@@ -344,10 +381,15 @@ void reshape( int w, int h )
 
 	glViewport( 0, 0, g_ScreenWidth, g_ScreenHeight );
 
-	glMatrixMode(GL_PROJECTION);
+	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 	gluPerspective( 45, float(g_ScreenWidth) / float(g_ScreenHeight), 0.001, 1000 );
+
+glGetFloatv( GL_PROJECTION_MATRIX, g_MatProj.m );//  列優先の行列要素並び順になってる. 
+
 	glMatrixMode(GL_MODELVIEW);
+
+
 }
 
 
@@ -363,9 +405,39 @@ void MouseCallback( int button, int state, int x, int y )
 
 		//if( g_InteractionMode == INTERACTION_MODE_ADD_CONTROLLER )
 		{
-			tcout << "gfdsgsdf\n";
-			
-			g_ControlPoints.AddToTail( RadialControlPoint2D<float>( g_CursorX, g_CursorY, g_CursorX, g_CursorY, 1.0f ) );
+
+// https://stackoverflow.com/questions/7692988/opengl-math-projecting-screen-space-to-world-space-coords
+
+// g_MatProjもg_MatViewも列優先になってる -> オレオレライブラリは全て行優先 -> 行列かける順番をひっくり返す & 終わったら合成行列を転置する
+Multiply( g_MatViewProj, g_MatView, g_MatProj );
+MatInverse( g_MatInvViewProj, g_MatViewProj );
+
+//tcout << g_MatInvViewProj << tendl;
+auto mattmp = g_MatInvViewProj;
+MatTranspose( g_MatInvViewProj, mattmp );
+
+//tcout << g_MatInvViewProj << tendl;
+
+float d = 1.0f;
+Vec4f tmp(
+	2.0f * float(g_CursorX) / float(g_ScreenWidth) - 1.0f,
+	1.0f -( 2.0f * float(g_CursorY) / float(g_ScreenHeight) ),
+	0.25f,//2.0f * d - 1.0f,//1.0f,
+	1.0f );
+
+
+Multiply( g_TestPoint, g_MatInvViewProj, tmp );
+tcout << tmp << tendl;
+
+g_TestPoint.w = 1.0f / g_TestPoint.w;
+g_TestPoint.x *= g_TestPoint.w;
+g_TestPoint.y *= g_TestPoint.w;
+g_TestPoint.z *= g_TestPoint.w;
+
+//InitZero( g_TestPoint );
+tcout << g_TestPoint << tendl;
+
+//g_ControlPoints.AddToTail( RadialControlPoint2D<float>( g_CursorX, g_CursorY, g_CursorX, g_CursorY, 1.0f ) );
 		}
 	}
 	if (state == GLUT_UP)
