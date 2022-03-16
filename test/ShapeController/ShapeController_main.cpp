@@ -56,12 +56,19 @@ bool	g_bDrawVertexBuffer = false;
 enum INTERACTION_MODE
 {
 	INTERACTION_MODE_VIEW,
-	INTERACTION_MODE_ADD_VIEW,
-	INTERACTION_MODE_ADD_CONTROLLER,
-	INTERACTION_MODE_MODIFY_CONTROLLER,
+	INTERACTION_MODE_CONTROLLER_PLACEMENT,
+	INTERACTION_MODE_CONTROLLER_EDIT,
+	NUM_INTERACTION_MODES,
 };
 
-INTERACTION_MODE	g_InteractionMode = INTERACTION_MODE_VIEW;
+uint8 g_InteractionMode = INTERACTION_MODE::INTERACTION_MODE_VIEW;
+
+const char* g_InteractionModeStrings[] =
+{
+	"View",
+	"Controller placement",
+	"Controller edit",
+};
 
 
 
@@ -159,6 +166,18 @@ void DRAW_XYZ()
 
 
 
+void DrawString( float x, float y, void *font, const char* str, const Vec3f& rgb )
+{  
+//  char *c;
+
+  glColor3f(rgb.r, rgb.g, rgb.b); 
+  glRasterPos2f(x, y);
+
+  glutBitmapString(font, (const unsigned char*)str );
+}
+
+
+
 template < typename T >
 void DrawRadialControlPoint2D( const RadialControlPoint2D<T>& cp )
 {
@@ -175,6 +194,7 @@ void DrawRadialControlPoint2D( const RadialControlPoint2D<T>& cp )
 
 void ProcessCameraKeys()
 {
+	if( g_InteractionMode != INTERACTION_MODE::INTERACTION_MODE_VIEW )	return;
 
 	if( gKeys[ int('w') ] ){	g_Camera.Transrate(+g_CamSpeed, 0, 0);	}
 	if( gKeys[ int('s') ] ){	g_Camera.Transrate(-g_CamSpeed, 0, 0);	}
@@ -184,30 +204,17 @@ void ProcessCameraKeys()
 	if( gKeys[ int('f') ] ){	g_Camera.Transrate(0, 0, -g_CamSpeed);	}
 	if( gKeys[ int('q') ] ){	g_Camera.Roll(-g_CamSpeed);				}
 	if( gKeys[ int('e') ] ){	g_Camera.Roll(+g_CamSpeed);				}
+}
 
 
-	//int	i;
 
-	//for(i=0; i<MAX_KEYS; i++)
-	//{
-	//	if(gKeys[i]==false)	continue;
-	//	
-	//	switch(i)
-	//	{
-	//		case 'w' :{	g_Camera.Transrate(+g_CamSpeed, 0, 0);	break; }
-	//		case 's' :{	g_Camera.Transrate(-g_CamSpeed, 0, 0);	break; }
-	//		case 'a' :{	g_Camera.Transrate(0, +g_CamSpeed, 0);	break; }
-	//		case 'd' :{	g_Camera.Transrate(0, -g_CamSpeed, 0);	break; }
-	//		case 'r' :{	g_Camera.Transrate(0, 0, +g_CamSpeed);	break; }
-	//		case 'f' :{	g_Camera.Transrate(0, 0, -g_CamSpeed);	break; }
-	//		case 'q' :{	g_Camera.Roll(-g_CamSpeed);				break; }
-	//		case 'e' :{	g_Camera.Roll(+g_CamSpeed);				break; }
-	//		default : {	break; }
-	//	}// end of switch
-	//	
-	//}// end of i loop
+void ProcessEditOperations()
+{
+
+
 
 }
+
 
 
 
@@ -215,8 +222,9 @@ void Initialize()
 {
 	glClearColor( 0.3f, 0.3f, 0.3f, 1.0f );
 	glPointSize(10.0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glEnable(GL_DEPTH_TEST);
+	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	glEnable( GL_DEPTH_TEST );
+	glEnable( GL_POINT_SMOOTH );
 	
 	g_Camera.SetViewParameter( {5, 5, 5}, {-1, -1, -1}, {0, 0, 1} );// set position, direction, vertical vector
 	//cam = new Camera(5,5,5, -1,-1,-1, 0,0,1);
@@ -249,6 +257,9 @@ void Initialize()
 
 void display()
 {	
+//	ProcessEditOperations();
+
+
 	ProcessCameraKeys();
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -304,9 +315,9 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 
 
 	// TestPoint
+	glPointSize( 10.0f );
 	glBegin( GL_POINTS );
 
-	glPointSize( 2.5f );
 	glColor3f( 1.0f, 0.2f, 0.2f );
 
 	glVertex3fv( g_TestPoint.xyzw );
@@ -328,9 +339,9 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 	glLoadIdentity();
 
 
+	glPointSize( 7.5f );
 	glBegin( GL_POINTS );
 
-	glPointSize( 2.5f );
 	glColor3f( 0.2f, 1.0f, 0.2f );
 
 	for( auto& cp : g_ControlPoints )
@@ -340,6 +351,10 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 	}
 
 	glEnd();
+
+	std::string str = std::string() + "Mode: " + g_InteractionModeStrings[ g_InteractionMode ];
+	DrawString( 10.0f, 20.0f, GLUT_BITMAP_HELVETICA_18,  str.c_str(), {0.8f, 0.8f, 0.8f} );
+	
 
 
 	glPopMatrix();
@@ -353,14 +368,14 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 
 
 // キーを押し込んだのを検出する
-void KeyboardCallback(unsigned char key, int w, int h)
+void KeyboardCallback( unsigned char key, int w, int h )
 {
 	gKeys[key] = true;
 }
 
 
 // キーを離したのを検出する
-void KeyboardUpCallback(unsigned char key, int x, int y)
+void KeyboardUpCallback( unsigned char key, int x, int y )
 {
 	gKeys[key] = false;
 
@@ -368,6 +383,8 @@ void KeyboardUpCallback(unsigned char key, int x, int y)
 	{
 	case 27: { exit(0);	break; }
 	case 'p': { g_bDrawVertexBuffer ^= 1; break; }
+
+	case 0x09 : { g_InteractionMode = ( g_InteractionMode + 1 ) % INTERACTION_MODE::NUM_INTERACTION_MODES; break; }//
 	default : { break; }
 	}
 }
@@ -437,7 +454,8 @@ g_TestPoint.z *= g_TestPoint.w;
 //InitZero( g_TestPoint );
 tcout << g_TestPoint << tendl;
 
-//g_ControlPoints.AddToTail( RadialControlPoint2D<float>( g_CursorX, g_CursorY, g_CursorX, g_CursorY, 1.0f ) );
+if( g_InteractionMode == INTERACTION_MODE::INTERACTION_MODE_CONTROLLER_PLACEMENT )
+	g_ControlPoints.AddToTail( RadialControlPoint2D<float>( g_CursorX, g_CursorY, g_CursorX, g_CursorY, 1.0f ) );
 		}
 	}
 	if (state == GLUT_UP)
@@ -456,7 +474,7 @@ void MotionCallback( int x, int y )
 	g_CursorDX	= x - g_CursorX;
 	g_CursorDY	= y - g_CursorY;
 
-	if(LeftMouseButtonPressed ==true)// 左ボタンをクリックしたときだけ回転
+	if( LeftMouseButtonPressed ==true && g_InteractionMode==INTERACTION_MODE_VIEW )// 左ボタンをクリックしたときだけ回転
 	{
 		float dx = -float(g_CursorDX) / float(g_ScreenWidth) * 2.0f*M_PI;
 		float dy = -float(g_CursorDY) / float(g_ScreenHeight) * 2.0f*M_PI;
