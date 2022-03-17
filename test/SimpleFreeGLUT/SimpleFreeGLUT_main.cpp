@@ -16,7 +16,7 @@
 #include	<graphics/gl4x/scene/Camera.h>
 
 #pragma comment (lib, "glew32.lib")
-#
+
 
 //using namespace OreOreLib;
 using namespace std;
@@ -29,6 +29,9 @@ using namespace std;
 
 
 Camera		*cam;
+const Vec3f	g_Up = { 0, 0, 1 };
+Vec3f		g_LookAt;
+
 
 
 #define MAX_KEYS 256
@@ -63,27 +66,14 @@ void DRAW_XYZ()
 
 void ProcessCameraKeys()
 {
-	int	i;
-
-	for(i=0; i<MAX_KEYS; i++)
-	{
-		if(gKeys[i]==false)	continue;
-		
-		switch(i)
-		{
-			case 'w' :{	cam->Transrate(+CamRotSpeed * gDeltaT, 0, 0);	break; }
-			case 's' :{	cam->Transrate(-CamRotSpeed * gDeltaT, 0, 0);	break; }
-			case 'a' :{	cam->Transrate(0, +CamRotSpeed * gDeltaT, 0);	break; }
-			case 'd' :{	cam->Transrate(0, -CamRotSpeed * gDeltaT, 0);	break; }
-			case 'r' :{	cam->Transrate(0, 0, +CamRotSpeed * gDeltaT);	break; }
-			case 'f' :{	cam->Transrate(0, 0, -CamRotSpeed * gDeltaT);	break; }
-			case 'q' :{	cam->Roll(-CamRotSpeed * gDeltaT);			break; }
-			case 'e' :{	cam->Roll(+CamRotSpeed * gDeltaT);			break; }
-			default : {	break; }
-		}// end of switch
-		
-	}// end of i loop
-
+	if( gKeys[ int('w') ] ){	cam->Transrate(+CamRotSpeed * gDeltaT, 0, 0);	}
+	if( gKeys[ int('s') ] ){	cam->Transrate(-CamRotSpeed * gDeltaT, 0, 0);	}
+	if( gKeys[ int('a') ] ){	cam->Transrate(0, +CamRotSpeed * gDeltaT, 0);	}
+	if( gKeys[ int('d') ] ){	cam->Transrate(0, -CamRotSpeed * gDeltaT, 0);	}
+	if( gKeys[ int('r') ] ){	cam->Transrate(0, 0, +CamRotSpeed * gDeltaT);	}
+	if( gKeys[ int('f') ] ){	cam->Transrate(0, 0, -CamRotSpeed * gDeltaT);	}
+	if( gKeys[ int('q') ] ){	cam->Roll(-CamRotSpeed * gDeltaT);				}
+	if( gKeys[ int('e') ] ){	cam->Roll(+CamRotSpeed * gDeltaT);				}
 }
 
 
@@ -97,12 +87,14 @@ void Initialize()
 	glEnable(GL_DEPTH_TEST);
 	
 	cam = new Camera(5,5,5, -1,-1,-1, 0,0,1);
+	InitVec( g_LookAt, 0.0f, 0.0f, 0.0f );
 }
+
+
 
 void display()
 {	
-	
-	ProcessCameraKeys();
+//ProcessCameraKeys();
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//====================================== 座標軸とかレンダリング =======================================//
@@ -188,7 +180,28 @@ void MotionCallback(int x, int y)
 
 	if(LeftMouseButtonPressed ==true)// 左ボタンをクリックしたときだけ回転
 	{
-		cam->Rotate(dx, dy);
+//============================== YawPitchRoll ==============================//
+//cam->Rotate(dx, dy);
+
+
+//================================= Arcball ================================//
+		auto pos = *cam->GetPosition();
+		auto hor = *cam->GetHorizontal();
+		
+		auto cosine = DotProduct( *cam->GetForward(), g_Up );// Limit theta angle within ( -0.5PI, 0.5PI )
+		if( cosine * Sign(dy) > 0.999f )
+			dy = 0.0f;
+
+		Quaternion<float> quat_phi, quat_theta;
+		InitQuat( quat_theta, -dy, hor );
+		InitQuat( quat_phi, dx, g_Up );
+
+		Rotate( pos, quat_theta );// Rotate around horizontal axis
+		Rotate( pos, quat_phi );// Rotate around vertical axis
+
+		Vec3f dir;
+		Subtract( dir, g_LookAt, pos );
+		cam->SetViewParameter( pos, dir, g_Up );
 	}
 
     mx = x;
