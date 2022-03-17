@@ -13,11 +13,10 @@ using namespace GraphicsLib;
 using namespace OreOreLib;
 
 
-
+//================ Scene ==================//
 // Lightsource
 const GLfloat lightPos[] = { 10 , 10 , 10 , 0 };
 const GLfloat lightCol[] = { 1 , 1 , 1 , 1 };
-
 
 // Camera
 Camera	g_Camera;
@@ -30,15 +29,8 @@ Array<VertexLayout> g_Vertices;
 Array<uint32>	g_Indices;
 
 
-// Control Points
-Array<RadialControlPoint2D<float>>	g_ControlPoints;
 
-
-Vec4f	g_TestPoint;
-Mat4f	g_MatView, g_MatProj, g_MatViewProj, g_MatInvViewProj;
-
-
-
+//================== Edit =================//
 
 // Mouse
 #define MAX_KEYS 256
@@ -51,8 +43,12 @@ bool	LeftMouseButtonPressed = false;
 float	g_CamSpeed = 0.1f;
 bool	g_bDrawVertexBuffer = false;
 
+float	g_ObjectPickRadius = 10.0f;
+float	g_RadiusTranslateScale = 2.5f;
 
-// Interaction mode
+
+
+// Modes
 enum INTERACTION_MODE
 {
 	INTERACTION_MODE_VIEW,
@@ -61,14 +57,61 @@ enum INTERACTION_MODE
 	NUM_INTERACTION_MODES,
 };
 
-uint8 g_InteractionMode = INTERACTION_MODE::INTERACTION_MODE_VIEW;
-
 const char* g_InteractionModeStrings[] =
 {
 	"View",
 	"Controller placement",
 	"Controller edit",
 };
+
+uint8 g_InteractionMode = INTERACTION_MODE::INTERACTION_MODE_VIEW;
+
+
+// Color settings
+const Vec3f g_UIColors[] =
+{
+	// None
+	{},
+
+	// Origin
+	{ 0.1f, 0.1f, 0.1f },// Origin_Locked
+	{ 0.6f, 0.3f, 0.3f },// Origin_Editable
+	{ 1.0f, 0.5f, 0.5f },// Origin_Selected
+
+	// Target
+	{ 0.6f, 0.6f, 0.6f },// Target_Locked
+	{ 0.3f, 0.3f, 0.6f },// Target_Editable
+	{ 0.8f, 0.8f, 0.8f },// Target_Selected
+
+	// Radius
+	{ 0.2f, 0.2f, 0.2f },// Radius_Locked
+	{ 0.6f, 0.6f, 0.6f },// Radius_Editable
+	{ 0.6f, 0.6f, 0.6f },// Radius_Selected
+
+	// Displacement
+	{ 0.3f, 0.3f, 0.3f },// Radius_Locked
+
+};
+
+
+uint8	g_SelectionMode = 0;
+int64	g_SelectedItemID = -1;
+
+
+// Control Points
+Array<RadialControlPoint2D<float>>	g_ControlPoints;
+
+
+
+
+
+//=============== Debug primitive ==============//
+Vec4f	g_TestPoint;
+Mat4f	g_MatView, g_MatProj, g_MatViewProj, g_MatInvViewProj;
+
+
+
+
 
 
 
@@ -178,16 +221,80 @@ void DrawString( float x, float y, void *font, const char* str, const Vec3f& rgb
 
 
 
-template < typename T >
-void DrawRadialControlPoint2D( const RadialControlPoint2D<T>& cp )
+void DrawCircle( float cx, float cy, float r, int num_segments )
 {
-	glBegin( GL_POINTS );
-
-	glPointSize( 2.5f );
-	glVertex3f( cp.Origin().x,  cp.Origin().y );
-
-	glEnd();
+    glBegin(GL_LINE_LOOP);
+    for( int i=0; i<num_segments; ++i ) 
+	{
+        float theta = 2.0f * 3.1415926f * float(i) / float(num_segments);//get the current angle 
+        float x = r * cosf(theta);//calculate the x component 
+        float y = r * sinf(theta);//calculate the y component 
+        glVertex2f(x + cx, y + cy);//output vertex 
+    }
+    glEnd();
 }
+
+
+
+template < typename T >
+void DrawRadialControlPoint2D( const RadialControlPoint2D<T>& cp, bool selected=false )
+{
+	uint8 origin_color_id = selected ? 3 :1;
+	uint8 target_color_id = selected ? 6 :4;
+	uint8 radius_color_id = selected ? 9 :7;
+
+
+	// Draw Origin
+	glColor3fv( g_UIColors[ origin_color_id ].rgb );
+
+	glBegin( GL_POINTS );
+		glPointSize( 2.5f );
+		glVertex2fv( cp.Origin().xy );
+	glEnd();
+
+	// Draw Radius
+	glColor3fv( g_UIColors[ radius_color_id ].rgb );
+	DrawCircle( cp.Origin().x, cp.Origin().y, cp.Radius(), 32 );
+
+}
+
+
+
+int64 GetIntersectedObject( float x, float y, float range )
+{
+	Vec2f pos( x, y );
+
+	for( int i=0; i<g_ControlPoints.Length(); ++i )
+	{
+		// Check Origin
+		if( Distance( pos, g_ControlPoints[i].Origin() ) <= range )
+			return i;
+	}
+
+	return -1;
+}
+
+
+
+
+void SetControlPointRadius( int64 objectid, float radius )
+{
+	if( objectid < 0 )	return;
+	g_ControlPoints[ objectid ].TranslateRadius( radius );
+}
+
+
+
+void DeleteSelectedController( int64& objectid )
+{
+	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
+
+	g_ControlPoints.Remove( objectid );
+
+	objectid = -1;
+}
+
+
 
 
 
@@ -208,12 +315,6 @@ void ProcessCameraKeys()
 
 
 
-void ProcessEditOperations()
-{
-
-
-
-}
 
 
 
@@ -314,15 +415,16 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 	//}
 
 
-	// TestPoint
-	glPointSize( 10.0f );
-	glBegin( GL_POINTS );
-
-	glColor3f( 1.0f, 0.2f, 0.2f );
-
-	glVertex3fv( g_TestPoint.xyzw );
-
-	glEnd();
+////############################# スクリーン座標からワールド座標に戻した点の表示 #######################################//
+//	glPointSize( 10.0f );
+//	glBegin( GL_POINTS );
+//
+//	glColor3f( 1.0f, 0.2f, 0.2f );
+//
+//	glVertex3fv( g_TestPoint.xyzw );
+//
+//	glEnd();
+////#####################################################################################################################//
 
 
 
@@ -344,10 +446,10 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 
 	glColor3f( 0.2f, 1.0f, 0.2f );
 
-	for( auto& cp : g_ControlPoints )
+	for( int i=0; i<g_ControlPoints.Length(); ++i )
 	{
-		glVertex3f( cp.Origin().x,  cp.Origin().y, 0.0f );
-		//DrawRadialControlPoint2D( cp );
+		//glVertex3f( g_ControlPoints[i].Origin().x, g_ControlPoints[i].Origin().y, 0.0f );
+		DrawRadialControlPoint2D( g_ControlPoints[i], i==g_SelectedItemID );
 	}
 
 	glEnd();
@@ -367,11 +469,13 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 }
 
 
+
 // キーを押し込んだのを検出する
 void KeyboardCallback( unsigned char key, int w, int h )
 {
 	gKeys[key] = true;
 }
+
 
 
 // キーを離したのを検出する
@@ -381,11 +485,31 @@ void KeyboardUpCallback( unsigned char key, int x, int y )
 
 	switch (key)
 	{
-	case 27: { exit(0);	break; }
-	case 'p': { g_bDrawVertexBuffer ^= 1; break; }
+	case 27:// escape( exit application )
+	{
+		exit(0);
+		break;
+	}
+	case 'p':// change render mode
+	{
+		g_bDrawVertexBuffer ^= 1;
+		break;
+	}
+	case 0x09:// tab( change edit mode )
+	{
+		g_InteractionMode = ( g_InteractionMode + 1 ) % INTERACTION_MODE::NUM_INTERACTION_MODES;
+		break;
+	}
+	case 127:// delete( delete selected controller )
+	{
+		DeleteSelectedController( g_SelectedItemID );
+		break;
+	}
 
-	case 0x09 : { g_InteractionMode = ( g_InteractionMode + 1 ) % INTERACTION_MODE::NUM_INTERACTION_MODES; break; }//
-	default : { break; }
+	default :
+	{
+		break;
+	}
 	}
 }
 
@@ -414,54 +538,67 @@ glGetFloatv( GL_PROJECTION_MATRIX, g_MatProj.m );//  列優先の行列要素並
 void MouseCallback( int button, int state, int x, int y )
 {
 	
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)// 左ボタンを押し込んだ状態
+	if( button==GLUT_LEFT_BUTTON && state==GLUT_DOWN )// 左ボタンを押し込んだ状態
 	{
 		LeftMouseButtonPressed = true;
 		g_CursorX = x;
 		g_CursorY = y;
 
-		//if( g_InteractionMode == INTERACTION_MODE_ADD_CONTROLLER )
+
+		if( g_InteractionMode == INTERACTION_MODE::INTERACTION_MODE_CONTROLLER_PLACEMENT )
 		{
+			// Check if controller already exists
+			g_SelectedItemID = GetIntersectedObject( g_CursorX, g_CursorY, g_ObjectPickRadius );
 
-// https://stackoverflow.com/questions/7692988/opengl-math-projecting-screen-space-to-world-space-coords
+			if( g_SelectedItemID==-1 )
+			{
+				g_ControlPoints.AddToTail( RadialControlPoint2D<float>( g_CursorX, g_CursorY, g_CursorX, g_CursorY, 20.0f ) );
+				g_SelectedItemID = g_ControlPoints.Length<int64>() - 1;
+			}
 
-// g_MatProjもg_MatViewも列優先になってる -> オレオレライブラリは全て行優先 -> 行列かける順番をひっくり返す & 終わったら合成行列を転置する
-Multiply( g_MatViewProj, g_MatView, g_MatProj );
-MatInverse( g_MatInvViewProj, g_MatViewProj );
+////#################################### スクリーンピクセル座標からワールド座標に戻すコード ###################################//
+//			// https://stackoverflow.com/questions/7692988/opengl-math-projecting-screen-space-to-world-space-coords
+//			// g_MatProjもg_MatViewも列優先になってる -> オレオレライブラリは全て行優先 -> 行列かける順番をひっくり返す & 終わったら合成行列を転置する
+//			Multiply( g_MatViewProj, g_MatView, g_MatProj );
+//			MatInverse( g_MatInvViewProj, g_MatViewProj );
+//
+//			//tcout << g_MatInvViewProj << tendl;
+//			auto mattmp = g_MatInvViewProj;
+//			MatTranspose( g_MatInvViewProj, mattmp );
+//
+//			//tcout << g_MatInvViewProj << tendl;
+//
+//			float d = 1.0f;
+//			Vec4f tmp(
+//				2.0f * float(g_CursorX) / float(g_ScreenWidth) - 1.0f,
+//				1.0f -( 2.0f * float(g_CursorY) / float(g_ScreenHeight) ),
+//				0.25f,//2.0f * d - 1.0f,//1.0f,
+//				1.0f );
+//
+//
+//			Multiply( g_TestPoint, g_MatInvViewProj, tmp );
+//			tcout << tmp << tendl;
+//
+//			g_TestPoint.w = 1.0f / g_TestPoint.w;
+//			g_TestPoint.x *= g_TestPoint.w;
+//			g_TestPoint.y *= g_TestPoint.w;
+//			g_TestPoint.z *= g_TestPoint.w;
+//
+//			tcout << g_TestPoint << tendl;
+////#############################################################################################################################//
 
-//tcout << g_MatInvViewProj << tendl;
-auto mattmp = g_MatInvViewProj;
-MatTranspose( g_MatInvViewProj, mattmp );
-
-//tcout << g_MatInvViewProj << tendl;
-
-float d = 1.0f;
-Vec4f tmp(
-	2.0f * float(g_CursorX) / float(g_ScreenWidth) - 1.0f,
-	1.0f -( 2.0f * float(g_CursorY) / float(g_ScreenHeight) ),
-	0.25f,//2.0f * d - 1.0f,//1.0f,
-	1.0f );
-
-
-Multiply( g_TestPoint, g_MatInvViewProj, tmp );
-tcout << tmp << tendl;
-
-g_TestPoint.w = 1.0f / g_TestPoint.w;
-g_TestPoint.x *= g_TestPoint.w;
-g_TestPoint.y *= g_TestPoint.w;
-g_TestPoint.z *= g_TestPoint.w;
-
-//InitZero( g_TestPoint );
-tcout << g_TestPoint << tendl;
-
-if( g_InteractionMode == INTERACTION_MODE::INTERACTION_MODE_CONTROLLER_PLACEMENT )
-	g_ControlPoints.AddToTail( RadialControlPoint2D<float>( g_CursorX, g_CursorY, g_CursorX, g_CursorY, 1.0f ) );
 		}
+
+		else if( g_InteractionMode == INTERACTION_MODE::INTERACTION_MODE_CONTROLLER_EDIT )
+		{
+			g_SelectedItemID = GetIntersectedObject( g_CursorX, g_CursorY, g_ObjectPickRadius );
+		}
+
 	}
-	if (state == GLUT_UP)
+
+	else if( state==GLUT_UP )
 	{
 		LeftMouseButtonPressed = false;
-
 	}
 
 	//cout << "Mouse LB state = " << LeftMouseButtonPressed << endl;
@@ -474,12 +611,15 @@ void MotionCallback( int x, int y )
 	g_CursorDX	= x - g_CursorX;
 	g_CursorDY	= y - g_CursorY;
 
-	if( LeftMouseButtonPressed ==true && g_InteractionMode==INTERACTION_MODE_VIEW )// 左ボタンをクリックしたときだけ回転
+	if( LeftMouseButtonPressed ==true )
 	{
 		float dx = -float(g_CursorDX) / float(g_ScreenWidth) * 2.0f*M_PI;
 		float dy = -float(g_CursorDY) / float(g_ScreenHeight) * 2.0f*M_PI;
 		//cout << "dv = (" << dx << ", " << dy << ")" << endl;
-		g_Camera.Rotate( dx, dy );
+
+		if( g_InteractionMode==INTERACTION_MODE_VIEW )// Mouse drag with view mode
+			g_Camera.Rotate( dx, dy );
+
 	}
 
     g_CursorX = x;
@@ -487,10 +627,26 @@ void MotionCallback( int x, int y )
 }
 
 
+
+void WheelCallback( int button, int dir, int x, int y )
+{
+	if( g_InteractionMode==INTERACTION_MODE_CONTROLLER_EDIT )
+	{
+		//tcout << dir<< tendl;
+		SetControlPointRadius( g_SelectedItemID, float(dir) * g_RadiusTranslateScale );
+	}
+
+
+	return;
+}
+
+
+
 void animate(void)
 {
 	glutPostRedisplay();
 }
+
 
 
 int main(int argc, char **argv)
@@ -510,7 +666,8 @@ int main(int argc, char **argv)
 	glutKeyboardUpFunc( KeyboardUpCallback );
 	glutMouseFunc( MouseCallback );
 	glutMotionFunc( MotionCallback );
-	MotionCallback(0,0);
+//	MotionCallback(0,0);
+	glutMouseWheelFunc( WheelCallback );
 
 	Initialize();
 	glutMainLoop();

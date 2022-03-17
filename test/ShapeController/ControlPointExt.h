@@ -49,9 +49,17 @@ namespace GraphicsLib
 
 		void SetRadius( const T& r )
 		{
-			assert( r >= 0 );//ASSERT( );
-			m_bRadiusChanged = (m_Radius != r);
-			m_Radius = r;
+			auto newrad = Max( r, (T)0 );
+			m_bRadiusChanged = (m_Radius != newrad);
+			m_Radius = newrad;
+		}
+
+
+		void TranslateRadius( const T& r )
+		{
+			auto newrad = Max( m_Radius + r, (T)0 );
+			m_bRadiusChanged = (m_Radius != newrad);
+			m_Radius = newrad;
 		}
 
 
