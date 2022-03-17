@@ -42,7 +42,7 @@ bool	LeftMouseButtonPressed = false;
 
 float	gDeltaT = 1.0f / 60.0f;
 float	CamRotSpeed = 1.0f;
-
+float	g_ZoomScale	= 3.0f;
 
 
 
@@ -209,6 +209,18 @@ void MotionCallback(int x, int y)
 }
 
 
+
+void WheelCallback( int button, int dir, int x, int y )
+{
+	//Vec3f vec = *cam->GetForward();
+	//Scale( vec,  );
+
+	cam->Transrate( float(dir) * g_ZoomScale, 0, 0 );
+
+}
+
+
+
 void animate(void)
 {
 	glutPostRedisplay();
@@ -234,7 +246,7 @@ int main(int argc, char **argv)
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutMouseFunc(MouseCallback);
 	glutMotionFunc(MotionCallback);
-	MotionCallback(0,0);
+	glutMouseWheelFunc( WheelCallback );
 
 	Initialize();
 	glutMainLoop();
