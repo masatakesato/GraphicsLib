@@ -192,15 +192,16 @@ void MotionCallback(int x, int y)
 		if( cosine * Sign(dy) > 0.999f )
 			dy = 0.0f;
 
-		Quaternion<float> quat_phi, quat_theta;
-		InitQuat( quat_theta, -dy, hor );
-		InitQuat( quat_phi, dx, g_Up );
+		Quaternion<float> quat_phi, quat_theta, quat_composed;
+		InitQuat( quat_theta, -dy, hor );// Rotate around horizontal axis
+		InitQuat( quat_phi, dx, g_Up );// Rotate around vertical axis
+		Multiply( quat_composed, quat_theta, quat_phi );// compose
 
-		Rotate( pos, quat_theta );// Rotate around horizontal axis
-		Rotate( pos, quat_phi );// Rotate around vertical axis
+		Rotate( pos, quat_composed );
 
 		Vec3f dir;
 		Subtract( dir, g_LookAt, pos );
+
 		cam->SetViewParameter( pos, dir, g_Up );
 	}
 
