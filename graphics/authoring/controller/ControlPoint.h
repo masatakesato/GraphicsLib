@@ -63,14 +63,14 @@ namespace GraphicsLib
 		void TranslateOrigin( const T& x, const T& y )
 		{
 			m_bOriginChanged = (x != 0) || (y != 0);
-			Add( m_Origin, x, y );
+			Add( m_Origin, {x, y} );
 		}
 
 		
 		void TranslateTarget( const T& x, const T& y )
 		{
 			m_bTargetChanged = (x != 0) || (y != 0);
-			InitVec( m_Target, x, y );
+			Add( m_Target, {x, y} );
 		}
 
 
