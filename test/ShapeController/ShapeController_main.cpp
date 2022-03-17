@@ -366,6 +366,20 @@ void DeleteSelectedController( int64& objectid )
 
 
 
+void ProcessMainMenu( int option )
+{
+	tcout << "ProcessMainMenu: " << option << tendl;
+
+}
+
+
+void ProcessSubMenu1( int option )
+{
+	tcout << "ProcessSubMenu1: " << option << tendl;
+
+
+}
+
 
 
 
@@ -397,6 +411,25 @@ void Initialize()
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_POINT_SMOOTH );
 	
+
+	// Popup menu setup
+	int submenu = glutCreateMenu( ProcessSubMenu1 );
+	glutAddMenuEntry( "test0", 0 );
+	glutAddMenuEntry( "test1", 1 );
+	glutAddMenuEntry( "test2", 2 );
+
+
+	int mainmenu = glutCreateMenu( ProcessMainMenu );
+	glutAddSubMenu( "Other", submenu );
+	glutAddMenuEntry( "Red",1 );
+	glutAddMenuEntry( "Blue",2 );
+	glutAddMenuEntry( "Green",3 );
+	glutAddMenuEntry( "Orange",4 );
+
+
+	glutAttachMenu( GLUT_RIGHT_BUTTON );
+
+
 	g_Camera.SetViewParameter( {5, 5, 5}, {-1, -1, -1}, {0, 0, 1} );// set position, direction, vertical vector
 	//cam = new Camera(5,5,5, -1,-1,-1, 0,0,1);
 
