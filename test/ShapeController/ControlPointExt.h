@@ -1,8 +1,6 @@
 ﻿#ifndef CONTROL_POINT_EXT_H
 #define	CONTROL_POINT_EXT_H
 
-#include	<tuple>
-
 #include	<graphics/authoring/controller/ControlPoint.h>
 
 
@@ -96,7 +94,7 @@ namespace GraphicsLib
 
 
 
-
+	//#include	<tuple>
 
 	// 変数型と名称をテンプレート引数で決め打ちして構造体を作りたい. -> 下記コード参考に実装は可能.
 	// https://stackoverflow.com/questions/63415651/variadic-template-parameter-inference-with-nested-maps

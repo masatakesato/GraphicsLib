@@ -88,6 +88,7 @@
     <ClInclude Include="..\..\..\graphics\common\OBJLoader.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\scene\Camera.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\scene\MeshLoader.h" />
+    <ClInclude Include="..\..\..\test\ShapeController\DeformCanvas.h" />
     <ClInclude Include="..\..\..\test\ShapeController\ControlPointExt.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

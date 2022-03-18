@@ -7,10 +7,13 @@
 #include	<graphics/gl4x/scene/MeshLoader.h>
 #include	<graphics/gl4x/scene/Camera.h>
 #include	<graphics/authoring/controller/ControlPoint.h>
+
 #include	"ControlPointExt.h"
+#include	"DeformCanvas.h"
 
 using namespace GraphicsLib;
 using namespace OreOreLib;
+
 
 
 //================ Scene ==================//
@@ -45,8 +48,6 @@ bool	g_bDrawVertexBuffer = false;
 
 float	g_ObjectPickRadius = 10.0f;
 float	g_RadiusTranslateScale = 2.5f;
-
-
 
 
 // Modes
@@ -100,16 +101,27 @@ const Vec3f g_UIColors[] =
 	// ViewFrame
 	{ 0.5f, 0.3f, 0.3f },
 
+	// Canvas
+	{ 0.6f, 0.6f, 0.6f },// Canvas_Default
+	{ 1.0f, 0.8f, 0.8f },// Canvas_Selected
+
 };
 
 
-uint8	g_SelectionMode = 0;
+// Object selection
 int64	g_SelectedItemID = -1;
+
 
 
 // Control Points
 using RadialControlPoint2Df = RadialControlPoint2D<float>;
-Array<RadialControlPoint2D<float>>	g_ControlPoints;
+Array<RadialControlPoint2Df>	g_ControlPoints;
+
+
+// Deform Canvasses
+Array< DeformCanvas<float> >	g_Canvasses;
+int64	g_SelectedCanvass = -1;
+
 
 
 
@@ -120,13 +132,14 @@ Mat4f	g_MatView, g_MatProj, g_MatViewProj, g_MatInvViewProj;
 
 
 
-
-
-
-
 static int	g_ScreenWidth	= 1280;
 static int	g_ScreenHeight	= 720;
 
+
+
+
+
+//#################################### Object drawing functions ##########################################//
 
 
 void DrawObjMesh( const MeshLoader& mesh )
@@ -277,9 +290,8 @@ void DrawRadialControlPoint2D( const RadialControlPoint2D<T>& cp, bool selected=
 	glColor3fv( g_UIColors[ radius_color_id ].rgb );
 	DrawCircle( cp.Origin().x, cp.Origin().y, cp.Radius(), 32 );
 
-
-
 }
+
 
 
 void DrawFixedFrame( int w, int h )
@@ -300,6 +312,45 @@ void DrawFixedFrame( int w, int h )
 }
 
 
+
+template < typename T >
+void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 5.0f )
+{
+	// カメラ四隅頂点
+	// 水平軸と鉛直軸を取得
+	const auto& cam		= canvas.GetCamera();
+	const auto& hor		= *cam.GetHorizontal();
+	const auto& vert	= *cam.GetVertical();
+
+
+TODO: カメラフレーム4隅の頂点位置を計算する
+	// フレーム基点位置を算出する
+	Vec3<T> offset;
+	T height = width / *cam.GetAspect();
+
+	AddScaled( offset, width, hor, height, vert );
+
+	glLineWidth( 5.0f );
+	glColor3fv( selected ? g_UIColors[ 13 ].rgb : g_UIColors[ 12 ].rgb );
+
+	glBegin( GL_LINE_LOOP );
+		glVertex3f( frameOrigin.x - offset.x, frameOrigin.y - offset.y, frameOrigin.z - offset.z );// top left
+		glVertex3f( frameOrigin.x - offset.x, 0 );//bottom left
+		glVertex3f( w, h );// bottom right
+		glVertex3f( 0, h );// top light
+	glEnd();
+
+	// restore line width settings
+	glLineWidth( 1.0f );
+}
+
+
+
+
+
+
+
+//################################# Object intersection test ############################################//
 
 
 bool GetIntersectedControlPoint( float x, float y, float range, int64& objectid, uint8& type )
@@ -375,9 +426,18 @@ void ProcessMainMenu( int option )
 }
 
 
-void ProcessSubMenu1( int option )
+void ProcessCanvasSubMenu( int option )
 {
-	tcout << "ProcessSubMenu1: " << option << tendl;
+	tcout << "ProcessCanvasSubMenu: " << option << tendl;
+
+	if( option == 0 )// Create
+	{
+		g_Canvasses.AddToTail( DeformCanvas<float>(g_Camera) );
+	}
+	//else if( option == 1 )
+	//{
+
+	//}
 
 
 }
@@ -412,26 +472,23 @@ void Initialize()
 	
 
 	// Popup menu setup
-	int submenu = glutCreateMenu( ProcessSubMenu1 );
-	glutAddMenuEntry( "test0", 0 );
-	glutAddMenuEntry( "test1", 1 );
-	glutAddMenuEntry( "test2", 2 );
+	int canvasSubmenu = glutCreateMenu( ProcessCanvasSubMenu );
+	glutAddMenuEntry( "Create", 0 );
+	//glutAddMenuEntry( "test1", 1 );
+	//glutAddMenuEntry( "test2", 2 );
 
 
 	int mainmenu = glutCreateMenu( ProcessMainMenu );
-	glutAddSubMenu( "Other", submenu );
-	glutAddMenuEntry( "Red",1 );
-	glutAddMenuEntry( "Blue",2 );
-	glutAddMenuEntry( "Green",3 );
-	glutAddMenuEntry( "Orange",4 );
-glutRemoveMenuItem
-
+	glutAddSubMenu( "Canvas", canvasSubmenu );
+	//glutAddMenuEntry( "Red",1 );
+	//glutAddMenuEntry( "Blue",2 );
+	//glutAddMenuEntry( "Green",3 );
+	//glutAddMenuEntry( "Orange",4 );
 
 	glutAttachMenu( GLUT_RIGHT_BUTTON );
 
 
 	g_Camera.SetViewParameter( {5, 5, 5}, {-1, -1, -1}, {0, 0, 1} );// set position, direction, vertical vector
-	//cam = new Camera(5,5,5, -1,-1,-1, 0,0,1);
 
 	MatIdentity( g_MatView );
 	MatIdentity( g_MatProj );
@@ -655,7 +712,7 @@ glGetFloatv( GL_PROJECTION_MATRIX, g_MatProj.m );//  列優先の行列要素並
 
 //#####################################################################################################################//
 
-	glMatrixMode(GL_MODELVIEW);
+	glMatrixMode( GL_MODELVIEW );
 
 
 }
