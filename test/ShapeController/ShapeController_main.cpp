@@ -48,12 +48,17 @@ float	g_RadiusTranslateScale = 2.5f;
 
 
 
+
 // Modes
 enum INTERACTION_MODE
 {
 	INTERACTION_MODE_VIEW,
-	INTERACTION_MODE_CONTROLLER_PLACEMENT,
-	INTERACTION_MODE_CONTROLLER_EDIT,
+
+	INTERACTION_MODE_EDIT_ORIGIN,
+
+	//INTERACTION_MODE_CONROLLER_PLACEMENT,
+
+	INTERACTION_MODE_EDIT_TARGET,
 	NUM_INTERACTION_MODES,
 };
 
@@ -103,8 +108,8 @@ int64	g_SelectedItemID = -1;
 
 
 // Control Points
+using RadialControlPoint2Df = RadialControlPoint2D<float>;
 Array<RadialControlPoint2D<float>>	g_ControlPoints;
-
 
 
 
@@ -297,36 +302,33 @@ void DrawFixedFrame( int w, int h )
 
 
 
-
-int64 GetIntersectedOrigin( float x, float y, float range )
+bool GetIntersectedControlPoint( float x, float y, float range, int64& objectid, uint8& type )
 {
 	Vec2f pos( x, y );
 
 	for( int i=0; i<g_ControlPoints.Length(); ++i )
 	{
-		// Check Origin
+		// Check origin intersection
 		if( Distance( pos, g_ControlPoints[i].Origin() ) <= range )
-			return i;
+		{
+			objectid = i;
+			type = RadialControlPoint2Df::ORIGIN;
+			return true;
+		}
+
+		// Check target intersection
+		else if( Distance( pos, g_ControlPoints[i].Target() ) <= range )
+		{
+			objectid = i;
+			type = RadialControlPoint2Df::TARGET;
+			return true;
+		}
+
 	}
 
-	return -1;
+	objectid = -1;
+	return false;
 }
-
-
-int64 GetIntersectedTarget( float x, float y, float range )
-{
-	Vec2f pos( x, y );
-
-	for( int i=0; i<g_ControlPoints.Length(); ++i )
-	{
-		// Check Target
-		if( Distance( pos, g_ControlPoints[i].Target() ) <= range )
-			return i;
-	}
-
-	return -1;
-}
-
 
 
 
@@ -396,9 +398,6 @@ void ProcessCameraKeys()
 	if( gKeys[ int('q') ] ){	g_Camera.Roll(-g_CamSpeed);				}
 	if( gKeys[ int('e') ] ){	g_Camera.Roll(+g_CamSpeed);				}
 }
-
-
-
 
 
 
@@ -619,12 +618,12 @@ void KeyboardUpCallback( unsigned char key, int x, int y )
 	}
 	case 0x09:// tab( change edit mode )
 	{
-		g_InteractionMode = ( g_InteractionMode + 1 ) % INTERACTION_MODE::NUM_INTERACTION_MODES;
+		g_InteractionMode = ( g_InteractionMode + 1 ) % 2;// switch between
 		break;
 	}
 	case 127:// delete( delete selected controller )
 	{
-		if( g_InteractionMode > INTERACTION_MODE::INTERACTION_MODE_VIEW )
+		if( g_InteractionMode > INTERACTION_MODE_VIEW )
 			DeleteSelectedController( g_SelectedItemID );
 		break;
 	}
@@ -672,28 +671,40 @@ void MouseCallback( int button, int state, int x, int y )
 		g_CursorY = y;
 
 
-		if( g_InteractionMode == INTERACTION_MODE::INTERACTION_MODE_CONTROLLER_PLACEMENT )
+		if( g_InteractionMode == INTERACTION_MODE_EDIT_ORIGIN )
 		{
 			// Check if controller already exists
-			g_SelectedItemID = GetIntersectedOrigin( g_CursorX, g_CursorY, g_ObjectPickRadius );
+			uint8 attrib = -1;
+			int64 objectid = -1;
+			GetIntersectedControlPoint( g_CursorX, g_CursorY, g_ObjectPickRadius, g_SelectedItemID, attrib );
 
-			// Add new controller
-			if( g_SelectedItemID==-1 )
+			if( g_SelectedItemID == -1 && (glutGetModifiers() & GLUT_ACTIVE_ALT)  )// If nothing is picked, put origin at current position, then transfer to target edit mode
 			{
-				g_ControlPoints.AddToTail( RadialControlPoint2D<float>( g_CursorX, g_CursorY, g_CursorX, g_CursorY, 20.0f ) );
+				g_ControlPoints.AddToTail( RadialControlPoint2Df( g_CursorX, g_CursorY, g_CursorX, g_CursorY, 20.0f ) );
 				g_SelectedItemID = g_ControlPoints.Length<int64>() - 1;
+				g_InteractionMode = INTERACTION_MODE_EDIT_TARGET;
 			}
+			else if( attrib == RadialControlPoint2Df::TARGET )//targetid != -1 )// If Target is picked, transfer to target edit mode
+			{
+				//g_SelectedItemID = objectid;
+				g_InteractionMode = INTERACTION_MODE_EDIT_TARGET;
+			}
+			else if( attrib == RadialControlPoint2Df::ORIGIN )// If Origin is picked, transfer to origin edit mode
+			{
+				//g_SelectedItemID = objectid;
+				g_InteractionMode = INTERACTION_MODE_EDIT_ORIGIN;
+			}
+			
 		}
 
-		else if( g_InteractionMode == INTERACTION_MODE::INTERACTION_MODE_CONTROLLER_EDIT )
-		{
-			g_SelectedItemID = GetIntersectedTarget( g_CursorX, g_CursorY, g_ObjectPickRadius );
-		}
 
 	}
 
 	else if( state == GLUT_UP )
 	{
+		if( g_InteractionMode == INTERACTION_MODE_EDIT_TARGET )
+			g_InteractionMode = INTERACTION_MODE_EDIT_ORIGIN;
+
 		LeftMouseButtonPressed = false;
 	}
 
@@ -717,12 +728,12 @@ void MotionCallback( int x, int y )
 		{
 			g_Camera.Rotate( dx, dy );
 		}
-		else if( g_InteractionMode == INTERACTION_MODE_CONTROLLER_PLACEMENT )
+		else if( g_InteractionMode == INTERACTION_MODE_EDIT_ORIGIN )
 		{
 			//tcout << "Delta = (" << g_CursorDX << ", " << g_CursorDY << ")" << tendl;
 			TranslateControlPointOrigin( g_SelectedItemID, float(g_CursorDX), float(g_CursorDY) );
 		}
-		else if( g_InteractionMode == INTERACTION_MODE_CONTROLLER_EDIT )
+		else if( g_InteractionMode == INTERACTION_MODE_EDIT_TARGET )
 		{
 			TranslateControlPointTarget( g_SelectedItemID, float(g_CursorDX), float(g_CursorDY) );
 		}
@@ -777,7 +788,7 @@ void MotionCallback( int x, int y )
 
 void WheelCallback( int button, int dir, int x, int y )
 {
-	if( g_InteractionMode >= INTERACTION_MODE_CONTROLLER_PLACEMENT )
+	if( g_InteractionMode >= INTERACTION_MODE_EDIT_ORIGIN )
 	{
 		//tcout << dir<< tendl;
 		TranslateControlPointRadius( g_SelectedItemID, float(dir) * g_RadiusTranslateScale );

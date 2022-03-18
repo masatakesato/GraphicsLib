@@ -81,6 +81,12 @@ namespace GraphicsLib
 		}
 
 		
+		enum ATTRIBBUTE
+		{
+			RADIUS = ControlPoint2D<T>::TARGET + 1,
+		};
+
+
 	private:
 
 		T		m_Radius;

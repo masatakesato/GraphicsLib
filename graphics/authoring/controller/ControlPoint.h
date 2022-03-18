@@ -121,6 +121,13 @@ namespace GraphicsLib
 		}
 
 
+		enum ATTRIBBUTE
+		{
+			ORIGIN,
+			TARGET,
+		};
+
+
 
 	private:
 
