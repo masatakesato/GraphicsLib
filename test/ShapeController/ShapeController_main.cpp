@@ -424,6 +424,7 @@ void Initialize()
 	glutAddMenuEntry( "Blue",2 );
 	glutAddMenuEntry( "Green",3 );
 	glutAddMenuEntry( "Orange",4 );
+glutRemoveMenuItem
 
 
 	glutAttachMenu( GLUT_RIGHT_BUTTON );
