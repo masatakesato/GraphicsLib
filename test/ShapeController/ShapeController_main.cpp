@@ -314,34 +314,39 @@ void DrawFixedFrame( int w, int h )
 
 
 template < typename T >
-void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 5.0f )
+void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 1.0f )
 {
-	// カメラ四隅頂点
-	// 水平軸と鉛直軸を取得
-	const auto& cam		= canvas.GetCamera();
-	const auto& hor		= *cam.GetHorizontal();
-	const auto& vert	= *cam.GetVertical();
+	Vec4f verts[] = 
+	{
+		{ -1, -1, 0, 1 },
+		{ +1, -1, 0, 1 },
+		{ +1, +1, 0, 1 },
+		{ -1, +1, 0, 1 },
+	};
 
+	const auto& cam = canvas.GetCamera();
 
-TODO: カメラフレーム4隅の頂点位置を計算する
-	// フレーム基点位置を算出する
-	Vec3<T> offset;
-	T height = width / *cam.GetAspect();
+	Mat4f matScale, matInv, matComp;
+	MatScale( matScale, width, width / cam.GetAspect(), 1.0f );
+	MatInverse( matInv, *cam.GetViewTransformationMatrix() );
+	Multiply( matComp, matInv, matScale );
+	Vec4f pos;
 
-	AddScaled( offset, width, hor, height, vert );
-
-	glLineWidth( 5.0f );
+	glLineWidth( 2.5f );
 	glColor3fv( selected ? g_UIColors[ 13 ].rgb : g_UIColors[ 12 ].rgb );
 
 	glBegin( GL_LINE_LOOP );
-		glVertex3f( frameOrigin.x - offset.x, frameOrigin.y - offset.y, frameOrigin.z - offset.z );// top left
-		glVertex3f( frameOrigin.x - offset.x, 0 );//bottom left
-		glVertex3f( w, h );// bottom right
-		glVertex3f( 0, h );// top light
+	for( auto& v : verts )
+	{
+		Multiply( pos, matComp, v );
+		glVertex3fv( pos.xyzw );
+	}
 	glEnd();
 
 	// restore line width settings
 	glLineWidth( 1.0f );
+
+
 }
 
 
@@ -487,8 +492,9 @@ void Initialize()
 
 	glutAttachMenu( GLUT_RIGHT_BUTTON );
 
-
 	g_Camera.SetViewParameter( {5, 5, 5}, {-1, -1, -1}, {0, 0, 1} );// set position, direction, vertical vector
+	g_Camera.SetProjectionParameter( float(g_ScreenWidth) / float(g_ScreenHeight), M_PI * 0.25f, 0.001f, 1000.0f );
+
 
 	MatIdentity( g_MatView );
 	MatIdentity( g_MatProj );
@@ -541,6 +547,10 @@ void display()
 glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並び順になってる. 
 //tcout << g_MatView << tendl;
 //#####################################################################################################################//
+
+
+	for( auto& canvas : g_Canvasses )
+		DrawCanvas( canvas, false );
 
 
 	//============================== Draw world space axis ================================//
@@ -700,11 +710,14 @@ void reshape( int w, int h )
 	g_ScreenWidth = w;
 	g_ScreenHeight = h;
 
+	g_Camera.SetAspect( float(g_ScreenWidth) / float(g_ScreenHeight) );
+	
+
 	glViewport( 0, 0, g_ScreenWidth, g_ScreenHeight );
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	gluPerspective( 45, float(g_ScreenWidth) / float(g_ScreenHeight), 0.001, 1000 );
+	gluPerspective( /*45*/g_Camera.GetFovy() * 180.0 / M_PI, (double)g_Camera.GetAspect(), (double)g_Camera.GetNearClip(), (double)g_Camera.GetFarClip() );
 
 //################################# スクリーンピクセル座標からワールド座標に戻すコード ################################//
 
