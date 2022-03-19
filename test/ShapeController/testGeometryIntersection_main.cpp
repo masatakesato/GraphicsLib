@@ -18,9 +18,36 @@ int main()
 		tcout << tendl;
 	}
 
-	// Ray Triangle intersection 
+	// Ray / Triangle intersection 
 	{
 		tcout << _T("//=============== Ray / Triangle intersection... ================//\n");
+
+		tcout << tendl;
+	}
+
+
+	// Line segment / Line segment intersection
+	{
+		tcout << _T("//=============== Line segment / Line segment intersection... ================//\n");
+
+		Vec3f P1(0, 0, 0), P2(10, 10, 0), Q1(0, 10, 5),  Q2(10, 0, 5);
+		Vec3f p_result, q_result;
+
+		LineSegmentIntersection( P1, P2, Q1, Q2, p_result, q_result );
+
+		tcout << _T("p_result: ") << p_result << tendl;
+		tcout << _T("q_result: ") << q_result << tendl;
+
+		// parallel case
+		InitVec( P1, 0.0f, 0.0f, 0.0f );
+		InitVec( P2, 10.0f, 10.0f, 0.0f );
+		InitVec( Q1, 0.0f, 0.0f, 5.0f );
+		InitVec( Q2, 10.0f, 10.0f, 5.0f );
+
+		LineSegmentIntersection( P1, P2, Q1, Q2, p_result, q_result );
+
+		tcout << _T("p_result: ") << p_result << tendl;
+		tcout << _T("q_result: ") << q_result << tendl;
 
 		tcout << tendl;
 	}

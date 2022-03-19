@@ -463,6 +463,75 @@ namespace GraphicsLib
 
 
 
+	// Distance to line segment
+	template < typename T >
+	static inline T DistanceToLineSegment( const Vec3<T>& P, const Vec3<T>& Q1, const Vec3<T>& Q2 )
+	{
+		if( IsSame( Q1, Q2 ) )
+			return Distance( P, Q1 );
+
+		Vec3<T> Q12, O=Q1;// O = closest point on line segment(Q1, Q2)
+		Subtract( Q12, Q2, Q1 );
+
+		T	Q12_Q12	= DotProduct( Q12, Q12 );
+			Q12_Q1	= DotProduct( Q12, Q1 );
+
+		T s = -Q12_Q1 / Q12_Q12;
+
+		AddScaled( O, Clamp(s, 0, 1), Q12 );
+
+		return Distance( P, O );
+	}
+
+
+
+	// Line segment intersection
+	template < typename T >
+	static inline bool LineSegmentIntersection( const Vec3<T>& P1, const Vec3<T>& P2, const Vec3<T>& Q1, const Vec3<T>& Q2, Vec3<T>&p_result, Vec3<T>& q_result )
+	{
+		Vec3<T> P12, Q12, W;// W=Q1->P1 vector
+
+		Subtract( P12, P2, P1 );
+		Subtract( Q12, Q2, Q1 );
+		Subtract( W, P1, Q1 );
+
+		// Dot products
+		T	P_Q = DotProduct( P12, Q12 ),
+			P_P = DotProduct( P12, P12 ),
+			Q_Q = DotProduct( Q12, Q12 ),
+			P_W = DotProduct( P12, W ),
+			Q_W = DotProduct( Q12, W );
+
+		T denom = P_P * Q_Q - P_Q * P_Q;
+		T s, t;
+		if( denom <= EPSILON_E9 )// 線分同士が平行な場合 -> P1/Q1Q2, P2/Q1Q2, Q1/P1P2, Q2/P1P2 の距離を求めて最小のケースを出力する
+		{
+			s = 0.0;
+			t = ( P_P * s - P_Q ) / P_Q;
+		}
+		else
+		{
+			s = ( P_Q * Q_W - Q_Q * P_W ) / denom;
+			t = ( P_P * Q_W - P_W * P_Q ) / denom;
+		}
+
+// TODO: 0 <= s <= 1,  0 <= t <= 1, が満たされていない場合はどうする?
+		// s>1 && t>1: P2-Q2間の距離
+		// s>1 && t<0: P2-Q1間の距離
+		// s<0 && t<0: P1-Q1間の距離
+		// s<0 && t>1: P1-Q2間の距離
+
+
+		AddScaled( p_result, P1, s, P12 );
+		AddScaled( q_result, Q1, t, Q12 );
+
+		return true;
+	}
+
+
+
+
+
 }// end of namespace
 
 
