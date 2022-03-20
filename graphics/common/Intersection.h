@@ -463,25 +463,43 @@ namespace GraphicsLib
 
 
 
-	// Distance to line segment
-	template < typename T >
-	static inline T DistanceToLineSegment( const Vec3<T>& P, const Vec3<T>& Q1, const Vec3<T>& Q2 )
-	{
-		if( IsSame( Q1, Q2 ) )
-			return Distance( P, Q1 );
 
-		Vec3<T> Q12, O=Q1;// O = closest point on line segment(Q1, Q2)
+	// Closest point on line segment. 距離を返す? 座標値を返す? それともQ1->Q2ベクトルのスケールを返す????
+	// O: closest point on line segment(Q1, Q2)
+	// s: Q1Q2 vector scale
+	template < typename T >
+	static inline void ClosestPointOnLineSegment( const Vec3<T>& P, const Vec3<T>& Q1, const Vec3<T>& Q2, Vec3<T>& O, T& s, bool clamp )
+	{
+		s = 0;
+		O = Q1;
+
+		Vec3<T> Q12;
 		Subtract( Q12, Q2, Q1 );
 
-		T	Q12_Q12	= DotProduct( Q12, Q12 );
-			Q12_Q1	= DotProduct( Q12, Q1 );
+		T	Q12_P	= DotProduct( Q12, P ),
+			Q12_Q1	= DotProduct( Q12, Q1 ),
+			Q12_Q12	= DotProduct( Q12, Q12 );
 
-		T s = -Q12_Q1 / Q12_Q12;
+		if( Q12_Q12 < EPSILON_E9 )
+			return;
 
-		AddScaled( O, Clamp(s, 0, 1), Q12 );
+		s = ( Q12_P - Q12_Q1 ) / Q12_Q12;
+		if( clamp ) Clamp( s, T(0), T(1) );
+		AddScaled( O, Q1, s, Q12 );
+	}
 
+
+	// Distance to line segment
+	template < typename T >
+	static inline T DistanceToLineSegment( const Vec3<T>& P, const Vec3<T>& Q1, const Vec3<T>& Q2, bool clamp )
+	{
+		Vec3<T> O;// O = closest point on line segment(Q1, Q2)
+		T s;// Q1->Q2 vector scale
+		ClosestPointOnLineSegment( P, Q1, Q2, O, s, clamp );
 		return Distance( P, O );
 	}
+
+
 
 
 
@@ -506,8 +524,36 @@ namespace GraphicsLib
 		T s, t;
 		if( denom <= EPSILON_E9 )// 線分同士が平行な場合 -> P1/Q1Q2, P2/Q1Q2, Q1/P1P2, Q2/P1P2 の距離を求めて最小のケースを出力する
 		{
-			s = 0.0;
-			t = ( P_P * s - P_Q ) / P_Q;
+			T min_dist, vecscale_tmp;
+			Vec3<T> O, O_tmp;// closeset point on line segment
+
+			ClosestPointOnLineSegment( P1, Q1, Q2, O, t, true );// init P1/Q1Q2 distance
+			min_dist = Distance( P1, O );
+			s = 0;
+
+			ClosestPointOnLineSegment( P2, Q1, Q2, O_tmp, vecscale_tmp, true );// check P2/Q1Q2 distance
+			if( Distance( P2, O_tmp ) < min_dist )
+			{
+				s=1;
+				t=vecscale_tmp;
+				O=O_tmp;
+			}
+
+			ClosestPointOnLineSegment( Q1, P1, P2, O_tmp, vecscale_tmp, true );// check Q1/P1P2 distance
+			if( Distance( Q1, O_tmp ) < min_dist )
+			{
+				s=vecscale_tmp;
+				t=0;
+				O=O_tmp;
+			}
+
+			ClosestPointOnLineSegment( Q2, P1, P2, O_tmp, vecscale_tmp, true );// check Q2/P1P2 distance
+			if( Distance( Q2, O_tmp ) < min_dist )
+			{
+				s=vecscale_tmp;
+				t=1;
+				O=O_tmp;
+			}
 		}
 		else
 		{
