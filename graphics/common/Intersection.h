@@ -507,18 +507,19 @@ namespace GraphicsLib
 	template < typename T >
 	static inline bool LineSegmentIntersection( const Vec3<T>& P1, const Vec3<T>& P2, const Vec3<T>& Q1, const Vec3<T>& Q2, Vec3<T>&p_result, Vec3<T>& q_result )
 	{
-		Vec3<T> P12, Q12, W;// W=Q1->P1 vector
+		Vec3<T>	P12, Q12,
+				W1;// W=Q1->P1 vector
 
 		Subtract( P12, P2, P1 );
 		Subtract( Q12, Q2, Q1 );
-		Subtract( W, P1, Q1 );
+		Subtract( W1, P1, Q1 );
 
 		// Dot products
 		T	P_Q = DotProduct( P12, Q12 ),
 			P_P = DotProduct( P12, P12 ),
 			Q_Q = DotProduct( Q12, Q12 ),
-			P_W = DotProduct( P12, W ),
-			Q_W = DotProduct( Q12, W );
+			P_W1 = DotProduct( P12, W1 ),
+			Q_W1 = DotProduct( Q12, W1 );
 
 		T denom = P_P * Q_Q - P_Q * P_Q;
 		T s, t;
@@ -557,19 +558,66 @@ namespace GraphicsLib
 		}
 		else
 		{
-			s = ( P_Q * Q_W - Q_Q * P_W ) / denom;
-			t = ( P_P * Q_W - P_W * P_Q ) / denom;
+			Vec3<T> W2;
+			Subtract( W2, P2, Q2 );
+			T Q_W2	= DotProduct( Q12, W2 );
+
+			s = ( P_Q * Q_W1 - Q_Q * P_W1 ) / denom;
+			t = ( P_P * Q_W1 - P_W1 * P_Q ) / denom;
+
+			tcout << "P scale: "<< s << ", Q scale: " << t << tendl;
+
+			AddScaled( p_result, P1, s, P12 );
+			AddScaled( q_result, Q1, t, Q12 );
+
+
+// https://stackoverflow.com/questions/2824478/shortest-distance-between-two-line-segments
+// 最接近点が線分からはみ出てる場合には、始点終点位置の補正 & 線分への投影再計算が必要
+
+			// Clamp p_result on P1P2
+			if( s < 0 )// && clampP0==true
+				p_result = P1;
+			else if( s > 1 )// && clampP1==true
+				p_result = P2;
+
+			// Clamp q_result on Q1Q2
+			if( t < 0 )// && clampQ0==true
+				q_result = Q1;
+			else if( t > 1 )// && clampQ1==true
+				q_result = Q2;
+
+
+			// 線分P1-P2上でp_presult配置をクランプした場合は、q_resultを再計算する
+			if( s < 0 || s > 1 )// ( s<0 && clampP1 ) || ( s>1 && ClampP2 )
+			{
+				auto dot = DotProduct( Q12_Normalized, p_result - Q1 );// Q1～Q12上の補正p_result垂線端点の距離をコサインで求める
+				if( dot < 0 )// && clampQ1
+					dot = 0;
+				else if( dot > 1 )// && clampQ2
+					dot = 1;
+				q_result = Q1 + dot * Q12_Normalized;
+			}
+
+
+
+			// 線分Q1-Q2上でq_presult配置をクランプした場合は、p_resultを再計算する
+			if( t < 0 || t > 1 )// ( t<0 && clampQ1 ) || ( t>1 && ClampQ2 )
+			{
+				auto dot = DotProduct( P12_Normalized, q_result - P1 );// Q1～Q12上の補正p_result垂線端点の距離をコサインで求める
+				if( dot < 0 )// && clampP1
+					dot = 0;
+				else if( dot > 1 )// && clampP2
+					dot = 1;
+				p_result = P1 + dot * P12_Normalized;
+			}
+
+
+
+
 		}
 
-// TODO: 0 <= s <= 1,  0 <= t <= 1, が満たされていない場合はどうする?
-		// s>1 && t>1: P2-Q2間の距離
-		// s>1 && t<0: P2-Q1間の距離
-		// s<0 && t<0: P1-Q1間の距離
-		// s<0 && t>1: P1-Q2間の距離
 
 
-		AddScaled( p_result, P1, s, P12 );
-		AddScaled( q_result, Q1, t, Q12 );
 
 		return true;
 	}
