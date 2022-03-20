@@ -300,10 +300,10 @@ void DrawFixedFrame( int w, int h )
 	glColor3fv( g_UIColors[ 11 ].rgb );
 
 	glBegin( GL_LINE_LOOP );
-		glVertex2f( 0, 0 );
-		glVertex2f( w, 0 );
-		glVertex2f( w, h );
-		glVertex2f( 0, h );
+		glVertex2f( 0.0f, 0.0f );
+		glVertex2f( (float)w, 0.0f );
+		glVertex2f( (float)w, (float)h );
+		glVertex2f( 0.0f, (float)h );
 	glEnd();
 
 	// restore line width settings
@@ -318,38 +318,92 @@ void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 1.0f )
 {
 	Vec4f verts[] = 
 	{
-		{ -1, -1, 0, 1 },
-		{ +1, -1, 0, 1 },
-		{ +1, +1, 0, 1 },
-		{ -1, +1, 0, 1 },
+		{ 0, -1, -1, 1 },// bl
+		{ 0, +1, -1, 1 },// br
+		{ 0, +1, +1, 1 },// tr
+		{ 0, -1, +1, 1 },// tl
 	};
+
+	Vec3f colors[] = 
+	{
+		{ 0, 0, 0 },// bl
+		{ 1, 0, 0 },// br
+		{ 1, 1, 0 },// tr
+		{ 0, 1, 0 },// tl
+	};
+
 
 	const auto& cam = canvas.GetCamera();
 
-	Mat4f matScale, matInv, matComp;
-	MatScale( matScale, width, width / cam.GetAspect(), 1.0f );
-	MatInverse( matInv, *cam.GetViewTransformationMatrix() );
-	Multiply( matComp, matInv, matScale );
+	Mat4f matScale, matWorld, matComp;
+	MatScale( matScale, 1.0f, width, width / cam.GetAspect() );
+	MatRotation( matWorld, *cam.GetForward(), *cam.GetVertical()/*{0.0f, 0.0f, 1.0f}*/ );
+	Multiply( matComp, matWorld, matScale );
 	Vec4f pos;
 
 	glLineWidth( 2.5f );
 	glColor3fv( selected ? g_UIColors[ 13 ].rgb : g_UIColors[ 12 ].rgb );
 
+
 	glBegin( GL_LINE_LOOP );
-	for( auto& v : verts )
+	for( int i=0; i<4; ++i )
 	{
-		Multiply( pos, matComp, v );
+		glColor3fv( colors[i].rgb );
+		Multiply( pos, matComp, verts[i] );
 		glVertex3fv( pos.xyzw );
+		//glVertex3fv( v.xyzw );
 	}
 	glEnd();
 
+	//glBegin( GL_LINE_LOOP );
+	//for( auto& v : verts )
+	//{
+	//	Multiply( pos, matComp, v );
+	//	glVertex3fv( pos.xyzw );
+	//	//glVertex3fv( v.xyzw );
+	//}
+	//glEnd();
+
 	// restore line width settings
 	glLineWidth( 1.0f );
-
-
 }
 
 
+
+
+//template < typename T >
+//void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 1.0f )
+//{
+//	Vec4f verts[] = 
+//	{
+//		{ -1, -1, 0, 1 },// bl
+//		{ +1, -1, 0, 1 },// br
+//		{ +1, +1, 0, 1 },// tr
+//		{ -1, +1, 0, 1 },// tl
+//	};
+//
+//	const auto& cam = canvas.GetCamera();
+//
+//	Mat4f matScale, matCamToWorld, matComp;
+//	MatScale( matScale, width, width / cam.GetAspect(), 1.0f );
+//	MatInverse( matCamToWorld, *cam.GetViewTransformationMatrix() );
+//	Multiply( matComp, matCamToWorld, matScale );
+//	Vec4f pos;
+//
+//	glLineWidth( 2.5f );
+//	glColor3fv( selected ? g_UIColors[ 13 ].rgb : g_UIColors[ 12 ].rgb );
+//
+//	glBegin( GL_LINE_LOOP );
+//	for( auto& v : verts )
+//	{
+//		Multiply( pos, matComp, v );
+//		glVertex3fv( pos.xyzw );
+//	}
+//	glEnd();
+//
+//	// restore line width settings
+//	glLineWidth( 1.0f );
+//}
 
 
 
@@ -362,7 +416,7 @@ bool GetIntersectedControlPoint( float x, float y, float range, int64& objectid,
 {
 	Vec2f pos( x, y );
 
-	for( int i=0; i<g_ControlPoints.Length(); ++i )
+	for( int i=0; i<g_ControlPoints.Length<int>(); ++i )
 	{
 		// Check origin intersection
 		if( Distance( pos, g_ControlPoints[i].Origin() ) <= range )
@@ -392,7 +446,7 @@ bool GetIntersectedControlPoint( float x, float y, float range, int64& objectid,
 void TranslateControlPointOrigin( int64 objectid, float dx, float dy )
 {
 	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
-	g_ControlPoints[ objectid ].TranslateOrigin( dx, dy );
+	g_ControlPoints[ (int32)objectid ].TranslateOrigin( dx, dy );
 }
 
 
@@ -400,7 +454,7 @@ void TranslateControlPointOrigin( int64 objectid, float dx, float dy )
 void TranslateControlPointTarget( int64 objectid, float dx, float dy )
 {
 	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
-	g_ControlPoints[ objectid ].TranslateTarget( dx, dy );
+	g_ControlPoints[ (int32)objectid ].TranslateTarget( dx, dy );
 }
 
 
@@ -408,7 +462,7 @@ void TranslateControlPointTarget( int64 objectid, float dx, float dy )
 void TranslateControlPointRadius( int64 objectid, float radius )
 {
 	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
-	g_ControlPoints[ objectid ].TranslateRadius( radius );
+	g_ControlPoints[ (int32)objectid ].TranslateRadius( radius );
 }
 
 
@@ -417,7 +471,7 @@ void DeleteSelectedController( int64& objectid )
 {
 	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
 
-	g_ControlPoints.Remove( objectid );
+	g_ControlPoints.Remove( (int32)objectid );
 
 	objectid = -1;
 }
@@ -492,7 +546,7 @@ void Initialize()
 
 	glutAttachMenu( GLUT_RIGHT_BUTTON );
 
-	g_Camera.SetViewParameter( {5, 5, 5}, {-1, -1, -1}, {0, 0, 1} );// set position, direction, vertical vector
+	//g_Camera.SetViewParameter( {5, 5, 5}, {-1, -1, -1}, {0, 0, 1} );// set position, direction, vertical vector
 	g_Camera.SetProjectionParameter( float(g_ScreenWidth) / float(g_ScreenHeight), M_PI * 0.25f, 0.001f, 1000.0f );
 
 
@@ -625,7 +679,7 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 
 	glColor3f( 0.2f, 1.0f, 0.2f );
 
-	for( int i=0; i<g_ControlPoints.Length(); ++i )
+	for( int i=0; i<g_ControlPoints.Length<int>(); ++i )
 	{
 		//glVertex3f( g_ControlPoints[i].Origin().x, g_ControlPoints[i].Origin().y, 0.0f );
 		DrawRadialControlPoint2D( g_ControlPoints[i], i==g_SelectedItemID );
@@ -747,11 +801,11 @@ void MouseCallback( int button, int state, int x, int y )
 			// Check if controller already exists
 			uint8 attrib = -1;
 			int64 objectid = -1;
-			GetIntersectedControlPoint( g_CursorX, g_CursorY, g_ObjectPickRadius, g_SelectedItemID, attrib );
+			GetIntersectedControlPoint( (float)g_CursorX, (float)g_CursorY, g_ObjectPickRadius, g_SelectedItemID, attrib );
 
 			if( g_SelectedItemID == -1 && (glutGetModifiers() & GLUT_ACTIVE_ALT)  )// If nothing is picked, put origin at current position, then transfer to target edit mode
 			{
-				g_ControlPoints.AddToTail( RadialControlPoint2Df( g_CursorX, g_CursorY, g_CursorX, g_CursorY, 20.0f ) );
+				g_ControlPoints.AddToTail( RadialControlPoint2Df( (float)g_CursorX, (float)g_CursorY, (float)g_CursorX, (float)g_CursorY, 20.0f ) );
 				g_SelectedItemID = g_ControlPoints.Length<int64>() - 1;
 				g_InteractionMode = INTERACTION_MODE_EDIT_TARGET;
 			}
