@@ -24,6 +24,7 @@ const GLfloat lightCol[] = { 1 , 1 , 1 , 1 };
 
 // Camera
 Camera	g_Camera;
+Camera*	g_refCurrentCamera = &g_Camera;
 
 // Obj Mesh Loader
 MeshLoader	g_MeshLoader;
@@ -50,6 +51,8 @@ bool	g_bDrawVertexBuffer = false;
 float	g_ObjectPickRadius = 10.0f;
 float	g_RadiusTranslateScale = 2.5f;
 
+const float c_DefaultControllerRadius = 20.0f;
+
 
 // Modes
 enum INTERACTION_MODE
@@ -57,10 +60,9 @@ enum INTERACTION_MODE
 	INTERACTION_MODE_VIEW,
 
 	INTERACTION_MODE_EDIT_ORIGIN,
-
 	//INTERACTION_MODE_CONROLLER_PLACEMENT,
-
 	INTERACTION_MODE_EDIT_TARGET,
+
 	NUM_INTERACTION_MODES,
 };
 
@@ -110,13 +112,13 @@ const Vec3f g_UIColors[] =
 
 
 // Object selection
-int64	g_SelectedItemID = -1;
-
+int64	g_SelectedItemID	= -1;
+int64	g_SelectedViewID	= -1;
 
 
 // Control Points
 using RadialControlPoint2Df = RadialControlPoint2D<float>;
-Array<RadialControlPoint2Df>	g_ControlPoints;
+//Array<RadialControlPoint2Df>	g_ControlPoints;
 
 
 // Deform Canvasses
@@ -315,20 +317,21 @@ void DrawFixedFrame( int w, int h )
 
 
 template < typename T >
-void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 1.0f )
+void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T canvasLength = 1.0f )
 {
-
 	const auto& cam = canvas.GetCamera();
 
-	Mat4f matScale, matWorld, matComp;
-	MatScale( matScale, 1.0f, width, width / cam.GetAspect() );
-	MatRotation( matWorld, *cam.GetForward(), *cam.GetVertical()/*{0.0f, 0.0f, 1.0f}*/ );
-	Multiply( matComp, matWorld, matScale );
+//	Mat4f matScale, matTranslate, matWorld, matComp;
+//	MatScale( matScale, 1.0f, canvasLength, canvasLength / cam.GetAspect() );
+//	MatTranslation( )
+//	MatRotation( matWorld, *cam.GetForward(), *cam.GetVertical()/*{0.0f, 0.0f, 1.0f}*/ );
+//	Multiply( matComp, matWorld, matScale );
+
+	const auto& matComp = canvas.WorldMatrix();
 	Vec4f pos;
 
 	glLineWidth( 2.5f );
 	glColor3fv( selected ? g_UIColors[ 13 ].rgb : g_UIColors[ 12 ].rgb );
-
 
 	glBegin( GL_LINE_LOOP );
 	for( int i=0; i<4; ++i )
@@ -339,15 +342,6 @@ void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 1.0f )
 		//glVertex3fv( v.xyzw );
 	}
 	glEnd();
-
-	//glBegin( GL_LINE_LOOP );
-	//for( auto& v : verts )
-	//{
-	//	Multiply( pos, matComp, v );
-	//	glVertex3fv( pos.xyzw );
-	//	//glVertex3fv( v.xyzw );
-	//}
-	//glEnd();
 
 	// restore line width settings
 	glLineWidth( 1.0f );
@@ -397,69 +391,73 @@ void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 1.0f )
 //################################# Object intersection test ############################################//
 
 
-bool GetIntersectedControlPoint( float x, float y, float range, int64& objectid, uint8& type )
-{
-	Vec2f pos( x, y );
-
-	for( int i=0; i<g_ControlPoints.Length<int>(); ++i )
-	{
-		// Check origin intersection
-		if( Distance( pos, g_ControlPoints[i].Origin() ) <= range )
-		{
-			objectid = i;
-			type = RadialControlPoint2Df::ORIGIN;
-			return true;
-		}
-
-		// Check target intersection
-		else if( Distance( pos, g_ControlPoints[i].Target() ) <= range )
-		{
-			objectid = i;
-			type = RadialControlPoint2Df::TARGET;
-			return true;
-		}
-
-	}
-
-	objectid = -1;
-	return false;
-}
-
-
-
-
-void TranslateControlPointOrigin( int64 objectid, float dx, float dy )
-{
-	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
-	g_ControlPoints[ (int32)objectid ].TranslateOrigin( dx, dy );
-}
+// Moved to DeformCanvas class
+//bool GetIntersectedControlPoint( float x, float y, float range, int64& objectid, uint8& type )
+//{
+//	Vec2f pos( x, y );
+//
+//	for( int i=0; i<g_ControlPoints.Length<int>(); ++i )
+//	{
+//		// Check origin intersection
+//		if( Distance( pos, g_ControlPoints[i].Origin() ) <= range )
+//		{
+//			objectid = i;
+//			type = RadialControlPoint2Df::ORIGIN;
+//			return true;
+//		}
+//
+//		// Check target intersection
+//		else if( Distance( pos, g_ControlPoints[i].Target() ) <= range )
+//		{
+//			objectid = i;
+//			type = RadialControlPoint2Df::TARGET;
+//			return true;
+//		}
+//
+//	}
+//
+//	objectid = -1;
+//	return false;
+//}
 
 
 
-void TranslateControlPointTarget( int64 objectid, float dx, float dy )
-{
-	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
-	g_ControlPoints[ (int32)objectid ].TranslateTarget( dx, dy );
-}
+// Moved to DeformCanvas class
+//void TranslateControlPointOrigin( int64 objectid, float dx, float dy )
+//{
+//	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
+//	g_ControlPoints[ (int32)objectid ].TranslateOrigin( dx, dy );
+//}
 
 
 
-void TranslateControlPointRadius( int64 objectid, float radius )
-{
-	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
-	g_ControlPoints[ (int32)objectid ].TranslateRadius( radius );
-}
+// Moved to DeformCanvas class
+//void TranslateControlPointTarget( int64 objectid, float dx, float dy )
+//{
+//	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
+//	g_ControlPoints[ (int32)objectid ].TranslateTarget( dx, dy );
+//}
 
 
 
-void DeleteSelectedController( int64& objectid )
-{
-	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
+// Moved to DeformCanvas class
+//void TranslateControlPointRadius( int64 objectid, float radius )
+//{
+//	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
+//	g_ControlPoints[ (int32)objectid ].TranslateRadius( radius );
+//}
 
-	g_ControlPoints.Remove( (int32)objectid );
 
-	objectid = -1;
-}
+
+// Moved to DeformCanvas class
+//void DeleteSelectedController( int64& objectid )
+//{
+//	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
+//
+//	g_ControlPoints.Remove( (int32)objectid );
+//
+//	objectid = -1;
+//}
 
 
 
@@ -480,8 +478,8 @@ bool GetIntersectedCanvas( float screenX, float screenY, float range, int64& obj
 		{
 			Multiply( screenSpaceVerts[j], matComp, CanvasFrameGeoemtry::verts[j] );
 
-			screenSpaceVerts[j].x =	0.5 * ( screenSpaceVerts[j].x + 1.0 );
-			screenSpaceVerts[j].y =	0.5 * ( screenSpaceVerts[j].y + 1.0 );
+			screenSpaceVerts[j].x =	0.5f * ( screenSpaceVerts[j].x + 1.0f );
+			screenSpaceVerts[j].y =	0.5f * ( screenSpaceVerts[j].y + 1.0f );
 			screenSpaceVerts[j].z =	0;
 		}
 
@@ -518,7 +516,7 @@ void ProcessCanvasSubMenu( int option )
 
 	if( option == 0 )// Create
 	{
-		g_Canvasses.AddToTail( DeformCanvas<float>(g_Camera) );
+		g_Canvasses.AddToTail( DeformCanvas<float>( g_Camera, (float)g_ScreenWidth, (float)g_ScreenHeight ) );
 	}
 	//else if( option == 1 )
 	//{
@@ -605,8 +603,6 @@ void Initialize()
 
 void display()
 {	
-//	ProcessEditOperations();
-
 
 	ProcessCameraKeys();
 	
@@ -616,13 +612,15 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	const Vec3f &pos = *g_Camera.GetPosition();
-	const Vec3f &dir = *g_Camera.GetForward();
-	const Vec3f &up	= *g_Camera.GetVertical();
+
+	const Vec3f &pos = *g_refCurrentCamera->GetPosition();
+	const Vec3f &dir = *g_refCurrentCamera->GetForward();
+	const Vec3f &up	= *g_refCurrentCamera->GetVertical();
 
 	gluLookAt(	pos.x, pos.y, pos.z,
 				pos.x + dir.x, pos.y + dir.y, pos.z + dir.z,
 				up.x, up.y, up.z );
+
 
 //############################# スクリーン座標からワールド座標に戻した点の表示 #######################################//
 glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並び順になってる. 
@@ -630,8 +628,9 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 //#####################################################################################################################//
 
 
-	for( auto& canvas : g_Canvasses )
-		DrawCanvas( canvas, false );
+	if( g_InteractionMode == INTERACTION_MODE_VIEW )
+		for( auto& canvas : g_Canvasses )
+			DrawCanvas( canvas, false );
 
 
 	//============================== Draw world space axis ================================//
@@ -701,18 +700,23 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 
 
 	// Controllers
-	glPointSize( 7.5f );
-	glBegin( GL_POINTS );
-
-	glColor3f( 0.2f, 1.0f, 0.2f );
-
-	for( int i=0; i<g_ControlPoints.Length<int>(); ++i )
+	if( g_InteractionMode > INTERACTION_MODE_VIEW && g_SelectedViewID != -1 )
 	{
-		//glVertex3f( g_ControlPoints[i].Origin().x, g_ControlPoints[i].Origin().y, 0.0f );
-		DrawRadialControlPoint2D( g_ControlPoints[i], i==g_SelectedItemID );
-	}
+		glPointSize( 7.5f );
+		glBegin( GL_POINTS );
 
-	glEnd();
+		glColor3f( 0.2f, 1.0f, 0.2f );
+
+		auto& g_ControlPoints = g_Canvasses[ g_SelectedViewID ].ControlPoints();
+
+		for( int i=0; i<g_ControlPoints.Length<int>(); ++i )
+		{
+			//glVertex3f( g_ControlPoints[i].Origin().x, g_ControlPoints[i].Origin().y, 0.0f );
+			DrawRadialControlPoint2D( g_ControlPoints[i], i==g_SelectedItemID );
+		}
+
+		glEnd();
+	}
 
 
 	// Draw FixedFrame if interaction mode is placement/edit mode.
@@ -767,13 +771,28 @@ void KeyboardUpCallback( unsigned char key, int x, int y )
 	}
 	case 0x09:// tab( change edit mode )
 	{
-		g_InteractionMode = ( g_InteractionMode + 1 ) % 2;// switch between
+TODO: VIEW -> EDITへの切替え
+
+
+TODO: EDIT -> VIEWの切り替え
+
+
+// TODO: Temporary implementation
+g_SelectedViewID = g_Canvasses ? 0 : -1;
+
+if( g_SelectedViewID > -1 )
+	g_InteractionMode = ( g_InteractionMode + 1 ) % 2;// switch between View and Edit mode
+
+// Clear controller selection
+if( g_InteractionMode == INTERACTION_MODE_VIEW )
+	g_SelectedItemID = -1;
+
 		break;
 	}
 	case 127:// delete( delete selected controller )
 	{
-		if( g_InteractionMode > INTERACTION_MODE_VIEW )
-			DeleteSelectedController( g_SelectedItemID );
+		if( g_InteractionMode >= INTERACTION_MODE_EDIT_ORIGIN )
+			g_Canvasses[ g_SelectedViewID ].DeleteController( g_SelectedItemID ); //DeleteSelectedController( g_SelectedItemID );
 		break;
 	}
 
@@ -828,12 +847,14 @@ void MouseCallback( int button, int state, int x, int y )
 			// Check if controller already exists
 			uint8 attrib = -1;
 			int64 objectid = -1;
-			GetIntersectedControlPoint( (float)g_CursorX, (float)g_CursorY, g_ObjectPickRadius, g_SelectedItemID, attrib );
+			g_Canvasses[ g_SelectedViewID ].GetIntersectedControlPoint( (float)g_CursorX, (float)g_CursorY, g_ObjectPickRadius, g_SelectedItemID, attrib );
+			//GetIntersectedControlPoint( (float)g_CursorX, (float)g_CursorY, g_ObjectPickRadius, g_SelectedItemID, attrib );
 
 			if( g_SelectedItemID == -1 && (glutGetModifiers() & GLUT_ACTIVE_ALT)  )// If nothing is picked, put origin at current position, then transfer to target edit mode
 			{
-				g_ControlPoints.AddToTail( RadialControlPoint2Df( (float)g_CursorX, (float)g_CursorY, (float)g_CursorX, (float)g_CursorY, 20.0f ) );
-				g_SelectedItemID = g_ControlPoints.Length<int64>() - 1;
+				g_Canvasses[ g_SelectedViewID ].AddController( { (float)g_CursorX, (float)g_CursorY }, c_DefaultControllerRadius, g_SelectedItemID );
+				//g_ControlPoints.AddToTail( RadialControlPoint2Df( (float)g_CursorX, (float)g_CursorY, (float)g_CursorX, (float)g_CursorY, c_DefaultControllerRadius ) );
+				//g_SelectedItemID = g_ControlPoints.Length<int64>() - 1;
 				g_InteractionMode = INTERACTION_MODE_EDIT_TARGET;
 			}
 			else if( attrib == RadialControlPoint2Df::TARGET )//targetid != -1 )// If Target is picked, transfer to target edit mode
@@ -883,11 +904,11 @@ void MotionCallback( int x, int y )
 		else if( g_InteractionMode == INTERACTION_MODE_EDIT_ORIGIN )
 		{
 			//tcout << "Delta = (" << g_CursorDX << ", " << g_CursorDY << ")" << tendl;
-			TranslateControlPointOrigin( g_SelectedItemID, float(g_CursorDX), float(g_CursorDY) );
+			g_Canvasses[ g_SelectedViewID ].TranslateControlPointOrigin( g_SelectedItemID, float(g_CursorDX), float(g_CursorDY) );
 		}
 		else if( g_InteractionMode == INTERACTION_MODE_EDIT_TARGET )
 		{
-			TranslateControlPointTarget( g_SelectedItemID, float(g_CursorDX), float(g_CursorDY) );
+			g_Canvasses[ g_SelectedViewID ].TranslateControlPointTarget( g_SelectedItemID, float(g_CursorDX), float(g_CursorDY) );
 		}
 
 
@@ -943,7 +964,7 @@ void WheelCallback( int button, int dir, int x, int y )
 	if( g_InteractionMode >= INTERACTION_MODE_EDIT_ORIGIN )
 	{
 		//tcout << dir<< tendl;
-		TranslateControlPointRadius( g_SelectedItemID, float(dir) * g_RadiusTranslateScale );
+		g_Canvasses[ g_SelectedViewID ].TranslateControlPointRadius( g_SelectedItemID, float(dir) * g_RadiusTranslateScale );
 	}
 
 
