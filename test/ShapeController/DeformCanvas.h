@@ -12,6 +12,32 @@
 namespace GraphicsLib
 {
 
+	namespace CanvasFrameGeoemtry
+	{
+		// vertices
+		const static Vec4f verts[4] = 
+		{
+			{ 0, -1, -1, 1 },// bl
+			{ 0, +1, -1, 1 },// br
+			{ 0, +1, +1, 1 },// tr
+			{ 0, -1, +1, 1 },// tl
+		};
+
+		// color
+		const static Vec3f colors[4] = 
+		{
+			{ 0, 0, 0 },// bl
+			{ 1, 0, 0 },// br
+			{ 1, 1, 0 },// tr
+			{ 0, 1, 0 },// tl
+		};
+
+		const float LineWidth = 5.0f;
+
+	};
+
+
+
 	template < typename T >
 	class DeformCanvas
 	{
@@ -48,15 +74,15 @@ namespace GraphicsLib
 
 		int64 AddControlPoint( const Vec2<T>& pos, T radius )
 		{
-			g_ControlPoints.AddToTail( RCP2D( (T)pos.x, (T)pos.y, 0, 0, (T)20.0f ) );
+			m_ControlPoints.AddToTail( RCP2D( (T)pos.x, (T)pos.y, 0, 0, (T)20.0f ) );
 		}
 
 
 		bool DeleteControlPoint( int64 objectid )
 		{
-			if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return false;
+			if( objectid < 0 || objectid >=m_ControlPoints.Length<int64>() )	return false;
 
-			g_ControlPoints.Remove( objectid );
+			m_ControlPoints.Remove( objectid );
 
 			return true;
 		}
@@ -78,7 +104,7 @@ namespace GraphicsLib
 		template < typename SizeType=uint32 >
 		inline const RCP2D& operator[]( SizeType n ) const&
 		{
-			return g_ControlPoints[n];
+			return m_ControlPoints[n];
 		}
 
 
@@ -86,8 +112,13 @@ namespace GraphicsLib
 		template < typename SizeType=uint32 >
 		inline RCP2D& operator[]( SizeType n ) &
 		{
-			return g_ControlPoints[n];
+			return m_ControlPoints[n];
 		}
+
+
+		Mat4<T>& WorldMatrix()				{ return m_MatWorld; }
+		const Mat4<T>& WorldMatrix() const	{ return m_MatWorld; }
+
 
 
 
@@ -95,10 +126,11 @@ namespace GraphicsLib
 
 		Camera	m_Camera;
 
-		OreOreLib::Array<RCP2D>	g_ControlPoints;
+		OreOreLib::Array<RCP2D>	m_ControlPoints;
 
 		// OpenGLの列優先行列を格納するバッファ. Cameraクラスのは行優先でやつしか入ってないから
-		Mat4<T>	m_MatView, m_MatProj, m_MatViewProj, m_MatInvViewProj;
+		Mat4<T>	m_MatView, m_MatProj, m_MatViewProj, m_MatScreenToWorld;
+		Mat4<T>	m_MatWorld;
 
 
 	};

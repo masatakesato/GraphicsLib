@@ -4,6 +4,7 @@
 #include	<oreore/mathlib/GraphicsMath.h>
 #include	<oreore/container/Array.h>
 
+#include	<graphics/common/Intersection.h>
 #include	<graphics/gl4x/scene/MeshLoader.h>
 #include	<graphics/gl4x/scene/Camera.h>
 #include	<graphics/authoring/controller/ControlPoint.h>
@@ -316,22 +317,6 @@ void DrawFixedFrame( int w, int h )
 template < typename T >
 void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 1.0f )
 {
-	Vec4f verts[] = 
-	{
-		{ 0, -1, -1, 1 },// bl
-		{ 0, +1, -1, 1 },// br
-		{ 0, +1, +1, 1 },// tr
-		{ 0, -1, +1, 1 },// tl
-	};
-
-	Vec3f colors[] = 
-	{
-		{ 0, 0, 0 },// bl
-		{ 1, 0, 0 },// br
-		{ 1, 1, 0 },// tr
-		{ 0, 1, 0 },// tl
-	};
-
 
 	const auto& cam = canvas.GetCamera();
 
@@ -348,8 +333,8 @@ void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 1.0f )
 	glBegin( GL_LINE_LOOP );
 	for( int i=0; i<4; ++i )
 	{
-		glColor3fv( colors[i].rgb );
-		Multiply( pos, matComp, verts[i] );
+		glColor3fv( CanvasFrameGeoemtry::colors[i].rgb );
+		Multiply( pos, matComp, CanvasFrameGeoemtry::verts[i] );
 		glVertex3fv( pos.xyzw );
 		//glVertex3fv( v.xyzw );
 	}
@@ -475,6 +460,48 @@ void DeleteSelectedController( int64& objectid )
 
 	objectid = -1;
 }
+
+
+
+bool GetIntersectedCanvas( float screenX, float screenY, float range, int64& objectid )
+{
+	Mat4f matComp;
+	Vec4f screenSpaceVerts[4];
+	Vec3f screenSpacePos( screenX, screenY, 0 );
+
+
+	for( int i=0; i<g_Canvasses.Length<int>(); ++i )
+	{
+		// construct matrix for frame vertices transformation ( canvas default posture to screen space )
+		Multiply( matComp, g_MatViewProj, g_Canvasses[i].WorldMatrix() );
+
+		// init vertices
+		for( int j=0; j<4; ++j )
+		{
+			Multiply( screenSpaceVerts[j], matComp, CanvasFrameGeoemtry::verts[j] );
+
+			screenSpaceVerts[j].x =	0.5 * ( screenSpaceVerts[j].x + 1.0 );
+			screenSpaceVerts[j].y =	0.5 * ( screenSpaceVerts[j].y + 1.0 );
+			screenSpaceVerts[j].z =	0;
+		}
+
+		// check intersection distance
+		for( int j=0; j<4; ++j )
+		{
+			if( DistanceToLineSegment( screenSpacePos, screenSpaceVerts[j].xyz, screenSpaceVerts[( j+1 )%4].xyz ) <= g_ObjectPickRadius )
+			{
+				objectid = i;
+				return true;
+			}
+		}
+
+	}
+
+	objectid = -1;
+	return false;
+}
+
+
 
 
 
