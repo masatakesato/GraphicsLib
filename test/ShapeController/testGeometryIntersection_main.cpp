@@ -49,18 +49,18 @@ int main()
 
 		// non-parallel case
 		//Vec3f P1(0, 0, 0), P2(10, 10, 0), Q1(0, 10, 5),  Q2(10, 0, 5);
-		Vec3f P1(0, 0, 0), P2(10, 10, 0), Q1(1, 1, 1),  Q2(-3, -3, 0.99f);
-		Vec3f p_result, q_result;
+		Vec3f P1(0, 0, 0), P2(10, 0, 0), Q1(0, 1, 0),  Q2(-1, 0, 0);
+		Vec3f Hp, Hq;
 
-		tcout << _T("Line P: ") << P1 << _T(" / ") << P2 << tendl;
-		tcout << _T("Line Q: ") << Q1 << _T(" / ") << Q2 << tendl;
+		//tcout << _T("Line P: ") << P1 << _T(" / ") << P2 << tendl;
+		//tcout << _T("Line Q: ") << Q1 << _T(" / ") << Q2 << tendl;
 
-		LineSegmentIntersection( P1, P2, Q1, Q2, p_result, q_result );
+		//LineSegmentIntersection( P1, P2, Q1, Q2, Hp, Hq );
 
-		tcout << _T("p_result: ") << p_result << tendl;
-		tcout << _T("q_result: ") << q_result << tendl;
+		//tcout << _T("Hp: ") << Hp << tendl;
+		//tcout << _T("Hq: ") << Hq << tendl;
 
-		tcout << tendl;
+		//tcout << tendl;
 
 		// parallel case
 		InitVec( P1, 0.0f, 0.0f, 0.0f );
@@ -71,10 +71,10 @@ int main()
 		tcout << _T("Line P: ") << P1 << _T(" / ") << P2 << tendl;
 		tcout << _T("Line Q: ") << Q1 << _T(" / ") << Q2 << tendl;
 
-		LineSegmentIntersection( P1, P2, Q1, Q2, p_result, q_result );
+		LineSegmentIntersection( P1, P2, Q1, Q2, Hp, Hq, true, true, false, true );
 
-		tcout << _T("p_result: ") << p_result << tendl;
-		tcout << _T("q_result: ") << q_result << tendl;
+		tcout << _T("Hp: ") << Hp << tendl;
+		tcout << _T("Hq: ") << Hq << tendl;
 
 		tcout << tendl;
 	}

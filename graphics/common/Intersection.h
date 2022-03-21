@@ -468,7 +468,7 @@ namespace GraphicsLib
 	// O: closest point on line segment(Q1, Q2)
 	// s: Q1Q2 vector scale
 	template < typename T >
-	static inline void ClosestPointOnLineSegment( const Vec3<T>& P, const Vec3<T>& Q1, const Vec3<T>& Q2, Vec3<T>& O, T& s, bool clamp )
+	static inline void ClosestPointOnLineSegment( const Vec3<T>& P, const Vec3<T>& Q1, const Vec3<T>& Q2, Vec3<T>& O, T& s, bool clampQ1=true, bool clampQ2=true )
 	{
 		s = 0;
 		O = Q1;
@@ -484,18 +484,19 @@ namespace GraphicsLib
 			return;
 
 		s = ( Q12_P - Q12_Q1 ) / Q12_Q12;
-		if( clamp ) Clamp( s, T(0), T(1) );
+		if( clampQ1 ) s = Max( s, T(0) );
+		if( clampQ2 ) s = Min( s, T(1) );
 		AddScaled( O, Q1, s, Q12 );
 	}
 
 
 	// Distance to line segment
 	template < typename T >
-	static inline T DistanceToLineSegment( const Vec3<T>& P, const Vec3<T>& Q1, const Vec3<T>& Q2, bool clamp )
+	static inline T DistanceToLineSegment( const Vec3<T>& P, const Vec3<T>& Q1, const Vec3<T>& Q2, bool clampQ1=true, bool clampQ2=true )
 	{
 		Vec3<T> O;// O = closest point on line segment(Q1, Q2)
 		T s;// Q1->Q2 vector scale
-		ClosestPointOnLineSegment( P, Q1, Q2, O, s, clamp );
+		ClosestPointOnLineSegment( P, Q1, Q2, O, s, clampQ1, clampQ2 );
 		return Distance( P, O );
 	}
 
@@ -504,12 +505,22 @@ namespace GraphicsLib
 
 
 	// Line segment intersection
+	// P1/P2: Line segment's start/end points
+	// Q1/Q2: Line segment's start/end points
+	// Hp: Point on line segment P1/P2 which is closest to line segment Q1/Q2.
+	// Hq: Point on line segment Q1/Q2 which is closest to line segment P1/P2.
+	// clampP1/clampP2: Clamp Hp position to [P1, P2].
+	// clampQ1/clampQ2: Clamp Hq position to [Q1, Q2].
 	template < typename T >
-	static inline bool LineSegmentIntersection( const Vec3<T>& P1, const Vec3<T>& P2, const Vec3<T>& Q1, const Vec3<T>& Q2, Vec3<T>&p_result, Vec3<T>& q_result )
+	static inline bool LineSegmentIntersection(
+		const Vec3<T>& P1, const Vec3<T>& P2,
+		const Vec3<T>& Q1, const Vec3<T>& Q2,
+		Vec3<T>&Hp, Vec3<T>& Hq,
+		bool clampP1=true, bool clampP2=true,
+		bool clampQ1=true, bool clampQ2=true
+	)
 	{
-		Vec3<T>	P12, Q12,
-				W1;// W=Q1->P1 vector
-
+		Vec3<T>	P12, Q12, W1;// W1=Q1->P1 vector
 		Subtract( P12, P2, P1 );
 		Subtract( Q12, Q2, Q1 );
 		Subtract( W1, P1, Q1 );
@@ -523,100 +534,115 @@ namespace GraphicsLib
 
 		T denom = P_P * Q_Q - P_Q * P_Q;
 		T s, t;
+
+
+		//================================== Parallel case ==============================//
+
 		if( denom <= EPSILON_E9 )// 線分同士が平行な場合 -> P1/Q1Q2, P2/Q1Q2, Q1/P1P2, Q2/P1P2 の距離を求めて最小のケースを出力する
 		{
-			T min_dist, vecscale_tmp;
+			T min_dist, dist_tmp, vecscale_tmp;
 			Vec3<T> O, O_tmp;// closeset point on line segment
 
-			ClosestPointOnLineSegment( P1, Q1, Q2, O, t, true );// init P1/Q1Q2 distance
+			ClosestPointOnLineSegment( P1, Q1, Q2, O, t, clampQ1, clampQ2 );// init P1/Q1Q2 distance
 			min_dist = Distance( P1, O );
 			s = 0;
 
-			ClosestPointOnLineSegment( P2, Q1, Q2, O_tmp, vecscale_tmp, true );// check P2/Q1Q2 distance
-			if( Distance( P2, O_tmp ) < min_dist )
+			ClosestPointOnLineSegment( P2, Q1, Q2, O_tmp, vecscale_tmp, clampQ1, clampQ2 );// check P2/Q1Q2 distance
+			dist_tmp = Distance( P2, O_tmp );
+			if( dist_tmp < min_dist )
 			{
-				s=1;
-				t=vecscale_tmp;
-				O=O_tmp;
+				s = 1;
+				t = vecscale_tmp;
+				O = O_tmp;
+				min_dist = dist_tmp;
 			}
 
-			ClosestPointOnLineSegment( Q1, P1, P2, O_tmp, vecscale_tmp, true );// check Q1/P1P2 distance
-			if( Distance( Q1, O_tmp ) < min_dist )
+			ClosestPointOnLineSegment( Q1, P1, P2, O_tmp, vecscale_tmp, clampP1, clampP2 );// check Q1/P1P2 distance
+			dist_tmp = Distance( Q1, O_tmp );
+			if( dist_tmp < min_dist )
 			{
-				s=vecscale_tmp;
-				t=0;
-				O=O_tmp;
+				s = vecscale_tmp;
+				t = 0;
+				O = O_tmp;
+				min_dist = dist_tmp;
 			}
 
-			ClosestPointOnLineSegment( Q2, P1, P2, O_tmp, vecscale_tmp, true );// check Q2/P1P2 distance
-			if( Distance( Q2, O_tmp ) < min_dist )
+			ClosestPointOnLineSegment( Q2, P1, P2, O_tmp, vecscale_tmp, clampP1, clampP2 );// check Q2/P1P2 distance
+			dist_tmp = Distance( Q2, O_tmp );
+			if( dist_tmp < min_dist )
 			{
-				s=vecscale_tmp;
-				t=1;
-				O=O_tmp;
+				s = vecscale_tmp;
+				t = 1;
+				O = O_tmp;
+				min_dist = dist_tmp;
 			}
-		}
-		else
-		{
-			Vec3<T> W2;
-			Subtract( W2, P2, Q2 );
-			T Q_W2	= DotProduct( Q12, W2 );
 
-			s = ( P_Q * Q_W1 - Q_Q * P_W1 ) / denom;
-			t = ( P_P * Q_W1 - P_W1 * P_Q ) / denom;
 
 			tcout << "P scale: "<< s << ", Q scale: " << t << tendl;
 
-			AddScaled( p_result, P1, s, P12 );
-			AddScaled( q_result, Q1, t, Q12 );
+			AddScaled( Hp, P1, s, P12 );
+			AddScaled( Hq, Q1, t, Q12 );
 
-
-// https://stackoverflow.com/questions/2824478/shortest-distance-between-two-line-segments
-// 最接近点が線分からはみ出てる場合には、始点終点位置の補正 & 線分への投影再計算が必要
-
-			// Clamp p_result on P1P2
-			if( s < 0 )// && clampP0==true
-				p_result = P1;
-			else if( s > 1 )// && clampP1==true
-				p_result = P2;
-
-			// Clamp q_result on Q1Q2
-			if( t < 0 )// && clampQ0==true
-				q_result = Q1;
-			else if( t > 1 )// && clampQ1==true
-				q_result = Q2;
-
-
-			// 線分P1-P2上でp_presult配置をクランプした場合は、q_resultを再計算する
-			if( s < 0 || s > 1 )// ( s<0 && clampP1 ) || ( s>1 && ClampP2 )
-			{
-				auto dot = DotProduct( Q12_Normalized, p_result - Q1 );// Q1～Q12上の補正p_result垂線端点の距離をコサインで求める
-				if( dot < 0 )// && clampQ1
-					dot = 0;
-				else if( dot > 1 )// && clampQ2
-					dot = 1;
-				q_result = Q1 + dot * Q12_Normalized;
-			}
-
-
-
-			// 線分Q1-Q2上でq_presult配置をクランプした場合は、p_resultを再計算する
-			if( t < 0 || t > 1 )// ( t<0 && clampQ1 ) || ( t>1 && ClampQ2 )
-			{
-				auto dot = DotProduct( P12_Normalized, q_result - P1 );// Q1～Q12上の補正p_result垂線端点の距離をコサインで求める
-				if( dot < 0 )// && clampP1
-					dot = 0;
-				else if( dot > 1 )// && clampP2
-					dot = 1;
-				p_result = P1 + dot * P12_Normalized;
-			}
-
-
-
-
+			return true;
 		}
 
 
+		//================================ Non parallel case ============================//
+
+		//------------- Calculate non-clamped closest positions -----------//
+		s = ( P_Q * Q_W1 - Q_Q * P_W1 ) / denom;
+		t = ( P_P * Q_W1 - P_W1 * P_Q ) / denom;
+		AddScaled( Hp, P1, s, P12 );
+		AddScaled( Hq, Q1, t, Q12 );
+
+
+		//-------------------- Clamp to Line Segment range ----------------//
+
+		// https://stackoverflow.com/questions/2824478/shortest-distance-between-two-line-segments
+		// 最接近点が線分からはみ出てる場合には、始点終点位置の補正 & 線分への投影再計算が必要
+
+		if( !( clampP1 | clampP2 | clampQ1 | clampQ2 ) )
+			return true;
+
+		Vec3<T>	P12_unit, Q12_unit, VecToH;
+		Normalize( P12_unit, P12 );
+		Normalize( Q12_unit, Q12 );
+
+		// Clamp Hp on P1P2
+		if( s < 0 && clampP1 )
+			Hp = P1;
+		else if( s > 1 && clampP2 )
+			Hp = P2;
+
+		// Clamp Hq on Q1Q2
+		if( t < 0 && clampQ1 )
+			Hq = Q1;
+		else if( t > 1 && clampQ2 )
+			Hq = Q2;
+
+		// 線分P1-P2上でp_presult配置をクランプした場合は、Hqを再計算する
+		if( ( (s < 0) && clampP1 ) || ( (s > 1) && clampP2 ) )
+		{
+			Subtract( VecToH, Hp, Q1 );// Hp - Q1
+			T dot = DotProduct( Q12_unit,VecToH );// Q1～Q12上の補正Hp垂線端点の距離をコサインで求める
+			if( dot < 0 )// && clampQ1
+				dot = 0;
+			else if( dot > 1 )// && clampQ2
+				dot = 1;
+			AddScaled( Hq, Q1, dot, Q12_unit );//Hq = Q1 + dot * Q12;
+		}
+
+		// 線分Q1-Q2上でq_presult配置をクランプした場合は、Hpを再計算する
+		if( ( (t < 0) && clampQ1 ) || ( (t > 1) && clampQ2 ) )
+		{
+			Subtract( VecToH, Hq, P1 );// Hq - P1
+			T dot = DotProduct( P12_unit, VecToH );// Q1～Q12上の補正Hp垂線端点の距離をコサインで求める
+			if( dot < 0 )// && clampP1
+				dot = 0;
+			else if( dot > 1 )// && clampP2
+				dot = 1;
+			AddScaled( Hp, P1, dot, P12_unit );//Hp = P1 + dot * P12;
+		}
 
 
 		return true;
