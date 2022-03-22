@@ -349,7 +349,6 @@ void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T canvasLength = 
 
 
 
-
 //template < typename T >
 //void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T width = 1.0f )
 //{
@@ -389,75 +388,6 @@ void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T canvasLength = 
 
 
 //################################# Object intersection test ############################################//
-
-
-// Moved to DeformCanvas class
-//bool GetIntersectedControlPoint( float x, float y, float range, int64& objectid, uint8& type )
-//{
-//	Vec2f pos( x, y );
-//
-//	for( int i=0; i<g_ControlPoints.Length<int>(); ++i )
-//	{
-//		// Check origin intersection
-//		if( Distance( pos, g_ControlPoints[i].Origin() ) <= range )
-//		{
-//			objectid = i;
-//			type = RadialControlPoint2Df::ORIGIN;
-//			return true;
-//		}
-//
-//		// Check target intersection
-//		else if( Distance( pos, g_ControlPoints[i].Target() ) <= range )
-//		{
-//			objectid = i;
-//			type = RadialControlPoint2Df::TARGET;
-//			return true;
-//		}
-//
-//	}
-//
-//	objectid = -1;
-//	return false;
-//}
-
-
-
-// Moved to DeformCanvas class
-//void TranslateControlPointOrigin( int64 objectid, float dx, float dy )
-//{
-//	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
-//	g_ControlPoints[ (int32)objectid ].TranslateOrigin( dx, dy );
-//}
-
-
-
-// Moved to DeformCanvas class
-//void TranslateControlPointTarget( int64 objectid, float dx, float dy )
-//{
-//	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
-//	g_ControlPoints[ (int32)objectid ].TranslateTarget( dx, dy );
-//}
-
-
-
-// Moved to DeformCanvas class
-//void TranslateControlPointRadius( int64 objectid, float radius )
-//{
-//	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
-//	g_ControlPoints[ (int32)objectid ].TranslateRadius( radius );
-//}
-
-
-
-// Moved to DeformCanvas class
-//void DeleteSelectedController( int64& objectid )
-//{
-//	if( objectid < 0 || objectid >=g_ControlPoints.Length<int64>() )	return;
-//
-//	g_ControlPoints.Remove( (int32)objectid );
-//
-//	objectid = -1;
-//}
 
 
 
@@ -529,18 +459,18 @@ void ProcessCanvasSubMenu( int option )
 
 
 
-void ProcessCameraKeys()
+void ProcessCameraKeys( Camera& cam )
 {
 	if( g_InteractionMode != INTERACTION_MODE::INTERACTION_MODE_VIEW )	return;
 
-	if( gKeys[ int('w') ] ){	g_Camera.Transrate(+g_CamSpeed, 0, 0);	}
-	if( gKeys[ int('s') ] ){	g_Camera.Transrate(-g_CamSpeed, 0, 0);	}
-	if( gKeys[ int('a') ] ){	g_Camera.Transrate(0, +g_CamSpeed, 0);	}
-	if( gKeys[ int('d') ] ){	g_Camera.Transrate(0, -g_CamSpeed, 0);	}
-	if( gKeys[ int('r') ] ){	g_Camera.Transrate(0, 0, +g_CamSpeed);	}
-	if( gKeys[ int('f') ] ){	g_Camera.Transrate(0, 0, -g_CamSpeed);	}
-	if( gKeys[ int('q') ] ){	g_Camera.Roll(-g_CamSpeed);				}
-	if( gKeys[ int('e') ] ){	g_Camera.Roll(+g_CamSpeed);				}
+	if( gKeys[ int('w') ] ){	cam.Transrate(+g_CamSpeed, 0, 0);	}
+	if( gKeys[ int('s') ] ){	cam.Transrate(-g_CamSpeed, 0, 0);	}
+	if( gKeys[ int('a') ] ){	cam.Transrate(0, +g_CamSpeed, 0);	}
+	if( gKeys[ int('d') ] ){	cam.Transrate(0, -g_CamSpeed, 0);	}
+	if( gKeys[ int('r') ] ){	cam.Transrate(0, 0, +g_CamSpeed);	}
+	if( gKeys[ int('f') ] ){	cam.Transrate(0, 0, -g_CamSpeed);	}
+	if( gKeys[ int('q') ] ){	cam.Roll(-g_CamSpeed);				}
+	if( gKeys[ int('e') ] ){	cam.Roll(+g_CamSpeed);				}
 }
 
 
@@ -601,10 +531,10 @@ void Initialize()
 
 
 
-void display()
+void DisplayCallback()
 {	
-
-	ProcessCameraKeys();
+	if( g_InteractionMode == INTERACTION_MODE_VIEW )
+		ProcessCameraKeys( *g_refCurrentCamera );
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -719,17 +649,23 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 	}
 
 
+	std::string str = "Mode: ";
+
 	// Draw FixedFrame if interaction mode is placement/edit mode.
 	if( g_InteractionMode > INTERACTION_MODE_VIEW )
 	{
 		DrawFixedFrame( g_ScreenWidth, g_ScreenHeight );
 		DrawString( float(g_ScreenWidth-100), float(g_ScreenHeight-10), GLUT_BITMAP_HELVETICA_18, "View Fixed.", {0.5f, 0.3f, 0.3f} );
+		str += "Edit Canvas " + std::to_string( g_SelectedViewID );
+	}
+	else
+	{
+		str += g_InteractionModeStrings[ g_InteractionMode ];
 	}
 
-
 	// Caption
-	std::string str = std::string() + "Mode: " + g_InteractionModeStrings[ g_InteractionMode ];
-	DrawString( 10.0f, 20.0f, GLUT_BITMAP_HELVETICA_18,  str.c_str(), {0.8f, 0.8f, 0.8f} );
+	//std::string str = std::string() + "Mode: " + g_InteractionModeStrings[ g_InteractionMode ];
+	DrawString( 10.0f, 20.0f, GLUT_BITMAP_HELVETICA_18,  str.c_str(), {0.6f, 0.6f, 0.6f} );
 	
 
 
@@ -771,21 +707,36 @@ void KeyboardUpCallback( unsigned char key, int x, int y )
 	}
 	case 0x09:// tab( change edit mode )
 	{
-TODO: VIEW -> EDITへの切替え
+		if( g_InteractionMode == INTERACTION_MODE_VIEW )// Switch from VIEW to EDIT
+		{
+			g_SelectedViewID = g_Canvasses ? 0 : -1;
+			if( g_SelectedViewID > -1 )// change to EDIT mode only if canvas exists
+			{
+				++g_InteractionMode;
+				g_refCurrentCamera	= &g_Canvasses[ g_SelectedViewID ].GetCamera();
+				glutDetachMenu( GLUT_RIGHT_BUTTON );
+			}
 
+			
+			//glutAttachMenu( GLUT_RIGHT_BUTTON );
+		}
+		else if( g_InteractionMode == INTERACTION_MODE_EDIT_ORIGIN )// Switch from EDIT to VIEW
+		{
+			g_SelectedItemID = -1;
+			++g_SelectedViewID;// = (g_SelectedViewID + 1) % g_Canvasses.Length<int64>();
 
-TODO: EDIT -> VIEWの切り替え
+			if( g_SelectedViewID >= g_Canvasses.Length<int64>() )// Canvasを一巡したらVIEWモードに戻す
+			{
+				--g_InteractionMode;
+				g_refCurrentCamera	= &g_Camera;//&g_Canvasses[ g_SelectedViewID ].GetCamera();
+				glutAttachMenu( GLUT_RIGHT_BUTTON );
+			}
+			else
+			{
+				g_refCurrentCamera = &g_Canvasses[ g_SelectedViewID ].GetCamera();
+			}
 
-
-// TODO: Temporary implementation
-g_SelectedViewID = g_Canvasses ? 0 : -1;
-
-if( g_SelectedViewID > -1 )
-	g_InteractionMode = ( g_InteractionMode + 1 ) % 2;// switch between View and Edit mode
-
-// Clear controller selection
-if( g_InteractionMode == INTERACTION_MODE_VIEW )
-	g_SelectedItemID = -1;
+		}
 
 		break;
 	}
@@ -805,19 +756,19 @@ if( g_InteractionMode == INTERACTION_MODE_VIEW )
 
 
 
-void reshape( int w, int h )
+void ReshapeCallback( int w, int h )
 {
 	g_ScreenWidth = w;
 	g_ScreenHeight = h;
 
-	g_Camera.SetAspect( float(g_ScreenWidth) / float(g_ScreenHeight) );
+	g_refCurrentCamera->SetAspect( float(g_ScreenWidth) / float(g_ScreenHeight) );//g_Camera.SetAspect( float(g_ScreenWidth) / float(g_ScreenHeight) );
 	
-
 	glViewport( 0, 0, g_ScreenWidth, g_ScreenHeight );
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	gluPerspective( /*45*/g_Camera.GetFovy() * 180.0 / M_PI, (double)g_Camera.GetAspect(), (double)g_Camera.GetNearClip(), (double)g_Camera.GetFarClip() );
+	gluPerspective( g_refCurrentCamera->GetFovy() * 180.0 / M_PI, (double)g_refCurrentCamera->GetAspect(), (double)g_refCurrentCamera->GetNearClip(), (double)g_refCurrentCamera->GetFarClip() );
+	//gluPerspective( g_Camera.GetFovy() * 180.0 / M_PI, (double)g_Camera.GetAspect(), (double)g_Camera.GetNearClip(), (double)g_Camera.GetFarClip() );
 
 //################################# スクリーンピクセル座標からワールド座標に戻すコード ################################//
 
@@ -899,7 +850,7 @@ void MotionCallback( int x, int y )
 
 		if( g_InteractionMode == INTERACTION_MODE_VIEW )// Mouse drag with view mode
 		{
-			g_Camera.Rotate( dx, dy );
+			g_refCurrentCamera->Rotate( dx, dy );//g_Camera.Rotate( dx, dy );
 		}
 		else if( g_InteractionMode == INTERACTION_MODE_EDIT_ORIGIN )
 		{
@@ -913,7 +864,6 @@ void MotionCallback( int x, int y )
 
 
 //#################################### スクリーンピクセル座標からワールド座標に戻すコード ###################################//
-
 
 		if( g_InteractionMode > INTERACTION_MODE_VIEW )
 		{
@@ -973,7 +923,7 @@ void WheelCallback( int button, int dir, int x, int y )
 
 
 
-void animate(void)
+void AnimateCallback( void )
 {
 	glutPostRedisplay();
 }
@@ -989,9 +939,9 @@ int main(int argc, char **argv)
 	glutInitWindowSize( g_ScreenWidth, g_ScreenHeight );
 	glutCreateWindow(argv[0]);
 		
-	glutDisplayFunc( display );
-	glutReshapeFunc( reshape );
-	glutIdleFunc( animate );
+	glutDisplayFunc( DisplayCallback );
+	glutReshapeFunc( ReshapeCallback );
+	glutIdleFunc( AnimateCallback );
 
 	glutKeyboardFunc( KeyboardCallback );
 	glutKeyboardUpFunc( KeyboardUpCallback );
