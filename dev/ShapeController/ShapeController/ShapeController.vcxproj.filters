@@ -59,5 +59,8 @@
     <ClInclude Include="..\..\..\test\ShapeController\DeformCanvas.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\graphics\common\Intersection.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

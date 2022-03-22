@@ -400,6 +400,7 @@ bool GetIntersectedCanvas( float screenX, float screenY, float range, int64& obj
 
 	for( int i=0; i<g_Canvasses.Length<int>(); ++i )
 	{
+TODO: g_MatViewProjがVIEWモードでも更新されるようにしないと、、、
 		// construct matrix for frame vertices transformation ( canvas default posture to screen space )
 		Multiply( matComp, g_MatViewProj, g_Canvasses[i].WorldMatrix() );
 
@@ -419,6 +420,7 @@ bool GetIntersectedCanvas( float screenX, float screenY, float range, int64& obj
 			if( DistanceToLineSegment( screenSpacePos, screenSpaceVerts[j].xyz, screenSpaceVerts[( j+1 )%4].xyz ) <= g_ObjectPickRadius )
 			{
 				objectid = i;
+				tcout << _T("Canvas ") << i << _T("intersected.\n");
 				return true;
 			}
 		}
@@ -839,10 +841,14 @@ void MouseCallback( int button, int state, int x, int y )
 
 void MotionCallback( int x, int y )
 {
+	int64 temp=-1;
+	GetIntersectedCanvas( float(g_CursorX), float(g_CursorY), 5.0f, temp );
+
+
 	g_CursorDX	= x - g_CursorX;
 	g_CursorDY	= y - g_CursorY;
 
-	if( LeftMouseButtonPressed ==true )
+	if( LeftMouseButtonPressed == true )
 	{
 		float dx = -float(g_CursorDX) / float(g_ScreenWidth) * 2.0f*M_PI;
 		float dy = -float(g_CursorDY) / float(g_ScreenHeight) * 2.0f*M_PI;
