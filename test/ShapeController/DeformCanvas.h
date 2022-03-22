@@ -24,7 +24,7 @@ namespace GraphicsLib
 		};
 
 		// color
-		const static Vec3f colors[4] = 
+		const static Vec3f debugColors[4] = 
 		{
 			{ 0, 0, 0 },// bl
 			{ 1, 0, 0 },// br

@@ -336,7 +336,7 @@ void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T canvasLength = 
 	glBegin( GL_LINE_LOOP );
 	for( int i=0; i<4; ++i )
 	{
-		glColor3fv( CanvasFrameGeoemtry::colors[i].rgb );
+		//glColor3fv( CanvasFrameGeoemtry::debugColors[i].rgb );
 		Multiply( pos, matComp, CanvasFrameGeoemtry::verts[i] );
 		glVertex3fv( pos.xyzw );
 		//glVertex3fv( v.xyzw );
@@ -393,26 +393,39 @@ void DrawCanvas( const DeformCanvas<T>& canvas, bool selected, T canvasLength = 
 
 bool GetIntersectedCanvas( float screenX, float screenY, float range, int64& objectid )
 {
-	Mat4f matComp;
+	Mat4f matComp, matTmp;
 	Vec4f screenSpaceVerts[4];
 	Vec3f screenSpacePos( screenX, screenY, 0 );
 
 
+	tcout << screenSpacePos << tendl;
+
+	Multiply( matTmp, g_MatView, g_MatProj );
+	MatTranspose( g_MatViewProj, matTmp );
+
 	for( int i=0; i<g_Canvasses.Length<int>(); ++i )
 	{
-TODO: g_MatViewProjがVIEWモードでも更新されるようにしないと、、、
+//TODO: g_MatViewProjがVIEWモードでも更新されるようにしないと、、、
 		// construct matrix for frame vertices transformation ( canvas default posture to screen space )
 		Multiply( matComp, g_MatViewProj, g_Canvasses[i].WorldMatrix() );
 
+		
 		// init vertices
 		for( int j=0; j<4; ++j )
 		{
 			Multiply( screenSpaceVerts[j], matComp, CanvasFrameGeoemtry::verts[j] );
 
-			screenSpaceVerts[j].x =	0.5f * ( screenSpaceVerts[j].x + 1.0f );
-			screenSpaceVerts[j].y =	0.5f * ( screenSpaceVerts[j].y + 1.0f );
-			screenSpaceVerts[j].z =	0;
+			Scale( screenSpaceVerts[j].xyz, 1.0f / screenSpaceVerts[j].w );
+			screenSpaceVerts[j].x =	( 0.5f * ( screenSpaceVerts[j].x + 1.0f ) ) * (float)g_ScreenWidth;
+			screenSpaceVerts[j].y =	( 0.5f * ( 1.0f - screenSpaceVerts[j].y ) ) * (float)g_ScreenHeight;
+			//screenSpaceVerts[j].z =	0;
+
+			
 		}
+
+		tcout << "Canvas frame coordinates...\n" << tendl;
+		tcout << screenSpaceVerts[0] << tendl;
+		tcout << tendl;
 
 		// check intersection distance
 		for( int j=0; j<4; ++j )
@@ -561,8 +574,8 @@ glGetFloatv( GL_MODELVIEW_MATRIX, g_MatView.m );// 列優先の行列要素並�
 
 
 	if( g_InteractionMode == INTERACTION_MODE_VIEW )
-		for( auto& canvas : g_Canvasses )
-			DrawCanvas( canvas, false );
+		for( int64 i=0; i<g_Canvasses.Length<int64>(); ++i )
+			DrawCanvas( g_Canvasses[i], i==g_SelectedViewID );
 
 
 	//============================== Draw world space axis ================================//
@@ -711,32 +724,31 @@ void KeyboardUpCallback( unsigned char key, int x, int y )
 	{
 		if( g_InteractionMode == INTERACTION_MODE_VIEW )// Switch from VIEW to EDIT
 		{
-			g_SelectedViewID = g_Canvasses ? 0 : -1;
+			//g_SelectedViewID = g_Canvasses ? 0 : -1;
 			if( g_SelectedViewID > -1 )// change to EDIT mode only if canvas exists
 			{
 				++g_InteractionMode;
 				g_refCurrentCamera	= &g_Canvasses[ g_SelectedViewID ].GetCamera();
 				glutDetachMenu( GLUT_RIGHT_BUTTON );
 			}
-
-			
+	
 			//glutAttachMenu( GLUT_RIGHT_BUTTON );
 		}
 		else if( g_InteractionMode == INTERACTION_MODE_EDIT_ORIGIN )// Switch from EDIT to VIEW
 		{
 			g_SelectedItemID = -1;
-			++g_SelectedViewID;// = (g_SelectedViewID + 1) % g_Canvasses.Length<int64>();
+			//++g_SelectedViewID;// = (g_SelectedViewID + 1) % g_Canvasses.Length<int64>();
 
-			if( g_SelectedViewID >= g_Canvasses.Length<int64>() )// Canvasを一巡したらVIEWモードに戻す
-			{
+			//if( g_SelectedViewID >= g_Canvasses.Length<int64>() )// Canvasを一巡したらVIEWモードに戻す
+			//{
 				--g_InteractionMode;
 				g_refCurrentCamera	= &g_Camera;//&g_Canvasses[ g_SelectedViewID ].GetCamera();
 				glutAttachMenu( GLUT_RIGHT_BUTTON );
-			}
-			else
-			{
-				g_refCurrentCamera = &g_Canvasses[ g_SelectedViewID ].GetCamera();
-			}
+			//}
+			//else
+			//{
+			//	g_refCurrentCamera = &g_Canvasses[ g_SelectedViewID ].GetCamera();
+			//}
 
 		}
 
@@ -822,7 +834,12 @@ void MouseCallback( int button, int state, int x, int y )
 			}
 			
 		}
-
+		else if( g_InteractionMode == INTERACTION_MODE_VIEW )
+		{
+			//int64 temp=-1;
+			GetIntersectedCanvas( float(g_CursorX), float(g_CursorY), 2.5f, g_SelectedViewID );
+			tcout << g_SelectedViewID << tendl;
+		}
 
 	}
 
@@ -841,10 +858,6 @@ void MouseCallback( int button, int state, int x, int y )
 
 void MotionCallback( int x, int y )
 {
-	int64 temp=-1;
-	GetIntersectedCanvas( float(g_CursorX), float(g_CursorY), 5.0f, temp );
-
-
 	g_CursorDX	= x - g_CursorX;
 	g_CursorDY	= y - g_CursorY;
 
