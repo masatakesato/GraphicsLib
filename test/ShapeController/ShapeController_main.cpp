@@ -951,12 +951,13 @@ void AnimateCallback( void )
 
 int main(int argc, char **argv)
 {
-	glutInit(&argc, argv);
+	glutInit( &argc, argv );
 	
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ALPHA);
+	glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ALPHA) ;
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize( g_ScreenWidth, g_ScreenHeight );
-	glutCreateWindow(argv[0]);
+	glutCreateWindow( argv[0] );
+		glutSetWindowTitle( "ShapeController" );
 		
 	glutDisplayFunc( DisplayCallback );
 	glutReshapeFunc( ReshapeCallback );
@@ -969,6 +970,15 @@ int main(int argc, char **argv)
 	glutMouseWheelFunc( WheelCallback );
 
 	Initialize();
+
+	HWND hThisWnd	= FindWindow( /*L"GLUT"*/NULL, L"ShapeController" );
+	if( hThisWnd )
+	{
+		LONG lStyle = GetWindowLong( hThisWnd, GWL_STYLE );
+		SetWindowLong( hThisWnd, GWL_STYLE, lStyle & ~( WS_DLGFRAME | WS_THICKFRAME ) );//lStyle & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU) );
+	}
+
+
 	glutMainLoop();
 
 	return 0;
