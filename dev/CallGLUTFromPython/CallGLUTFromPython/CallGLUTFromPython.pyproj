@@ -4,14 +4,17 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d5b4b420-ecc6-4340-935d-5c7114247ebd</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>CallGLUTFromPython.py</StartupFile>
+    <StartupFile>EmbedNotepadToQWidget_main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>CallGLUTFromPython</Name>
     <RootNamespace>CallGLUTFromPython</RootNamespace>
-    <InterpreterId>CondaEnv|CondaEnv|testpy37</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|env_node_editor_37</InterpreterId>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <Environment>PATH=D:\ProgramData\Anaconda3\envs\env_node_editor_37\Library\bin</Environment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,9 +26,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CallGLUTFromPython.py" />
+    <Compile Include="EmbedNotepadToQWidget_main.py" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|testpy37" />
+    <InterpreterReference Include="CondaEnv|CondaEnv|env_node_editor_37" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

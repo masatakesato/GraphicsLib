@@ -28,7 +28,7 @@ import win32gui
 import sys
 
 PORTABLE_APPLICATION_LOCATION = "C:\\Windows\\system32\\notepad.exe"
-processHandler = 15196#-1
+processHandler = -1
 
 
 def callback(hwnd, procid):
