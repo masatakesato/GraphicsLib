@@ -14,6 +14,33 @@ import subprocess
 import time
 
 
+class MyWidget(QWidget):
+
+	def __init__( self ):
+		super( MyWidget, self ).__init__()
+		self.setEnabled( True)
+		self.setFocusPolicy( Qt.StrongFocus )
+		self.setLayout( QVBoxLayout() ) 
+		self.setGeometry(0, 0, 400,800)
+
+
+	def mousePressEvent( self, a0 ):
+		print( "MyWidget::mousePressEvent" )
+		return super().mousePressEvent(a0)
+
+
+	def mouseReleaseEvent( self, a0 ):
+		print( "MyWidget::mouseReleaseEvent" )
+		return super().mouseReleaseEvent(a0)
+
+
+	def keyPressEvent( self, event ):
+		print( "MyWidget::keyPressEvent" )
+		return super().keyPressEvent( event )
+
+
+
+
 def get_hwnds_for_pid (pid):
 	def callback (hwnd, hwnds):
 		if win32gui.IsWindowVisible (hwnd) and win32gui.IsWindowEnabled (hwnd):
@@ -31,16 +58,26 @@ if __name__ == "__main__":
 
 	app = QApplication( sys.argv )
 
-	notepad = subprocess.Popen( [r"C:\\Windows\\system32\\notepad.exe"] )
+	notepad = subprocess.Popen( [r"C:\\Windows\\system32\\notepad.exe"] )#[r"C:\\Windows\\System32\\mspaint.exe"] ) #
 
-	time.sleep (2.0)
+	time.sleep (0.5)
 
+
+	w = MyWidget()
 #TODO: runProgramからhwnd引っ張り出す
 	for hwnd in get_hwnds_for_pid( notepad.pid ):
 		window_wrapper = QWindow.fromWinId( hwnd )
 		window_widget = QWidget.createWindowContainer( window_wrapper )
-		window_widget.show()
+		#window_widget.show()
+		#break
 
+		w.layout().addWidget( window_widget )
+		#w.createWindowContainer( window_wrapper, w )
+		#w.setGeometry(0, 0, 800, 600)
+		w.show()
+		break
+
+		
 	sys.exit( app.exec_() )
 
 
