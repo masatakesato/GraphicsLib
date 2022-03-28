@@ -137,7 +137,13 @@ import threading
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+
 import pythoncom, pyWinhook, ctypes
+
+import win32api
+import win32con
+import win32gui
+import win32process
 
 
 
@@ -146,13 +152,20 @@ class Window( QFrame ):
 	def __init__(self, parent=None):
 		super(Window, self).__init__(parent)
 
+		self.blockKey = False
+
 		self.hm = pyWinhook.HookManager()
 
 		self.label = QLabel('hook:',self)
 
-		self.timer = QTimer(self)
-		self.timer.timeout.connect( self.hookThread ) #self.hook)
-		self.timer.start()
+		#self.timer = QTimer(self)
+		#self.timer.timeout.connect( self.hook )#self.hookThread )#
+		#self.timer.start()
+
+		self.th = threading.Thread( target=self.hook )#self.hookThread )
+		self.th.daemon = True
+		self.th.start()
+
 
 
 	def closeEvent( self,event ):
@@ -177,8 +190,34 @@ class Window( QFrame ):
 
 	def hookEvent( self, event ):
 		print('hookEvent')
+		
+		print( 'MessageName:',event.MessageName )
+		print( 'Message:',event.Message )
+		print( 'Time:',event.Time )
+		print( 'Window:',event.Window )
+		print( 'WindowName:',event.WindowName )
+		print( 'Ascii:', event.Ascii, chr(event.Ascii) )
+		print( 'Key:', event.Key )
+		print( 'KeyID:', event.KeyID )
+		print( 'ScanCode:', event.ScanCode )
+		print( 'Extended:', event.Extended )
+		print( 'Injected:', event.Injected )
+		print( 'Alt', event.Alt )
+		print( 'Transition', event.Transition )
+		print( '---' )
+
+		#ctrl_pressed = pyWinhook.GetKeyState( pyWinhook.HookConstants.VKeyToID('VK_LSHIFT') )
+		#print( "shift_pressed: ", bool(ctrl_pressed), event.KeyID )
+
+		#if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
+		#	self.blockKey = self.blockKey ^ True
+		#	print( "blockKey:",  )
+
+		if( event.Window == 67204 ):# 特定のウィンドウに対するキー入力を無効化できる
+			return False
+
 		self.label.setText( event.Key )#self.label.text() + event.Key )
-		ctypes.windll.user32.PostQuitMessage(0)
+		#ctypes.windll.user32.PostQuitMessage(0)
 		return True
 
 
