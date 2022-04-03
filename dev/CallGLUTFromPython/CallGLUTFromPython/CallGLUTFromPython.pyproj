@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d5b4b420-ecc6-4340-935d-5c7114247ebd</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>test.py</StartupFile>
+    <StartupFile>testPyhookCrash_main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -29,6 +29,7 @@
     <Compile Include="EmbedNotepadToQWidget_main.py" />
     <Compile Include="keylogger.py" />
     <Compile Include="test.py" />
+    <Compile Include="testPyhookCrash_main.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="CondaEnv|CondaEnv|testpyqt" />

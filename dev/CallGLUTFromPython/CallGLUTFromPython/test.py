@@ -157,7 +157,16 @@ class Window( QFrame ):
 
         self.label = QLabel('hook:',self)
 
-        self.__m_KeyLogger = keylogger.KeyLogger()
+        self.__m_KeyLogger = None
+
+        #self.__m_KeyLogger = keylogger.KeyLogger()
+        #self.__m_KeyLogger.bindKeyEvent( self.__hookEvent )
+        #self.__m_KeyLogger.start()
+
+
+    def bindKeyLogger( self, logger ):
+        self.__m_KeyLogger = logger
+        self.__m_KeyLogger.bindKeyEvent( self.__hookEvent )
         self.__m_KeyLogger.start()
 
 
@@ -166,11 +175,54 @@ class Window( QFrame ):
         self.__m_KeyLogger.stop()
 
 
+    def __hookEvent( self, event ):
+        print('hookEvent')
+        
+        print( 'MessageName:',event.MessageName )
+        print( 'Message:',event.Message )
+        print( 'Time:',event.Time )
+        print( 'Window handle:',event.Window )
+        print( 'WindowName:',event.WindowName )
+        print( 'Ascii:', event.Ascii, chr(event.Ascii) )
+        print( 'Key:', event.Key )
+        print( 'KeyID:', event.KeyID )
+        print( 'ScanCode:', event.ScanCode )
+        print( 'Extended:', event.Extended )
+        print( 'Injected:', event.Injected )
+        print( 'Alt', event.Alt )
+        print( 'Transition', event.Transition )
+        print( '---' )
+
+        hwnd = event.Window
+        tid, pid = win32process.GetWindowThreadProcessId( hwnd )
+
+        #if( shift_pressed = pyWinhook.GetKeyState( pyWinhook.HookConstants.VKeyToID('VK_LSHIFT') ) )
+        #    print( "shift_pressed: ", event.KeyID )
+
+        if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
+            global STOP_KEY_HANDLER
+            STOP_KEY_HANDLER = True
+        #	print( "F pressed: ", event.KeyID )
+
+        #if( event.Window == 67204 ):# 特定のウィンドウに対するキー入力を無効化できる
+        #    return False
+
+
+        self.label.setText( event.Key )
+
+        return True
+
+
+
 
 
 if __name__ == '__main__':
     app = QApplication( sys.argv )
     window = Window()
+
+    logger = keylogger.KeyLogger()
+    window.bindKeyLogger( logger )
+
     window.show()
     sys.exit( app.exec_() )
 

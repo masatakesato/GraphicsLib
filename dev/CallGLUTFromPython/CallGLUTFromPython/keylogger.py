@@ -23,6 +23,7 @@ class KeyLogger:
         self.hm.KeyDown = self.__hookEvent
 
         self.__m_Thread = None
+        self.___KeyEvent = None
 
 
     def start( self ):
@@ -31,13 +32,15 @@ class KeyLogger:
         self.__m_Thread.start()
 
 
-
     def stop( self ):
         print( "KeyLogger::stop()...")
-
         global STOP_KEY_HANDLER
         STOP_KEY_HANDLER = True
         #self.__m_Thread.join()
+
+
+    def bindKeyEvent( self, hook ):
+        self.___KeyEvent = hook
 
 
 
@@ -58,41 +61,49 @@ class KeyLogger:
         #self.label.setText(self.label.text())#for update
 
 
-
     def __hookEvent( self, event ):
-        print('hookEvent')
-        
-        print( 'MessageName:',event.MessageName )
-        print( 'Message:',event.Message )
-        print( 'Time:',event.Time )
-        print( 'Window handle:',event.Window )
-        print( 'WindowName:',event.WindowName )
-        print( 'Ascii:', event.Ascii, chr(event.Ascii) )
-        print( 'Key:', event.Key )
-        print( 'KeyID:', event.KeyID )
-        print( 'ScanCode:', event.ScanCode )
-        print( 'Extended:', event.Extended )
-        print( 'Injected:', event.Injected )
-        print( 'Alt', event.Alt )
-        print( 'Transition', event.Transition )
-        print( '---' )
-
-        hwnd = event.Window
-        tid, pid = win32process.GetWindowThreadProcessId( hwnd )
-
-        #if( shift_pressed = pyWinhook.GetKeyState( pyWinhook.HookConstants.VKeyToID('VK_LSHIFT') ) )
-        #    print( "shift_pressed: ", event.KeyID )
 
         if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
             global STOP_KEY_HANDLER
             STOP_KEY_HANDLER = True
-        #	print( "F pressed: ", event.KeyID )
 
-        #if( event.Window == 67204 ):# 特定のウィンドウに対するキー入力を無効化できる
-        #    return False
+        return self.___KeyEvent( event )
 
 
-        return True
+    #def __hookEvent( self, event ):
+    #    print('hookEvent')
+        
+    #    print( 'MessageName:',event.MessageName )
+    #    print( 'Message:',event.Message )
+    #    print( 'Time:',event.Time )
+    #    print( 'Window handle:',event.Window )
+    #    print( 'WindowName:',event.WindowName )
+    #    print( 'Ascii:', event.Ascii, chr(event.Ascii) )
+    #    print( 'Key:', event.Key )
+    #    print( 'KeyID:', event.KeyID )
+    #    print( 'ScanCode:', event.ScanCode )
+    #    print( 'Extended:', event.Extended )
+    #    print( 'Injected:', event.Injected )
+    #    print( 'Alt', event.Alt )
+    #    print( 'Transition', event.Transition )
+    #    print( '---' )
+
+    #    hwnd = event.Window
+    #    tid, pid = win32process.GetWindowThreadProcessId( hwnd )
+
+    #    #if( shift_pressed = pyWinhook.GetKeyState( pyWinhook.HookConstants.VKeyToID('VK_LSHIFT') ) )
+    #    #    print( "shift_pressed: ", event.KeyID )
+
+    #    if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
+    #        global STOP_KEY_HANDLER
+    #        STOP_KEY_HANDLER = True
+    #    #	print( "F pressed: ", event.KeyID )
+
+    #    #if( event.Window == 67204 ):# 特定のウィンドウに対するキー入力を無効化できる
+    #    #    return False
+
+
+    #    return True
 
 
 
