@@ -146,109 +146,134 @@ import win32gui
 import win32process
 
 
+import keylogger
+
+
 
 class Window( QFrame ):
 
-	def __init__(self, parent=None):
-		super(Window, self).__init__(parent)
+    def __init__(self, parent=None):
+        super(Window, self).__init__(parent)
 
-		self.blockKey = False
+        self.blockKey = False
 
-		self.hm = pyWinhook.HookManager()
-
-		self.label = QLabel('hook:',self)
-
-		#self.timer = QTimer(self)
-		#self.timer.timeout.connect( self.hook )#self.hookThread )#
-		#self.timer.start()
-
-		self.th = threading.Thread( target=self.hook )#self.hookThread )
-		self.th.daemon = True
-		self.th.start()
+        self.label = QLabel('hook:',self)
 
 
+        self.__m_KeyLogger = keylogger.KeyLogger()
 
-	def closeEvent( self,event ):
-		print( 'closeEvent' )
-		ctypes.windll.user32.PostQuitMessage(0)
+        self.__m_KeyLogger.start()
 
+        #self.hm = pyWinhook.HookManager()
 
-	#def setTimer( self ):
-	#	print('setTimer')
-	#	self.timer = QTimer(self)
-	#	self.timer.timeout.connect(self.hook)
-	#	self.timer.start()
+        # Assgin keydown event function
+        #self.hm.KeyDown = self.hookEvent
+        #self.hm.HookKeyboard()
 
-
-	def hook( self ):
-		print( 'hook' )
-		self.hm.KeyDown = self.hookEvent
-		self.hm.HookKeyboard()
-		pythoncom.PumpMessages()
-		#self.label.setText(self.label.text())#for update
+        #self.th = threading.Thread( target=self.hook )#self.hookThread )
+        #self.th.daemon = True
+        #self.th.start()
 
 
-	def hookEvent( self, event ):
-		print('hookEvent')
-		
-		print( 'MessageName:',event.MessageName )
-		print( 'Message:',event.Message )
-		print( 'Time:',event.Time )
-		print( 'Window:',event.Window )
-		print( 'WindowName:',event.WindowName )
-		print( 'Ascii:', event.Ascii, chr(event.Ascii) )
-		print( 'Key:', event.Key )
-		print( 'KeyID:', event.KeyID )
-		print( 'ScanCode:', event.ScanCode )
-		print( 'Extended:', event.Extended )
-		print( 'Injected:', event.Injected )
-		print( 'Alt', event.Alt )
-		print( 'Transition', event.Transition )
-		print( '---' )
-
-		#ctrl_pressed = pyWinhook.GetKeyState( pyWinhook.HookConstants.VKeyToID('VK_LSHIFT') )
-		#print( "shift_pressed: ", bool(ctrl_pressed), event.KeyID )
-
-		#if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
-		#	self.blockKey = self.blockKey ^ True
-		#	print( "blockKey:",  )
-
-		if( event.Window == 67204 ):# 特定のウィンドウに対するキー入力を無効化できる
-			return False
-
-		self.label.setText( event.Key )#self.label.text() + event.Key )
-		#ctypes.windll.user32.PostQuitMessage(0)
-		return True
+        #self.timer = QTimer(self)
+        #self.timer.timeout.connect( self.hook )#self.hookThread )#
+        #self.timer.start()
 
 
-	def hookThread( self ):
-		print( 'hookThread' )
-		self.hm.KeyDown = self.hookEventThread
-		self.hm.HookKeyboard()
-		pythoncom.PumpMessages()
-		#self.label.setText(self.label.text())#for update
+    def closeEvent( self,event ):
+        print( 'closeEvent' )
+        #ctypes.windll.user32.PostQuitMessage(0)
+        self.__m_KeyLogger.stop()
 
-	def hookEvent2( self, event ):
-		print('hookEvent2')
-		self.label.setText( event.Key )#self.label.text() + event.Key )
-		#ctypes.windll.user32.PostQuitMessage(0)
 
-	def hookEventThread( self, event ):
-		print('hookEventThread')
-		th = threading.Thread( target=self.hookEvent2, args=(event,))
-		th.daedaemon = True
-		th.start()
-		return True
+
+    #def setTimer( self ):
+    #	print('setTimer')
+    #	self.timer = QTimer(self)
+    #	self.timer.timeout.connect(self.hook)
+    #	self.timer.start()
+
+
+    def hook( self ):
+        print( 'hook' )
+        #self.hm.KeyDown = self.hookEvent# moved to constructor
+        self.hm.HookKeyboard()
+        pythoncom.PumpMessages()
+        #self.label.setText(self.label.text())#for update
+
+
+    def hookEvent( self, event ):
+        print('hookEvent')
+
+        print( 'MessageName:',event.MessageName )
+        print( 'Message:',event.Message )
+        print( 'Time:',event.Time )
+        print( 'Window:',event.Window )
+        print( 'WindowName:',event.WindowName )
+        print( 'Ascii:', event.Ascii, chr(event.Ascii) )
+        print( 'Key:', event.Key )
+        print( 'KeyID:', event.KeyID )
+        print( 'ScanCode:', event.ScanCode )
+        print( 'Extended:', event.Extended )
+        print( 'Injected:', event.Injected )
+        print( 'Alt', event.Alt )
+        print( 'Transition', event.Transition )
+        print( '---' )
+
+        hwnd = event.Window
+        tid, pid = win32process.GetWindowThreadProcessId( hwnd )
+
+        print( "process id: ", pid, ", thread id: ", tid )
+
+        #ctrl_pressed = pyWinhook.GetKeyState( pyWinhook.HookConstants.VKeyToID('VK_LSHIFT') )
+        #print( "shift_pressed: ", bool(ctrl_pressed), event.KeyID )
+
+        #if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
+        #	self.blockKey = self.blockKey ^ True
+        #	print( "blockKey:",  )
+
+        if( event.Window == 67204 ):# 特定のウィンドウに対するキー入力を無効化できる
+            return False
+
+        self.label.setText( event.Key )#self.label.text() + event.Key )
+        #ctypes.windll.user32.PostQuitMessage(0)
+        return True
+
+
+    #def hookThread( self ):
+    #	print( 'hookThread' )
+    #	self.hm.KeyDown = self.hookEventThread
+    #	self.hm.HookKeyboard()
+    #	pythoncom.PumpMessages()
+    #	#self.label.setText(self.label.text())#for update
+
+
+    #def hookEventThread( self, event ):
+    #	print('hookEventThread')
+    #	th = threading.Thread( target=self.hookEvent2, args=(event,))
+    #	th.daedaemon = True
+    #	th.start()
+    #	return True
+
+    #def hookEvent2( self, event ):
+    #	print('hookEvent2')
+    #	self.label.setText( event.Key )#self.label.text() + event.Key )
+    #	#ctypes.windll.user32.PostQuitMessage(0)
 
 
 
 if __name__ == '__main__':
-	app = QApplication( sys.argv )
-	window = Window()
-	window.show()
-	sys.exit( app.exec_() )
+    #app = QApplication( sys.argv )
+    #window = Window()
+    #window.show()
+    #sys.exit( app.exec_() )
+
+    logger = keylogger.KeyLogger()
+    logger.start()
 
 
+    print("----------------")
+    logger.stop()
 
 
 

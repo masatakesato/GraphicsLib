@@ -27,6 +27,7 @@
   <ItemGroup>
     <Compile Include="CallGLUTFromPython.py" />
     <Compile Include="EmbedNotepadToQWidget_main.py" />
+    <Compile Include="keylogger.py" />
     <Compile Include="test.py" />
   </ItemGroup>
   <ItemGroup>
