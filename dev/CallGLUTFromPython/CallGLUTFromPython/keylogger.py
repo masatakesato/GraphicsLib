@@ -37,8 +37,6 @@ class KeyLogger:
 
         global STOP_KEY_HANDLER
         STOP_KEY_HANDLER = True
-# TODO: PostQuitMessageを同じスレッドから実行しないとダメ
-        #ctypes.windll.user32.PostQuitMessage(0)
         #self.__m_Thread.join()
 
 
@@ -47,13 +45,16 @@ class KeyLogger:
 
     def __hook( self ):
         print( 'hook' )
+
         self.hm.HookKeyboard()
 
         while( not STOP_KEY_HANDLER ):
             pythoncom.PumpWaitingMessages()
             time.sleep(0.01)
 
-        #pythoncom.PumpMessages()
+        self.killkey()
+
+        #pythoncom.PumpMessages()# Wait for WM_QUIT
         #self.label.setText(self.label.text())#for update
 
 
@@ -61,10 +62,6 @@ class KeyLogger:
     def __hookEvent( self, event ):
         print('hookEvent')
         
-        if( STOP_KEY_HANDLER==True ):
-            self.killkey()
-
-
         print( 'MessageName:',event.MessageName )
         print( 'Message:',event.Message )
         print( 'Time:',event.Time )
@@ -86,14 +83,14 @@ class KeyLogger:
         #if( shift_pressed = pyWinhook.GetKeyState( pyWinhook.HookConstants.VKeyToID('VK_LSHIFT') ) )
         #    print( "shift_pressed: ", event.KeyID )
 
-        #if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
+        if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
+            global STOP_KEY_HANDLER
+            STOP_KEY_HANDLER = True
         #	print( "F pressed: ", event.KeyID )
 
         #if( event.Window == 67204 ):# 特定のウィンドウに対するキー入力を無効化できる
         #    return False
 
-        #if( self.__m_Stopped ):
-        #    ctypes.windll.user32.PostQuitMessage(0)# moved to stop method
 
         return True
 
@@ -103,8 +100,7 @@ class KeyLogger:
         global STOP_KEY_HANDLER
 
         if( STOP_KEY_HANDLER==False ):
-            STOP_KEY_HANDLER = True
-            return None
+            return 
 
         self.hm.UnhookKeyboard()
         ctypes.windll.user32.PostQuitMessage(0)
