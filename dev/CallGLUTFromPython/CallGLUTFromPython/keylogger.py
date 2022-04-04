@@ -52,28 +52,31 @@ class KeyLogger:
     
     def __init__( self ):
         self.hm = pyWinhook.HookManager()
-        self.hm.KeyDown = self.__KeyDown#functools.partial( self.__KeyDownEvent, 
+        self.hm.KeyDown = self.__DefaultKeyDown#functools.partial( self.__KeyDownEvent, 
 
 
         self.__m_Thread = None
         self.__m_Lock = threading.Lock()
 
-        self.__m_KeyDownEvent = None
+
 
 
         self.__m_refEventFilter = None
 
 
-        self.m_QuitFlag = self.QuitFlag()
+        self.m_QuitFlag = [False]#self.QuitFlag()
+
+
+        #self.__m_KeyDownEvent = None
+
 
 
 
     def Start( self ):
-        print( "KeyLogger::start()...", self.m_QuitFlag.value  )
-
+        print( "KeyLogger::start()...", self.m_QuitFlag )#.value  )
         self.__m_Thread = threading.Thread( target=self.__hook )#  args=None
-        self.th__m_Threaddaemon = True
         self.__m_Thread.start()
+        #self.__hook()
 
 
     def Stop( self ):
@@ -85,25 +88,28 @@ class KeyLogger:
 
     def BindEventFilter( self, filter ):
         self.__m_refEventFilter = filter
+        self.__m_refEventFilter.quitFlag = self.m_QuitFlag
+
 
         for funcname in CONST_EVENT_FUNC_NAMES:
             try:
                 callback = getattr( self.__m_refEventFilter, funcname )
                 bindFunc = getattr( self.hm, "Subscribe" + funcname )
-                bindFunc( functools.partial( callback, quitFlag=self.m_QuitFlag ) )
+                bindFunc( callback )#functools.partial( callback, quitFlag=self.m_QuitFlag ) )
                 print( "Registered callback: " + callback.__name__ )
-                
-
             except:# Exception as e:
-                pass
-                #print( e )
-                #print( "Registered callback: " + callback.__name__ )
+                pass #print( e )
+
+        # こっち2つはOK
+        #self.hm.KeyDown = self.__m_refEventFilter.KeyDown
+        #self.hm.SubscribeKeyDown( self.__m_refEventFilter.KeyDown )
+
 
 
     def UnbindEventFilter( self ):
         if( not self.__m_refEventFilter ):
             return
-        self.__m_refEventFilter.m_QuitFlag = None
+        self.__m_refEventFilter.quitFlag = None
         self.__m_refEventFilter = None
 
 
@@ -117,7 +123,7 @@ class KeyLogger:
         #self.hm.HookMouse()
 
         # Custom message loop instead of WM_QUIT waiting( pythoncom.PumpMessages() )
-        while( not self.m_QuitFlag.value ):
+        while( not self.m_QuitFlag[0] ):#.value ):
             pythoncom.PumpWaitingMessages()
             time.sleep(0.001)
 
@@ -128,10 +134,10 @@ class KeyLogger:
 
     def __unhook( self ):
 
-        print( "KeyLogger::__unhook()...", self.m_QuitFlag.value )
+        print( "KeyLogger::__unhook()...", self.m_QuitFlag[0] )#.value )
 
-        if( self.m_QuitFlag.value==True ):
-            self.m_QuitFlag.value = False
+        if( self.m_QuitFlag[0] ):#.value==True ):
+            self.m_QuitFlag[0] = False
             return 
 
         self.hm.UnhookKeyboard()
@@ -140,18 +146,19 @@ class KeyLogger:
 
 
 
-    def __KeyDown( self, event ):
+    def __DefaultKeyDown( self, event ):
 
         if( pyWinhook.HookConstants.IDToName( event.KeyID )=='Q' ):
-            self.m_QuitFlag.value = True
+            self.m_QuitFlag[0] = True
             return False
 
-        try:
-            return self.__m_KeyDownEvent( event )
+        return True
+        #try:
+        #    return self.__m_KeyDownEvent( event )
 
-        except Exception as e:
-            print( e )
-            return False
+        #except Exception as e:
+        #    print( e )
+        #    return False
 
 
 
@@ -160,83 +167,84 @@ class KeyLogger:
 
 class EventFilterBase:
 
-    #def KeyAll( self, event, quitFlag ):
+    #def KeyAll( self, event ):
     #    return False
 
 
-    #def KeyChar( self, event, quitFlag ):
+    #def KeyChar( self, event ):
     #    return False
 
 
-    #def KeyDown( self, event, quitFlag ):
+    #def KeyDown( self, event ):
     #    return False
 
 
-    #def KeyUp( self, event, quitFlag ):
+    #def KeyUp( self, event ):
     #    return False
 
 
-    #def MouseAll( self, event, quitFlag ):
+    #def MouseAll( self, event ):
     #    return False
 
 
-    #def MouseAllButtons( self, event, quitFlag ):
+    #def MouseAllButtons( self, event ):
     #    return False
 
 
-    #def MouseAllButtonsDbl( self, event, quitFlag ):
+    #def MouseAllButtonsDbl( self, event ):
     #    return False
 
 
-    #def MouseAllButtonsDown( self, event, quitFlag ):
+    #def MouseAllButtonsDown( self, event ):
     #    return False
 
 
-    #def MouseAllButtonsUp( self, event, quitFlag ):
+    #def MouseAllButtonsUp( self, event ):
     #    return False
 
 
-    #def MouseLeftDbl( self, event, quitFlag ):
+    #def MouseLeftDbl( self, event ):
     #    return False
 
 
-    #def MouseLeftDown( self, event, quitFlag ):
+    #def MouseLeftDown( self, event ):
     #    return False
 
 
-    #def MouseLeftUp( self, event, quitFlag ):
+    #def MouseLeftUp( self, event ):
     #    return False
 
 
-    #def MouseMiddleDbl( self, event, quitFlag ):
+    #def MouseMiddleDbl( self, event ):
     #    return False
 
 
-    #def MouseMiddleDown( self, event, quitFlag ):
+    #def MouseMiddleDown( self, event ):
     #    return False
 
 
-    #def MouseMiddleUp( self, event, quitFlag ):
+    #def MouseMiddleUp( self, event ):
     #    return False
 
 
-    #def MouseMove( self, event, quitFlag ):
+    #def MouseMove( self, event ):
     #    return False
 
 
-    #def MouseRightDbl( self, event, quitFlag ):
+    #def MouseRightDbl( self, event ):
     #    return False
 
 
-    #def MouseRightDown( self, event, quitFlag ):
+    #def MouseRightDown( self, event ):
     #    return False
 
 
-    #def MouseRightUp( self, event, quitFlag ):
+    #def MouseRightUp( self, event ):
     #    return False
 
 
-    #def MouseWheel( self, event, quitFlag ):
+    #def MouseWheel( self, event ):
     #    return False
+
 
     pass

@@ -19,6 +19,60 @@ import keylogger
 
 
 
+
+
+
+
+
+class MyEventFilter( keylogger.EventFilterBase ):
+
+    def __init__( self, label ):
+        self.label = None#label
+
+
+
+    def KeyDown( self, event ):#, quitFlag ):
+
+        print('MyEventFilter::OnKeyDown()...', event.Key )
+    
+        #if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
+        #    quitFlag.value = True
+        #    return False
+
+        print( 'MessageName:',event.MessageName )
+        print( 'Message:',event.Message )
+        print( 'Time:',event.Time )
+        print( 'Window handle:',event.Window )
+        print( 'WindowName:',event.WindowName )
+        print( 'Ascii:', event.Ascii, chr(event.Ascii) )
+        print( 'Key:', event.Key )
+        print( 'KeyID:', event.KeyID )
+        print( 'ScanCode:', event.ScanCode )
+        print( 'Extended:', event.Extended )
+        print( 'Injected:', event.Injected )
+        print( 'Alt', event.Alt )
+        print( 'Transition', event.Transition )
+        print( '---' )
+
+        #if( shift_pressed = pyWinhook.GetKeyState( pyWinhook.HookConstants.VKeyToID('VK_LSHIFT') ) )
+        #    print( "shift_pressed: ", event.KeyID )
+
+        if( pyWinhook.HookConstants.IDToName( event.KeyID )=='A' ):
+            print( "A pressed: ", event.KeyID )
+
+        #if( event.Window == 67204 ):# 特定のウィンドウに対するキー入力を無効化できる
+        #    return False
+
+        # ウィンドウハンドルからプロセスID, スレッドIDを捕まえる
+        hwnd = event.Window
+        tid, pid = win32process.GetWindowThreadProcessId( hwnd )
+
+        self.label.setText( event.Key )
+
+        return True
+
+
+
 class Window( QFrame ):
 
     def __init__(self, parent=None):
@@ -35,23 +89,18 @@ class Window( QFrame ):
 
     def bindKeyLogger( self, logger ):
         self.__m_KeyLogger = logger
-        self.__m_KeyLogger.bindKeyDownEvent( self.__hookEvent )
-        self.__m_KeyLogger.start()
+        #self.__m_KeyLogger.bindKeyDownEvent( self.__hookEvent )
+        self.__m_KeyLogger.Start()
 
 
     def closeEvent( self,event ):
         print( 'closeEvent' )
-        self.__m_KeyLogger.stop()
+        self.__m_KeyLogger.Stop()
 
 
     def __hookEvent( self, event ):
         print('hookEvent')
         
-        if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
-            #self.STOP_KEY_HANDLER = True
-            ctypes.windll.user32.PostQuitMessage(0)
-            #return False
-
         print( 'MessageName:',event.MessageName )
         print( 'Message:',event.Message )
         print( 'Time:',event.Time )
@@ -91,7 +140,12 @@ if __name__ == '__main__':
     app = QApplication( sys.argv )
     window = Window()
 
+    filter = MyEventFilter( window.label )
+    filter.label = window.label
+
     logger = keylogger.KeyLogger()
+    logger.BindEventFilter( filter )
+
     window.bindKeyLogger( logger )
 
     window.show()
