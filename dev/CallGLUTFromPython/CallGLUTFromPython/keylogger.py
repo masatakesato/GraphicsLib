@@ -1,5 +1,6 @@
 ﻿import time
 import threading
+import functools
 
 import pythoncom
 import ctypes
@@ -12,138 +13,230 @@ import win32process
 # https://stackoverflow.com/questions/23516150/pyhook-keylogger-thread-not-finishing
 
 
-STOP_KEY_HANDLER = False
+
+CONST_EVENT_FUNC_NAMES = (
+    "KeyAll",
+    "KeyChar",
+    "KeyDown",
+    "KeyUp",
+    "MouseAll",
+    "MouseAllButtons",
+    "MouseAllButtonsDbl",
+    "MouseAllButtonsDown",
+    "MouseAllButtonsUp",
+    "MouseLeftDbl",
+    "MouseLeftDown",
+    "MouseLeftUp",
+    "MouseMiddleDbl",
+    "MouseMiddleDown",
+    "MouseMiddleUp",
+    "MouseMove",
+    "MouseRightDbl",
+    "MouseRightDown",
+    "MouseRightUp",
+    "MouseWheel"
+)
+
+
+
 
 class KeyLogger:
 
-#public:
 
+    class QuitFlag:
+        def __init__( self ):
+            self.value = False
+
+
+#public:
+    
     def __init__( self ):
         self.hm = pyWinhook.HookManager()
-        self.hm.KeyDown = self.__hookEvent
+        self.hm.KeyDown = self.__KeyDown#functools.partial( self.__KeyDownEvent, 
+
 
         self.__m_Thread = None
-        self.___KeyEvent = None
+        self.__m_Lock = threading.Lock()
+
+        self.__m_KeyDownEvent = None
 
 
-    def start( self ):
+        self.__m_refEventFilter = None
+
+
+        self.m_QuitFlag = self.QuitFlag()
+
+
+
+    def Start( self ):
+        print( "KeyLogger::start()...", self.m_QuitFlag.value  )
+
         self.__m_Thread = threading.Thread( target=self.__hook )#  args=None
         self.th__m_Threaddaemon = True
         self.__m_Thread.start()
 
 
-    def stop( self ):
+    def Stop( self ):
         print( "KeyLogger::stop()...")
-        global STOP_KEY_HANDLER
-        STOP_KEY_HANDLER = True
+        self.m_QuitFlag.value = True
         #self.__m_Thread.join()
 
 
-    def bindKeyEvent( self, hook ):
-        self.___KeyEvent = hook
+
+    def BindEventFilter( self, filter ):
+        self.__m_refEventFilter = filter
+
+        for funcname in CONST_EVENT_FUNC_NAMES:
+            try:
+                callback = getattr( self.__m_refEventFilter, funcname )
+                bindFunc = getattr( self.hm, "Subscribe" + funcname )
+                bindFunc( functools.partial( callback, quitFlag=self.m_QuitFlag ) )
+                print( "Registered callback: " + callback.__name__ )
+                
+
+            except:# Exception as e:
+                pass
+                #print( e )
+                #print( "Registered callback: " + callback.__name__ )
+
+
+    def UnbindEventFilter( self ):
+        if( not self.__m_refEventFilter ):
+            return
+        self.__m_refEventFilter.m_QuitFlag = None
+        self.__m_refEventFilter = None
 
 
 
 #private:
 
     def __hook( self ):
-        print( 'hook' )
 
+        # Initialize hook
         self.hm.HookKeyboard()
+        #self.hm.HookMouse()
 
-        while( not STOP_KEY_HANDLER ):
+        # Custom message loop instead of WM_QUIT waiting( pythoncom.PumpMessages() )
+        while( not self.m_QuitFlag.value ):
             pythoncom.PumpWaitingMessages()
-            time.sleep(0.01)
-
-        self.killkey()
-
-        #pythoncom.PumpMessages()# Wait for WM_QUIT
-        #self.label.setText(self.label.text())#for update
+            time.sleep(0.001)
 
 
-    def __hookEvent( self, event ):
-
-        if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
-            global STOP_KEY_HANDLER
-            STOP_KEY_HANDLER = True
-
-        return self.___KeyEvent( event )
+        # Uninitialize hook
+        self.__unhook()
 
 
-    #def __hookEvent( self, event ):
-    #    print('hookEvent')
-        
-    #    print( 'MessageName:',event.MessageName )
-    #    print( 'Message:',event.Message )
-    #    print( 'Time:',event.Time )
-    #    print( 'Window handle:',event.Window )
-    #    print( 'WindowName:',event.WindowName )
-    #    print( 'Ascii:', event.Ascii, chr(event.Ascii) )
-    #    print( 'Key:', event.Key )
-    #    print( 'KeyID:', event.KeyID )
-    #    print( 'ScanCode:', event.ScanCode )
-    #    print( 'Extended:', event.Extended )
-    #    print( 'Injected:', event.Injected )
-    #    print( 'Alt', event.Alt )
-    #    print( 'Transition', event.Transition )
-    #    print( '---' )
+    def __unhook( self ):
 
-    #    hwnd = event.Window
-    #    tid, pid = win32process.GetWindowThreadProcessId( hwnd )
+        print( "KeyLogger::__unhook()...", self.m_QuitFlag.value )
 
-    #    #if( shift_pressed = pyWinhook.GetKeyState( pyWinhook.HookConstants.VKeyToID('VK_LSHIFT') ) )
-    #    #    print( "shift_pressed: ", event.KeyID )
-
-    #    if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
-    #        global STOP_KEY_HANDLER
-    #        STOP_KEY_HANDLER = True
-    #    #	print( "F pressed: ", event.KeyID )
-
-    #    #if( event.Window == 67204 ):# 特定のウィンドウに対するキー入力を無効化できる
-    #    #    return False
-
-
-    #    return True
-
-
-
-    def killkey( self ):
-        global STOP_KEY_HANDLER
-
-        if( STOP_KEY_HANDLER==False ):
+        if( self.m_QuitFlag.value==True ):
+            self.m_QuitFlag.value = False
             return 
 
         self.hm.UnhookKeyboard()
+        #self.hm.UnhookMouse()
         ctypes.windll.user32.PostQuitMessage(0)
 
-        print("invoked killkey()")
 
 
-    #============== QtのQTimer使う場合は以下必要 ==================#
+    def __KeyDown( self, event ):
 
-    #self.timer = QTimer(self)
-    #self.timer.timeout.connect( self.hookThread )
-    #self.timer.start()
+        if( pyWinhook.HookConstants.IDToName( event.KeyID )=='Q' ):
+            self.m_QuitFlag.value = True
+            return False
 
-    #def hookThread( self ):
-    #    print( 'hookThread' )
-    #    self.hm.KeyDown = self.kewDownEvent
-    #    self.hm.HookKeyboard()
-    #    pythoncom.PumpMessages()
+        try:
+            return self.__m_KeyDownEvent( event )
 
-
-    #def kewDownEvent( self, event ):
-    #    print('hookEventThread')
-    #    th = threading.Thread( target=self.hookEvent, args=(event,))
-    #    th.daedaemon = True
-    #    th.start()
-    #    return True
+        except Exception as e:
+            print( e )
+            return False
 
 
-    #def hookEvent( self, event ):
-    #    print('hookEvent')
 
-    #    print( 'MessageName:',event.MessageName )
-    #    print( 'Message:',event.Message )
-    #    print( 'Time:',event.Time )
-    #    #...
+
+
+
+class EventFilterBase:
+
+    #def KeyAll( self, event, quitFlag ):
+    #    return False
+
+
+    #def KeyChar( self, event, quitFlag ):
+    #    return False
+
+
+    #def KeyDown( self, event, quitFlag ):
+    #    return False
+
+
+    #def KeyUp( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseAll( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseAllButtons( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseAllButtonsDbl( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseAllButtonsDown( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseAllButtonsUp( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseLeftDbl( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseLeftDown( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseLeftUp( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseMiddleDbl( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseMiddleDown( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseMiddleUp( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseMove( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseRightDbl( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseRightDown( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseRightUp( self, event, quitFlag ):
+    #    return False
+
+
+    #def MouseWheel( self, event, quitFlag ):
+    #    return False
+
+    pass

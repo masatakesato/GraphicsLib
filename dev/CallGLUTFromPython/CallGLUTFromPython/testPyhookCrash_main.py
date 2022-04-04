@@ -85,48 +85,73 @@ def OnKeyboardEvent(event):
 
 
 # キー同時押しでクラッシュする例　https://code.tiblab.net/python/pyhook
-
-import sys
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-import pythoncom, pyWinhook, ctypes
-
-class Window(QMainWindow):
-    def __init__(self, parent=None):
-        super(Window, self).__init__(parent)
-
-        self.label = QLabel('hook:',self)
-
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.hook)
-        self.timer.start( )
-
-
-    def closeEvent(self,event):
-        ctypes.windll.user32.PostQuitMessage(0)
-
-
-    def hook(self):
-        print('hook')
-        self.hm = pyWinhook.HookManager()
-        self.hm.KeyDown = self.hookEvent
-        self.hm.HookKeyboard()
-        pythoncom.PumpMessages()
-        self.label.setText(self.label.text())#for update
-
-
-    def hookEvent(self,event):
-        self.label.setText(self.label.text()+event.Key)
-        #ctypes.windll.user32.PostQuitMessage(0)# ここに置くのはダメ!
-        return True
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = Window()
-    window.show()
-    sys.exit(app.exec_())
-
-
 # QTimerのせい? -> 違う
 # 原因: hookEvent内部で ctypes.windll.user32.PostQuitMessage(0) 呼び出してるから
+
+#import sys
+#from PyQt5.QtCore import *
+#from PyQt5.QtWidgets import *
+#from PyQt5.QtGui import *
+#import pythoncom, pyWinhook, ctypes
+
+#class Window(QMainWindow):
+#    def __init__(self, parent=None):
+#        super(Window, self).__init__(parent)
+
+#        self.label = QLabel('hook:',self)
+
+#        self.timer = QTimer(self)
+#        self.timer.timeout.connect(self.hook)
+#        self.timer.start( )
+
+
+#    def closeEvent(self,event):
+#        ctypes.windll.user32.PostQuitMessage(0)
+
+
+#    def hook(self):
+#        print('hook')
+#        self.hm = pyWinhook.HookManager()
+#        self.hm.KeyDown = self.hookEvent
+#        self.hm.HookKeyboard()
+#        pythoncom.PumpMessages()
+#        self.label.setText(self.label.text())#for update
+
+
+#    def hookEvent(self,event):
+#        self.label.setText(self.label.text()+event.Key)
+#        ctypes.windll.user32.PostQuitMessage(0)# <----------------------- ここに置くのはダメ!
+#        return True
+
+#if __name__ == '__main__':
+#    app = QApplication(sys.argv)
+#    window = Window()
+#    window.show()
+#    sys.exit(app.exec_())
+
+
+
+
+
+
+# https://stackoverflow.com/questions/3673769/pyhook-pythoncom-stop-working-after-too-much-keys-pressed-python
+# 2010年のクラッシュ事例. 一応大丈夫
+
+#import pyWinhook
+#import pythoncom
+
+#hookManager = pyWinhook.HookManager()
+
+
+#def doSomething():
+#    print("gdsssssssssssssssssssssssss")
+
+
+#def onKeyboardEvent(event):
+#    #if event.KeyID == 113: # F2
+#    doSomething()#do something#
+#    return True
+
+#hookManager.KeyDown = onKeyboardEvent
+#hookManager.HookKeyboard()
+#pythoncom.PumpMessages()
