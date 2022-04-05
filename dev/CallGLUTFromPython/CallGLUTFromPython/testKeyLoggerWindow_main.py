@@ -24,20 +24,16 @@ import keylogger
 
 
 
-class MyEventFilter( keylogger.EventFilterBase ):
+class MyEventFilter:
 
     def __init__( self, label ):
         self.label = None#label
 
 
 
-    def KeyDown( self, event ):#, quitFlag ):
+    def KeyDown( self, event ):
 
         print('MyEventFilter::OnKeyDown()...', event.Key )
-    
-        #if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
-        #    quitFlag.value = True
-        #    return False
 
         print( 'MessageName:',event.MessageName )
         print( 'Message:',event.Message )

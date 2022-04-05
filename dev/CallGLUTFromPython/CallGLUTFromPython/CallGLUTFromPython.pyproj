@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d5b4b420-ecc6-4340-935d-5c7114247ebd</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>testKeyLoggerConsole.py</StartupFile>
+    <StartupFile>testKeyLoggerWindow_main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

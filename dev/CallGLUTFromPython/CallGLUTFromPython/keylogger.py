@@ -1,6 +1,5 @@
 ﻿import time
 import threading
-import functools
 
 import pythoncom
 import ctypes
@@ -11,6 +10,8 @@ import win32process
 
 
 # https://stackoverflow.com/questions/23516150/pyhook-keylogger-thread-not-finishing
+
+# http://pyhook.sourceforge.net/doc_1.5.0/ pyHook api document
 
 
 
@@ -42,10 +43,17 @@ CONST_EVENT_FUNC_NAMES = (
 
 class KeyLogger:
 
+    # Mutable boolean
+    class MutableBool:
 
-    class QuitFlag:
         def __init__( self ):
-            self.value = False
+            self.__m_Value = False
+
+        def get( self ):
+            return self.__m_Value
+
+        def set( self, value ):
+            self.__m_Value = value
 
 
 #public:
@@ -64,7 +72,7 @@ class KeyLogger:
         self.__m_refEventFilter = None
 
 
-        self.m_QuitFlag = [False]#self.QuitFlag()
+        self.m_IsRunning = self.MutableBool()
 
 
         #self.__m_KeyDownEvent = None
@@ -73,7 +81,8 @@ class KeyLogger:
 
 
     def Start( self ):
-        print( "KeyLogger::start()...", self.m_QuitFlag )#.value  )
+        self.m_IsRunning.set( True )
+        print( "KeyLogger::start()...", self.m_IsRunning.get()  )
         self.__m_Thread = threading.Thread( target=self.__hook )#  args=None
         self.__m_Thread.start()
         #self.__hook()
@@ -81,21 +90,21 @@ class KeyLogger:
 
     def Stop( self ):
         print( "KeyLogger::stop()...")
-        self.m_QuitFlag.value = True
+        self.m_IsRunning.set( False )
         #self.__m_Thread.join()
 
 
 
     def BindEventFilter( self, filter ):
         self.__m_refEventFilter = filter
-        self.__m_refEventFilter.quitFlag = self.m_QuitFlag
+        self.__m_refEventFilter.isRunning = self.m_IsRunning
 
 
         for funcname in CONST_EVENT_FUNC_NAMES:
             try:
                 callback = getattr( self.__m_refEventFilter, funcname )
                 bindFunc = getattr( self.hm, "Subscribe" + funcname )
-                bindFunc( callback )#functools.partial( callback, quitFlag=self.m_QuitFlag ) )
+                bindFunc( callback )
                 print( "Registered callback: " + callback.__name__ )
             except:# Exception as e:
                 pass #print( e )
@@ -123,7 +132,7 @@ class KeyLogger:
         #self.hm.HookMouse()
 
         # Custom message loop instead of WM_QUIT waiting( pythoncom.PumpMessages() )
-        while( not self.m_QuitFlag[0] ):#.value ):
+        while( self.m_IsRunning.get() ):
             pythoncom.PumpWaitingMessages()
             time.sleep(0.001)
 
@@ -134,10 +143,10 @@ class KeyLogger:
 
     def __unhook( self ):
 
-        print( "KeyLogger::__unhook()...", self.m_QuitFlag[0] )#.value )
+        print( "KeyLogger::__unhook()...", self.m_IsRunning.get() )
 
-        if( self.m_QuitFlag[0] ):#.value==True ):
-            self.m_QuitFlag[0] = False
+        if( self.m_IsRunning.get()==False ):
+            self.m_IsRunning.set( True )
             return 
 
         self.hm.UnhookKeyboard()
@@ -149,7 +158,7 @@ class KeyLogger:
     def __DefaultKeyDown( self, event ):
 
         if( pyWinhook.HookConstants.IDToName( event.KeyID )=='Q' ):
-            self.m_QuitFlag[0] = True
+            self.m_IsRunning.set( False )
             return False
 
         return True
@@ -165,7 +174,7 @@ class KeyLogger:
 
 
 
-class EventFilterBase:
+#class EventFilterBase:
 
     #def KeyAll( self, event ):
     #    return False
@@ -247,4 +256,4 @@ class EventFilterBase:
     #    return False
 
 
-    pass
+    #pass

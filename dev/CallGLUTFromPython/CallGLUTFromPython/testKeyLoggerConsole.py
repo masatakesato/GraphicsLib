@@ -6,19 +6,20 @@ import keylogger
 
 
 
-class MyEventFilter( ):#keylogger.EventFilterBase ):
+class MyEventFilter:
 
     # キーイベントで処理が必要な引数は取り込んでおく
-    def __init__( self, flag=None ):
-        self.quitFlag = [flag]
+    def __init__( self, isrunning=None ):
+        self.isRunning = isrunning
 
 
+    # Pyhookのイベント関数名でコールバック関数を実装する
     def KeyDown( self, event ):
 
         print('MyEventFilter::OnKeyDown()...', event.Key )
     
         if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
-            self.quitFlag[0] = True
+            self.isRunning.set( False )
             return False
 
         print( 'MessageName:',event.MessageName )
