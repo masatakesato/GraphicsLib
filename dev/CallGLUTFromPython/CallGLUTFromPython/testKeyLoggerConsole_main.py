@@ -6,11 +6,11 @@ import keylogger
 
 
 
-class MyEventFilter:
+class MyEventFilter( keylogger.EventFilterBase ):
 
     # キーイベントで処理が必要な引数は取り込んでおく
-    def __init__( self, isrunning=None ):
-        self.isRunning = isrunning
+    #def __init__( self, isRunning ):
+    #    super(MyEventFilter, self).__init__( isRunning )
 
 
     # Pyhookのイベント関数名でコールバック関数を実装する
@@ -19,7 +19,7 @@ class MyEventFilter:
         print('MyEventFilter::OnKeyDown()...', event.Key )
     
         if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
-            self.isRunning.set( False )
+            self.m_refIsRunning.set( False )
             return False
 
         print( 'MessageName:',event.MessageName )
@@ -68,21 +68,12 @@ class MyEventFilter:
 
 if __name__ == '__main__':
 
-    # これは動く
-    #logger = keylogger.KeyLogger()
-    #filter = MyEventFilter( logger.m_QuitFlag )
-    #filter.quitFlag = logger.m_QuitFlag
-    #filter.RunThread()
-
-
-    # こっちが動かない
     logger = keylogger.KeyLogger()
 
-    filter = MyEventFilter()# logger.m_QuitFlag )
+    filter = MyEventFilter()
     #filter.quitFlag = logger.m_QuitFlag
 
     logger.BindEventFilter( filter )
-
 
     logger.Start()
     ##logger.Stop()

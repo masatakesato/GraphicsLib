@@ -14,8 +14,14 @@ import win32process
 # http://pyhook.sourceforge.net/doc_1.5.0/ pyHook api document
 
 
+#############################################################################
+#                                                                           #
+#                               Declarations                                #
+#                                                                           #
+#############################################################################
 
-CONST_EVENT_FUNC_NAMES = (
+# Pyhook event function names
+PYHOOK_EVENT_FUNC_NAMES = (
     "KeyAll",
     "KeyChar",
     "KeyDown",
@@ -39,7 +45,18 @@ CONST_EVENT_FUNC_NAMES = (
 )
 
 
+# forward declaration
+class KeyLogger: pass
+class EventFilterBase: pass
 
+
+
+
+#############################################################################
+#                                                                           #
+#                           Keylogger implementation                        #
+#                                                                           #
+#############################################################################
 
 class KeyLogger:
 
@@ -59,33 +76,20 @@ class KeyLogger:
 #public:
     
     def __init__( self ):
-        self.hm = pyWinhook.HookManager()
-        self.hm.KeyDown = self.__DefaultKeyDown#functools.partial( self.__KeyDownEvent, 
 
-
+        self.__m_HookManager = pyWinhook.HookManager()
+ 
         self.__m_Thread = None
-        self.__m_Lock = threading.Lock()
-
-
-
-
-        self.__m_refEventFilter = None
-
-
         self.m_IsRunning = self.MutableBool()
 
-
-        #self.__m_KeyDownEvent = None
-
-
+        self.__m_refEventFilter = None
 
 
     def Start( self ):
         self.m_IsRunning.set( True )
         print( "KeyLogger::start()...", self.m_IsRunning.get()  )
-        self.__m_Thread = threading.Thread( target=self.__hook )#  args=None
+        self.__m_Thread = threading.Thread( target=self.__hook )
         self.__m_Thread.start()
-        #self.__hook()
 
 
     def Stop( self ):
@@ -94,31 +98,29 @@ class KeyLogger:
         #self.__m_Thread.join()
 
 
-
-    def BindEventFilter( self, filter ):
+    def BindEventFilter( self, filter: EventFilterBase ):
         self.__m_refEventFilter = filter
-        self.__m_refEventFilter.isRunning = self.m_IsRunning
+        self.__m_refEventFilter.BindRunningFlag( self.m_IsRunning )
+        #try:
+        #    bindRunningFlag = getattr( self.__m_refEventFilter, "BindRunningFunc" )
+        #except:
+        #    pass
 
 
-        for funcname in CONST_EVENT_FUNC_NAMES:
+        for funcname in PYHOOK_EVENT_FUNC_NAMES:
             try:
                 callback = getattr( self.__m_refEventFilter, funcname )
-                bindFunc = getattr( self.hm, "Subscribe" + funcname )
+                bindFunc = getattr( self.__m_HookManager, "Subscribe" + funcname )
                 bindFunc( callback )
                 print( "Registered callback: " + callback.__name__ )
             except:# Exception as e:
                 pass #print( e )
 
-        # こっち2つはOK
-        #self.hm.KeyDown = self.__m_refEventFilter.KeyDown
-        #self.hm.SubscribeKeyDown( self.__m_refEventFilter.KeyDown )
-
-
 
     def UnbindEventFilter( self ):
         if( not self.__m_refEventFilter ):
             return
-        self.__m_refEventFilter.quitFlag = None
+        self.__m_refEventFilter.BindRuningFlag( None )
         self.__m_refEventFilter = None
 
 
@@ -128,14 +130,13 @@ class KeyLogger:
     def __hook( self ):
 
         # Initialize hook
-        self.hm.HookKeyboard()
-        #self.hm.HookMouse()
+        self.__m_HookManager.HookKeyboard()
+        #self.__m_HookManager.HookMouse()
 
         # Custom message loop instead of WM_QUIT waiting( pythoncom.PumpMessages() )
         while( self.m_IsRunning.get() ):
             pythoncom.PumpWaitingMessages()
             time.sleep(0.001)
-
 
         # Uninitialize hook
         self.__unhook()
@@ -149,32 +150,29 @@ class KeyLogger:
             self.m_IsRunning.set( True )
             return 
 
-        self.hm.UnhookKeyboard()
-        #self.hm.UnhookMouse()
+        self.__m_HookManager.UnhookKeyboard()
+        #self.__m_HookManager.UnhookMouse()
         ctypes.windll.user32.PostQuitMessage(0)
 
 
 
-    def __DefaultKeyDown( self, event ):
 
-        if( pyWinhook.HookConstants.IDToName( event.KeyID )=='Q' ):
-            self.m_IsRunning.set( False )
-            return False
+#############################################################################
+#                                                                           #
+#                       EventFilterBase implementation                      #
+#                                                                           #
+#############################################################################
 
-        return True
-        #try:
-        #    return self.__m_KeyDownEvent( event )
+class EventFilterBase:
 
-        #except Exception as e:
-        #    print( e )
-        #    return False
+    def __init__( self, isRunning=None ):
+        self.m_refIsRunning = isRunning
 
 
+    def BindRunningFlag( self, isRunning ):
+        self.m_refIsRunning = isRunning
 
 
-
-
-#class EventFilterBase:
 
     #def KeyAll( self, event ):
     #    return False
@@ -256,4 +254,4 @@ class KeyLogger:
     #    return False
 
 
-    #pass
+    pass

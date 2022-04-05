@@ -24,11 +24,12 @@ import keylogger
 
 
 
-class MyEventFilter:
+class MyEventFilter( keylogger.EventFilterBase ):
 
     def __init__( self, label ):
-        self.label = None#label
+        super(MyEventFilter, self).__init__()
 
+        self.label = None#label
 
 
     def KeyDown( self, event ):
