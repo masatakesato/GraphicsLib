@@ -26,6 +26,7 @@ namespace vk
 		DescriptorBuffer( VkDevice device, uint32 numSwaps, const DescriptorLayout& descLayout );
 		~DescriptorBuffer();
 		DescriptorBuffer( const DescriptorBuffer& ) = delete;
+		//DescriptorBuffer( DescriptorBuffer&& obj );
 
 		void Init( VkDevice device, uint32 numSwaps, const DescriptorLayout& descLayout );
 		void Release();

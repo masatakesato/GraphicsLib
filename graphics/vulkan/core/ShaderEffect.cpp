@@ -104,7 +104,7 @@ namespace vk
 	void ShaderEffect::InitRenderTargets( std::initializer_list<RenderTargetDesc> renderTargetDescs )
 	{
 		// 先頭から順番にRenderTargetDescsを詰めていく
-		OreOreLib::MemCopy( m_CustomRTDescView.begin(), renderTargetDescs.begin(), renderTargetDescs.size() );
+		OreOreLib::Mem::Copy( m_CustomRTDescView.begin(), renderTargetDescs.begin(), renderTargetDescs.size() );
 		m_RenderTargets.Init( m_refDevice, renderTargetDescs );
 	}
 
