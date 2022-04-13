@@ -30,8 +30,8 @@
     <Compile Include="keylogger.py" />
     <Compile Include="testKeyLoggerConsole_main.py" />
     <Compile Include="testKeyLoggerWindow_main.py" />
+    <Compile Include="testOverlayViewOnWidget.py" />
     <Compile Include="testPyhookCrash_main.py" />
-    <Compile Include="tttt.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="CondaEnv|CondaEnv|testpyqt" />
