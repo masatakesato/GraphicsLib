@@ -971,12 +971,13 @@ int main(int argc, char **argv)
 
 	Initialize();
 
-	HWND hThisWnd	= FindWindow( /*L"GLUT"*/NULL, L"ShapeController" );
-	if( hThisWnd )
-	{
-		LONG lStyle = GetWindowLong( hThisWnd, GWL_STYLE );
-		SetWindowLong( hThisWnd, GWL_STYLE, lStyle & ~( WS_DLGFRAME | WS_THICKFRAME ) );//lStyle & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU) );
-	}
+	// Remove window border
+	//HWND hThisWnd	= FindWindow( /*L"GLUT"*/NULL, L"ShapeController" );
+	//if( hThisWnd )
+	//{
+	//	LONG lStyle = GetWindowLong( hThisWnd, GWL_STYLE );
+	//	SetWindowLong( hThisWnd, GWL_STYLE, lStyle & ~( WS_DLGFRAME | WS_THICKFRAME ) );//lStyle & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU) );
+	//}
 
 
 	glutMainLoop();

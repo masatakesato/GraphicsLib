@@ -67,54 +67,104 @@ class MINMAXINFO(ctypes.Structure):
 	]
 
 
+
+
+
 class MyWidget(QWidget):
 
-	def __init__( self ):
-		super( MyWidget, self ).__init__()
-		#self.setFocusPolicy( Qt.NoFocus )
-		self.setLayout( QVBoxLayout() ) 
-		self.setGeometry(100, 100, 400,800)
-		#self.resize( 400, 400)
-		self.myEventFilter = MyNativeEventFilter()
+    def __init__( self ):
+        super( MyWidget, self ).__init__()
+        #self.setFocusPolicy( Qt.NoFocus )
+        self.setLayout( QVBoxLayout() ) 
+        self.setGeometry(100, 100, 400,800)
+        #self.resize( 400, 400)
+        #self.myEventFilter = MyNativeEventFilter()
 
-		self.window_widget = None
+        self.window = None
+        self.window_widget = None
 
-
-	def BindHwnd( self, hwnd ):
-		self.window_widget = QWidget.createWindowContainer( window_wrapper, self )
-		#self.window_widget.installEventFilter( self )
-		self.layout().addWidget( self.window_widget )
-		ctypes.windll.user32.RegisterHotKey()
+        self.__p = None
 
 
-
-	def mousePressEvent( self, a0 ):
-		print( "MyWidget::mousePressEvent" )
-		return super().mousePressEvent(a0)
-
-
-	def mouseReleaseEvent( self, a0 ):
-		print( "MyWidget::mouseReleaseEvent" )
-		return super().mouseReleaseEvent(a0)
-
-
-	#def event( self, event ):
-	#	print( "MyWidget::event" )
-	#	return super().event( event )
-
-
-	def keyPressEvent( self, event ):
-		print( "MyWidget::keyPressEvent" )
-		return super().keyPressEvent( event )
+    #def __del__( self ):
+    #    #self.__p.terminate()
+    #    if( self.window ):
+    #        self.window.close()
 
 
 
-	def GET_X_PARAM( self, param ):
-		return param & 0xffff
+    def BindHwnd( self, window_handle, processhandle ):
+        
+        self.hwnd = window_handle
+        self._style = win32gui.GetWindowLong( self.hwnd, win32con.GWL_EXSTYLE )
+
+        self.window =  QWindow.fromWinId( window_handle )
+        self.window_widget = QWidget.createWindowContainer( self.window )
+        #self.__p = processhandle
+
+        #self.window_widget.installEventFilter( self )
+        
+        #self.layout().addWidget( self.window_widget )
+        self.window_widget.setParent(self)
+
+        ctypes.windll.user32.RegisterHotKey()
+        #print( self.window_widget.layout() )
+        #self.window_widget.chi
 
 
-	def GET_Y_PARAM( self, param ):
-		return param >> 16
+    def UnbindHWnd( self ):
+        try:
+            # 外部アプリ埋め込んだwindowと、はめ込んでるwindow_widgetを、下記の順番でSetParentする必要がある
+            if( self.window_widget ):
+                self.window_widget.setParent( None )
+                self.window.setParent( None )
+                win32gui.SetWindowLong( self.hwnd, win32con.GWL_EXSTYLE, self._style )
+                self.window
+            
+                self.window_widget = None
+                self.window = None
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+
+
+
+    def mousePressEvent( self, a0 ):
+        print( "MyWidget::mousePressEvent" )
+        return super().mousePressEvent(a0)
+
+
+    def mouseReleaseEvent( self, a0 ):
+        print( "MyWidget::mouseReleaseEvent" )
+        return super().mouseReleaseEvent(a0)
+
+
+    def closeEvent( self, event ):
+        print( "MyWidget::closeEvent" )
+
+        self.UnbindHWnd()
+
+        #self.__p.terminate()
+        if( self.window ):
+        #    print('terminating window')
+            self.window.close()
+
+        return super(MyWidget, self).closeEvent(event)
+
+
+    def keyPressEvent( self, event ):
+        print( "MyWidget::keyPressEvent" )
+        return super().keyPressEvent( event )
+
+
+
+    #def GET_X_PARAM( self, param ):
+    #    return param & 0xffff
+
+
+    #def GET_Y_PARAM( self, param ):
+    #    return param >> 16
 
 
 	# https://jpdebug.com/p/365848
@@ -159,7 +209,8 @@ class MyWidget(QWidget):
 	#	return retval, result
 
 
-def get_hwnds_for_pid( pid ):
+
+def GetWindowHandlesFromPID( pid, window_handles ):
 
 	def callback( hwnd, hwnds ):
 		if( win32gui.IsWindowVisible(hwnd) and win32gui.IsWindowEnabled(hwnd) ):
@@ -168,30 +219,22 @@ def get_hwnds_for_pid( pid ):
 				hwnds.append( hwnd )
 		return True
 
-	hwnds = []
-	win32gui.EnumWindows( callback, hwnds )
-	return hwnds
+	window_handles.clear()
+	win32gui.EnumWindows( callback, window_handles )
+	return any( window_handles )
 
 
 
-def get_child_hwnds( hwnd ):
-
-	#def callback( handle, childlist ):
-	#	childlist.append( handle )
-	#	return True
+def GetChildHandles( hwnd ):
 
 	def callback( hwnd, hwnds ):
 		if( win32gui.IsWindowVisible(hwnd) and win32gui.IsWindowEnabled(hwnd) ):
 			hwnds.append( hwnd )
 		return True
 
-	child_hwnds = []
-	win32gui.EnumChildWindows( hwnd, callback, child_hwnds )
-	return child_hwnds
-
-
-
-
+	hwnds = []
+	win32gui.EnumChildWindows( hwnd, callback, hwnds )
+	return hwnds
 
 
 
@@ -211,41 +254,41 @@ def get_child_hwnds( hwnd ):
 
 if __name__ == "__main__":
 
-	app = QApplication( sys.argv )
+    app = QApplication( sys.argv )
 
-	w = MyWidget()
-	app.installNativeEventFilter( w.myEventFilter )
+    w = MyWidget()
 
-	notepad = subprocess.Popen( [r"C:\\Windows\\system32\\notepad.exe"] )#[r"C:\\Windows\\System32\\mspaint.exe"] ) #
+    notepad = subprocess.Popen( [r"C:\\Windows\\system32\\notepad.exe"] )#[r"C:\\Windows\\System32\\mspaint.exe"] ) #
+    process_id = notepad.pid
 
-	time.sleep (0.5)
-
-	parent_window_handles = get_hwnds_for_pid( notepad.pid )
-
-	child_handles = []
-	child_handles = get_child_hwnds( parent_window_handles[0] )
-	print( child_handles )# 0:テキストフィールド, 1:ステータスバー
-
-	#c_handle = ctypes.windll.user32.FindWindowExW( parent_window_handles[0], 0, 'Edit', 0 )
-	#print("子ウインドウハンドル: ", c_handle )
+    # Wait until app is ready
+    window_handles = []
+    while( GetWindowHandlesFromPID( process_id, window_handles ) == False ):
+        print( window_handles )
+        time.sleep(0.05)
 
 
-	#for hwnd in child_handles:#parent_window_handles:
-	#	window_wrapper = QWindow.fromWinId( hwnd )
-	#	window_widget = QWidget.createWindowContainer( window_wrapper )
-	#	window_widget.show()
+    #child_handles = []
+    #child_handles = GetChildHandles( window_handles[0] )
+    #print( child_handles )# 0:テキストフィールド, 1:ステータスバー
 
-	window_wrapper = QWindow.fromWinId( parent_window_handles[0] )#child_handles[0] )#
-	w.BindHwnd( window_wrapper )
-	w.setGeometry(0, 0, 800, 600)
-	w.show()
-
-	sys.exit( app.exec_() )
+    #c_handle = ctypes.windll.user32.FindWindowExW( window_handles[0], 0, 'Edit', 0 )
+    #print("子ウインドウハンドル: ", c_handle )
 
 
+    #for hwnd in child_handles:#parent_window_handles:
+    #	window_wrapper = QWindow.fromWinId( hwnd )
+    #	window_widget = QWidget.createWindowContainer( window_wrapper )
+    #	window_widget.show()
 
+    #w.BindHwnd( window_handle, notepad )
+    w.BindHwnd( window_handles[0], notepad )
+    w.setGeometry(0, 0, 800, 600)
+    w.show()
 
+    #w.UnbindHWnd()
 
+    sys.exit( app.exec_() )
 
 
 
