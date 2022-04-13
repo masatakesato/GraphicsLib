@@ -76,7 +76,7 @@ class MyWidget(QWidget):
         super( MyWidget, self ).__init__()
         #self.setFocusPolicy( Qt.NoFocus )
         self.setLayout( QVBoxLayout() ) 
-        self.setGeometry(100, 100, 400,800)
+        #self.setGeometry(100, 100, 400,800)
         #self.resize( 400, 400)
         #self.myEventFilter = MyNativeEventFilter()
 
@@ -84,6 +84,10 @@ class MyWidget(QWidget):
         self.window_widget = None
 
         self.__p = None
+
+
+        self.nonlayoutwidgets = []
+
 
 
     #def __del__( self ):
@@ -96,10 +100,14 @@ class MyWidget(QWidget):
     def BindHwnd( self, window_handle, processhandle ):
         
         self.hwnd = window_handle
-        self._style = win32gui.GetWindowLong( self.hwnd, win32con.GWL_EXSTYLE )
+        #self._style = win32gui.GetWindowLong( self.hwnd, win32con.GWL_EXSTYLE )
 
         self.window =  QWindow.fromWinId( window_handle )
         self.window_widget = QWidget.createWindowContainer( self.window )
+
+        self.nonlayoutwidgets.append( self.window_widget )
+
+
         #self.__p = processhandle
 
         #self.window_widget.installEventFilter( self )
@@ -118,11 +126,12 @@ class MyWidget(QWidget):
             if( self.window_widget ):
                 self.window_widget.setParent( None )
                 self.window.setParent( None )
-                win32gui.SetWindowLong( self.hwnd, win32con.GWL_EXSTYLE, self._style )
-                self.window
-            
+                #win32gui.SetWindowLong( self.hwnd, win32con.GWL_EXSTYLE, self._style )
+
                 self.window_widget = None
                 self.window = None
+
+                self.nonlayoutwidgets.clear()
 
         except Exception as e:
             import traceback
@@ -140,6 +149,17 @@ class MyWidget(QWidget):
         return super().mouseReleaseEvent(a0)
 
 
+    def keyPressEvent( self, event ):
+        print( "MyWidget::keyPressEvent" )
+        return super().keyPressEvent( event )
+
+
+    def resizeEvent(self, event):
+        for w in self.nonlayoutwidgets:
+            w.resize(event.size())
+        event.accept()
+
+
     def closeEvent( self, event ):
         print( "MyWidget::closeEvent" )
 
@@ -153,9 +173,6 @@ class MyWidget(QWidget):
         return super(MyWidget, self).closeEvent(event)
 
 
-    def keyPressEvent( self, event ):
-        print( "MyWidget::keyPressEvent" )
-        return super().keyPressEvent( event )
 
 
 
