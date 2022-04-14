@@ -16,6 +16,11 @@ using namespace GraphicsLib;
 using namespace OreOreLib;
 
 
+//============== model path ===============//
+
+tstring g_ModelPath;
+
+
 
 //================ Scene ==================//
 // Lightsource
@@ -526,15 +531,15 @@ void Initialize()
 	MatIdentity( g_MatInvViewProj );
 
 
+	g_MeshLoader.Load( g_ModelPath );
 
+	//TCHAR currdir[ MAX_PATH ];
+	//GetCurrentDirectory( MAX_PATH, currdir );
+	//SetCurrentDirectory( _T( "../../../assets/scene/obj" ) );
 
-	TCHAR currdir[ MAX_PATH ];
-	GetCurrentDirectory( MAX_PATH, currdir );
-	SetCurrentDirectory( _T( "../../../assets/scene/obj" ) );
+	//g_MeshLoader.Load( _T("viking_room.obj") );
 
-	g_MeshLoader.Load( _T("viking_room.obj") );
-
-	SetCurrentDirectory( currdir );
+	//SetCurrentDirectory( currdir );
 
 	g_MeshLoader.Information();
 	//g_MeshLoader.GetGroupInfo(1);
@@ -949,8 +954,16 @@ void AnimateCallback( void )
 
 
 
-int main(int argc, char **argv)
+int main( int argc, char **argv )
 {
+	//for( int i=0; i<argc; ++i )
+	//	tcout << argv[i] << tendl;
+
+	//tcout << tendl;
+
+	if( argc > 0 )
+		g_ModelPath = CharToTString( argv[1] );
+
 	glutInit( &argc, argv );
 	
 	glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ALPHA) ;
