@@ -105,6 +105,10 @@ class MyWidget(QWidget):
         self.window =  QWindow.fromWinId( window_handle )
         self.window_widget = QWidget.createWindowContainer( self.window )
 
+        self.window_widget.setFocusPolicy(Qt.StrongFocus)
+        self.window_widget.setFocus()
+        self.window_widget.grabKeyboard()
+
         self.nonlayoutwidgets.append( self.window_widget )
 
 
@@ -112,8 +116,8 @@ class MyWidget(QWidget):
 
         #self.window_widget.installEventFilter( self )
         
-        #self.layout().addWidget( self.window_widget )
-        self.window_widget.setParent(self)
+        
+        self.window_widget.setParent(self)#self.layout().addWidget( self.window_widget )
 
         ctypes.windll.user32.RegisterHotKey()
         #print( self.window_widget.layout() )
@@ -275,7 +279,8 @@ if __name__ == "__main__":
 
     w = MyWidget()
 
-    notepad = subprocess.Popen( [r"C:\\Windows\\system32\\notepad.exe"] )#[r"C:\\Windows\\System32\\mspaint.exe"] ) #
+    notepad = subprocess.Popen( r"D:/Program Files (x86)/sakura/sakura.exe" )
+    #r"./app/ShapeController.exe" )#[r"C:\\Windows\\system32\\notepad.exe"] )#[r"C:\\Windows\\System32\\mspaint.exe"] ) #[r"./app/ProceduralPlanetRendering.exe"] )#
     process_id = notepad.pid
 
     # Wait until app is ready
@@ -284,6 +289,7 @@ if __name__ == "__main__":
         print( window_handles )
         time.sleep(0.05)
 
+    time.sleep(0.5)
 
     #child_handles = []
     #child_handles = GetChildHandles( window_handles[0] )

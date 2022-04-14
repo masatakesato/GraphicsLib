@@ -961,7 +961,7 @@ int main( int argc, char **argv )
 
 	//tcout << tendl;
 
-	if( argc > 0 )
+	if( argc > 1 )
 		g_ModelPath = CharToTString( argv[1] );
 
 	glutInit( &argc, argv );
