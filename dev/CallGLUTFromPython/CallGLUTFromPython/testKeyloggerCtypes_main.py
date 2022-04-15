@@ -421,6 +421,66 @@ class KeyLogger:
 
 def HookProc( nCode, wParam, lParam ):
 
+
+#
+#MsgToName =
+#{
+#    WM_MOUSEMOVE : 'mouse move',
+#    WM_LBUTTONDOWN : 'mouse left down', 
+#    WM_LBUTTONUP : 'mouse left up',
+#    WM_LBUTTONDBLCLK : 'mouse left double', 
+#    WM_RBUTTONDOWN : 'mouse right down',
+#    WM_RBUTTONUP : 'mouse right up', 
+#    WM_RBUTTONDBLCLK : 'mouse right double',
+#    WM_MBUTTONDOWN : 'mouse middle down', 
+#    WM_MBUTTONUP : 'mouse middle up',
+#    WM_MBUTTONDBLCLK : 'mouse middle double', 
+#    WM_MOUSEWHEEL : 'mouse wheel',
+#    WM_KEYDOWN : 'key down', 
+#    WM_KEYUP : 'key up',
+#    WM_CHAR : 'key char',
+#    WM_DEADCHAR : 'key dead char', 
+#    WM_SYSKEYDOWN : 'key sys down',
+#    WM_SYSKEYUP : 'key sys up', 
+#    WM_SYSCHAR : 'key sys char',
+#    WM_SYSDEADCHAR : 'key sys dead char'
+#}
+
+
+# https://www.cnblogs.com/franknihao/p/7904434.html
+#*   MessageName: key down ------------> Messageの名前. MsgToName辞書
+#*   Message: 256 ---------------------> wParam. WM_KEYDOWNとかWM_KEYUPとか.
+#*   Time: 2426687 ---------------------> KBDLLHOOKSTRUCT.timeで取得可能
+#*   Window handle: 3409886
+#*   WindowName: C:\WINDOWS\system32\cmd.exe
+#*    Ascii: 0      ---------------------> 506行目からの処理と等価. 497行目からの処理使えばUnicodeもできる.
+#*    Key: Right     --------------------> pyHookが変換テーブル使ってVKからキー名に変換してる. 余裕あったらtestKeydownSimulation_main.pyのコードから作る
+#*    KeyID: 39       --------------------> Virtual key id. KBDLLHOOKSTRUCT::vkCodeで取得可能 ( = 0x27 )
+#*    ScanCode: 77   --------------------> KBDLLHOOKSTRUCT.scanCodeで取得可能
+#*    Extended: 1    --------------------> 拡張キーかどうか判定フラグ. KBDLLHOOKSTRUCT.flags & 0x01 で取得可能 
+#*    Injected: 0     --------------------> プログラムで生成されたコマンドかどうかフラグ. KBDLLHOOKSTRUCT.flags & 0x10 で取得可能.
+#*    Alt 0            -------------------> Altキー押されてるかどうかフラグ. KBDLLHOOKSTRUCT.flags & 0x20 で取得可能
+#*    Transition 0    --------------------> Up/Downの状態遷移かどうかフラグ. KBDLLHOOKSTRUCT.flags & 0x80 で取得可能
+
+
+
+
+    # Get active window information
+    # get window handle
+    hwnd = ctypes.windll.user32.GetForegroundWindow()
+
+    # get process id
+    pid = ctypes.wintypes.DWORD()    
+    tid = ctypes.windll.user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
+
+    # get window title
+    length = user32.GetWindowTextLengthW( hwnd ) + 1
+    title = ctypes.create_unicode_buffer( length )
+    user32.GetWindowTextW( hwnd, title, length )
+
+    print( pid, title.value )
+
+
     if( user32.GetKeyState(win32con.VK_CONTROL) & 0x8000 ):
         print("\nCtrl pressed, call uninstallHook()" )
         KeyLogger.UninstallHookProc()
@@ -428,17 +488,30 @@ def HookProc( nCode, wParam, lParam ):
 
     if( nCode == win32con.HC_ACTION and wParam == win32con.WM_KEYDOWN ):
         kb = KBDLLHOOKSTRUCT.from_address( lParam )
-        user32.GetKeyState( win32con.VK_SHIFT )
-        user32.GetKeyState( win32con.VK_MENU )
-        state = ( ctypes.c_char * 256 )()
-        user32.GetKeyboardState( byref(state) )
-        str = create_unicode_buffer(8)
-        n = user32.ToUnicode( kb.vkCode, kb.scanCode, state, str, 8-1, 0 )
-        if( n > 0 ):
+        print( kb.time )
+#        user32.GetKeyState( win32con.VK_SHIFT )
+#        user32.GetKeyState( win32con.VK_MENU )
+        keyboard_state = ( ctypes.c_char * 256 )()
+        user32.GetKeyboardState( byref(keyboard_state) )
+
+        # VK_CodeからUnicodeへの変換
+        #str = create_unicode_buffer(8)
+        #n = user32.ToUnicode( kb.vkCode, kb.scanCode, keyboard_state, str, 8-1, 0 )
+        #if( n > 0 ):
+        #    if( kb.vkCode == win32con.VK_RETURN ):
+        #        print()
+        #    else:
+        #        print( ctypes.wstring_at(str), end="", flush=True )
+
+        # VK_CodeからASCIIへの変換
+        str_ascii = create_string_buffer(2)
+        n_ascii = user32.ToAscii( kb.vkCode, kb.scanCode, keyboard_state, str_ascii, 0 )
+        if( n_ascii > 0 ):
             if( kb.vkCode == win32con.VK_RETURN ):
                 print()
             else:
-                print( ctypes.wstring_at(str), end="", flush=True )
+                print( ctypes.string_at(str_ascii), end="", flush=True )
+
 
     return ctypes.windll.user32.CallNextHookEx( KeyLogger.hooked, nCode, wParam, ctypes.c_longlong(lParam) )
 
