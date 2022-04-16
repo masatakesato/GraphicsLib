@@ -29,23 +29,23 @@ SetWindowsHookEx.argtypes = [ c_int, HOOKPROC, ctypes.wintypes.HINSTANCE, ctypes
 
 class EventBase:
 
-    def __init__( self ):
+    def __init__( self, msg, time, hwnd, windowtitle, injected ):
         self.__m_MessageName = None
-        self.__m_Message = None
-        self.__m_Time = None
-        self.__m_WindowHandle = None
-        self.__m_WindowName = None
-        self.__m_bInjected = False
+        self.__m_Message = msg
+        self.__m_Time = time
+        self.__m_WindowHandle = hwnd
+        self.__m_WindowName = windowtitle
+        self.__m_Injected = injected
+
 
 
 class MouseEvent( EventBase ):
 
-    def __init__( self ):
-        super(MouseEvent, self).__init__()
+    def __init__( self, msg, x, y, mousedata, flags, time, hwnd, windowtitle ):
+        super(MouseEvent, self).__init__( msg, time, hwnd, windowtitle, flags & 0x01 )
 
-        self.__m_Position = None
-        self.__m_Wheel = None
-
+        self.__m_Position = (x, y)
+        self.__m_Wheel = 0 if mousedata==0 else 1 if mousedata>0 else -1
 
 #*   MessageName: mouse left down ------> Messageの名前. MsgToName辞書
 #*   Message: 256 ---------------------> wParam. WM_LBUTTONDOWNとかWM_LBUTTONUPとか.
@@ -60,16 +60,16 @@ class MouseEvent( EventBase ):
 
 class KeyboardEvent( EventBase ):
 
-    def __init__( self ):
-        super(KeyboardEvent, self).__init__()
+    def __init__( self, msg, vkcode, scancode, flags, time, hwnd, windowtitle ):
+        super(KeyboardEvent, self).__init__( msg, time, hwnd, windowtitle, flags & 0x20 )
 
-        self.__m_Ascii = None
-        self.__m_Key = None
-        self.__m_KeyID = None
-        self.__m_ScanCode = None
-        self.__m_Extended = None
-        self.__m_Alt = None
-        self.__m_Transition = None
+        #self.__m_Ascii     = None
+        self.__m_KeyID      = vkcode
+        #self.__m_Key       = VkToKeyName[ vkcode ]
+        self.__m_ScanCode   = scancode
+        self.__m_Extended   = flags & 0x01
+        self.__m_Alt        = flags & 0x20
+        self.__m_Transition = flags & 0x80
 
 #*   MessageName: key down ------------> Messageの名前. MsgToName辞書
 #*   Message: 256 ---------------------> wParam. WM_KEYDOWNとかWM_KEYUPとか.
