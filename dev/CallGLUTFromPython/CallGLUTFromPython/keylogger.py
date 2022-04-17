@@ -1,11 +1,12 @@
 ﻿import time
 import threading
 
-import pythoncom
+#import pythoncom
 import ctypes
+import ctypes.wintypes
 import pyWinhook
 
-
+import win32con
 import win32process
 
 
@@ -60,17 +61,17 @@ class EventFilterBase: pass
 
 class KeyLogger:
 
-    # Mutable boolean
-    class MutableBool:
+    ## Mutable boolean
+    #class MutableBool:
 
-        def __init__( self ):
-            self.__m_Value = False
+    #    def __init__( self ):
+    #        self.__m_Value = False
 
-        def get( self ):
-            return self.__m_Value
+    #    def get( self ):
+    #        return self.__m_Value
 
-        def set( self, value ):
-            self.__m_Value = value
+    #    def set( self, value ):
+    #        self.__m_Value = value
 
 
 #public:
@@ -80,32 +81,39 @@ class KeyLogger:
         self.__m_HookManager = pyWinhook.HookManager()
  
         self.__m_Thread = None
-        self.m_IsRunning = self.MutableBool()
+        self.__m_ThredID = None
 
         self.__m_refEventFilter = None
 
 
     def Start( self ):
-        self.m_IsRunning.set( True )
-        print( "KeyLogger::start()...", self.m_IsRunning.get()  )
+        print( "KeyLogger::start()..." )
         self.__m_Thread = threading.Thread( target=self.__hook )
+
+        lock = threading.Lock()
+        lock.acquire()
+
         self.__m_Thread.start()
+        if( self.__m_refEventFilter ):
+            try:
+                print( "assigning thread id...", self.__m_Thread.ident )
+                bindThreadID = getattr( self.__m_refEventFilter, "BindThreadID" )
+                bindThreadID( self.__m_Thread.ident )
+            except:
+                pass
+
+        lock.release()
 
 
     def Stop( self ):
         print( "KeyLogger::stop()...")
-        self.m_IsRunning.set( False )
-        #self.__m_Thread.join()
+        ctypes.windll.user32.PostThreadMessageW( self.__m_Thread.ident, win32con.WM_QUIT, 0, 0 )
+        self.__m_Thread.join()
 
 
     def BindEventFilter( self, filter: EventFilterBase ):
-        self.__m_refEventFilter = filter
-        self.__m_refEventFilter.BindRunningFlag( self.m_IsRunning )
-        #try:
-        #    bindRunningFlag = getattr( self.__m_refEventFilter, "BindRunningFunc" )
-        #except:
-        #    pass
 
+        self.__m_refEventFilter = filter
 
         for funcname in PYHOOK_EVENT_FUNC_NAMES:
             try:
@@ -133,10 +141,14 @@ class KeyLogger:
         self.__m_HookManager.HookKeyboard()
         #self.__m_HookManager.HookMouse()
 
+        msg = ctypes.wintypes.MSG()#MSG()#
+        ctypes.windll.user32.GetMessageW( ctypes.byref(msg), 0, 0, 0 )
+        #pythoncom.PumpMessages()
+
         # Custom message loop instead of WM_QUIT waiting( pythoncom.PumpMessages() )
-        while( self.m_IsRunning.get() ):
-            pythoncom.PumpWaitingMessages()
-            time.sleep(0.001)
+        #while( self.m_IsRunning.get() ):
+        #    pythoncom.PumpWaitingMessages()
+        #    time.sleep(0.001)
 
         # Uninitialize hook
         self.__unhook()
@@ -144,15 +156,16 @@ class KeyLogger:
 
     def __unhook( self ):
 
-        print( "KeyLogger::__unhook()...", self.m_IsRunning.get() )
+        print( "KeyLogger::__unhook()..." )#, self.m_IsRunning.get() )
 
-        if( self.m_IsRunning.get()==False ):
-            self.m_IsRunning.set( True )
-            return 
+        #if( self.m_IsRunning.get()==False ):
+        #    self.m_IsRunning.set( True )
+        #    return 
 
         self.__m_HookManager.UnhookKeyboard()
         #self.__m_HookManager.UnhookMouse()
-        ctypes.windll.user32.PostQuitMessage(0)
+
+        #ctypes.windll.user32.PostQuitMessage(0)
 
 
 
@@ -166,11 +179,11 @@ class KeyLogger:
 class EventFilterBase:
 
     def __init__( self, isRunning=None ):
-        self.m_refIsRunning = isRunning
+        self.m_ThreadID = None#self.m_refIsRunning = isRunning
 
 
-    def BindRunningFlag( self, isRunning ):
-        self.m_refIsRunning = isRunning
+    def BindThreadID( self, isRunning ):
+        self.m_ThreadID = isRunning #self.m_refIsRunning = isRunning
 
 
 

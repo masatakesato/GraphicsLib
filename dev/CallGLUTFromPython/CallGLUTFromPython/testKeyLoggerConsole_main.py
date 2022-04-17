@@ -1,3 +1,4 @@
+import win32con
 import win32process
 import pyWinhook
 import ctypes
@@ -19,7 +20,10 @@ class MyEventFilter( keylogger.EventFilterBase ):
         print('MyEventFilter::OnKeyDown()...', event.Key )
     
         if( pyWinhook.HookConstants.IDToName( event.KeyID )=='F' ):
-            self.m_refIsRunning.set( False )
+            print("Quiting...")
+            print( self.m_ThreadID )
+            #ctypes.windll.user32.PostQuitMessage(0)
+            ctypes.windll.user32.PostThreadMessageW( self.m_ThreadID, win32con.WM_QUIT, 0, 0 )#self.m_refIsRunning.set( False )
             return False
 
         print( 'MessageName:',event.MessageName )
@@ -76,7 +80,8 @@ if __name__ == '__main__':
     logger.BindEventFilter( filter )
 
     logger.Start()
-    ##logger.Stop()
+    #logger.Stop()
     #logger.Start()
 
     #logger.UnbindEventFilter()
+    print("end...")
