@@ -392,6 +392,8 @@ class KeyLogger:
         self.lUser32 = user32
         self.hooked = None
 
+        self.__m_refCallbackFuncs = {}
+
 
     def InstallHookProc( self, pointer ):
 
@@ -468,7 +470,7 @@ def KeyHookProc( nCode, wParam, lParam ):
 #*    Transition 0    --------------------> Up/Downの状態遷移かどうかフラグ. KBDLLHOOKSTRUCT.flags & 0x80 で取得可能
 
 
-
+#TODO: メッセージ(wParam)の種類に応じてコールバック関数を切り替える.
 
     # Get active window information
     # get window handle
@@ -518,8 +520,11 @@ def KeyHookProc( nCode, wParam, lParam ):
             else:
                 print( ctypes.string_at(str_ascii), end="", flush=True )
 
-
-    return ctypes.windll.user32.CallNextHookEx( KeyLogger.hooked, nCode, wParam, ctypes.c_longlong(lParam) )
+    result = True# KeyEvent
+    if( result ):
+        return ctypes.windll.user32.CallNextHookEx( KeyLogger.hooked, nCode, wParam, ctypes.c_longlong(lParam) )# メッセージそのまま通す
+    else:
+        return True# メッセージ伝播をブロックする
 
 
 
