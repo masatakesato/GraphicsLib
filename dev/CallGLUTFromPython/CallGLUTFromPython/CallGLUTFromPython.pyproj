@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d5b4b420-ecc6-4340-935d-5c7114247ebd</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>testKeyloggerCtypes_main.py</StartupFile>
+    <StartupFile>testOverlayViewOnWidget.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -35,8 +35,11 @@
     <Compile Include="testMouseloggerCtypes_main.py" />
     <Compile Include="testOverlayViewOnWidget.py" />
     <Compile Include="testPyhookCrash_main.py" />
+    <Compile Include="testQGLWidget_main.py" />
+    <Compile Include="WindowHandleHelper.py" />
   </ItemGroup>
   <ItemGroup>
+    <InterpreterReference Include="CondaEnv|CondaEnv|opengl_dev" />
     <InterpreterReference Include="CondaEnv|CondaEnv|testpyqt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
