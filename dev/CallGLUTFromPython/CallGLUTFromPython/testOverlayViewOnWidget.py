@@ -3,6 +3,7 @@ import time
 import traceback
 import subprocess
 import ctypes
+import numpy as np
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -13,6 +14,53 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 import WindowHandleHelper
+
+
+
+
+class OpenGLWidget(QOpenGLWidget):
+
+    def __init__( self, parent=None):
+        super().__init__( parent=parent )
+        self.setWindowTitle("Triangle, PyQt5, OpenGL ES 2.0")
+        self.resize(300, 300)
+
+    def initializeGL(self):
+        glClearColor(0.5, 0.8, 0.7, 1.0)
+        vertShaderSrc = """
+            attribute vec3 aPosition;
+            void main()
+            {
+                gl_Position = vec4(aPosition, 1.0);
+            }
+        """
+        fragShaderSrc = """
+            void main()
+            {
+                gl_FragColor = vec4(0.5, 0.2, 0.9, 1.0);
+            }
+        """
+        program = QOpenGLShaderProgram()
+        program.addShaderFromSourceCode(QOpenGLShader.Vertex, vertShaderSrc)
+        program.addShaderFromSourceCode(QOpenGLShader.Fragment, fragShaderSrc)
+        program.link()
+        program.bind()
+        vertPositions = np.array([
+            -0.5, -0.5, 0.0,
+            0.5, -0.5, 0.0,
+            0.0, 0.5, 0.0], dtype=np.float32)
+        self.vertPosBuffer = QOpenGLBuffer()
+        self.vertPosBuffer.create()
+        self.vertPosBuffer.bind()
+        self.vertPosBuffer.allocate(vertPositions, len(vertPositions) * 4)
+        program.bindAttributeLocation("aPosition", 0)
+        program.setAttributeBuffer(0, GL_FLOAT, 0, 3)
+        program.enableAttributeArray(0)
+
+    def paintGL(self):
+        glClear(GL_COLOR_BUFFER_BIT)
+        glDrawArrays(GL_TRIANGLES, 0, 3)
+
 
 
 
@@ -58,6 +106,12 @@ class ExternalAppWidget( QWidget ):
         super( ExternalAppWidget, self ).__init__( parent=parent )
 
         self.setLayout( QVBoxLayout() ) 
+
+        self.layout().setSpacing(0)
+        #self.layout().setMargin(0)
+        self.layout().setContentsMargins (0, 0, 0, 0)
+
+
         #self.myEventFilter = MyNativeEventFilter()
 
         self.__m_AppWindow = None
@@ -234,7 +288,7 @@ class MyFrame( QFrame ):
 
     def resizeEvent( self, event ):
         print( "MyFrame::resizeEvent()..." )
-        r = self.layout().contentsRect()
+        r = self.rect()#self.layout().contentsRect()
         for w in self.nonlayoutwidgets:
             w.resize( r.width(), r.height() )# event.size() )#
             print( w.geometry() )
@@ -276,25 +330,54 @@ class MyView( QGraphicsView ):
         super(MyView, self).__init__(parent=parent)
         self.setEnabled(True)
 
-        #self.setAttribute( Qt.WA_TransparentForMouseEvents, False )
+        self.setFocusPolicy(Qt.NoFocus)
+        self.setAttribute( Qt.WA_TransparentForMouseEvents, False )
         #self.setOptimizationFlags( QGraphicsView.DontSavePainterState )
-        self.setViewportUpdateMode( QGraphicsView.SmartViewportUpdate )
-        self.setCacheMode( QGraphicsView.CacheBackground )
+        #self.setViewportUpdateMode( QGraphicsView.SmartViewportUpdate )
+        #self.setCacheMode( QGraphicsView.CacheBackground )
 
 
     def mousePressEvent( self, event ):
         print( "MyView::mousePressEvent" )
-        return super().mousePressEvent(event)
+        print( self.isActiveWindow() )
+        return super(MyView, self).mousePressEvent(event)
 
 
     def keyPressEvent( self, event ):
         print( "MyView::keyPressEvent" )
-        return super().keyPressEvent(event)
+        return super(MyView, self).keyPressEvent(event)
 
 
-    def paintEvent( self, event ):
-        print( "MyView::paintEvent()..." )
-        return super(MyView, self).paintEvent( event )
+    #def changeEvent( self, event ):
+    #    super(MyView, self).changeEvent( event )
+    #    print( "MyView::changeEvent()...", event.type() )
+    #    if( event.type() == QEvent.ActivationChange ):
+    #        print( self.isActiveWindow() )
+    #        self.parent().activateWindow()
+
+
+    #def event( self, event ):
+    #    print( "MyView::event()...", event.type() )
+    #    if( event.type() == QEvent.WindowActivate ):
+    #        print( self.isActiveWindow() )
+    #    return super(MyView, self).event( event )
+
+
+
+
+    #def focusInEvent( self, event ):# Qt.NoFocusやってれば入ってこないはず
+    #    print( "MyView::focusInEvent()..." )
+    #    return super(MyView, self).focusInEvent( event )
+
+
+    #def focusOutEvent( self, event ):
+    #    print( "MyView::focusOutEvent()..." )
+    #    return super(MyView, self).focusOutEvent( event )
+
+
+    #def paintEvent( self, event ):
+    #    print( "MyView::paintEvent()..." )
+    #    return super(MyView, self).paintEvent( event )
 
 
     #def resizeEvent(self, event):
@@ -322,16 +405,18 @@ class MyScene( QGraphicsScene ):
 
 
 
+
 class windowOverlay(QWidget):
 
     view = None
 
     def __init__(self, parent=None):
         super(windowOverlay, self).__init__(parent)
-
+        
         #================ Setup background widget ================#
 
         #################### Normal QWidget test #####################
+
         #self.backgroundWidget = BackgroundWidget()
         #self.backgroundWidget.setStyleSheet( 'background-color: rgb(130,130,130);' )
         #self.backgroundWidget.setLayout( QGridLayout() )
@@ -347,29 +432,30 @@ class windowOverlay(QWidget):
 
         ############### Embedded application background test ###############
 
-        #notepad = subprocess.Popen( r"D:/Program Files (x86)/sakura/sakura.exe" )
+        notepad = subprocess.Popen( r"D:/Program Files (x86)/sakura/sakura.exe" )
 
-        #window_handles = []
-        #while( WindowHandleHelper.GetWindowHandlesFromPID( notepad.pid, window_handles ) == False ):
-        #    print( window_handles )
-        #    time.sleep(0.05)
+        window_handles = []
+        while( WindowHandleHelper.GetWindowHandlesFromPID( notepad.pid, window_handles ) == False ):
+            print( window_handles )
+            time.sleep(0.05)
 
-        #time.sleep(0.5)
+        time.sleep(0.5)
 
-        #self.backgroundWidget = ExternalAppWidget( self )
-        #self.backgroundWidget.BindHwnd( window_handles[0], notepad.pid )
-        ##self.backgroundWidget.show()
+        self.backgroundWidget = ExternalAppWidget( self )
+        self.backgroundWidget.BindHwnd( window_handles[0], notepad.pid )
+        #self.backgroundWidget.show()
 
 
         #################### OpenGL background test ########################
-        self.backgroundWidget = glWidget( self )
+
+        #self.backgroundWidget = glWidget( self )#OpenGLWidget( self )#
 
 
 
         #================ Setup GraphicsScene/View ===============#
         self.scene = MyScene()
         self.view = MyView( )
-        self.view.setStyleSheet( 'background: rgba(255, 255, 64, 0);' )#self.view.setStyleSheet( 'background: transparent;' )
+        self.view.setStyleSheet( 'background: rgba(255, 255, 64, 50);' )#self.view.setStyleSheet( 'background: transparent;' )
         
         #self.view.setParent( self )# Qt.CoverWindow前にやらなきゃダメ
         #self.view.hide()
@@ -381,28 +467,47 @@ class windowOverlay(QWidget):
         # https://forum.qt.io/topic/98974/draw-on-other-program/8
 # https://gist.github.com/lebedov/5179201 CUDAでフレームバッファだけ転送する? -> でもOpenGLウィジェットの手前にボタンとか配置できないんでは？
   # -> https://stackoverflow.com/questions/11604062/semi-transparent-qwidget-over-qglwidget-strange-results
-        #self.view.setAttribute( Qt.WA_NoSystemBackground )# バックグラウンドなし
-        #self.view.setAttribute( Qt.WA_TranslucentBackground )
-        #self.view.setWindowFlags( Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)# | Qt.CoverWindow )
+
         
         #================ compose myFrame ==================#
-        #layout = QStackedLayout()
-        #layout.setStackingMode( QStackedLayout.StackAll )
+
+
+        ####################### WindowContainer/QGLWidget/QOpenGLWidget使う場合 ###########################
 
         self.myFrame = MyFrame()
         self.myFrame.setLayout( QVBoxLayout() )
         
-        #self.myFrame.layout().addWidget( self.view )# NG
-        #self.myFrame.addChildWidget( self.view )
-
-        self.myFrame.layout().addWidget( self.backgroundWidget )
-        
-
-        self.myFrame.addChildWidget( self.view )#
+        self.myFrame.addChildWidget( self.view )# QLayoutではなく直接QWidgetの子供にする & viewのアトリビュートを変更する
         self.view.setAttribute( Qt.WA_NoSystemBackground )# バックグラウンドなし
-        self.view.setAttribute( Qt.WA_TranslucentBackground )
-        self.view.setWindowFlags( Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.CoverWindow )
+        self.view.setAttribute( Qt.WA_TranslucentBackground )# ビューの背景を完全透明化する
+        self.view.setWindowFlags( Qt.Tool | Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus )# 枠なしカバーウィンドウにする. Qt.WindowStaysOnTopHint: 全画面上で常に最前面にView表示させるフラグ.これは外す
 
+        # | Qt.CoverWindow
+        self.myFrame.layout().addWidget( self.backgroundWidget )# 埋め込みアプリ背景ウィンドウはQLayoutに登録する
+        
+# TODO: viewにどうしてもフォーカスが入る. focusIn/focusOutをオーバーライドして無理矢理外す方法はある. -> ダメだった
+# https://stackoverflow.com/questions/63181016/show-a-qt-window-that-does-not-take-focus
+
+# TODO: こっちはどう? -> ダメ
+# https://stackoverflow.com/questions/11527407/prevent-focus-out-for-a-qwidget
+
+
+# 結論
+#self.view.setWindowFlag( Qt.WindowDoesNotAcceptFocus, True )これで勝手にフォーカス移動しないようになる
+
+
+        ############################ QOpenGLWidget使う場合 #################################
+        
+        ## スタックレイアウト(全レイヤー一括表示)を使う
+        #self.myFrame = MyFrame()
+        #self.myFrame.setLayout( QStackedLayout() )
+        #self.myFrame.layout().setStackingMode( QStackedLayout.StackAll )
+        
+        #self.myFrame.layout().addWidget( self.view )
+        #self.myFrame.layout().addWidget( self.backgroundWidget )
+
+
+        ####################################################################################
 
 
         self.button = QPushButton("Toggle Overlay")
@@ -424,6 +529,7 @@ class windowOverlay(QWidget):
         rect.setFlag( QGraphicsItem.ItemSendsGeometryChanges )
         rect.setFlag( QGraphicsItem.ItemIsMovable )
         rect.setFlag( QGraphicsItem.ItemIsSelectable )
+        rect.setFlag( QGraphicsItem.ItemIsFocusable, False )
 
 
         self.scene.addItem( rect )
@@ -462,7 +568,26 @@ class windowOverlay(QWidget):
         event.accept()
 
 
+    #def changeEvent( self, event ):
+    #    print( "windowOverlay::changeEvent()...", event.type() )
+    #    super(windowOverlay, self).changeEvent( event )
+
+
     
+    #def onTabFocusChanged( self, from_, to_ ):
+        
+    #    if( from_ and to_ is None ):
+    #        print( "windowOverlay::onTabFocusChanged()..." )
+    #        print( from_, to_ )
+    #        #self.raise_()
+    #        self.activateWindow()
+            
+        #if( self.isAncestorOf( to_ ) ):
+        #    self.setFocus( Qt.OtherFocusReason )
+        #    self.raise_()
+        #    self.activateWindow()
+        #return super(windowOverlay, self).focusChanged( from_, to_ )
+
 
 
 
@@ -485,6 +610,9 @@ if __name__ == "__main__":
     #appWidget.show()
 
     main = windowOverlay()
+
+    #app.focusChanged.connect( lambda old, new: main.onTabFocusChanged( old, new ) )
+
     main.show()
 
     sys.exit( app.exec_() )

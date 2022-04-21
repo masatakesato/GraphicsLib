@@ -67,7 +67,7 @@ def runProgram():
         #print( ctypes.windll.kernel32.GetLastError() )# ウィンドウハンドルが無効(1400)だと言われる
 
         # https://stackoverflow.com/questions/64041296/how-to-programatically-hinder-windows-from-playing-default-beep-sound-when-use
-TODO: デフォルトビープ音鳴ってほしくない
+#TODO: デフォルトビープ音鳴ってほしくない
 
     except:
         print(sys.exc_info[0])
