@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.1705
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "CallGLUTFromPython", "CallGLUTFromPython\CallGLUTFromPython.pyproj", "{D5B4B420-ECC6-4340-935D-5C7114247EBD}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "testKeyLogger", "testKeyLogger\testKeyLogger.pyproj", "{026B2216-6B92-4F59-8182-ED3F9633EB45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D5B4B420-ECC6-4340-935D-5C7114247EBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D5B4B420-ECC6-4340-935D-5C7114247EBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{026B2216-6B92-4F59-8182-ED3F9633EB45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{026B2216-6B92-4F59-8182-ED3F9633EB45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
