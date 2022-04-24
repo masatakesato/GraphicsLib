@@ -27,14 +27,7 @@
   <ItemGroup>
     <Compile Include="CallGLUTFromPython.py" />
     <Compile Include="EmbedNotepadToQWidget_main.py" />
-    <Compile Include="keylogger.py" />
-    <Compile Include="testKeydownSimulation_main.py" />
-    <Compile Include="testKeyLoggerConsole_main.py" />
-    <Compile Include="testKeyloggerCtypes_main.py" />
-    <Compile Include="testKeyLoggerWindow_main.py" />
-    <Compile Include="testMouseloggerCtypes_main.py" />
     <Compile Include="testOverlayViewOnWidget.py" />
-    <Compile Include="testPyhookCrash_main.py" />
     <Compile Include="testQGLWidget_main.py" />
     <Compile Include="WindowHandleHelper.py" />
   </ItemGroup>
