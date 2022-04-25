@@ -47,7 +47,7 @@ class MSLLHOOKSTRUCT( Structure ):
 
 
 
-class KeyLogger:
+class HookManager:
 
     def __init__( self ):
 
@@ -62,14 +62,11 @@ class KeyLogger:
 
         self.__m_CustomEventFuncs = {}# Key: WM_***
 
-        self.__InstallKeyHookProc()
-        self.__InstallMouseHookProc()
-
 
 
     def __del__( self ):
-        self.__UninstallKeyHookProc()
-        self.__UninstallMouseHookProc()
+        self.UnhookKeyboard()
+        self.UnhookMouse()
 
 
 
@@ -190,7 +187,9 @@ class KeyLogger:
 
 
 
-    def __InstallKeyHookProc( self ):
+    def HookKeyboard( self ):
+
+        print( "Hooking keyboard procedure...", end="" )
 
         # hinstの入力に注意. https://stackoverflow.com/questions/49898751/setwindowshookex-gives-error-126-module-not-found-when
         # 明示的にやらないと126(module not found)が発生して関数フックできない
@@ -207,15 +206,18 @@ class KeyLogger:
         )
 
         if( not self.__m_KeyHookHandle ):
-            print( "Failed hook procedure installation:", str( kernel32.GetLastError() ) )
+            print( "Failed: ", str( kernel32.GetLastError() ) )
             return False
 
-        print( "Installed keyboard hook procedure" )
+        print( "Done." )
+        
         return True
 
 
 
-    def __InstallMouseHookProc( self ):
+    def HookMouse( self ):
+
+        print( "Hooking mouse procedure...", end="" )
 
         # hinstの入力に注意. https://stackoverflow.com/questions/49898751/setwindowshookex-gives-error-126-module-not-found-when
         # 明示的にやらないと126(module not found)が発生して関数フックできない
@@ -232,16 +234,17 @@ class KeyLogger:
         )
 
         if( not self.__m_MouseHookHandle ):
-            print( "Failed mouse hook procedure installation:", str( kernel32.GetLastError() ) )
+            print( "Failed: ", str( kernel32.GetLastError() ) )
             return False
 
-        print( "Installed mouse hook procedure" )
+        print( "Done." )
+        
         return True
 
 
 
-    def __UninstallKeyHookProc( self ):
-        print( "Uninstalling keyboard hook procedure" )
+    def UnhookKeyboard( self ):
+        print( "Unhooking keyboard procedure" )
         if( self.__m_KeyHookHandle is None ):
             return
 
@@ -251,14 +254,14 @@ class KeyLogger:
 
 
 
-    def __UninstallMouseHookProc( self ):
-        print( "Uninstalling mouse hook procedure" )
-        if( self.__m_KeyHookHandle is None ):
+    def UnhookMouse( self ):
+        print( "Unhooking mouse procedure" )
+        if( self.__m_MouseHookHandle is None ):
             return
 
-        self.lUser32.UnhookWindowsHookEx( self.__m_KeyHookHandle )
-        self.__m_KeyHookHandle = None
-        self.__m_KeyHookFuncPtr = None
+        self.lUser32.UnhookWindowsHookEx( self.__m_MouseHookHandle )
+        self.__m_MouseHookHandle = None
+        self.__m_MouseHookFuncPtr = None
 
 
 
@@ -266,23 +269,23 @@ class KeyLogger:
 
         # Get active window information
         # get window handle
-        hwnd = user32.GetForegroundWindow()
+        hwnd = self.lUser32.GetForegroundWindow()
 
         # get process id
         #pid = ctypes.wintypes.DWORD()
-        #tid = user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
+        #tid = self.lUser32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
 
         # get window title
-        length = user32.GetWindowTextLengthW( hwnd ) + 1
+        length = self.lUser32.GetWindowTextLengthW( hwnd ) + 1
         title = ctypes.create_unicode_buffer( length )
-        user32.GetWindowTextW( hwnd, title, length )
+        self.lUser32.GetWindowTextW( hwnd, title, length )
 
         #print( pid, title.value )
 
-        #if( user32.GetKeyState(Const.VK_ESCAPE) & Const.STATE_KEYDOWN ):
+        #if( self.lUser32.GetKeyState(Const.VK_ESCAPE) & Const.STATE_KEYDOWN ):
         #    print("\nCtrl pressed. Exiting keylogger." )
-        #    #user32.SendMessageW( hwnd, win32con.WM_CLOSE, 0, 0 )
-        #    user32.PostQuitMessage(0)
+        #    #self.lUser32.SendMessageW( hwnd, win32con.WM_CLOSE, 0, 0 )
+        #    self.lUser32.PostQuitMessage(0)
         #    return 0
 
 
@@ -294,7 +297,7 @@ class KeyLogger:
 
         if( result ):
             self.__UpdateKeyState( kb.vkCode, wParam )
-            return user32.CallNextHookEx( self.__m_KeyHookHandle, nCode, wParam, ctypes.c_longlong(lParam) )# メッセージそのまま通す
+            return self.lUser32.CallNextHookEx( self.__m_KeyHookHandle, nCode, wParam, ctypes.c_longlong(lParam) )# メッセージそのまま通す
         else:
             return True# メッセージ伝播をブロックする
 
@@ -304,16 +307,16 @@ class KeyLogger:
 
         # Get active window information
         # get window handle
-        hwnd = user32.GetForegroundWindow()
+        hwnd = self.lUser32.GetForegroundWindow()
 
         # get process id
         #pid = ctypes.wintypes.DWORD()
-        #tid = user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
+        #tid = self.lUser32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
 
         # get window title
-        length = user32.GetWindowTextLengthW( hwnd ) + 1
+        length = self.lUser32.GetWindowTextLengthW( hwnd ) + 1
         title = ctypes.create_unicode_buffer( length )
-        user32.GetWindowTextW( hwnd, title, length )
+        self.lUser32.GetWindowTextW( hwnd, title, length )
 
         #print( pid, title.value )
 
@@ -324,7 +327,7 @@ class KeyLogger:
         result = func( e ) if func else True# call custom mouseevent func
 
         if( result ):
-            return user32.CallNextHookEx( self.__m_MouseHookHandle, nCode, wParam, ctypes.c_longlong(lParam) )# メッセージそのまま通す
+            return self.lUser32.CallNextHookEx( self.__m_MouseHookHandle, nCode, wParam, ctypes.c_longlong(lParam) )# メッセージそのまま通す
         else:
             return True# メッセージ伝播をブロックする
 
@@ -333,10 +336,10 @@ class KeyLogger:
     # Convert VK_Code toUnicode
     def __VkToUinicode( self ):
 
-        #user32.GetKeyboardState( byref(self.__m_KeyState) )
+        #self.lUser32.GetKeyboardState( byref(self.__m_KeyState) )
         buf = create_unicode_buffer(8)
 
-        length = user32.ToUnicode( kb.vkCode, kb.scanCode, self.__m_KeyState, buf, 8-1, 0 )
+        length = self.lUser32.ToUnicode( kb.vkCode, kb.scanCode, self.__m_KeyState, buf, 8-1, 0 )
 
         if( length > 0 ):
             return ctypes.wstring_at( buf )
@@ -349,10 +352,10 @@ class KeyLogger:
     # Convert VK_Code to ascii
     def __VkToAscii( self ):
 
-        #user32.GetKeyboardState( byref(self.__m_KeyState) )
+        #self.lUser32.GetKeyboardState( byref(self.__m_KeyState) )
         buf = create_string_buffer(2)
 
-        length = user32.ToAscii( kb.vkCode, kb.scanCode, self.__m_KeyState, buf, 0 )
+        length = self.lUser32.ToAscii( kb.vkCode, kb.scanCode, self.__m_KeyState, buf, 0 )
 
         if( length > 0 ):
             return ctypes.string_at( buf )

