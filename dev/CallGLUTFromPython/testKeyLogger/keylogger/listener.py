@@ -3,75 +3,8 @@ import ctypes
 from ctypes import *
 from ctypes.wintypes import DWORD
 
-
+import const as Const
 from event import KeyboardEvent
-
-
-################################# Constants ##################################
-
-class Constants:
-
-    # Window Messages
-    WM_MOUSEFIRST       = 0x0200
-    WM_MOUSEMOVE        = 0x0200
-    WM_LBUTTONDOWN      = 0x0201
-    WM_LBUTTONUP        = 0x0202
-    WM_LBUTTONDBLCLK    = 0x0203
-    WM_RBUTTONDOWN      = 0x0204
-    WM_RBUTTONUP        = 0x0205
-    WM_RBUTTONDBLCLK    = 0x0206
-    WM_MBUTTONDOWN      = 0x0207
-    WM_MBUTTONUP        = 0x0208
-    WM_MBUTTONDBLCLK    = 0x0209
-    WM_MOUSEWHEEL       = 0x020A
-    WM_MOUSELAST        = 0x020A
-
-    WM_KEYFIRST         = 0x0100
-    WM_KEYDOWN          = 0x0100
-    WM_KEYUP            = 0x0101
-    WM_CHAR             = 0x0102
-    WM_DEADCHAR         = 0x0103
-    WM_SYSKEYDOWN       = 0x0104
-    WM_SYSKEYUP         = 0x0105
-    WM_SYSCHAR          = 0x0106
-    WM_SYSDEADCHAR      = 0x0107
-    # WM_UNICHAR        = 0x0109 windows xp
-    WM_KEYLAST          = 0x0109
-
-
-
-    # Check flag for GetKeyState/GetAsyncKeyState result
-    KEYSTATE_DOWN = 0x8000
-    KEYSTATE_TOGGLE = 0x0001
-
-
-
-
-
-
-
-    MsgToName = {
-        WM_MOUSEMOVE :      "mouse move",
-        WM_LBUTTONDOWN :    "mouse left down", 
-        WM_LBUTTONUP :      "mouse left up",
-        WM_LBUTTONDBLCLK :  "mouse left double", 
-        WM_RBUTTONDOWN :    "mouse right down",
-        WM_RBUTTONUP :      "mouse right up", 
-        WM_RBUTTONDBLCLK :  "mouse right double",
-        WM_MBUTTONDOWN :    "mouse middle down", 
-        WM_MBUTTONUP :      "mouse middle up",
-        WM_MBUTTONDBLCLK :  "mouse middle double", 
-        WM_MOUSEWHEEL :     "mouse wheel",
-        WM_KEYDOWN :        "key down", 
-        WM_KEYUP :          "key up",
-        WM_CHAR :           "key char",
-        WM_DEADCHAR :       "key dead char", 
-        WM_SYSKEYDOWN :     "key sys down",
-        WM_SYSKEYUP :       "key sys up", 
-        WM_SYSCHAR :        "key sys char",
-        WM_SYSDEADCHAR :    "key sys dead char"
-    }
-
 
 
 
@@ -102,15 +35,18 @@ class KBDLLHOOKSTRUCT( Structure ):
 
 
 
-
 class KeyLogger:
 
     def __init__( self ):
+
         self.lUser32 = user32
         self.__m_HHook = None# handle to the hook procedure
 
         #self.__m_refCallbackFuncs = {}# WH_KEYBOARD_LL, WH_MOUSE_LLだけ? WH_MAX個必要?
         self.__m_CustomEventFuncs = {}# Key: WM_***
+
+        self.__m_KeyState = ( ctypes.c_char * 256 )()
+
 
 
         pointer = HOOKPROC( self.__KeyboardHookProc )
@@ -150,7 +86,6 @@ class KeyLogger:
 
 
 
-
     def __InstallHookProc( self, pointer ):
 
         # hinstの入力に注意. https://stackoverflow.com/questions/49898751/setwindowshookex-gives-error-126-module-not-found-when
@@ -158,7 +93,7 @@ class KeyLogger:
         hinst = ctypes.windll.LoadLibrary('user32')._handle
         #hinst = kernel32.GetModuleHandleW( None )
 
-        self.__m_HHook = SetWindowsHookEx(#self.lUser32.SetWindowsHookExA(
+        self.__m_HHook = SetWindowsHookEx(#self.lUser32.SetWindowsHookExA(#
             win32con.WH_KEYBOARD_LL,
             pointer,
             hinst,
@@ -183,101 +118,111 @@ class KeyLogger:
 
 
 
-# cLLKeyboardCallback: SetWindowsHookExでフックしてる関数. 
-# callback_funcs[ WH_KEYBOARD_LL ]: キーイベント用関数 KeyboardSwitchへのポインタ.
-# KeyboardSwitch: メッセージの種類に応じて__m_CustomEventFuncsから該当するカスタムイベントを呼び出す関数.
-
-
-
     def __KeyboardHookProc( self, nCode, wParam, lParam ):
-
-    #TODO: メッセージ(wParam)の種類に応じてコールバック関数を切り替える.
 
         # Get active window information
         # get window handle
         hwnd = user32.GetForegroundWindow()
 
         # get process id
-        pid = ctypes.wintypes.DWORD()
-        tid = user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
+        #pid = ctypes.wintypes.DWORD()
+        #tid = user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
 
         # get window title
         length = user32.GetWindowTextLengthW( hwnd ) + 1
         title = ctypes.create_unicode_buffer( length )
         user32.GetWindowTextW( hwnd, title, length )
 
-        print( pid, title.value )
+        #print( pid, title.value )
+
+        #if( user32.GetKeyState(Const.VK_ESCAPE) & Const.STATE_KEYDOWN ):
+        #    print("\nCtrl pressed. Exiting keylogger." )
+        #    #user32.SendMessageW( hwnd, win32con.WM_CLOSE, 0, 0 )
+        #    user32.PostQuitMessage(0)
+        #    return 0
 
 
-        if( user32.GetKeyState(win32con.VK_ESCAPE) & STATE_KEYDOWN ):
-            print("\nCtrl pressed. Exiting keylogger." )
-            #user32.SendMessageW( hwnd, win32con.WM_CLOSE, 0, 0 )
-            user32.PostQuitMessage(0)
-            return 0
-
-        if( nCode == win32con.HC_ACTION and wParam == win32con.WM_KEYDOWN ):
-            kb = KBDLLHOOKSTRUCT.from_address( lParam )
-            print( kb.time )
-    #        user32.GetKeyState( win32con.VK_SHIFT )
-    #        user32.GetKeyState( win32con.VK_MENU )
-            keyboard_state = ( ctypes.c_char * 256 )()
-            user32.GetKeyboardState( byref(keyboard_state) )
-
-            # VK_CodeからUnicodeへの変換
-            #str = create_unicode_buffer(8)
-            #n = user32.ToUnicode( kb.vkCode, kb.scanCode, keyboard_state, str, 8-1, 0 )
-            #if( n > 0 ):
-            #    if( kb.vkCode == win32con.VK_RETURN ):
-            #        print()
-            #    else:
-            #        print( ctypes.wstring_at(str), end="", flush=True )
-
-            # VK_CodeからASCIIへの変換
-            str_ascii = create_string_buffer(2)
-            n_ascii = user32.ToAscii( kb.vkCode, kb.scanCode, keyboard_state, str_ascii, 0 )
-            if( n_ascii > 0 ):
-                if( kb.vkCode == win32con.VK_RETURN ):
-                    print()
-                else:
-                    print( ctypes.string_at(str_ascii), end="", flush=True )
-
-
-
-#TODO: Create event instance
-#TODO: Call self.__m_CustomEventFuncs event function according to WindowMessage type wParam.
         kb = KBDLLHOOKSTRUCT.from_address( lParam )
 
         event = KeyboardEvent( wParam, kb.vkCode, kb.scanCode, kb.flags, kb.time, hwnd, title )
-        result = self.__m_CustomEventFuncs[ wParam ]( event ) #self.__m_refCallbackFuncs[ win32con.WH_KEYBOARD_LL ]# KeyEvent
+        func = self.__m_CustomEventFuncs.get( wParam )
+        result = func( event ) if func else True #self.__m_refCallbackFuncs[ win32con.WH_KEYBOARD_LL ]# KeyEvent
 
         if( result ):
+            self.__UpdateKeyState( kb.vkCode, wParam )
             return user32.CallNextHookEx( self.__m_HHook, nCode, wParam, ctypes.c_longlong(lParam) )# メッセージそのまま通す
         else:
             return True# メッセージ伝播をブロックする
 
 
 
+    # Convert VK_Code toUnicode
+    def __VkToUinicode( self ):
 
-# Convert VK_Code toUnicode
-def __VkToUinicode():
-    buf = create_unicode_buffer(8)
-    length = user32.ToUnicode( kb.vkCode, kb.scanCode, keyboard_state, buf, 8-1, 0 )
+        #user32.GetKeyboardState( byref(self.__m_KeyState) )
+        buf = create_unicode_buffer(8)
 
-    if( length > 0 ):
-        return ctypes.wstring_at( buf )
+        length = user32.ToUnicode( kb.vkCode, kb.scanCode, self.__m_KeyState, buf, 8-1, 0 )
 
-    # cannot convert to ascii
-    return 0
+        if( length > 0 ):
+            return ctypes.wstring_at( buf )
+
+        # cannot convert to ascii
+        return 0
 
 
 
-# Convert VK_Code to ascii
-def __VkToAscii():
-    buf = create_string_buffer(2)
-    length = user32.ToAscii( kb.vkCode, kb.scanCode, keyboard_state, buf, 0 )
+    # Convert VK_Code to ascii
+    def __VkToAscii( self ):
 
-    if( length > 0 ):
-        return ctypes.string_at( buf )
+        #user32.GetKeyboardState( byref(self.__m_KeyState) )
+        buf = create_string_buffer(2)
 
-    # cannot convert to ascii
-    return 0
+        length = user32.ToAscii( kb.vkCode, kb.scanCode, self.__m_KeyState, buf, 0 )
+
+        if( length > 0 ):
+            return ctypes.string_at( buf )
+
+        # cannot convert to ascii
+        return 0
+
+
+
+    def __SetKeyState( self, vkey, down ):
+
+        # Bitwise OR operation for bytes https://techoverflow.net/2020/09/27/how-to-perform-bitwise-boolean-operations-on-bytes-in-python3/
+        def OR(a, b):
+            result_int = int.from_bytes(a, byteorder="big") | int.from_bytes(b, byteorder="big")
+            return result_int.to_bytes(max(len(a), len(b)), byteorder="big")
+
+	    #(1 > 0) ? True : False
+        if( vkey == Const.VK_MENU or vkey == Const.VK_LMENU or vkey == Const.VK_RMENU ):
+            keyboard_state[ vkey ] = 0x80 if down else 0x00
+            keyboard_state[ Const.VK_MENU ] = OR( keyboard_state[ Const.VK_LMENU ], keyboard_state[ Const.Const.VK_RMENU ] )
+
+        elif( vkey == Const.VK_SHIFT or vkey == Const.VK_LSHIFT or vkey == Const.VK_RSHIFT):
+            keyboard_state[ vkey ] = 0x80 if down else 0x00
+            keyboard_state[ Const.VK_SHIFT ] = OR( keyboard_state[ Const.VK_LSHIFT ], keyboard_state[ Const.VK_RSHIFT ] )
+
+        elif( vkey == Const.VK_CONTROL or vkey == Const.VK_LCONTROL or vkey == Const.Const.Const.VK_NUMLOCK ):
+            keyboard_state[ vkey ] = 0x80 if down else 0x00
+            keyboard_state[ Const.VK_CONTROL ] = OR( keyboard_state[ Const.VK_LCONTROL ], keyboard_state[ Const.Const.Const.VK_NUMLOCK ] )
+
+        elif( vkey == Const.VK_NUMLOCK and not down ):
+            keyboard_state[ Const.VK_NUMLOCK ] = not keyboard_state[ Const.VK_NUMLOCK ]
+
+        elif( vkey == Const.VK_CAPITAL and not down ):
+            keyboard_state[ Const.VK_CAPITAL ] = not keyboard_state[ Const.VK_CAPITAL ]
+
+        elif( vkey == Const.VK_SCROLL and not down ):
+            keyboard_state[ Const.VK_SCROLL ] = not keyboard_state[ Const.VK_SCROLL ]
+
+
+
+    def __UpdateKeyState( self, vkey, msg ):
+
+        if( msg == Const.WM_KEYDOWN or msg == Const.WM_SYSKEYDOWN ):
+            self.__SetKeyState( vkey, 1 )
+
+        elif(msg == Const.WM_KEYUP or msg == Const.WM_SYSKEYUP):
+            self.__SetKeyState( vkey, 0 )

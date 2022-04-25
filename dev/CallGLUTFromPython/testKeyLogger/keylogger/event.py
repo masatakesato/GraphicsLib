@@ -8,6 +8,8 @@ class EventBase:
         self.__m_Message = msg
         self.__m_Time = time
         self.__m_WindowHandle = hwnd
+        #self.__m_ProcessID  =
+        #self.__m_ThreadID  =
         self.__m_WindowName = windowtitle
         self.__m_Injected = injected
 

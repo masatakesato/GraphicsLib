@@ -1,4 +1,40 @@
-﻿# Virtual-Key Codes https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+﻿
+# Window Messages
+WM_MOUSEFIRST       = 0x0200
+WM_MOUSEMOVE        = 0x0200
+WM_LBUTTONDOWN      = 0x0201
+WM_LBUTTONUP        = 0x0202
+WM_LBUTTONDBLCLK    = 0x0203
+WM_RBUTTONDOWN      = 0x0204
+WM_RBUTTONUP        = 0x0205
+WM_RBUTTONDBLCLK    = 0x0206
+WM_MBUTTONDOWN      = 0x0207
+WM_MBUTTONUP        = 0x0208
+WM_MBUTTONDBLCLK    = 0x0209
+WM_MOUSEWHEEL       = 0x020A
+WM_MOUSELAST        = 0x020A
+
+WM_KEYFIRST         = 0x0100
+WM_KEYDOWN          = 0x0100
+WM_KEYUP            = 0x0101
+WM_CHAR             = 0x0102
+WM_DEADCHAR         = 0x0103
+WM_SYSKEYDOWN       = 0x0104
+WM_SYSKEYUP         = 0x0105
+WM_SYSCHAR          = 0x0106
+WM_SYSDEADCHAR      = 0x0107
+# WM_UNICHAR        = 0x0109 windows xp
+WM_KEYLAST          = 0x0109
+
+
+
+# Check flag for GetKeyState/GetAsyncKeyState result
+KEYSTATE_DOWN = 0x8000
+KEYSTATE_TOGGLE = 0x0001
+
+
+
+# Virtual-Key Codes https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 
 VK_LBUTTON              = 0x01# Left mouse button
 VK_RBUTTON              = 0x02# Right mouse button
@@ -196,228 +232,24 @@ KEY_Z                   = 0x5A# Z key
 
 
 
-
-# https://stackoverflow.com/questions/53732628/python-using-winapi-setwindowshookexa-on-windows-10
-
-
-import win32con
-import ctypes
-from ctypes import *
-from ctypes.wintypes import DWORD
-
-
-
-
-# Check flag for GetKeyState result
-STATE_KEYDOWN = 0x8000
-STATE_KEYTOGGLE = 0x0001
-
-
-user32 = windll.user32
-kernel32 = windll.kernel32
-
-
-class KBDLLHOOKSTRUCT( Structure ):
-    _fields_ = (
-        ( "vkCode", DWORD ),    
-        ( "scanCode", DWORD ),
-        ( "flags", DWORD ),
-        ( "time", DWORD ),
-        ( "dwExtraInfo", DWORD )
-    )
-
-HOOKPROC = WINFUNCTYPE( HRESULT, ctypes.c_int, ctypes.wintypes.WPARAM, ctypes.wintypes.LPARAM )
-#HOOKPROC = CFUNCTYPE(c_int, c_int, ctypes.wintypes.HINSTANCE, POINTER(c_void_p))
-
-SetWindowsHookEx = ctypes.windll.user32.SetWindowsHookExA
-SetWindowsHookEx.restype = ctypes.wintypes.HHOOK
-SetWindowsHookEx.argtypes = [ c_int, HOOKPROC, ctypes.wintypes.HINSTANCE, ctypes.wintypes.DWORD ]
-
-
-
-class KeyLogger:
-
-    def __init__( self ):
-        self.lUser32 = user32
-        self.hooked = None
-
-        self.__m_refCallbackFuncs = {}
-
-
-    def InstallHookProc( self, pointer ):
-
-        # hinstの入力に注意. https://stackoverflow.com/questions/49898751/setwindowshookex-gives-error-126-module-not-found-when
-        # 明示的にやらないと126(module not found)が発生して関数フックできない
-        hinst = ctypes.windll.LoadLibrary('user32')._handle
-        #hinst = kernel32.GetModuleHandleW( None )
-
-        self.hooked = SetWindowsHookEx(#self.lUser32.SetWindowsHookExA(
-            win32con.WH_KEYBOARD_LL,
-            pointer,
-            hinst,
-            0
-        )
-
-        if( not self.hooked ):
-            print( "Failed hook procedure installation:", str( kernel32.GetLastError() ) )
-            return False
-
-        print( "Installed hook procedure" )
-        return True
-
-
-    def UninstallHookProc( self ):
-        if( self.hooked is None ):
-            return
-
-        self.lUser32.UnhookWindowsHookEx( self.hooked )
-        self.hooked = None
-
-
-
-keyboard_state = ( ctypes.c_char * 256 )()
-
-
-
-# https://techoverflow.net/2020/09/27/how-to-perform-bitwise-boolean-operations-on-bytes-in-python3/
-def bitwise_and_bytes(a, b):
-    result_int = int.from_bytes(a, byteorder="big") & int.from_bytes(b, byteorder="big")
-    return result_int.to_bytes(max(len(a), len(b)), byteorder="big")
-
-def bitwise_or_bytes(a, b):
-    result_int = int.from_bytes(a, byteorder="big") | int.from_bytes(b, byteorder="big")
-    return result_int.to_bytes(max(len(a), len(b)), byteorder="big")
-
-def bitwise_xor_bytes(a, b):
-    result_int = int.from_bytes(a, byteorder="big") ^ int.from_bytes(b, byteorder="big")
-    return result_int.to_bytes(max(len(a), len(b)), byteorder="big")
-
-
-
-def SetKeyState( vkey, down ):
-	#(1 > 0) ? True : False
-    if( vkey == VK_MENU or vkey == VK_LMENU or vkey == VK_RMENU):
-        keyboard_state[ vkey ] = 0x80 if down else 0x00
-        keyboard_state[ VK_MENU ] = bitwise_or_bytes( keyboard_state[ VK_LMENU ], keyboard_state[ VK_RMENU ] )
-
-    elif( vkey == VK_SHIFT or vkey == VK_LSHIFT or vkey == VK_RSHIFT):
-        keyboard_state[ vkey ] = 0x80 if down else 0x00
-        keyboard_state[ VK_SHIFT ] = bitwise_or_bytes( keyboard_state[ VK_LSHIFT ], keyboard_state[ VK_RSHIFT ] )
-
-    elif( vkey ==  VK_CONTROL or vkey == VK_LCONTROL or vkey == VK_RCONTROL ):
-        keyboard_state[ vkey ] = 0x80 if down else 0x00
-        keyboard_state[ VK_CONTROL ] = bitwise_or_bytes( keyboard_state[ VK_LCONTROL ], keyboard_state[ VK_RCONTROL ] )
-
-    elif( vkey == VK_NUMLOCK and not down ):
-        keyboard_state[ VK_NUMLOCK ] = not keyboard_state[ VK_NUMLOCK ]
-
-    elif( vkey == VK_CAPITAL and not down ):
-        keyboard_state[ VK_CAPITAL ] = not keyboard_state[ VK_CAPITAL ]
-
-    elif( vkey == VK_SCROLL and not down ):
-        keyboard_state[ VK_SCROLL ] = not keyboard_state[ VK_SCROLL ]
-
-
-
-def UpdateKeyState( vkey, msg ):
-    if( msg == win32con.WM_KEYDOWN or msg == win32con.WM_SYSKEYDOWN ):
-        SetKeyState(vkey, 1)
-    elif(msg == win32con.WM_KEYUP or msg == win32con.WM_SYSKEYUP):
-        SetKeyState(vkey, 0)
-
-
-
-
-def KeyHookProc( nCode, wParam, lParam ):
-
-# https://www.cnblogs.com/franknihao/p/7904434.html
-#*   MessageName: key down ------------> Messageの名前. MsgToName辞書
-#*   Message: 256 ---------------------> wParam. WM_KEYDOWNとかWM_KEYUPとか.
-#*   Time: 2426687 ---------------------> KBDLLHOOKSTRUCT.timeで取得可能
-#*   Window handle: 3409886
-#*   WindowName: C:\WINDOWS\system32\cmd.exe
-#*    Ascii: 0      ---------------------> 506行目からの処理と等価. 497行目からの処理使えばUnicodeもできる.
-#*    Key: Right     --------------------> pyHookが変換テーブル使ってVKからキー名に変換してる. 余裕あったらtestKeydownSimulation_main.pyのコードから作る
-#*    KeyID: 39       --------------------> Virtual key id. KBDLLHOOKSTRUCT::vkCodeで取得可能 ( = 0x27 )
-#*    ScanCode: 77   --------------------> KBDLLHOOKSTRUCT.scanCodeで取得可能
-#*    Extended: 1    --------------------> 拡張キーかどうか判定フラグ. KBDLLHOOKSTRUCT.flags & 0x01 で取得可能 
-#*    Injected: 0     --------------------> プログラムで生成されたコマンドかどうかフラグ. KBDLLHOOKSTRUCT.flags & 0x10 で取得可能.
-#*    Alt 0            -------------------> Altキー押されてるかどうかフラグ. KBDLLHOOKSTRUCT.flags & 0x20 で取得可能
-#*    Transition 0    --------------------> Up/Downの状態遷移かどうかフラグ. KBDLLHOOKSTRUCT.flags & 0x80 で取得可能
-
-
-#TODO: メッセージ(wParam)の種類に応じてコールバック関数を切り替える.
-
-    # Get active window information
-    # get window handle
-    hwnd = ctypes.windll.user32.GetForegroundWindow()
-
-    # get process id
-    pid = ctypes.wintypes.DWORD()
-    tid = ctypes.windll.user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
-
-    # get window title
-    length = user32.GetWindowTextLengthW( hwnd ) + 1
-    title = ctypes.create_unicode_buffer( length )
-    user32.GetWindowTextW( hwnd, title, length )
-
-    #print( pid, title.value )
-
-
-    kb = KBDLLHOOKSTRUCT.from_address( lParam )
-    
-
-
-    if( user32.GetKeyState(win32con.VK_ESCAPE) & STATE_KEYDOWN ):
-        print("\nEsc pressed. Exiting keylogger." )
-        #user32.SendMessageW( hwnd, win32con.WM_CLOSE, 0, 0 )
-        user32.PostQuitMessage(0)
-        return 0
-
-
-    ## VK_CodeからUnicodeへの変換
-    #buf = create_unicode_buffer(8)
-    #n = user32.ToUnicode( kb.vkCode, kb.scanCode, keyboard_state, buf, 8-1, 0 )
-    #if( n > 0 ):
-    #    if( kb.vkCode == win32con.VK_RETURN ):
-    #        print()
-    #    else:
-    #        print( ctypes.wstring_at(buf), flush=True )
-
-    # VK_CodeからASCIIへの変換
-    str_ascii = create_string_buffer(2)
-    n_ascii = user32.ToAscii( kb.vkCode, kb.scanCode, keyboard_state, str_ascii, 0 )
-    if( n_ascii > 0 ):
-        if( kb.vkCode == win32con.VK_RETURN ):
-            print( ctypes.string_at(str_ascii), flush=True )
-        else:
-            print( ctypes.string_at(str_ascii), flush=True )
-
-
-    result = True# KeyEvent
-    if( result ):
-        UpdateKeyState( kb.vkCode, wParam )
-        return ctypes.windll.user32.CallNextHookEx( KeyLogger.hooked, nCode, wParam, ctypes.c_longlong(lParam) )# メッセージそのまま通す
-    else:
-        return True# メッセージ伝播をブロックする
-
-
-
-if __name__=="__main__":
-
-    KeyLogger = KeyLogger()
-    pointer = HOOKPROC( KeyHookProc )
-    KeyLogger.InstallHookProc( pointer )
-
-    print("Start keylogger...")
-
-    msg = ctypes.wintypes.MSG()
-    user32.GetMessageW( byref(msg), 0, 0, 0 )
-    #import pythoncom
-    #pythoncom.PumpMessages()# equivalent to GetMessageW
-
-    print("End keylogger...")
-
-    KeyLogger.UninstallHookProc()
-
-   
+MsgToName = {
+    WM_MOUSEMOVE :      "mouse move",
+    WM_LBUTTONDOWN :    "mouse left down", 
+    WM_LBUTTONUP :      "mouse left up",
+    WM_LBUTTONDBLCLK :  "mouse left double", 
+    WM_RBUTTONDOWN :    "mouse right down",
+    WM_RBUTTONUP :      "mouse right up", 
+    WM_RBUTTONDBLCLK :  "mouse right double",
+    WM_MBUTTONDOWN :    "mouse middle down", 
+    WM_MBUTTONUP :      "mouse middle up",
+    WM_MBUTTONDBLCLK :  "mouse middle double", 
+    WM_MOUSEWHEEL :     "mouse wheel",
+    WM_KEYDOWN :        "key down", 
+    WM_KEYUP :          "key up",
+    WM_CHAR :           "key char",
+    WM_DEADCHAR :       "key dead char", 
+    WM_SYSKEYDOWN :     "key sys down",
+    WM_SYSKEYUP :       "key sys up", 
+    WM_SYSCHAR :        "key sys char",
+    WM_SYSDEADCHAR :    "key sys dead char"
+}

@@ -25,6 +25,8 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="keylogger\event.py" />
+    <Compile Include="keylogger\listener.py" />
     <Compile Include="pyhookkeylogger.py" />
     <Compile Include="testKeydownSimulation_main.py" />
     <Compile Include="testKeyLoggerConsole_main.py" />
@@ -35,6 +37,9 @@
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="CondaEnv|CondaEnv|testpyqt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="keylogger\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
