@@ -423,20 +423,58 @@
   
 
 def KeyDown( event ):
-
     print( "KeyDown" )
-
-
     return True
-
 
 
 def KeyUp( event ):
-
     print( "KeyUp" )
+    return True
+
+
+
+def MouseLeftDown( event ):
+    print( "MouseLeftDown" )
+    return True
+
+
+def MouseLeftUp( event ):
+    print( "MouseLeftUp" )
+    return True
+
+
+
+def MouseRightDown( event ):
+    print( "MouseRightDown" )
+    return True
+
+
+def MouseRightUp( event ):
+    print( "MouseRightUp" )
+    return True
+
+
+
+def MouseMiddleDown( event ):
+    print( "MouseMiddleDown" )
+    return True
+
+
+def MouseMiddleUp( event ):
+    print( "MouseMiddleUp" )
+    return True
+
+
+
+def MouseWheel( event ):
+    print( "MouseWheel" )
+
+    print( event.Wheel() )
 
 
     return True
+
+
 
 
 
@@ -449,12 +487,27 @@ user32 = ctypes.windll.user32
 
 
 if __name__=="__main__":
+
     keylogger = KeyLogger()
+
     keylogger.BindKeyDown( KeyDown )
     keylogger.BindKeyUp( KeyUp )
 
-    print("Start keylogger...")
+    keylogger.BindMouseLeftDown( MouseLeftDown )
+    keylogger.BindMouseLeftUp( MouseLeftUp )
+
+    keylogger.BindMouseRightDown( MouseRightDown )
+    keylogger.BindMouseRightUp( MouseRightUp )
+
+    keylogger.BindMouseMiddleDown( MouseMiddleDown )
+    keylogger.BindMouseMiddleUp( MouseMiddleUp )
+
+    keylogger.BindMouseWheel( MouseWheel )
+
+
+
+    print( "Start keylogger..." )
     msg = ctypes.wintypes.MSG()
     user32.GetMessageW( byref(msg), 0, 0, 0 )
 
-    print("End keylogger...")
+    print( "End keylogger..." )

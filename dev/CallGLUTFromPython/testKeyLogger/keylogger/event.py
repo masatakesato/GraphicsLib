@@ -22,7 +22,12 @@ class MouseEvent( EventBase ):
         super(MouseEvent, self).__init__( msg, time, hwnd, windowtitle, flags & 0x01 )
 
         self.__m_Position = (x, y)
+        #self.__m_Wheel = 0 if mousedata==0 else 1 if mousedata>0 else -1
+        self.__m_Wheel = 0
         self.__m_Wheel = 0 if mousedata==0 else 1 if mousedata>0 else -1
+
+
+
 
 #*   MessageName: mouse left down ------> Messageの名前. MsgToName辞書
 #*   Message: 256 ---------------------> wParam. WM_LBUTTONDOWNとかWM_LBUTTONUPとか.
@@ -32,6 +37,10 @@ class MouseEvent( EventBase ):
 #*    Position:    -------------------------> MSLLHOOKSTRUCT.pt.x/y で取得可能
 #?    Wheel
 #    Injected     --------------------> プログラムで生成されたコマンドかどうかフラグ. MSLLHOOKSTRUCT.flags & 0x01 で取得可能.
+
+
+    def Wheel( self ):
+        return self.__m_Wheel
 
 
 
