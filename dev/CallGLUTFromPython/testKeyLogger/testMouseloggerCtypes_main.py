@@ -1,5 +1,6 @@
 ﻿import threading
 import win32con
+import win32api
 import ctypes
 from ctypes import *
 from ctypes.wintypes import DWORD, POINT
@@ -184,7 +185,9 @@ def HookProc( nCode, wParam, lParam ):
     
     kb = MSLLHOOKSTRUCT.from_address( lParam )
     #print( kb.pt.x, kb.pt.y )
-    print( MsgToName[wParam] )
+    print( MsgToName[wParam], -1 if kb.mouseData > 0x80000000 else 1 )
+
+    
 
     #print("mouseproc...")
 

@@ -36,6 +36,7 @@
     <Compile Include="testKeyLoggerWindow_main.py" />
     <Compile Include="testMouseloggerCtypes_main.py" />
     <Compile Include="testPyhookCrash_main.py" />
+    <Compile Include="yyyy.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="CondaEnv|CondaEnv|testpyqt" />

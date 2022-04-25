@@ -22,11 +22,7 @@ class MouseEvent( EventBase ):
         super(MouseEvent, self).__init__( msg, time, hwnd, windowtitle, flags & 0x01 )
 
         self.__m_Position = (x, y)
-        #self.__m_Wheel = 0 if mousedata==0 else 1 if mousedata>0 else -1
-        self.__m_Wheel = 0
-        self.__m_Wheel = 0 if mousedata==0 else 1 if mousedata>0 else -1
-
-
+        self.__m_Wheel = 0 if mousedata==0 else -1 if mousedata > 0x80000000 else 1
 
 
 #*   MessageName: mouse left down ------> Messageの名前. MsgToName辞書
