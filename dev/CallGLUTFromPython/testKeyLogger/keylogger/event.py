@@ -1,10 +1,10 @@
-﻿
+﻿from .const import Const
 
 
 class EventBase:
 
     def __init__( self, msg, time, hwnd, windowtitle, injected ):
-        self.__m_MessageName = None
+        self.__m_MessageName = Const.MsgToName[ msg ]
         self.__m_Message = msg
         self.__m_Time = time
         self.__m_WindowHandle = hwnd
@@ -12,6 +12,48 @@ class EventBase:
         #self.__m_ThreadID  =
         self.__m_WindowName = windowtitle
         self.__m_Injected = injected
+
+
+
+    @property
+    def MessageName( self ):
+        return self.__m_MessageName
+
+
+    @property
+    def Message( self ):
+        return self.__m_Message
+
+
+    @property
+    def Time( self ):
+        return self.__m_Time
+
+
+    @property
+    def WindowHandle( self ):
+        return self.__m_WindowHandle
+
+
+    #@property
+    #def ProcessID( self ):
+    #    return self.__m_ProcessID
+
+
+    #@property
+    #def ThreadID( self ):
+    #    return self.__m_ThreadID
+
+
+    @property
+    def WindowName( self ):
+        return self.__m_WindowName
+
+
+    @property
+    def Injected( self ):
+        return self.__m_Injected
+
 
 
 
@@ -35,6 +77,12 @@ class MouseEvent( EventBase ):
 #    Injected     --------------------> プログラムで生成されたコマンドかどうかフラグ. MSLLHOOKSTRUCT.flags & 0x01 で取得可能.
 
 
+    @property
+    def Position( self ):
+        return self.__m_Position
+
+
+    @property
     def Wheel( self ):
         return self.__m_Wheel
 
@@ -43,12 +91,12 @@ class MouseEvent( EventBase ):
 
 class KeyboardEvent( EventBase ):
 
-    def __init__( self, msg, vkcode, scancode, flags, time, hwnd, windowtitle ):
+    def __init__( self, msg, vkcode, scancode, ascii, flags, time, hwnd, windowtitle ):
         super(KeyboardEvent, self).__init__( msg, time, hwnd, windowtitle, flags & 0x10 )
 
-        #self.__m_Ascii     = None
+        self.__m_Ascii      = ascii
         self.__m_KeyID      = vkcode
-        #self.__m_Key       = VkToKeyName[ vkcode ]
+        self.__m_Key        = Const.VkCodeToName[ vkcode ]
         self.__m_ScanCode   = scancode
         self.__m_Extended   = flags & 0x01
         self.__m_Alt        = flags & 0x20
@@ -70,3 +118,36 @@ class KeyboardEvent( EventBase ):
 
 
 
+    @property
+    def Ascii( self ):
+        return self.__m_Ascii
+
+
+    @property
+    def KeyID( self ):
+        return self.__m_KeyID
+
+
+    @property
+    def Key( self ):  
+        return self.__m_Key
+
+
+    @property
+    def ScanCode( self ):  
+        return self.__m_ScanCode
+
+
+    @property
+    def Extended( self ):  
+        return self.__m_Extended
+
+
+    @property
+    def Alt( self ):  
+        return self.__m_Alt
+
+
+    @property
+    def Transition( self ):  
+        return self.__m_Transition

@@ -4,9 +4,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>026b2216-6b92-4f59-8182-ed3f9633eb45</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>testKeyloggerCtypes_main.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <StartupFile>testMyKeyLoggerWindow_main.py</StartupFile>
+    <SearchPath>keylogger</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>testKeyLogger</Name>
@@ -35,6 +34,7 @@
     <Compile Include="testKeyloggerCtypes_main.py" />
     <Compile Include="testKeyLoggerWindow_main.py" />
     <Compile Include="testMouseloggerCtypes_main.py" />
+    <Compile Include="testMyKeyLoggerWindow_main.py" />
     <Compile Include="testPyhookCrash_main.py" />
     <Compile Include="yyyy.py" />
   </ItemGroup>

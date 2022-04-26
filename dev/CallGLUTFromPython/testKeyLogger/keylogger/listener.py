@@ -291,7 +291,7 @@ class HookManager:
 
         kb = KBDLLHOOKSTRUCT.from_address( lParam )
 
-        e = KeyboardEvent( wParam, kb.vkCode, kb.scanCode, kb.flags, kb.time, hwnd, title )
+        e = KeyboardEvent( wParam, kb.vkCode, kb.scanCode, self.__VkToAscii(kb), kb.flags, kb.time, hwnd, title.value )
         func = self.__m_CustomEventFuncs.get( wParam )
         result = func( e ) if func else True# call custom keyevent func
 
@@ -322,7 +322,7 @@ class HookManager:
 
         ms = MSLLHOOKSTRUCT.from_address( lParam )
 
-        e = MouseEvent( wParam, ms.pt.x, ms.pt.y, ms.mouseData, ms.flags, ms.time, hwnd, title )
+        e = MouseEvent( wParam, ms.pt.x, ms.pt.y, ms.mouseData, ms.flags, ms.time, hwnd, title.value )
         func = self.__m_CustomEventFuncs.get( wParam )
         result = func( e ) if func else True# call custom mouseevent func
 
@@ -334,7 +334,7 @@ class HookManager:
 
 
     # Convert VK_Code toUnicode
-    def __VkToUinicode( self ):
+    def __VkToUinicode( self, kb ):
 
         #self.lUser32.GetKeyboardState( byref(self.__m_KeyState) )
         buf = create_unicode_buffer(8)
@@ -342,7 +342,7 @@ class HookManager:
         length = self.lUser32.ToUnicode( kb.vkCode, kb.scanCode, self.__m_KeyState, buf, 8-1, 0 )
 
         if( length > 0 ):
-            return ctypes.wstring_at( buf )
+            return int.from_bytes( ctypes.string_at( buf ), byteorder="big" )
 
         # cannot convert to ascii
         return 0
@@ -350,7 +350,7 @@ class HookManager:
 
 
     # Convert VK_Code to ascii
-    def __VkToAscii( self ):
+    def __VkToAscii( self, kb ):
 
         #self.lUser32.GetKeyboardState( byref(self.__m_KeyState) )
         buf = create_string_buffer(2)
@@ -358,7 +358,7 @@ class HookManager:
         length = self.lUser32.ToAscii( kb.vkCode, kb.scanCode, self.__m_KeyState, buf, 0 )
 
         if( length > 0 ):
-            return ctypes.string_at( buf )
+            return int.from_bytes( ctypes.string_at( buf ), byteorder="big" )
 
         # cannot convert to ascii
         return 0
