@@ -467,7 +467,7 @@ def MouseMiddleUp( event ):
 
 
 def MouseWheel( event ):
-    print( "MouseWheel", event.Wheel() )
+    print( "MouseWheel", event.Wheel )
     return True
 
 

@@ -130,44 +130,44 @@ class INPUT( ctypes.Structure ):
 #INPUT_HARDWARE = 2
 
 
-def Input( structure ):
+#def Input( structure ):
 
-    if( isinstance(structure, MOUSEINPUT) ):
-        return INPUT( 0, _INPUTunion(mi=structure) )#INPUT( INPUT_MOUSE, _INPUTunion(mi=structure) )
+#    if( isinstance(structure, MOUSEINPUT) ):
+#        return INPUT( 0, _INPUTunion(mi=structure) )#INPUT( INPUT_MOUSE, _INPUTunion(mi=structure) )
 
-    if( isinstance(structure, KEYBDINPUT) ):
-        return INPUT( 1, _INPUTunion(ki=structure) )#INPUT( INPUT_KEYBOARD, _INPUTunion(ki=structure) )
+#    if( isinstance(structure, KEYBDINPUT) ):
+#        return INPUT( 1, _INPUTunion(ki=structure) )#INPUT( INPUT_KEYBOARD, _INPUTunion(ki=structure) )
 
-    if( isinstance(structure, HARDWAREINPUT) ):
-        return INPUT( 2, _INPUTunion(hi=structure) )#INPUT( INPUT_HARDWARE, _INPUTunion(hi=structure) )
+#    if( isinstance(structure, HARDWAREINPUT) ):
+#        return INPUT( 2, _INPUTunion(hi=structure) )#INPUT( INPUT_HARDWARE, _INPUTunion(hi=structure) )
     
-    raise TypeError("Cannot create INPUT structure!")
+#    raise TypeError("Cannot create INPUT structure!")
+
+
+
+#def MouseInput( flags, dx, dy, data ):
+#    return MOUSEINPUT( dx, dy, data, flags, 0, None )
+
+
+
+#def KeybdInput( code, flags ):
+#    return KEYBDINPUT( code, code, flags, 0, None )
+
+
+
+#def HardwareInput( message, parameter ):
+#    return HARDWAREINPUT(
+#        message & 0xFFFFFFFF,
+#        parameter & 0xFFFF,
+#        parameter >> 16 & 0xFFFF )
 
 
 
 
-
-def MouseInput( flags, x, y, data ):
-    return MOUSEINPUT( x, y, data, flags, 0, None )
-
-
-
-def KeybdInput( code, flags ):
-    return KEYBDINPUT( code, code, flags, 0, None )
-
-
-
-def HardwareInput( message, parameter ):
-    return HARDWAREINPUT(
-        message & 0xFFFFFFFF,
-        parameter & 0xFFFF,
-        parameter >> 16 & 0xFFFF )
-
-
-
-
-def Mouse( flags, x=0, y=0, data=0 ):
-    return Input( MouseInput( flags, x, y, data ) )
+#def Mouse( flags, dx=0, dy=0, data=0 ):
+#    return Input( MouseInput( flags, dx, dy, data ) )
+def Mouse( flags, dx=0, dy=0, data=0 ):
+    return INPUT( 0, _INPUTunion( mi=MOUSEINPUT(dx, dy, data, flags, 0, None) ) )
 
 
 #def Keyboard( code, flags=0 ):
@@ -176,8 +176,10 @@ def Keyboard( code, flags=0 ):
     return INPUT( 1, _INPUTunion( ki=KEYBDINPUT(code, code, flags, 0, None) ) )
 
 
+#def Hardware( message, parameters=0 ):
+#    return Input( HardwareInput( message, parameter ) )
 def Hardware( message, parameters=0 ):
-    return Input( HardwareInput( message, parameter ) )
+    return INPUT( 2, _INPUTunion( hi=HARDWAREINPUT(message & 0xFFFFFFFF, parameter & 0xFFFF, parameter >> 16 & 0xFFFF) ) )
 
 
 
@@ -190,3 +192,47 @@ def SendInput( *inputs ):
     cbSize = ctypes.c_int( ctypes.sizeof(INPUT) )
 
     return ctypes.windll.user32.SendInput( nInputs, pInputs, cbSize )
+
+
+
+
+
+
+def PressKey( code ):
+#    return SendInput( Keyboard( code ) )
+    return ctypes.windll.user32.PostMessage( None, Const.WM_KEYDOWN, code, 0 )
+
+
+def ReleaseKey( code ):
+    return SendInput( Keyboard( code, KEYEVENTF_KEYUP ) )
+
+
+
+
+# http://nonsoft.la.coocan.jp/SoftSample/CS.NET/SampleSendInput.html
+
+# mouse command settings
+#def MouseClick
+
+
+def MouseMove( dx, dy ):
+    return SendInput( Mouse( MOUSEEVENTF_MOVE, dx, dy ) )
+    #return SendInput( INPUT( 0, _INPUTunion( mi=MOUSEINPUT(dx, dy, 0, MOUSEEVENTF_MOVE, 0, None) ) ) )
+
+
+
+
+#MOUSEEVENTF_MOVE            = 0x0001
+#MOUSEEVENTF_LEFTDOWN        = 0x0002
+#MOUSEEVENTF_LEFTUP          = 0x0004
+#MOUSEEVENTF_RIGHTDOWN       = 0x0008
+#MOUSEEVENTF_RIGHTUP         = 0x0010
+#MOUSEEVENTF_MIDDLEDOWN      = 0x0020
+#MOUSEEVENTF_MIDDLEUP        = 0x0040
+#MOUSEEVENTF_XDOWN           = 0x0080
+#MOUSEEVENTF_XUP             = 0x0100
+#MOUSEEVENTF_WHEEL           = 0x0800
+#MOUSEEVENTF_HWHEEL          = 0x1000
+#MOUSEEVENTF_MOVE_NOCOALESCE = 0x2000
+#MOUSEEVENTF_VIRTUALDESK     = 0x4000
+#MOUSEEVENTF_ABSOLUTE        = 0x8000
