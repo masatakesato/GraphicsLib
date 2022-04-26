@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>026b2216-6b92-4f59-8182-ed3f9633eb45</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>testMyKeyLoggerWindow_main.py</StartupFile>
+    <StartupFile>testKeydownSimulation_main.py</StartupFile>
     <SearchPath>keylogger</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
