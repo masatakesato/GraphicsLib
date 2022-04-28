@@ -453,3 +453,8 @@ class Const:
         KEY_Y                   : "KEY_Y",
         KEY_Z                   : "KEY_Z",
     }
+
+
+
+
+    VkCodeToScanCode = {}

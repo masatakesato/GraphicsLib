@@ -17,6 +17,8 @@ import sys
 import subprocess
 import time
 
+import WindowHandleHelper
+
 
 
 
@@ -231,33 +233,6 @@ class MyWidget(QWidget):
 
 
 
-def GetWindowHandlesFromPID( pid, window_handles ):
-
-	def callback( hwnd, hwnds ):
-		if( win32gui.IsWindowVisible(hwnd) and win32gui.IsWindowEnabled(hwnd) ):
-			_, found_pid = win32process.GetWindowThreadProcessId( hwnd )
-			if( found_pid == pid ):
-				hwnds.append( hwnd )
-		return True
-
-	window_handles.clear()
-	win32gui.EnumWindows( callback, window_handles )
-	return any( window_handles )
-
-
-
-def GetChildHandles( hwnd ):
-
-	def callback( hwnd, hwnds ):
-		if( win32gui.IsWindowVisible(hwnd) and win32gui.IsWindowEnabled(hwnd) ):
-			hwnds.append( hwnd )
-		return True
-
-	hwnds = []
-	win32gui.EnumChildWindows( hwnd, callback, hwnds )
-	return hwnds
-
-
 
 
 # https://bbs.huaweicloud.com/blogs/106187
@@ -285,7 +260,7 @@ if __name__ == "__main__":
 
     # Wait until app is ready
     window_handles = []
-    while( GetWindowHandlesFromPID( process_id, window_handles ) == False ):
+    while( WindowHandleHelper.GetWindowHandlesFromPID( process_id, window_handles ) == False ):
         print( window_handles )
         time.sleep(0.05)
 
