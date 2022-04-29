@@ -58,7 +58,7 @@ def SendKeys( hwnd, vkcode, ha):#, modifier ):
     #threadId = 
     pid = ctypes.wintypes.DWORD()
     tid = ctypes.windll.user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
-    processHandle = ctypes.windll.kernel32.OpenProcess( SYNCHRONIZE | PROCESS_ALL_ACCESS, False, pid )
+    #processHandle = ctypes.windll.kernel32.OpenProcess( SYNCHRONIZE | PROCESS_ALL_ACCESS, False, pid )
 
 
     currentitd = ctypes.windll.kernel32.GetCurrentThreadId()#currentitd = threading.current_thread().ident#
@@ -74,13 +74,49 @@ def SendKeys( hwnd, vkcode, ha):#, modifier ):
     # Presse A
     ctypes.windll.user32.PostMessageW( hwnd, win32con.WM_KEYDOWN, Const.KEY_A, 0x0001 | 0x1E<<16 )
     ctypes.windll.user32.PostMessageW( hwnd, win32con.WM_KEYUP, Const.KEY_A, 0x0001 | 0x1E<<16 | KEY_DOWN_TO_UP )
-    Sleep( 0.01 )#time.sleep( 0.00000000001 )#
+    Sleep( 0.005 )#time.sleep( 0.00000000001 )#
     #while( ctypes.windll.user32.WaitForInputIdle( processHandle, 1 ) == False ):
     #    pass
 
     # Set shift state to keyup
     __m_KeyState[ Const.VK_SHIFT ] = 0x0
     ctypes.windll.user32.SetKeyboardState( ctypes.byref(__m_KeyState) )
+
+    ctypes.windll.user32.AttachThreadInput( currentitd, tid, False )
+
+
+
+
+# 非アクティブなウィンドウへのSendInputはできない. Sleepも必須
+def SendInputs( hwnd, vkcode, ha):#, modifier ):
+
+    __m_KeyState = ( ctypes.c_ubyte * 256 )()
+    
+    #threadId = 
+    pid = ctypes.wintypes.DWORD()
+    tid = ctypes.windll.user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
+
+    currentitd = ctypes.windll.kernel32.GetCurrentThreadId()#currentitd = threading.current_thread().ident#
+    ctypes.windll.user32.AttachThreadInput( currentitd, tid, True )
+    ctypes.windll.user32.GetKeyboardState( ctypes.byref(__m_KeyState) )
+
+
+    # Set shift state to keydown
+    #__m_KeyState[ Const.VK_SHIFT ] |= 0x80
+    #ctypes.windll.user32.SetKeyboardState( ctypes.byref(__m_KeyState) )
+    SendInput( Keyboard(Const.VK_SHIFT)  )
+    #time.sleep(0.01)
+
+    # Presse A
+    SendInput( Keyboard(Const.KEY_A) )
+    SendInput( Keyboard(Const.KEY_A, KEYEVENTF_KEYUP) )
+    Sleep( 0.005 )#time.sleep( 0.00000000001 )#
+
+    # Set shift state to keyup
+    SendInput( Keyboard(Const.VK_SHIFT, KEYEVENTF_KEYUP)  )
+
+    #__m_KeyState[ Const.VK_SHIFT ] = 0x0
+    #ctypes.windll.user32.SetKeyboardState( ctypes.byref(__m_KeyState) )
 
     ctypes.windll.user32.AttachThreadInput( currentitd, tid, False )
 
@@ -124,10 +160,10 @@ if __name__=="__main__":
     # Shift + a を送信する
 
     SW_MINIMIZE =6
-    ctypes.windll.user32.ShowWindow(window_handles[0], SW_MINIMIZE)# 最小化したウィンドウでもPostMessageできる
-    ctypes.windll.user32.EnableWindow( window_handles[0], False )# DisableしたウィンドウでもPostMessageできる
-    #ctypes.windll.user32.SetForegroundWindow(window_handles[0])
-    time.sleep(1)
+    #ctypes.windll.user32.ShowWindow(window_handles[0], SW_MINIMIZE)# 最小化したウィンドウ:PostMessageだけできる
+    #ctypes.windll.user32.EnableWindow( window_handles[0], False )# Disableしたウィンドウ:SendInput/PostMessageできる
+    #ctypes.windll.user32.SetForegroundWindow(window_handles[0])# フォーカス外れたウィンドウ:PostMessageだけできる
+    time.sleep(3)
 
     # http://delfusa.main.jp/delfusafloor/archive/www.nifty.ne.jp_forum_fdelphi/samples/00027.html
     # https://stackoverflow.com/questions/13200362/how-to-send-ctrl-shift-alt-key-combinations-to-an-application-window-via-sen
@@ -151,20 +187,11 @@ if __name__=="__main__":
 
     for i in range(200):
         SendKeys( hWnds[0], Const.KEY_A, notepad._handle )
+        #SendInputs( hWnds[0], Const.KEY_A, notepad._handle )
 
 
 
-    # 非アクティブなウィンドウへのSendInputはできない
-    #pid = ctypes.wintypes.DWORD()
-    #tid = ctypes.windll.user32.GetWindowThreadProcessId( hWnds[0], ctypes.byref(pid) )
-    
-    #currentitd = ctypes.windll.kernel32.GetCurrentThreadId()#currentitd = threading.current_thread().ident#
-    #ctypes.windll.user32.AttachThreadInput( currentitd, tid, True )
 
-    #SendInput( Keyboard(Const.KEY_A) )
-    #SendInput( Keyboard(Const.KEY_A, KEYEVENTF_KEYUP) )
-
-    #ctypes.windll.user32.AttachThreadInput( currentitd, tid, False )
 
 
 
