@@ -124,7 +124,7 @@ def SendInputs( hwnd, vkcode, ha):#, modifier ):
 
 
 
-def MAKELPARAM( high, low ):
+def MAKELPARAM( low, high ):
     return ctypes.wintypes.LPARAM( ( (high & 0xFFFF) << 16 ) | (low & 0xFFFF) )
 
 
@@ -160,7 +160,7 @@ def MouseMove( hwnd, dx, dy ):
     WM_MOUSEMOVE        = 0x0200
     MK_LBUTTON  = 0x0001
 
-    lpPoint = MAKELPARAM( x, y )#POINT( dx, dy )
+    lpPoint = MAKELPARAM( dx, dy )#POINT( dx, dy )
     ctypes.windll.user32.PostMessageW( hwnd, WM_MOUSEMOVE, MK_LBUTTON, lpPoint )
 
 
@@ -243,7 +243,7 @@ if __name__=="__main__":
     # DO mouse operation
     MouseLeftDown( hDrawArea, 10, 10 )
 
-    #MouseMove( hDrawArea, 5, 5 )
+    MouseMove( hDrawArea, 25, 100 )
     #MouseMove( hDrawArea, 5, 5 )
 
     MouseLeftUp( hDrawArea, 100, 100 )
