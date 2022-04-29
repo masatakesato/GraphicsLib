@@ -123,18 +123,64 @@ def SendInputs( hwnd, vkcode, ha):#, modifier ):
 
 
 
+
+def MAKELPARAM( high, low ):
+    return ctypes.wintypes.LPARAM( ( (high & 0xFFFF) << 16 ) | (low & 0xFFFF) )
+
+
+def MouseLeftDown( hwnd, x, y ):
+
+    WM_LBUTTONDOWN      = 0x0201
+    MK_LBUTTON  = 0x0001
+
+    lpPoint = MAKELPARAM( x, y )#POINT( x, y )#
+    #ctypes.windll.user32.ScreenToClient( hwnd, ctypes.byref(lpPoint) )
+
+    ctypes.windll.user32.PostMessageW( hwnd, WM_LBUTTONDOWN, MK_LBUTTON, lpPoint )
+
+    #print( "MouseLeftDown", lpPoint.x, lpPoint.y  )
+    
+
+
+def MouseLeftUp( hwnd, x, y ):
+    WM_LBUTTONUP        = 0x0202
+    MK_LBUTTON  = 0x0001
+
+    lpPoint = MAKELPARAM( x, y )#POINT( x, y )
+    #ctypes.windll.user32.ScreenToClient( hwnd, ctypes.byref(lpPoint) )
+
+    ctypes.windll.user32.PostMessageW( hwnd, WM_LBUTTONUP, MK_LBUTTON, lpPoint )
+
+    #print( "MouseLeftUp", lpPoint.x, lpPoint.y  )
+
+
+
+def MouseMove( hwnd, dx, dy ):
+
+    WM_MOUSEMOVE        = 0x0200
+    MK_LBUTTON  = 0x0001
+
+    lpPoint = MAKELPARAM( x, y )#POINT( dx, dy )
+    ctypes.windll.user32.PostMessageW( hwnd, WM_MOUSEMOVE, MK_LBUTTON, lpPoint )
+
+
+
+
 if __name__=="__main__":
 
-    notepad = subprocess.Popen( [r"C:\\Windows\\system32\\notepad.exe"] )#
-    #r"./app/ShapeController.exe" )#[r"./app/ProceduralPlanetRendering.exe"] )#[r"C:\\Windows\\System32\\mspaint.exe"] ) #
+    app = subprocess.Popen([r"C:\\Windows\\System32\\mspaint.exe"] )
+    #[r"C:\\Windows\\system32\\notepad.exe"] )
+    #r"./app/ShapeController.exe" )
+    #[r"./app/ProceduralPlanetRendering.exe"] )
+    #[r"C:\\Windows\\System32\\mspaint.exe"] )
     #r"D:/Program Files (x86)/sakura/sakura.exe" )
 
 #TODO: プロセスがアイドル状態になるまで待つ -> アプリ起動検出には使えない. HCBT_CREATEWND 
 #ctypes.windll.user32.WaitForInputIdle( notepad._handle, 1000 ) ):
 # https://stackoverflow.com/questions/33405201/waitforinputidle-doesnt-work-for-starting-mspaint-programmatically
 
-    print( int(notepad._handle) )
-    process_id = notepad.pid
+    print( int(app._handle) )
+    process_id = app.pid
 
     # Wait until app is ready
     window_handles = []
@@ -142,7 +188,7 @@ if __name__=="__main__":
         print( window_handles )
         time.sleep(0.05)
 
-    #time.sleep(0.5)
+    time.sleep(0.5)
 
     hWnds = GetChildHandles( window_handles[0] )
     hWnd = window_handles[0]#hWnds[1]
@@ -159,25 +205,20 @@ if __name__=="__main__":
 
     # Shift + a を送信する
 
-    SW_MINIMIZE =6
+    #SW_MINIMIZE =6
     #ctypes.windll.user32.ShowWindow(window_handles[0], SW_MINIMIZE)# 最小化したウィンドウ:PostMessageだけできる
     #ctypes.windll.user32.EnableWindow( window_handles[0], False )# Disableしたウィンドウ:SendInput/PostMessageできる
     #ctypes.windll.user32.SetForegroundWindow(window_handles[0])# フォーカス外れたウィンドウ:PostMessageだけできる
-    time.sleep(3)
+    time.sleep(0.5)
 
     # http://delfusa.main.jp/delfusafloor/archive/www.nifty.ne.jp_forum_fdelphi/samples/00027.html
     # https://stackoverflow.com/questions/13200362/how-to-send-ctrl-shift-alt-key-combinations-to-an-application-window-via-sen
 
-    KEY_UP_TO_DOWN = 0x00000000
-    KEY_DOWN_TO_UP = 0xC0000000
+    #KEY_UP_TO_DOWN = 0x00000000
+    #KEY_DOWN_TO_UP = 0xC0000000
+    #ALT_DOWN = 0x20000000
 
-    ALT_DOWN = 0x20000000
-
-
-
-
-
-    VirtualKey = ctypes.windll.user32.MapVirtualKeyA(Const.KEY_A, 0);
+    #VirtualKey = ctypes.windll.user32.MapVirtualKeyA(Const.KEY_A, 0);
 
     #ctypes.windll.user32.PostMessageW( hWnds[0], win32con.WM_IME_KEYDOWN, win32con.VK_SHIFT, 1 )#0x0001 | 0x2A<<16 )
     #ctypes.windll.user32.PostMessageW( hWnds[0], win32con.WM_KEYDOWN, Const.KEY_A, 0)#0x0001 | 0x1E<<16 )
@@ -185,9 +226,28 @@ if __name__=="__main__":
     #ctypes.windll.user32.PostMessageW( hWnds[0], win32con.WM_KEYUP, Const.KEY_A, 0)#0x0001 | 0x1E<<16 | KEY_DOWN_TO_UP )
     #ctypes.windll.user32.PostMessageW( hWnds[0], win32con.WM_IME_KEYUP, win32con.VK_SHIFT, 0 )#KEY_DOWN_TO_UP )
 
-    for i in range(200):
-        SendKeys( hWnds[0], Const.KEY_A, notepad._handle )
+    #for i in range(200):
+    #    SendKeys( hWnds[0], Const.KEY_A, notepad._handle )
         #SendInputs( hWnds[0], Const.KEY_A, notepad._handle )
+
+
+
+    #https://codesequoia.wordpress.com/2009/06/07/control-mouse-programmatically/
+
+    # Get MSPaintView handle
+    hwndView = ctypes.windll.user32.FindWindowExW( window_handles[0], 0, "MSPaintView", None )
+    # Get drawable area handle from hwndView
+    hDrawArea = GetChildHandles( hwndView )[0]#ctypes.windll.user32.GetWindow( hwndView, win32con.GW_CHILD )
+
+
+    # DO mouse operation
+    MouseLeftDown( hDrawArea, 10, 10 )
+
+    #MouseMove( hDrawArea, 5, 5 )
+    #MouseMove( hDrawArea, 5, 5 )
+
+    MouseLeftUp( hDrawArea, 100, 100 )
+
 
 
 
