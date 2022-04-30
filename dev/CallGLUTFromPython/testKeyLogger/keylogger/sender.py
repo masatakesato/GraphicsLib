@@ -268,10 +268,12 @@ class Sender:
         elif( vkey == Const.VK_SHIFT or vkey == Const.VK_LSHIFT or vkey == Const.VK_RSHIFT):
             self.__m_KeyState[ vkey ] = 0x80 if down else 0x00
             self.__m_KeyState[ Const.VK_SHIFT ] = OR( self.__m_KeyState[ Const.VK_LSHIFT ], self.__m_KeyState[ Const.VK_RSHIFT ] )
+            self.__m_MK_Flags = self.__m_MK_Flags | Const.MK_SHIFT if down else self.__m_MK_Flags & Const.MK_SHIFT_INV
 
-        elif( vkey == Const.VK_CONTROL or vkey == Const.VK_LCONTROL or vkey == Const.VK_NUMLOCK ):
+        elif( vkey == Const.VK_CONTROL or vkey == Const.VK_LCONTROL or vkey == Const.VK_RCONTROL ):
             self.__m_KeyState[ vkey ] = 0x80 if down else 0x00
-            self.__m_KeyState[ Const.VK_CONTROL ] = OR( self.__m_KeyState[ Const.VK_LCONTROL ], self.__m_KeyState[ Const.VK_NUMLOCK ] )
+            self.__m_KeyState[ Const.VK_CONTROL ] = OR( self.__m_KeyState[ Const.VK_LCONTROL ], self.__m_KeyState[ Const.VK_RCONTROL ] )
+#self.__m_MK_Flags = self.__m_MK_Flags | Const.MK_SHIFT if down else self.__m_MK_Flags & Const.MK_SHIFT_INV
 
         elif( vkey == Const.VK_NUMLOCK and not down ):
             self.__m_KeyState[ Const.VK_NUMLOCK ] = not self.__m_KeyState[ Const.VK_NUMLOCK ]
