@@ -232,6 +232,8 @@ class Sender:
 
     def __init__( self ):
         self.__m_KeyState = ( ctypes.c_ubyte * 256 )()
+        self.__m_MK_Flags = 0x00
+
 
         self.__m_CurrentThreadID = ctypes.windll.kernel32.GetCurrentThreadId()
 
@@ -281,100 +283,126 @@ class Sender:
             self.__m_KeyState[ Const.VK_SCROLL ] = not self.__m_KeyState[ Const.VK_SCROLL ]
 
 
-
-
-    #MOUSEEVENTF_MOVE            = 0x0001
-    #MOUSEEVENTF_ABSOLUTE
     
     # Mouse move
-    def MouseMove( self, hwnd, dx, dy, mk_buttons=0x0 ):
-        lpPoint = MAKELPARAM( dx, dy )#POINT( dx, dy )
-        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEMOVE, mk_buttons, lpPoint )#Const.MK_LBUTTON
+    def MouseMove( self, hwnd, dx, dy ):
+        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEMOVE, self.__m_MK_Flags, MAKELPARAM( dx, dy ) )
 
     # Mouse move absolute
 
 
 
     # Mouse left down
-    def MouseLeftDown( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_LBUTTONDOWN, Const.MK_LBUTTON | mk_buttons, x, y, is_world_coord )
-
+    def MouseLeftDown( self, hwnd, x, y, is_world_coord=False ):
+        self.__m_MK_Flags |= Const.MK_LBUTTON
+        self.__MouseButton( hwnd, Const.WM_LBUTTONDOWN, self.__m_MK_Flags, x, y, is_world_coord )
+        
     # Mouse left up
     def MouseLeftUp( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_LBUTTONUP, Const.MK_LBUTTON | mk_buttons, x, y, is_world_coord )
+        self.__m_MK_Flags &= Const.MK_LBUTTON_INV# Disable MK_LBUTTON
+        self.__MouseButton( hwnd, Const.WM_LBUTTONUP, self.__m_MK_Flags, x, y, is_world_coord )
 
     # Mouse left double click
-    def MouseLeftDoubleClick( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_LBUTTONDBLCLK, Const.MK_LBUTTON | mk_buttons, x, y, is_world_coord )
+    def MouseLeftDoubleClick( self, hwnd, x, y, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_LBUTTONDBLCLK, Const.MK_LBUTTON | self.__m_MK_Flags, x, y, is_world_coord )
+        # Windows double click behavior...
+        #self.__m_MK_Flags |= Const.MK_LBUTTON
+        #self.__MouseButton( hwnd, Const.WM_LBUTTONDBLCLK, self.__m_MK_Flags, x, y, is_world_coord )
+        #self.MouseLeftUp( hwnd, x, y, is_world_coord )
 
 
 
     # Mouse right down
-    def MouseRightDown( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_RBUTTONDOWN, Const.MK_RBUTTON | mk_buttons, x, y, is_world_coord )
+    def MouseRightDown( self, hwnd, x, y, is_world_coord=False ):
+        self.__m_MK_Flags |= Const.MK_RBUTTON
+        self.__MouseButton( hwnd, Const.WM_RBUTTONDOWN, self.__m_MK_Flags, x, y, is_world_coord )
 
     # Mouse right up
-    def MouseRightUp( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_RBUTTONUP, Const.MK_RBUTTON | mk_buttons, x, y, is_world_coord )
+    def MouseRightUp( self, hwnd, x, y, is_world_coord=False ):
+        self.__m_MK_Flags &= Const.MK_RBUTTON_INV# Disable MK_RBUTTON
+        self.__MouseButton( hwnd, Const.WM_RBUTTONUP, self.__m_MK_Flags, x, y, is_world_coord )
 
     # Mouse right double click
-    def MouseRightDoubleClick( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_RBUTTONDBLCLK, Const.MK_RBUTTON | mk_buttons, x, y, is_world_coord )
+    def MouseRightDoubleClick( self, hwnd, x, y, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_RBUTTONDBLCLK, Const.MK_RBUTTON | self.__m_MK_Flags, x, y, is_world_coord )
+        # Windows double click behavior...
+        #self.__m_MK_Flags |= Const.MK_RBUTTON
+        #self.__MouseButton( hwnd, Const.WM_RBUTTONDBLCLK, self.__m_MK_Flags, x, y, is_world_coord )
+        #self.MouseRightUp( hwnd, x, y, is_world_coord )
 
 
 
     # Mouse middle down
-    def MouseMiddleDown( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_MBUTTONDOWN, Const.MK_MBUTTON | mk_buttons, x, y, is_world_coord )
+    def MouseMiddleDown( self, hwnd, x, y, is_world_coord=False ):
+        self.__m_MK_Flags |= Const.MK_MBUTTON
+        self.__MouseButton( hwnd, Const.WM_MBUTTONDOWN, self.__m_MK_Flags, x, y, is_world_coord )
 
     # Mouse middle up
-    def MouseMiddleUp( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_MBUTTONUP, Const.MK_MBUTTON | mk_buttons, x, y, is_world_coord )
+    def MouseMiddleUp( self, hwnd, x, y, is_world_coord=False ):
+        self.__m_MK_Flags &= Const.MK_MBUTTON_INV# Disable MK_MBUTTON
+        self.__MouseButton( hwnd, Const.WM_MBUTTONUP, self.__m_MK_Flags, x, y, is_world_coord )
 
     # Mouse middle double click
-    def MouseMiddleDoubleClick( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_MBUTTONDBLCLK, Const.MK_MBUTTON | mk_buttons, x, y, is_world_coord )
+    def MouseMiddleDoubleClick( self, hwnd, x, y, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_MBUTTONDBLCLK, Const.MK_MBUTTON | self.__m_MK_Flags, x, y, is_world_coord )
+        # Windows double click behavior...
+        #self.__m_MK_Flags |= Const.MK_MBUTTON
+        #self.__MouseButton( hwnd, Const.WM_MBUTTONDBLCLK, self.__m_MK_Flags, x, y, is_world_coord )
+        #self.MouseMiddleUp( hwnd, x, y, is_world_coord )
 
 
 
 # https://stackoverflow.com/questions/41817550/mouse-simulation-works-really-slow-can-it-be-faster
     # Mouse X1 down
-    def MouseX1Down( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_XBUTTONDOWN, Const.XBUTTON1 | mk_buttons, x, y, is_world_coord )
+    def MouseX1Down( self, hwnd, x, y, is_world_coord=False ):
+        self.__m_MK_Flags |= Const.MK_XBUTTON1
+        self.__MouseButton( hwnd, Const.WM_XBUTTONDOWN, self.__m_MK_Flags, x, y, is_world_coord )
 
     # Mouse X1 up
-    def MouseX1Up( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_XBUTTONUP, Const.XBUTTON1 | mk_buttons, x, y, is_world_coord )
+    def MouseX1Up( self, hwnd, x, y, is_world_coord=False ):
+        self.__m_MK_Flags &= Const.MK_XBUTTON1_INV# Disable MK_XBUTTON1
+        self.__MouseButton( hwnd, Const.WM_XBUTTONUP, self.__m_MK_Flags, x, y, is_world_coord )
 
     # Mouse X1 double click
-    def MouseX1DoubleClick( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_XBUTTONDBLCLK, Const.XBUTTON1 | mk_buttons, x, y, is_world_coord )
+    def MouseX1DoubleClick( self, hwnd, x, y, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_XBUTTONDBLCLK, Const.XBUTTON1 | self.__m_MK_Flags, x, y, is_world_coord )
+        # Windows double click behavior...
+        #self.__m_MK_Flags |= Const.MK_XBUTTON1
+        #self.__MouseButton( hwnd, Const.WM_XBUTTONDBLCLK, self.__m_MK_Flags, x, y, is_world_coord )
+        #self.MouseX1Up( hwnd, x, y, is_world_coord )
 
 
     # Mouse X2 down
-    def MouseX1Down( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_XBUTTONDOWN, Const.XBUTTON2 | mk_buttons, x, y, is_world_coord )
+    def MouseX1Down( self, hwnd, x, y, is_world_coord=False ):
+        self.__m_MK_Flags |= Const.MK_XBUTTON2
+        self.__MouseButton( hwnd, Const.WM_XBUTTONDOWN, self.__m_MK_Flags, x, y, is_world_coord )
 
     # Mouse X2 up
-    def MouseX1Up( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_XBUTTONUP, Const.XBUTTON2 | mk_buttons, x, y, is_world_coord )
+    def MouseX1Up( self, hwnd, x, y, is_world_coord=False ):
+        self.__m_MK_Flags &= Const.MK_XBUTTON2_INV# Disable MK_XBUTTON2
+        self.__MouseButton( hwnd, Const.WM_XBUTTONUP, self.__m_MK_Flags, x, y, is_world_coord )
 
     # Mouse X2 double click
-    def MouseX1DoubleClick( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
-        self.__MouseButton( hwnd, Const.WM_XBUTTONDBLCLK, Const.XBUTTON2 | mk_buttons, x, y, is_world_coord )
+    def MouseX1DoubleClick( self, hwnd, x, y, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_XBUTTONDBLCLK, Const.XBUTTON2 | self.__m_MK_Flags, x, y, is_world_coord )
+        # Windows double click behavior...
+        #self.__m_MK_Flags |= Const.MK_XBUTTON2
+        #self.__MouseButton( hwnd, Const.WM_XBUTTONDBLCLK, self.__m_MK_Flags, x, y, is_world_coord )
+        #self.MouseX1Up( hwnd, x, y, is_world_coord )
 
 
 
 
+#TODO: Cursor position is required
     # Mouse scroll up
-    def MouseScrollUp( self, hwnd, direction, mk_buttons=0x0 ):
+    def MouseScrollUp( self, hwnd, direction ):
         #lParam = MAKELPARAM( x, y )
-        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEWHEEL, Const.WHEEL_UP | mk_buttons, 0 )
+        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEWHEEL, Const.WHEEL_UP | self.__m_MK_Flags, 0 )
 
     # Mouse scroll down        
-    def MouseScrollDown( self, hwnd, direction, keyflags=0x0 ):
+    def MouseScrollDown( self, hwnd, direction ):
         #lParam = MAKELPARAM( x, y )
-        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEWHEEL, Const.WHEEL_DOWN | mk_buttons, 0 )
+        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEWHEEL, Const.WHEEL_DOWN | self.__m_MK_Flags, 0 )
 
 
 
@@ -382,32 +410,3 @@ class Sender:
         lpPoint = MAKELPARAM( x, y )
         if( is_world_coord ): ctypes.windll.user32.ScreenToClient( hwnd, ctypes.byref(lpPoint) )
         ctypes.windll.user32.PostMessageW( hwnd, msg, wpButtons, lpPoint )
-
-
-
-
-
-
-
-
-
-
-#WHEEL_DELTA                 = 120
-#XBUTTON1                    = 0x0001
-#XBUTTON2                    = 0x0002
-
-
-#MOUSEEVENTF_MOVE            = 0x0001
-#MOUSEEVENTF_LEFTDOWN        = 0x0002
-#MOUSEEVENTF_LEFTUP          = 0x0004
-#MOUSEEVENTF_RIGHTDOWN       = 0x0008
-#MOUSEEVENTF_RIGHTUP         = 0x0010
-#MOUSEEVENTF_MIDDLEDOWN      = 0x0020
-#MOUSEEVENTF_MIDDLEUP        = 0x0040
-#MOUSEEVENTF_XDOWN           = 0x0080
-#MOUSEEVENTF_XUP             = 0x0100
-#MOUSEEVENTF_WHEEL           = 0x0800
-#MOUSEEVENTF_HWHEEL          = 0x1000
-#MOUSEEVENTF_MOVE_NOCOALESCE = 0x2000
-#MOUSEEVENTF_VIRTUALDESK     = 0x4000
-#MOUSEEVENTF_ABSOLUTE        = 0x8000

@@ -477,10 +477,20 @@ class Const:
     MK_XBUTTON1             = 0x0020
     MK_XBUTTON2             = 0x0040
 
+    # Bitmasks for disabling MK_*** with AND operation.
+    MK_LBUTTON_INV         = MK_LBUTTON ^ 0xFF
+    MK_RBUTTON_INV         = MK_RBUTTON ^ 0xFF
+    MK_SHIFT_INV           = MK_SHIFT ^ 0xFF
+    MK_CONTROL_INV         = MK_CONTROL ^ 0xFF
+    MK_MBUTTON_INV         = MK_MBUTTON ^ 0xFF
+    MK_XBUTTON1_INV        = MK_XBUTTON1 ^ 0xFF
+    MK_XBUTTON2_INV        = MK_XBUTTON2 ^ 0xFF
+
+
     # Upper WParams for mouse PostMessage
     XBUTTON1                = 0x00010000
     XBUTTON2                = 0x00020000
     WHEEL_UP                = 0x00780000
-    WHEEL_DOWN              = 0xff880000
+    WHEEL_DOWN              = 0xFF880000
 
 
