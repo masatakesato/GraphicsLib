@@ -51,32 +51,26 @@ PROCESS_ALL_ACCESS = 0x001F0FFF
 SYNCHRONIZE = 0x00100000
 INFINITE = 0xFFFFFFFF
 
-def SendKeys( hwnd, vkcode, ha):#, modifier ):
+def SendKeys( hwnd, vkcode ):#, modifier ):
 
     __m_KeyState = ( ctypes.c_ubyte * 256 )()
     
     #threadId = 
     pid = ctypes.wintypes.DWORD()
     tid = ctypes.windll.user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
-    #processHandle = ctypes.windll.kernel32.OpenProcess( SYNCHRONIZE | PROCESS_ALL_ACCESS, False, pid )
-
 
     currentitd = ctypes.windll.kernel32.GetCurrentThreadId()#currentitd = threading.current_thread().ident#
     ctypes.windll.user32.AttachThreadInput( currentitd, tid, True )
     ctypes.windll.user32.GetKeyboardState( ctypes.byref(__m_KeyState) )
 
-
     # Set shift state to keydown
     __m_KeyState[ Const.VK_SHIFT ] |= 0x80
     ctypes.windll.user32.SetKeyboardState( ctypes.byref(__m_KeyState) )
-    #time.sleep(0.01)
 
     # Presse A
     ctypes.windll.user32.PostMessageW( hwnd, win32con.WM_KEYDOWN, Const.KEY_A, 0x0001 | 0x1E<<16 )
     ctypes.windll.user32.PostMessageW( hwnd, win32con.WM_KEYUP, Const.KEY_A, 0x0001 | 0x1E<<16 | KEY_DOWN_TO_UP )
     Sleep( 0.005 )#time.sleep( 0.00000000001 )#
-    #while( ctypes.windll.user32.WaitForInputIdle( processHandle, 1 ) == False ):
-    #    pass
 
     # Set shift state to keyup
     __m_KeyState[ Const.VK_SHIFT ] = 0x0
@@ -88,7 +82,7 @@ def SendKeys( hwnd, vkcode, ha):#, modifier ):
 
 
 # 非アクティブなウィンドウへのSendInputはできない. Sleepも必須
-def SendInputs( hwnd, vkcode, ha):#, modifier ):
+def SendInputs( hwnd, vkcode ):#, modifier ):
 
     __m_KeyState = ( ctypes.c_ubyte * 256 )()
     
@@ -148,8 +142,8 @@ def MouseLeftUp( hwnd, x, y ):
 
     lpPoint = MAKELPARAM( x, y )#POINT( x, y )
     #ctypes.windll.user32.ScreenToClient( hwnd, ctypes.byref(lpPoint) )
-
-    ctypes.windll.user32.PostMessageW( hwnd, WM_LBUTTONUP, MK_LBUTTON, lpPoint )
+    
+    ctypes.windll.user32.PostMessageW( hwnd, Const.WM_LBUTTONUP, Const.MK_LBUTTON, lpPoint )
 
     #print( "MouseLeftUp", lpPoint.x, lpPoint.y  )
 
@@ -161,7 +155,7 @@ def MouseMove( hwnd, dx, dy ):
     MK_LBUTTON  = 0x0001
 
     lpPoint = MAKELPARAM( dx, dy )#POINT( dx, dy )
-    ctypes.windll.user32.PostMessageW( hwnd, WM_MOUSEMOVE, MK_LBUTTON, lpPoint )
+    ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEMOVE, 0, lpPoint )#Const.MK_LBUTTON
 
 
 
@@ -231,6 +225,13 @@ if __name__=="__main__":
         #SendInputs( hWnds[0], Const.KEY_A, notepad._handle )
 
 
+    def MouseWheel( hwnd, direction, mk_buttons=0x0 ):
+        #WHEEL_POS = 0x00780000
+        #WHEEL_NEG = 0xff880000
+        #lParam = MAKELPARAM( x, y )
+        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEWHEEL, Const.WHEEL_DOWN | mk_buttons, 0 )
+
+
 
     #https://codesequoia.wordpress.com/2009/06/07/control-mouse-programmatically/
 
@@ -238,6 +239,9 @@ if __name__=="__main__":
     hwndView = ctypes.windll.user32.FindWindowExW( window_handles[0], 0, "MSPaintView", None )
     # Get drawable area handle from hwndView
     hDrawArea = GetChildHandles( hwndView )[0]#ctypes.windll.user32.GetWindow( hwndView, win32con.GW_CHILD )
+
+    MouseWheel( hDrawArea, -1, Const.MK_CONTROL )
+
 
 
     # DO mouse operation

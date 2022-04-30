@@ -225,12 +225,19 @@ def MouseMove( dx, dy ):
 
 
 
+import helper
+
 
 class Sender:
 
     def __init__( self ):
         self.__m_KeyState = ( ctypes.c_ubyte * 256 )()
-      
+
+        self.__m_CurrentThreadID = ctypes.windll.kernel32.GetCurrentThreadId()
+
+        self.__m_refHwndThreadID = None
+
+
 
     def SendInput( ):
         pass
@@ -279,71 +286,105 @@ class Sender:
     #MOUSEEVENTF_MOVE            = 0x0001
     #MOUSEEVENTF_ABSOLUTE
     
-    #WM_MOUSEMOVE        = 0x0200
+    # Mouse move
+    def MouseMove( self, hwnd, dx, dy, mk_buttons=0x0 ):
+        lpPoint = MAKELPARAM( dx, dy )#POINT( dx, dy )
+        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEMOVE, mk_buttons, lpPoint )#Const.MK_LBUTTON
 
-    def MouseMove( dx, dy, absolute=False ):
-        pass
-
-
-
-    #MOUSEEVENTF_LEFTDOWN        = 0x0002
-    #MOUSEEVENTF_LEFTUP          = 0x0004
-    #MOUSEEVENTF_RIGHTDOWN       = 0x0008
-    #MOUSEEVENTF_RIGHTUP         = 0x0010
-    #MOUSEEVENTF_MIDDLEDOWN      = 0x0020
-    #MOUSEEVENTF_MIDDLEUP        = 0x0040
-    #MOUSEEVENTF_XDOWN           = 0x0080
-    #MOUSEEVENTF_XUP             = 0x0100
-
-    
-    #WM_LBUTTONDOWN      = 0x0201
-    #WM_LBUTTONUP        = 0x0202
-    #WM_LBUTTONDBLCLK    = 0x0203
-    #WM_RBUTTONDOWN      = 0x0204
-    #WM_RBUTTONUP        = 0x0205
-    #WM_RBUTTONDBLCLK    = 0x0206
-    #WM_MBUTTONDOWN      = 0x0207
-    #WM_MBUTTONUP        = 0x0208
-    #WM_MBUTTONDBLCLK    = 0x0209
-    #WM_MOUSEWHEEL       = 0x020A
-
-
-    #MK_LBUTTON  = 0x0001
-    #MK_RBUTTON  = 0x0002
-    #MK_SHIFT    = 0x0004
-    #MK_CONTROL  = 0x0008
-    #MK_MBUTTON  = 0x0010
-    #MK_XBUTTON1 = 0x0020
-    #MK_XBUTTON2 = 0x0040
-
-      
-
-
-    def __MakeLong( self, high, low ):
-        return ctypes.wintypes.LPARAM( ( (high & 0xFFFF) << 16 ) | (low & 0xFFFF) )
+    # Mouse move absolute
 
 
 
-    # http://chokuto.ifdef.jp/urawaza/message/WM_LBUTTONUP.html
-    def MouseButtonDown( self, hwnd, msg, x, y ):
+    # Mouse left down
+    def MouseLeftDown( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_LBUTTONDOWN, Const.MK_LBUTTON | mk_buttons, x, y, is_world_coord )
 
-        lpPoint = POINT( x, y )# self.__MakeLong( x, y )
+    # Mouse left up
+    def MouseLeftUp( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_LBUTTONUP, Const.MK_LBUTTON | mk_buttons, x, y, is_world_coord )
 
-        ctypes.windll.user32.ScreenToClient( hwnd, ctypes.byref(lpPoint) )
-        ctypes.windll.user32.PostMessageW( hwnd, msg, 0, lpPoint )
-        pass
-
-
-    def MouseButtonUp( self ):
-        pass
-
+    # Mouse left double click
+    def MouseLeftDoubleClick( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_LBUTTONDBLCLK, Const.MK_LBUTTON | mk_buttons, x, y, is_world_coord )
 
 
-    def MouseWheel( self ):
-        pass
+
+    # Mouse right down
+    def MouseRightDown( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_RBUTTONDOWN, Const.MK_RBUTTON | mk_buttons, x, y, is_world_coord )
+
+    # Mouse right up
+    def MouseRightUp( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_RBUTTONUP, Const.MK_RBUTTON | mk_buttons, x, y, is_world_coord )
+
+    # Mouse right double click
+    def MouseRightDoubleClick( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_RBUTTONDBLCLK, Const.MK_RBUTTON | mk_buttons, x, y, is_world_coord )
 
 
-    def MouseWheel( self ): pass
+
+    # Mouse middle down
+    def MouseMiddleDown( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_MBUTTONDOWN, Const.MK_MBUTTON | mk_buttons, x, y, is_world_coord )
+
+    # Mouse middle up
+    def MouseMiddleUp( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_MBUTTONUP, Const.MK_MBUTTON | mk_buttons, x, y, is_world_coord )
+
+    # Mouse middle double click
+    def MouseMiddleDoubleClick( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_MBUTTONDBLCLK, Const.MK_MBUTTON | mk_buttons, x, y, is_world_coord )
+
+
+
+# https://stackoverflow.com/questions/41817550/mouse-simulation-works-really-slow-can-it-be-faster
+    # Mouse X1 down
+    def MouseX1Down( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_XBUTTONDOWN, Const.XBUTTON1 | mk_buttons, x, y, is_world_coord )
+
+    # Mouse X1 up
+    def MouseX1Up( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_XBUTTONUP, Const.XBUTTON1 | mk_buttons, x, y, is_world_coord )
+
+    # Mouse X1 double click
+    def MouseX1DoubleClick( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_XBUTTONDBLCLK, Const.XBUTTON1 | mk_buttons, x, y, is_world_coord )
+
+
+    # Mouse X2 down
+    def MouseX1Down( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_XBUTTONDOWN, Const.XBUTTON2 | mk_buttons, x, y, is_world_coord )
+
+    # Mouse X2 up
+    def MouseX1Up( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_XBUTTONUP, Const.XBUTTON2 | mk_buttons, x, y, is_world_coord )
+
+    # Mouse X2 double click
+    def MouseX1DoubleClick( self, hwnd, x, y, mk_buttons=0x0, is_world_coord=False ):
+        self.__MouseButton( hwnd, Const.WM_XBUTTONDBLCLK, Const.XBUTTON2 | mk_buttons, x, y, is_world_coord )
+
+
+
+
+    # Mouse scroll up
+    def MouseScrollUp( self, hwnd, direction, mk_buttons=0x0 ):
+        #lParam = MAKELPARAM( x, y )
+        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEWHEEL, Const.WHEEL_UP | mk_buttons, 0 )
+
+    # Mouse scroll down        
+    def MouseScrollDown( self, hwnd, direction, keyflags=0x0 ):
+        #lParam = MAKELPARAM( x, y )
+        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEWHEEL, Const.WHEEL_DOWN | mk_buttons, 0 )
+
+
+
+    def __MouseButton( self, hwnd, msg, wpButtons, x, y, is_world_coord ):
+        lpPoint = MAKELPARAM( x, y )
+        if( is_world_coord ): ctypes.windll.user32.ScreenToClient( hwnd, ctypes.byref(lpPoint) )
+        ctypes.windll.user32.PostMessageW( hwnd, msg, wpButtons, lpPoint )
+
+
+
 
 
 
