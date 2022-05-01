@@ -230,14 +230,17 @@ import helper
 
 class Sender:
 
+    KEY_UP_TO_DOWN = 0x00000000
+    KEY_DOWN_TO_UP = 0xC0000000
+    ALT_DOWN = 0x20000000
+
+
     def __init__( self ):
         self.__m_KeyState = ( ctypes.c_ubyte * 256 )()
         self.__m_MK_Flags = 0x00
 
-
-        self.__m_CurrentThreadID = ctypes.windll.kernel32.GetCurrentThreadId()
-
-        self.__m_refHwndThreadID = None
+        self.__m_ThisThreadID = ctypes.windll.kernel32.GetCurrentThreadId()#  threading.current_thread().ident#
+        self.__m_TargetThreadID = None
 
 
 
@@ -245,8 +248,73 @@ class Sender:
         pass
 
 
-    def PressKey( self, vkcode ):
-        pass
+
+
+
+# https://docs.microsoft.com/ja-jp/windows/win32/inputdev/about-keyboard-input#keystroke-message-flags
+# LParam
+# 0-15bit: 回数.   1回なら 0x0001
+# 16-23bit: スキャンコード. VirtualKeyからの変換テーブルが必要. aなら1E # https://bsakatu.net/doc/virtual-key-of-windows/
+# 24bit: 拡張キーフラグ. 拡張キーの場合は"1", そうでない場合は"0"
+# 25-28bit: 未使用
+# 29bit: Altキー押し込まれてる間は"1", そうでない場合は"0"
+# 30bit: 直前のキー状態. キーダウンしている場合は"1", キーアップしている場合は"0"
+# 31bit: 遷移状態フラグ. WM_KEYDOWN/WM_SYSMKEYDOWNを実行する場合は"0", WM_KEYUP/WM_SYSKEYUPを実行する場合は"1"に設定する
+
+
+# 便利マクロ
+#KEY_UP_TO_DOWN = 0x00000000
+#KEY_DOWN_TO_UP = 0xC0000000
+#ALT_DOWN = 0x20000000
+
+
+# F4キーを押し込むlParamの例: 0x003E0001  ( 0000 0000 0011 1110 0000 0000 0000 0001 )
+# 0x0001 -> 1回
+# 3E -> F4キーのスキャンコード
+# 拡張キーフラグ -> 0
+# Altキー押し込み -> 0
+# 直前のキー状態 -> 0(キーアップ)
+# 遷移状態 -> 0(WM_KEYDOWN/WM_SYSMKEYDOWN)
+
+
+
+# F4キーを解放するlParamの例例: 0xC03E0001 ( 1100 0000 0011 1110 0000 0000 0000 0001 )
+# 0x0001 -> 1回
+# 3E -> F4キーのスキャンコード
+# 拡張キーフラグ -> 0
+# Altキー押し込み -> 0
+# 直前のキー状態 -> 1(キーダウン)
+# 遷移状態 -> 1(WM_KEYUP/WM_SYSKEYUP)
+
+
+
+    def __MakeKeyWParam( self, vkcode, num, down, alt ):
+
+        scancode = ctypes.windll.user32.MapVirtualKeyW( vkcode, 0 ) << 16
+        wparam = scancode | ( num & 0xFF ) | ( self.KEY_UP_TO_DOWN if down else self.KEY_DOWN_TO_UP ) | ( self.ALT_DOWN if alt else 0x0 )
+
+        return wparam
+
+
+
+# TODO: AltはPostMessageで送る. Shift/CtrlはSetKeyboardStateで送る.
+    def PressKey( self, vkcode, n ):
+        
+        self.__SetKeyState( vkcode, True )
+
+        # shift/ctrl case: Use SetKeyboardState
+        if( vkcode == Const.VK_SHIFT or vkcode == Const.VK_LSHIFT or vkcode == Const.VK_RSHIFT or
+            vkcode == Const.VK_CONTROL or vkcode == Const.VK_LCONTROL or vkcode == Const.VK_RCONTROL ):
+            ctypes.windll.user32.SetKeyboardState( ctypes.byref(__m_KeyState) )
+
+        # other case: PostMessage
+        else:
+            msg = Const.WM_SYSKEYDOWN if ( self.__m_KeyState[ Const.VK_MENU ] == 0x80 ) else Const.WM_KEYDOWN
+            wparam = self.__MakeKeyWParam( vkcode, n, True, alt_pressed )
+            ctypes.windll.user32.PostMessageW( hwnd, msg, vkcode, wparam )
+
+
+
 
 
     def ReleaseKey( self, vkcode ):
@@ -265,7 +333,7 @@ class Sender:
             self.__m_KeyState[ vkey ] = 0x80 if down else 0x00
             self.__m_KeyState[ Const.VK_MENU ] = OR( self.__m_KeyState[ Const.VK_LMENU ], self.__m_KeyState[ Const.VK_RMENU ] )
 
-        elif( vkey == Const.VK_SHIFT or vkey == Const.VK_LSHIFT or vkey == Const.VK_RSHIFT):
+        elif( vkey == Const.VK_SHIFT or vkey == Const.VK_LSHIFT or vkey == Const.VK_RSHIFT ):
             self.__m_KeyState[ vkey ] = 0x80 if down else 0x00
             self.__m_KeyState[ Const.VK_SHIFT ] = OR( self.__m_KeyState[ Const.VK_LSHIFT ], self.__m_KeyState[ Const.VK_RSHIFT ] )
             self.__m_MK_Flags = self.__m_MK_Flags | Const.MK_SHIFT if down else self.__m_MK_Flags & Const.MK_SHIFT_INV
@@ -273,7 +341,7 @@ class Sender:
         elif( vkey == Const.VK_CONTROL or vkey == Const.VK_LCONTROL or vkey == Const.VK_RCONTROL ):
             self.__m_KeyState[ vkey ] = 0x80 if down else 0x00
             self.__m_KeyState[ Const.VK_CONTROL ] = OR( self.__m_KeyState[ Const.VK_LCONTROL ], self.__m_KeyState[ Const.VK_RCONTROL ] )
-#self.__m_MK_Flags = self.__m_MK_Flags | Const.MK_SHIFT if down else self.__m_MK_Flags & Const.MK_SHIFT_INV
+            self.__m_MK_Flags = self.__m_MK_Flags | Const.MK_CONTROL if down else self.__m_MK_Flags & Const.MK_CONTROL_INV
 
         elif( vkey == Const.VK_NUMLOCK and not down ):
             self.__m_KeyState[ Const.VK_NUMLOCK ] = not self.__m_KeyState[ Const.VK_NUMLOCK ]
@@ -285,7 +353,44 @@ class Sender:
             self.__m_KeyState[ Const.VK_SCROLL ] = not self.__m_KeyState[ Const.VK_SCROLL ]
 
 
+    def __UpdateKeyState( self, vkey, msg ):
+
+        if( msg == Const.WM_KEYDOWN or msg == Const.WM_SYSKEYDOWN ):
+            self.__SetKeyState( vkey, 1 )
+
+        elif(msg == Const.WM_KEYUP or msg == Const.WM_SYSKEYUP):
+            self.__SetKeyState( vkey, 0 )
+
     
+# m_KeyStateを更新するのはどの処理?
+
+    def __BindTargetHwnd( self, hwnd ):
+
+        #pid = DWORD()
+        self.__m_TargetThreadID = ctypes.windll.user32.GetWindowThreadProcessId( hwnd, None )#ctypes.byref(pid) )
+
+        ctypes.windll.user32.AttachThreadInput( self.__m_ThisThreadID, self.__m_TargetThreadID, True )
+        #ctypes.windll.user32.GetKeyboardState( ctypes.byref(__m_KeyState) )
+
+
+    def __UpdateKeyState_( self ):
+        ctypes.windll.user32.GetKeyboardState( ctypes.byref(self.__m_KeyState) )
+        self.__m_MK_Flags = self.__m_MK_Flags | Const.MK_SHIFT if self.__m_KeyState[ Const.VK_SHIFT ] else self.__m_MK_Flags & Const.MK_SHIFT_INV
+        self.__m_MK_Flags = self.__m_MK_Flags | Const.MK_CONTROL if self.__m_KeyState[ Const.MK_CONTROL ] else self.__m_MK_Flags & Const.MK_CONTROL_INV
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     # Mouse move
     def MouseMove( self, hwnd, dx, dy ):
         ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEMOVE, self.__m_MK_Flags, MAKELPARAM( dx, dy ) )
