@@ -241,6 +241,80 @@ class Const:
 
 
 
+    AltVkCodes = {
+        
+        VK_MENU,
+        VK_LMENU,
+        VK_RMENU,
+        #VK_F10,
+
+    }
+
+
+    ModifierVkCodes = {
+
+        VK_SHIFT,
+        VK_LSHIFT,
+        VK_RSHIFT,
+        VK_CONTROL,
+        VK_LCONTROL,
+        VK_RCONTROL,
+    }
+
+
+
+    # https://stackoverflow.com/questions/54160331/determine-whether-a-virtual-key-code-belongs-to-a-extended-key-or-a-modifier-key
+    ExtendedVkCodes = {
+
+        VK_LWIN,
+        VK_RWIN,
+        
+        VK_RSHIFT,
+        VK_RMENU,
+        VK_APPS,
+        VK_RCONTROL,
+
+        VK_SNAPSHOT,
+        VK_INSERT,
+        VK_DELETE,
+        VK_HOME,
+        VK_END,
+        VK_PRIOR,
+        VK_NEXT,
+        
+        VK_LEFT,
+        VK_UP,
+        VK_RIGHT,
+        VK_DOWN,
+        
+        VK_NUMLOCK,
+        VK_DIVIDE,
+
+
+        VK_BROWSER_BACK,
+        VK_BROWSER_FORWARD,
+        VK_BROWSER_REFRESH,
+        VK_BROWSER_STOP,
+        VK_BROWSER_SEARCH,
+        VK_BROWSER_FAVORITES,
+        VK_BROWSER_HOME,
+
+        VK_VOLUME_MUTE,
+        VK_VOLUME_DOWN,
+        VK_VOLUME_UP,
+
+        VK_LAUNCH_MAIL,
+        VK_LAUNCH_MEDIA_SELECT,
+        VK_LAUNCH_APP1,
+        VK_LAUNCH_APP2,
+    }
+
+
+#キーボードの右側にある Alt キーと Ctrl キーで構成されます。INS、DEL、HOME、END、PAGE UP、PAGE DOWN、および方向キー。NUM LOCK キー。BREAK (Ctrl + PAUSE) キー。PRINT SCRN キー。テンキーの除算 (/) キーと ENTER キーを使用します。
+
+
+
+
     MsgToName = {
         WM_MOUSEMOVE :      "mouse move",
         WM_LBUTTONDOWN :    "mouse left down", 

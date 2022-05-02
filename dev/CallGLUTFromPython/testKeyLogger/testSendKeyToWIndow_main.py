@@ -79,29 +79,6 @@ def SendAltSpace( hwnd ):
     wparam = scancode | 0x0001 | KEY_DOWN_TO_UP
     ctypes.windll.user32.PostMessageW( hWnd, win32con.WM_KEYUP, win32con.VK_MENU, wparam )
 
-#    pid = ctypes.wintypes.DWORD()
-#    tid = ctypes.windll.user32.GetWindowThreadProcessId( hwnd, ctypes.byref(pid) )
-
-#    currentitd = ctypes.windll.kernel32.GetCurrentThreadId()#currentitd = threading.current_thread().ident#
-#    ctypes.windll.user32.AttachThreadInput( currentitd, tid, True )
-#    ctypes.windll.user32.GetKeyboardState( ctypes.byref(__m_KeyState) )
-
-    # Set shift state to keydown
-#    __m_KeyState[ Const.VK_MENU ] |= 0x80
-#    ctypes.windll.user32.SetKeyboardState( ctypes.byref(__m_KeyState) )
-
-    ## Presse Space
-    #scancode = ctypes.windll.user32.MapVirtualKeyW(Const.VK_SPACE, 0)
-    #ctypes.windll.user32.PostMessageW( hwnd, win32con.WM_KEYDOWN, Const.VK_SPACE, 0x0001 | scancode<<16 )
-    #ctypes.windll.user32.PostMessageW( hwnd, win32con.WM_KEYUP, Const.VK_SPACE, 0x0001 | scancode<<16 | KEY_DOWN_TO_UP )
-    #Sleep( 0.005 )#time.sleep( 0.00000000001 )#
-
-    # Set shift state to keyup
-#    __m_KeyState[ Const.VK_MENU ] = 0x0
-#    ctypes.windll.user32.SetKeyboardState( ctypes.byref(__m_KeyState) )
-
-#    ctypes.windll.user32.AttachThreadInput( currentitd, tid, False )
-
 
 
 
@@ -215,7 +192,6 @@ def MouseMove( hwnd, dx, dy ):
 if __name__=="__main__":
 
     app = subprocess.Popen(
-        #[r"C:\\Windows\\System32\\mspaint.exe"] )
         [r"C:\\Windows\\system32\\notepad.exe"] )
         #r"./app/ShapeController.exe" )
         #[r"./app/ProceduralPlanetRendering.exe"] )
@@ -270,45 +246,65 @@ if __name__=="__main__":
     #ctypes.windll.user32.PostMessageW( hWnds[0], win32con.WM_KEYUP, Const.KEY_A, 0)#0x0001 | 0x1E<<16 | KEY_DOWN_TO_UP )
     #ctypes.windll.user32.PostMessageW( hWnds[0], win32con.WM_IME_KEYUP, win32con.VK_SHIFT, 0 )#KEY_DOWN_TO_UP )
 
-    #for i in range(200):
-    #    SendKeys( hWnds[0], Const.KEY_A )
+    for i in range(200):
+        SendKeys( hWnds[0], Const.KEY_A )
         #SendInputs( hWnds[0], Const.KEY_A )
 
 
-    SendAltSpace( hWnds[0] )
+    #SendAltSpace( hWnds[0] )
+
+    s = Sender()
 
 
 
 
 
-    ####################################### MSPaintにマウス入力を送信する例 ###################################
-
-    def MouseWheel( hwnd, direction, mk_buttons=0x0 ):
-        #WHEEL_POS = 0x00780000
-        #WHEEL_NEG = 0xff880000
-        #lParam = MAKELPARAM( x, y )
-        ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEWHEEL, Const.WHEEL_DOWN | mk_buttons, 0 )
 
 
 
-    #https://codesequoia.wordpress.com/2009/06/07/control-mouse-programmatically/
 
-    # Get MSPaintView handle
-    hwndView = ctypes.windll.user32.FindWindowExW( window_handles[0], 0, "MSPaintView", None )
-    # Get drawable area handle from hwndView
-    hDrawArea = GetChildHandles( hwndView )[0]#ctypes.windll.user32.GetWindow( hwndView, win32con.GW_CHILD )
 
-    MouseWheel( hDrawArea, -1, Const.MK_CONTROL )
+    ######################################## MSPaintにマウス入力を送信する例 ###################################
 
 
 
-    # DO mouse operation
-    MouseLeftDown( hDrawArea, 10, 10 )
+    #app = subprocess.Popen( [r"C:\\Windows\\System32\\mspaint.exe"] )
 
-    MouseMove( hDrawArea, 25, 100 )
-    #MouseMove( hDrawArea, 5, 5 )
 
-    MouseLeftUp( hDrawArea, 100, 100 )
+    ##TODO: プロセスがアイドル状態になるまで待つ -> アプリ起動検出には使えない. HCBT_CREATEWND 
+    ##ctypes.windll.user32.WaitForInputIdle( notepad._handle, 1000 ) ):
+    ## https://stackoverflow.com/questions/33405201/waitforinputidle-doesnt-work-for-starting-mspaint-programmatically
+
+    #process_id = app.pid
+
+    ## Wait until app is ready
+    #window_handles = []
+    #while( GetWindowHandlesFromPID( process_id, window_handles ) == False ):
+    #    print( window_handles )
+    #    time.sleep(0.05)
+
+    #time.sleep(0.5)
+
+
+    #def MouseWheel( hwnd, direction, mk_buttons=0x0 ):
+    #    ctypes.windll.user32.PostMessageW( hwnd, Const.WM_MOUSEWHEEL, Const.WHEEL_DOWN | mk_buttons, 0 )
+
+
+    ##https://codesequoia.wordpress.com/2009/06/07/control-mouse-programmatically/
+
+    ## Get MSPaintView handle
+    #hwndView = ctypes.windll.user32.FindWindowExW( window_handles[0], 0, "MSPaintView", None )
+    ## Get drawable area handle from hwndView
+    #hDrawArea = GetChildHandles( hwndView )[0]#ctypes.windll.user32.GetWindow( hwndView, win32con.GW_CHILD )
+
+
+    ## DO mouse operation
+    #MouseWheel( hDrawArea, -1, Const.MK_CONTROL )
+
+    #MouseLeftDown( hDrawArea, 10, 10 )
+    #MouseMove( hDrawArea, 25, 100 )
+    ##MouseMove( hDrawArea, 5, 5 )
+    #MouseLeftUp( hDrawArea, 100, 100 )
 
 
 
