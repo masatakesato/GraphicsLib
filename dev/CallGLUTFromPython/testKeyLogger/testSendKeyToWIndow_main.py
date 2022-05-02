@@ -246,8 +246,8 @@ if __name__=="__main__":
     #ctypes.windll.user32.PostMessageW( hWnds[0], win32con.WM_KEYUP, Const.KEY_A, 0)#0x0001 | 0x1E<<16 | KEY_DOWN_TO_UP )
     #ctypes.windll.user32.PostMessageW( hWnds[0], win32con.WM_IME_KEYUP, win32con.VK_SHIFT, 0 )#KEY_DOWN_TO_UP )
 
-    for i in range(200):
-        SendKeys( hWnds[0], Const.KEY_A )
+    #for i in range(1000):
+    #    SendKeys( hWnds[0], Const.KEY_A )
         #SendInputs( hWnds[0], Const.KEY_A )
 
 
@@ -255,12 +255,24 @@ if __name__=="__main__":
 
     s = Sender()
 
+    s.BindTargetHwnd( hWnds[0] )
+
+    s.PressKey( Const.VK_SHIFT )
+
+    for j in range(50):
+        for i in range(20):
+            s.PressKey( Const.KEY_A )
+            s.ReleaseKey( Const.KEY_A )
+            Sleep( 0.005 )
+
+        s.PressKey( Const.VK_RETURN )
+        s.ReleaseKey( Const.VK_RETURN )
+        Sleep( 0.005 )
+
+    s.ReleaseKey( Const.VK_SHIFT )
 
 
-
-
-
-
+    s.UnbindTargetHwnd()
 
 
 

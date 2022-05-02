@@ -289,7 +289,7 @@ class Const:
         
         VK_NUMLOCK,
         VK_DIVIDE,
-
+        # NUMPAD_RETURN?,
 
         VK_BROWSER_BACK,
         VK_BROWSER_FORWARD,
@@ -308,10 +308,6 @@ class Const:
         VK_LAUNCH_APP1,
         VK_LAUNCH_APP2,
     }
-
-
-#キーボードの右側にある Alt キーと Ctrl キーで構成されます。INS、DEL、HOME、END、PAGE UP、PAGE DOWN、および方向キー。NUM LOCK キー。BREAK (Ctrl + PAUSE) キー。PRINT SCRN キー。テンキーの除算 (/) キーと ENTER キーを使用します。
-
 
 
 

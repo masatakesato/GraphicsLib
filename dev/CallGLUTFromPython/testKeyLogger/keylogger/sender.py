@@ -299,8 +299,7 @@ class Sender:
 
 
 
-# TODO: AltはPostMessageで送る. Shift/CtrlはSetKeyboardStateで送る.
-    def PressKey( self, vkcode, count ):
+    def PressKey( self, vkcode, count=1 ):
         
         # Alt押し込んだ状態で別キーのインタラクション発生しているかどうか検出する
         self.__m_IsAltModified |= ( self.__m_KeyState[ Const.VK_MENU ]==0x80 and not vkcode in Const.AltVkCodes )
@@ -310,51 +309,19 @@ class Sender:
 
         # shift/ctrl case: Use SetKeyboardState
         if( vkcode in Const.ModifierVkCodes ):
-            ctypes.windll.user32.SetKeyboardState( ctypes.byref(__m_KeyState) )
+            print( self.__m_KeyState[vkcode] )
+            ctypes.windll.user32.SetKeyboardState( ctypes.byref(self.__m_KeyState) )
 
         # other case: PostMessage
         else:
             alt_pressed = self.__m_KeyState[ Const.VK_MENU ] == 0x80
             msg = Const.WM_SYSKEYDOWN if ( alt_pressed or (vkcode==Const.VK_F10) ) else Const.WM_KEYDOWN
             wparam = self.__MakeKeyWParam( vkcode, count, True, alt_pressed )
-            ctypes.windll.user32.PostMessageW( hwnd, msg, vkcode, wparam )
+            ctypes.windll.user32.PostMessageW( self.__m_TargetHwnd, msg, vkcode, wparam )
 
 
 
-    def ReleaseKey( self, vkcode, count ):
-
-# self.__m_bAfterAlt = False
-# if( self.__m_KeyState[ Const.VK_MENU ] == 0x80 and vkcode != Const.VK_MENU ):  self.__m_bAfterAlt = True
-
-
-#ALT押した後に、別キーのDown/Upが割り込むと、ALT離すときはWM_KEYUPになる(割り込みなしの場合のみWM_SYSKEYUP)
-
-# Altdown -> Pdown -> Pup -> Altup
-#  sysdown  sysdown   sysup   "up"
-
-# Altdown -> Pdown -> Altup -> Pup
-#  sysdown  sysdown   "up"      up
-
-# Pdown -> Altdown -> Altup -> Pup
-#  down     sysdown   "sysup"   up
-
-# Pdown -> Altdown -> Pup -> Altup
-#  down    sysdown    sysup    "up"
-
-
-# F10の場合は、別キーのDown/Upが割り込み関係なく常にWM_SYSKEYUP
-
-# F10down -> Altdown -> Altup -> F10up
-#  sysdown    sysdown    sysup   sysup
-
-# F10down -> Altdown -> F10up -> Altup
-#  sysdown    sysdown    sysup     up
-
-# Altdown -> F10down -> F10up -> Altup
-#  sysdown   sysdown    sysup      up
-
-# Altdown -> F10down -> Altup -> F10up
-#  sysdown   sysdown      up     sysup
+    def ReleaseKey( self, vkcode, count=1 ):
 
         isAltUp = vkcode in Const.AltVkCodes
 
@@ -367,24 +334,12 @@ class Sender:
 
         # shift/ctrl case: Use SetKeyboardState
         if( vkcode in Const.ModifierVkCodes ):
-            ctypes.windll.user32.SetKeyboardState( ctypes.byref(__m_KeyState) )
+            ctypes.windll.user32.SetKeyboardState( ctypes.byref(self.__m_KeyState) )
 
         # other case: PostMessage
         else:
 
-#-------------------+-------------------+-------------------+
-#     vkcode is Alt |       True        |       False       |
-# __m_IsAltModified    |                   |                   |
-#-------------------+-------------------+-------------------+
-#                   |                   |                   |
-#   True            |   WM_KEYUP        |   WM_SYSKEYUP     |
-#                   |                   |                   |
-#-------------------+-------------------+-------------------+
-#                   |                   |                   |
-#   False           |   WM_SYSKEYUP     |   WM_KEYUP        |
-#                   |                   |                   |
-#-------------------+-------------------+-------------------+
-
+            # WM_KEYUP/WM_SYSKEYUP detection.
             msg = Const.WM_SYSKEYUP if( ( self.__m_IsAltModified ^ isAltUp ) or vkcode==Const.VK_F10 ) \
                 else Const.WM_KEYUP
 
@@ -393,35 +348,68 @@ class Sender:
 
             alt_status = self.__m_KeyState[ Const.VK_MENU ]==0x80
             wparam = self.__MakeKeyWParam( vkcode, count, False, alt_status )
-            ctypes.windll.user32.PostMessageW( hwnd, msg, vkcode, wparam )
+            ctypes.windll.user32.PostMessageW( self.__m_TargetHwnd, msg, vkcode, wparam )
+
+
+            #==================== WM_KEYUP/WM_SYSKEYUP detection ========================#
+            #-------------------+-------------------+-------------------+
+            #     vkcode is Alt |       True        |       False       |
+            # __m_IsAltModified |                   |                   |
+            #-------------------+-------------------+-------------------+
+            #                   |                   |                   |
+            #   True            |   WM_KEYUP        |   WM_SYSKEYUP     |
+            #                   |                   |                   |
+            #-------------------+-------------------+-------------------+
+            #                   |                   |                   |
+            #   False           |   WM_SYSKEYUP     |   WM_KEYUP        |
+            #                   |                   |                   |
+            #-------------------+-------------------+-------------------+
+
+           
+            #================= WM_KEYUP/WM_SYSKEYUP behavior of ALT key ===============#
+
+            #----------- "Alt" and "P" combinaitions ---------#
+
+            # "Alt"down -> "P"down -> "P"up -> "Alt"up
+            #   sysdown     sysdown    sysup     up
+
+            # "Alt"down -> "P"down -> "Alt"up -> "P"up
+            #   sysdown     sysdown   "up"       up
+
+            # "P"down -> "Alt"down -> "Alt"up -> "P"up
+            #   down      sysdown      sysup     up
+
+            # "P"down -> "Alt"down -> "P"up -> "Alt"up
+            #   down      sysdown     sysup     up
+
+
+            #--------- "Alt" and "F10" combinations ----------#
+
+            # "F10"down -> "Alt"down -> "Alt"up -> "F10"up
+            #  sysdown      sysdown      sysup     sysup
+
+            # "F10"down -> "Alt"down -> "F10"up -> "Alt"up
+            #  sysdown      sysdown      sysup      up
+
+            # "Alt"down -> "F10"down -> "F10"up -> "Alt"up
+            #  sysdown      sysdown      sysup      up
+
+            # "Alt"down -> "F10"down -> "Alt"up -> "F10"up
+            #  sysdown      sysdown      up        sysup
 
 
 
     def __SetKeyState( self, vkey, down ):
 
-        # Bitwise OR operation for bytes https://techoverflow.net/2020/09/27/how-to-perform-bitwise-boolean-operations-on-bytes-in-python3/
-        def OR( a, b ):
-            result_int = int.from_bytes(a, byteorder="big") | int.from_bytes(b, byteorder="big")
-            return result_int.to_bytes(max(len(a), len(b)), byteorder="big")
-
-
-        # detect key interaction after alt press
-        #self.__m_bAfterAlt = ( self.__m_KeyState[ Const.VK_MENU ]==0x80 )# and ( vkcode!=Const.VK_MENU )
-
-
-	    #(1 > 0) ? True : False
         if( vkey == Const.VK_MENU or vkey == Const.VK_LMENU or vkey == Const.VK_RMENU ):
-            self.__m_KeyState[ vkey ] = 0x80 if down else 0x00
-            self.__m_KeyState[ Const.VK_MENU ] = OR( self.__m_KeyState[ Const.VK_LMENU ], self.__m_KeyState[ Const.VK_RMENU ] )
+            self.__m_KeyState[ vkey ] = self.__m_KeyState[ Const.VK_MENU ] = 0x80 if down else 0x00
 
         elif( vkey == Const.VK_SHIFT or vkey == Const.VK_LSHIFT or vkey == Const.VK_RSHIFT ):
-            self.__m_KeyState[ vkey ] = 0x80 if down else 0x00
-            self.__m_KeyState[ Const.VK_SHIFT ] = OR( self.__m_KeyState[ Const.VK_LSHIFT ], self.__m_KeyState[ Const.VK_RSHIFT ] )
+            self.__m_KeyState[ vkey ] = self.__m_KeyState[ Const.VK_SHIFT ] = 0x80 if down else 0x00
             self.__m_MK_Flags = self.__m_MK_Flags | Const.MK_SHIFT if down else self.__m_MK_Flags & Const.MK_SHIFT_INV
 
         elif( vkey == Const.VK_CONTROL or vkey == Const.VK_LCONTROL or vkey == Const.VK_RCONTROL ):
-            self.__m_KeyState[ vkey ] = 0x80 if down else 0x00
-            self.__m_KeyState[ Const.VK_CONTROL ] = OR( self.__m_KeyState[ Const.VK_LCONTROL ], self.__m_KeyState[ Const.VK_RCONTROL ] )
+            self.__m_KeyState[ vkey ] = self.__m_KeyState[ Const.VK_CONTROL ] = 0x80 if down else 0x00
             self.__m_MK_Flags = self.__m_MK_Flags | Const.MK_CONTROL if down else self.__m_MK_Flags & Const.MK_CONTROL_INV
 
         elif( vkey == Const.VK_NUMLOCK and not down ):
@@ -444,9 +432,8 @@ class Sender:
     #        self.__SetKeyState( vkey, 0 )
 
     
-# m_KeyStateを更新するのはどの処理?
 
-    def __BindTargetHwnd( self, hwnd ):
+    def BindTargetHwnd( self, hwnd ):
 
         self.__m_TargetHwnd = hwnd
         #pid = DWORD()
@@ -457,7 +444,7 @@ class Sender:
 
 
 
-    def __UnbindTargetHwnd( self ):
+    def UnbindTargetHwnd( self ):
 
         if( self.__m_TargetThreadID ):
             ctypes.windll.user32.AttachThreadInput( self.__m_ThisThreadID, self.__m_TargetThreadID, False )
