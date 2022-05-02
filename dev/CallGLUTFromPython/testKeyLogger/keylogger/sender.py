@@ -238,7 +238,7 @@ class Sender:
     def __init__( self ):
         self.__m_KeyState = ( ctypes.c_ubyte * 256 )()
         self.__m_MK_Flags = 0x00
-        self.__m_bInsideAlt = False
+        self.__m_IsAltModified = False
 
         self.__m_ThisThreadID = ctypes.windll.kernel32.GetCurrentThreadId()#  threading.current_thread().ident#
         self.__m_TargetHwnd = None
@@ -302,11 +302,11 @@ class Sender:
 # TODO: AltはPostMessageで送る. Shift/CtrlはSetKeyboardStateで送る.
     def PressKey( self, vkcode, count ):
         
-        if( self.__m_KeyState[ Const.VK_MENU ]==0x80 and vkcode!=Const.VK_MENU ):
-            self.__m_bInsideAlt |= True# Alt押し込んだ状態で別キーのインタラクションあるかどうか検出する
+        # Alt押し込んだ状態で別キーのインタラクション発生しているかどうか検出する
+        self.__m_IsAltModified |= ( self.__m_KeyState[ Const.VK_MENU ]==0x80 and not vkcode in Const.AltVkCodes )
 
+        # Apply vkcode press interaction to self.__m_KeyState
         self.__SetKeyState( vkcode, True )
-        
 
         # shift/ctrl case: Use SetKeyboardState
         if( vkcode in Const.ModifierVkCodes ):
@@ -315,7 +315,7 @@ class Sender:
         # other case: PostMessage
         else:
             alt_pressed = self.__m_KeyState[ Const.VK_MENU ] == 0x80
-            msg = Const.WM_SYSKEYDOWN if ( alt_pressed ) else Const.WM_KEYDOWN
+            msg = Const.WM_SYSKEYDOWN if ( alt_pressed or (vkcode==Const.VK_F10) ) else Const.WM_KEYDOWN
             wparam = self.__MakeKeyWParam( vkcode, count, True, alt_pressed )
             ctypes.windll.user32.PostMessageW( hwnd, msg, vkcode, wparam )
 
@@ -358,10 +358,10 @@ class Sender:
 
         isAltUp = vkcode in Const.AltVkCodes
 
-        if( self.__m_KeyState[ Const.VK_MENU ]==0x80 and not isAltUp ):
-            self.__m_bInsideAlt |= True# Alt押し込んだ状態で別キーのインタラクションあるかどうか検出する
+        # Detect key release while Alt is down (except Alt release).
+        self.__m_IsAltModified |= ( self.__m_KeyState[ Const.VK_MENU ]==0x80 and not isAltUp )
 
-
+        # Apply vkcode release interaction to self.__m_KeyState
         self.__SetKeyState( vkcode, False )
         
 
@@ -374,7 +374,7 @@ class Sender:
 
 #-------------------+-------------------+-------------------+
 #     vkcode is Alt |       True        |       False       |
-# __m_bInsideAlt    |                   |                   |
+# __m_IsAltModified    |                   |                   |
 #-------------------+-------------------+-------------------+
 #                   |                   |                   |
 #   True            |   WM_KEYUP        |   WM_SYSKEYUP     |
@@ -385,20 +385,15 @@ class Sender:
 #                   |                   |                   |
 #-------------------+-------------------+-------------------+
 
+            msg = Const.WM_SYSKEYUP if( ( self.__m_IsAltModified ^ isAltUp ) or vkcode==Const.VK_F10 ) \
+                else Const.WM_KEYUP
 
-            if( self.__m_bInsideAlt ^ vkcode==Const.VK_MENU ):
-                msg = Const.WM_SYSKEYUP
-            else:
-                msg = Const.WM_KEYUP
-
-            self.__m_bInsideAlt &= not isAltUp
-            # TODO: AltキーをUpしたらself.__m_bInsideAltをFalseで初期化する
+            self.__m_IsAltModified &= (not isAltUp)
+            # TODO: AltキーをUpしたらself.__m_IsAltModifiedをFalseで初期化する
 
             alt_status = self.__m_KeyState[ Const.VK_MENU ]==0x80
             wparam = self.__MakeKeyWParam( vkcode, count, False, alt_status )
             ctypes.windll.user32.PostMessageW( hwnd, msg, vkcode, wparam )
-
-# TODO: F10は他キーにSYSKEYDOWN/SYSKEYUP伝播しない. 自分のDownUpだけに適用する
 
 
 
