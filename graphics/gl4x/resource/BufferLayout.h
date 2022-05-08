@@ -232,8 +232,8 @@ namespace OreOreLib
 		DISABLE				= 0,
 		CAST_SHADOW_ON		= 1,
 		CAST_SHADOW_OFF		= 0,
-		RECIEVE_SHADOW_ON	= 1,
-		RECIEVE_SHADOW_OFF	= 0,
+		RECEIVE_SHADOW_ON	= 1,
+		RECEIVE_SHADOW_OFF	= 0,
 		INSTANCE_ON			= 1,
 		INSTANCE_OFF		= 0,
 		TRANSPARENT_ON		= 1,
@@ -433,7 +433,7 @@ namespace OreOreLib
 	{
 		bool	Visible;		// 可視オブジェクト
 		bool	CastShadow;		// 他のオブジェクトに影を投影する
-		bool	RecieveShadow;	// 他のオブジェクトから影を受像する
+		bool	ReceiveShadow;	// 他のオブジェクトから影を受像する
 	};
 
 

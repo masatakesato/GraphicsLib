@@ -37,7 +37,7 @@ FaceGroupBuffer* m_pFaceGroupBuffer;	// pointer to facegroup buffer
 
 		void SetVisible( bool visible )				{ m_RenderStats.Visible = visible; }
 		void SetCastShadow( bool castshadow )		{ m_RenderStats.CastShadow = castshadow; }
-		void SetRecieveShadow( bool recieveshadow )	{ m_RenderStats.RecieveShadow = recieveshadow; }
+		void SetReceiveShadow( bool receiveshadow )	{ m_RenderStats.ReceiveShadow = receiveshadow; }
 
 		//inline void SetScale( const Vec3f &scale )		{ m_pParent->SetScale( scale );		}
 		//inline void SetRotation( const Mat4f &rot )		{ m_pParent->SetRotation( rot );	}

@@ -23,7 +23,7 @@ namespace OreOreLib
 
 		m_RenderStats.Visible		= true;
 		m_RenderStats.CastShadow	= false;
-		m_RenderStats.RecieveShadow	= false;
+		m_RenderStats.ReceiveShadow	= false;
 	}
 
 

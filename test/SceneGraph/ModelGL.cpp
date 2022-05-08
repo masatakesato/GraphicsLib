@@ -127,7 +127,7 @@ void ModelGL::Init()
 	};
 
 	// 属性情報の初期化
-	MeshAttribute attrib = { SHADER_SIMPLEMESH, VISIBLE, CAST_SHADOW_ON, RECIEVE_SHADOW_ON };
+	MeshAttribute attrib = { SHADER_SIMPLEMESH, VISIBLE, CAST_SHADOW_ON, RECEIVE_SHADOW_ON };
 
 	// 頂点バッファの初期化
 	AllocateVertexBuffer( &vb, 24, sizeof(VertexLayout), vertices );
