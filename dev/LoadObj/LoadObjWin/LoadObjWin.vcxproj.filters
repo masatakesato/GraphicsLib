@@ -15,16 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\oreore\ui\win\Window.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\graphics\gl4x\scene\Camera.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\oreore\ui\win\WindowProcedure.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\graphics\gl4x\app\ViewGL.cpp">
@@ -48,11 +42,14 @@
     <ClCompile Include="..\..\..\graphics\gl4x\scene\MeshLoader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\external\oreore\ui\win\Window.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\oreore\ui\win\WindowProcedure.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\oreore\ui\win\Window.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\graphics\gl4x\app\ViewGL.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -60,9 +57,6 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\oreore\ui\win\WindowProcedure.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\test\LoadObj\ControllerLoadObj.h">
@@ -78,6 +72,12 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\graphics\gl4x\scene\MeshLoader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\oreore\ui\win\WindowProcedure.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\oreore\ui\win\Window.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

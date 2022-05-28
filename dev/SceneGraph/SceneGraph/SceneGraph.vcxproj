@@ -136,8 +136,8 @@
     <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShaderParameter.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\shader\IShader.cpp" />
-    <ClCompile Include="..\..\..\oreore\ui\win\Window.cpp" />
-    <ClCompile Include="..\..\..\oreore\ui\win\WindowProcedure.cpp" />
+    <ClCompile Include="..\..\..\external\oreore\ui\win\Window.cpp" />
+    <ClCompile Include="..\..\..\external\oreore\ui\win\WindowProcedure.cpp" />
     <ClCompile Include="..\..\..\test\SceneGraph\ControllerGL.cpp" />
     <ClCompile Include="..\..\..\test\SceneGraph\ModelGL.cpp" />
     <ClCompile Include="..\..\..\test\SceneGraph\win_main.cpp" />
@@ -201,8 +201,8 @@
     <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShaderParameter.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\shader\IShader.h" />
-    <ClInclude Include="..\..\..\oreore\ui\win\Window.h" />
-    <ClInclude Include="..\..\..\oreore\ui\win\WindowProcedure.h" />
+    <ClInclude Include="..\..\..\external\oreore\ui\win\Window.h" />
+    <ClInclude Include="..\..\..\external\oreore\ui\win\WindowProcedure.h" />
     <ClInclude Include="..\..\..\test\SceneGraph\ControllerGL.h" />
     <ClInclude Include="..\..\..\test\SceneGraph\ModelGL.h" />
   </ItemGroup>

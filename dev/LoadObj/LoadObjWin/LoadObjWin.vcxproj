@@ -80,8 +80,8 @@
     <ClCompile Include="..\..\..\graphics\common\OBJLoader.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\scene\MeshLoader.cpp" />
     <ClCompile Include="..\..\..\graphics\gl4x\shader\GLShader.cpp" />
-    <ClCompile Include="..\..\..\oreore\ui\win\Window.cpp" />
-    <ClCompile Include="..\..\..\oreore\ui\win\WindowProcedure.cpp" />
+    <ClCompile Include="..\..\..\external\oreore\ui\win\Window.cpp" />
+    <ClCompile Include="..\..\..\external\oreore\ui\win\WindowProcedure.cpp" />
     <ClCompile Include="..\..\..\test\LoadObj\ControllerLoadObj.cpp" />
     <ClCompile Include="..\..\..\test\LoadObj\LoadObj_winmain.cpp" />
     <ClCompile Include="..\..\..\test\LoadObj\ModelLoadObj.cpp" />
@@ -93,8 +93,8 @@
     <ClInclude Include="..\..\..\graphics\common\OBJLoader.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\scene\MeshLoader.h" />
     <ClInclude Include="..\..\..\graphics\gl4x\shader\GLShader.h" />
-    <ClInclude Include="..\..\..\oreore\ui\win\Window.h" />
-    <ClInclude Include="..\..\..\oreore\ui\win\WindowProcedure.h" />
+    <ClInclude Include="..\..\..\external\oreore\ui\win\Window.h" />
+    <ClInclude Include="..\..\..\external\oreore\ui\win\WindowProcedure.h" />
     <ClInclude Include="..\..\..\test\LoadObj\ControllerLoadObj.h" />
     <ClInclude Include="..\..\..\test\LoadObj\ModelLoadObj.h" />
   </ItemGroup>

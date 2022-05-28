@@ -144,12 +144,6 @@
     <ClCompile Include="..\..\..\graphics\gl4x\io\SceneLoader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\oreore\ui\win\Window.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\oreore\ui\win\WindowProcedure.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\graphics\gl4x\shader\IShader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -202,6 +196,12 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\oreorelib\oreore\io\FileIO.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\oreore\ui\win\Window.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\external\oreore\ui\win\WindowProcedure.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -332,12 +332,6 @@
     <ClInclude Include="..\..\..\graphics\gl4x\io\SceneLoader.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\oreore\ui\win\Window.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\oreore\ui\win\WindowProcedure.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\graphics\gl4x\shader\IShader.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -390,6 +384,12 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\oreorelib\oreore\io\FileIO.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\oreore\ui\win\Window.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\external\oreore\ui\win\WindowProcedure.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
