@@ -348,6 +348,16 @@ class MyView( QGraphicsView ):
         return super(MyView, self).keyPressEvent(event)
 
 
+
+    def drawBackground( self, painter, rect ):
+
+        painter.setBrush( Qt.lightGray )
+        #painter.drawRect( QRect(0, 0, 100, 100) )
+        painter.fillRect(rect, QBrush(QColor(128, 128, 255, 1)))
+
+
+
+
     #def changeEvent( self, event ):
     #    super(MyView, self).changeEvent( event )
     #    print( "MyView::changeEvent()...", event.type() )
