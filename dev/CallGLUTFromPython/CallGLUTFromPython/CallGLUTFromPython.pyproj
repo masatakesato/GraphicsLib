@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d5b4b420-ecc6-4340-935d-5c7114247ebd</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>testOverlayViewOnWidget.py</StartupFile>
+    <StartupFile>EmbedExternalAppToQWidget_main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -26,6 +26,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CallGLUTFromPython.py" />
+    <Compile Include="EmbedExternalAppToQWidget_main.py" />
     <Compile Include="EmbedNotepadToQWidget_main.py" />
     <Compile Include="testOverlayViewOnWidget.py" />
     <Compile Include="testQGLWidget_main.py" />

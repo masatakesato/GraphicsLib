@@ -103,9 +103,17 @@ class MyWidget(QWidget):
         
         self.hwnd = window_handle
         #self._style = win32gui.GetWindowLong( self.hwnd, win32con.GWL_EXSTYLE )
+        self.style = win32gui.GetWindowLong( self.hwnd, win32con.GWL_STYLE )
+        self.exstyle = win32gui.GetWindowLong( self. hwnd, win32con.GWL_EXSTYLE )
+
+
 
         self.window =  QWindow.fromWinId( window_handle )
         self.window_widget = QWidget.createWindowContainer( self.window )
+
+        self.window_widget.style = self.style
+        self.window_widget.exstyle = self.exstyle
+
 
         self.window_widget.setFocusPolicy(Qt.StrongFocus)
         self.window_widget.setFocus()
@@ -132,7 +140,9 @@ class MyWidget(QWidget):
             if( self.window_widget ):
                 self.window_widget.setParent( None )
                 self.window.setParent( None )
-                #win32gui.SetWindowLong( self.hwnd, win32con.GWL_EXSTYLE, self._style )
+                win32gui.SetWindowLong( self.hwnd, win32con.GWL_STYLE, self.style | win32con.WS_VISIBLE )
+                win32gui.SetWindowLong( self.hwnd, win32con.GWL_EXSTYLE, self.exstyle )
+
 
                 self.window_widget = None
                 self.window = None
