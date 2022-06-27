@@ -117,7 +117,7 @@ class ExternalAppWidget( QWidget ):
         self.__m_AppWindow = None
         self.__m_WindowWidget = None
 
-        self.__p = None
+        #self.__p = None
 
 
         #self.nonlayoutwidgets = []
@@ -133,7 +133,7 @@ class ExternalAppWidget( QWidget ):
 
     def BindHwnd( self, window_handle, processhandle ):
         
-        self.hwnd = window_handle
+        #self.hwnd = window_handle
         #self._style = win32gui.GetWindowLong( self.hwnd, win32con.GWL_EXSTYLE )
         
         self.__m_AppWindow =  QWindow.fromWinId( window_handle )
@@ -151,7 +151,7 @@ class ExternalAppWidget( QWidget ):
         #self.__m_WindowWidget.installEventFilter( self )
         
         #https://programtalk.com/python-examples/ctypes.windll.user32.CreateWindowExW/
-        ctypes.windll.user32.EnableWindow( self.hwnd, 0 )
+        #ctypes.windll.user32.EnableWindow( self.hwnd, 0 )
 
         self.layout().addWidget( self.__m_WindowWidget )#self.__m_WindowWidget.setParent( self )#
 
@@ -167,9 +167,9 @@ class ExternalAppWidget( QWidget ):
 
                 self.__m_WindowWidget = None
                 self.__m_AppWindow = None
-                self.hwnd = None
+                #self.hwnd = None
                 #self.nonlayoutwidgets.clear()
-                ctypes.windll.user32.EnableWindow( self.hwnd, 0 )
+                #ctypes.windll.user32.EnableWindow( self.hwnd, 0 )
 
         except Exception as e:
             import traceback
@@ -312,9 +312,16 @@ class MyFrame( QFrame ):
 
 
 
-    def addChildWidget(self, w):
+    def AddChildWidget( self, w ):
         w.setParent(self)
         self.nonlayoutwidgets.append(w)
+
+
+
+    def RemoveChildWidget( self, w ):
+        self.nonlayoutwidgets.remove(w)
+        w.setParent( None )
+
 
 
     def mousePressEvent( self, event ):
@@ -487,12 +494,12 @@ class windowOverlay(QWidget):
         self.myFrame = MyFrame()
         self.myFrame.setLayout( QVBoxLayout() )
         
-        self.myFrame.addChildWidget( self.view )# QLayoutではなく直接QWidgetの子供にする & viewのアトリビュートを変更する
+        self.myFrame.AddChildWidget( self.view )# QLayoutではなく直接QWidgetの子供にする & viewのアトリビュートを変更する
         self.view.setAttribute( Qt.WA_NoSystemBackground )# バックグラウンドなし
         self.view.setAttribute( Qt.WA_TranslucentBackground )# ビューの背景を完全透明化する
         self.view.setWindowFlags( Qt.Tool | Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus )# 枠なしカバーウィンドウにする. Qt.WindowStaysOnTopHint: 全画面上で常に最前面にView表示させるフラグ.これは外す
+        # プラットフォーム依存のQt.CoverWindowの代わりにQt.Toolを使っている
 
-        # | Qt.CoverWindow
         self.myFrame.layout().addWidget( self.backgroundWidget )# 埋め込みアプリ背景ウィンドウはQLayoutに登録する
         
 # TODO: viewにどうしてもフォーカスが入る. focusIn/focusOutをオーバーライドして無理矢理外す方法はある. -> ダメだった
@@ -523,12 +530,15 @@ class windowOverlay(QWidget):
         self.button = QPushButton("Toggle Overlay")
         self.button.setFixedHeight(50)
 
+        self.button2 = QPushButton("Swap Layer")
+        self.button2.setFixedHeight(50)
+
+
         self.verticalLayout = QVBoxLayout( self )# QStackedLayout(self)#
         #self.layout().setStackingMode( QStackedLayout.StackAll )
         self.verticalLayout.addWidget( self.myFrame )#self.view )#
         self.verticalLayout.addWidget( self.button )
-
-
+        self.verticalLayout.addWidget( self.button2 )
 
 
         # define rect item
@@ -546,16 +556,79 @@ class windowOverlay(QWidget):
 
        
         self.button.clicked.connect( lambda: self.button_off() if self.view.isVisible() else self.button_on() )
-        
+        self.button2.clicked.connect( self.swap_layer )
+
+
+
+        ################################################################################################################
+        #                                    Viewを新たに追加するテスト                                                #
+        ################################################################################################################
+
+        # View/Sceneを作成する
+        self.scene2 = MyScene()
+        self.view2 = MyView()
+        self.view2.setStyleSheet( 'background: rgba(60, 255, 255, 50);' )#self.view.setStyleSheet( 'background: transparent;' )
+        self.view2.setScene( self.scene2 )
+
+        # myFrameにviewを追加する
+        self.myFrame.AddChildWidget( self.view2 )# QLayoutではなく直接QWidgetの子供にする & viewのアトリビュートを変更する
+        self.view2.setAttribute( Qt.WA_NoSystemBackground )# バックグラウンドなし
+        self.view2.setAttribute( Qt.WA_TranslucentBackground )# ビューの背景を完全透明化する
+        self.view2.setWindowFlags( Qt.Tool | Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus )
+
+        rect2 = QGraphicsRectItem()
+        rect2.setRect( 36, -5, 100, 50 )
+        rect2.setOpacity( 0.5 )
+        rect2.setBrush( Qt.red )
+        rect2.setFlag( QGraphicsItem.ItemSendsGeometryChanges )
+        rect2.setFlag( QGraphicsItem.ItemIsMovable )
+        rect2.setFlag( QGraphicsItem.ItemIsSelectable )
+        rect2.setFlag( QGraphicsItem.ItemIsFocusable, False )
+
+        self.scene2.addItem( rect2 )
+
+
+
+
+        ################################################################################################################
+        #                                   一旦Viewを外してもう一回つけなおすテスト                                   #
+        ################################################################################################################
+        self.myFrame.RemoveChildWidget( self.view )
+
+        self.myFrame.AddChildWidget( self.view )
+        self.view.setAttribute( Qt.WA_NoSystemBackground )# バックグラウンドなし
+        self.view.setAttribute( Qt.WA_TranslucentBackground )# ビューの背景を完全透明化する
+        self.view.setWindowFlags( Qt.Tool | Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus )# 枠なしカバーウィンドウにする. Qt.WindowStaysOnTopHint: 全画面上で常に最前面にView表示させるフラグ.これは外す
+ 
+
+        ################################################################################################################
+        #                                   順番入れ替え                                   #
+        ################################################################################################################
+
+        #self.myFrame.children()[0], self.myFrame.children()[1] = self.myFrame.children()[1], self.myFrame.children()[0]
+
+
 
 
     def button_on( self ):
         self.view.show()
+        self.view2.show()
 
 
     def button_off( self ):
         self.view.hide()
+        self.view2.hide()
 
+
+    def swap_layer( self ):
+
+        print( self.myFrame.children() )
+
+        print(  self.view)
+        #self.view.raise_()
+        #self.myFrame.children()[2].raise_()
+
+        #print( self.myFrame.children() )
 
     #def resizeEvent( self, event ):
     #    super(windowOverlay, self).resizeEvent( event )

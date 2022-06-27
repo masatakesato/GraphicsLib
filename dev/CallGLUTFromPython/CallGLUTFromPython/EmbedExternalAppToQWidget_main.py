@@ -22,51 +22,39 @@ import WindowHandleHelper
 
 
 
-class MyNativeEventFilter( QAbstractNativeEventFilter ):
+#class MyNativeEventFilter( QAbstractNativeEventFilter ):
 
-	def __init__( self ):
-		super(MyNativeEventFilter, self).__init__()
-
-
-	def nativeEventFilter( self, eventType, message ):
-
-		if( eventType == "windows_generic_MSG" ):
-			msg = ctypes.wintypes.MSG.from_address( message.__int__() )
-
-			print( msg.message )
+#	def __init__( self ):
+#		super(MyNativeEventFilter, self).__init__()
 
 
-			if( msg.message == win32con.WM_PARENTNOTIFY ):
-				print( "WM_PARENTNOTIFY" )
+#	def nativeEventFilter( self, eventType, message ):
 
-			elif( msg.message == win32con.WM_MOUSEACTIVATE ):
-				print( "WM_MOUSEACTIVATE" )
+#		if( eventType == "windows_generic_MSG" ):
+#			msg = ctypes.wintypes.MSG.from_address( message.__int__() )
+
+#			print( msg.message )
 
 
+#			if( msg.message == win32con.WM_PARENTNOTIFY ):
+#				print( "WM_PARENTNOTIFY" )
 
-			elif( msg.message == win32con.WM_KEYDOWN ):
-				print( "WM_KEYDOWN" )
-
-			elif( msg.message == win32con.WM_KEYUP ):
-				print( "WM_KEYUP" )
-
-			elif( msg.message == win32con.WM_LBUTTONDOWN ):
-				print( "WM_LBUTTONDOWN" )
-
-		return False, 0
+#			elif( msg.message == win32con.WM_MOUSEACTIVATE ):
+#				print( "WM_MOUSEACTIVATE" )
 
 
 
+#			elif( msg.message == win32con.WM_KEYDOWN ):
+#				print( "WM_KEYDOWN" )
 
+#			elif( msg.message == win32con.WM_KEYUP ):
+#				print( "WM_KEYUP" )
 
-class MINMAXINFO(ctypes.Structure):
-	_fields_ = [
-		("ptReserved",      POINT),
-		("ptMaxSize",       POINT),
-		("ptMaxPosition",   POINT),
-		("ptMinTrackSize",  POINT),
-		("ptMaxTrackSize",  POINT),
-	]
+#			elif( msg.message == win32con.WM_LBUTTONDOWN ):
+#				print( "WM_LBUTTONDOWN" )
+
+#		return False, 0
+
 
 
 
@@ -138,8 +126,8 @@ class MyWidget(QWidget):
             if( self.window_widget ):
                 self.window_widget.setParent( None )
                 self.window.setParent( None )
-                win32gui.SetWindowLong( self.hwnd, win32con.GWL_STYLE, self.style | win32con.WS_VISIBLE )
-                win32gui.SetWindowLong( self.hwnd, win32con.GWL_EXSTYLE, self.exstyle )
+                #win32gui.SetWindowLong( self.hwnd, win32con.GWL_STYLE, self.style | win32con.WS_VISIBLE )
+                #win32gui.SetWindowLong( self.hwnd, win32con.GWL_EXSTYLE, self.exstyle )
 
 
                 self.window_widget = None
